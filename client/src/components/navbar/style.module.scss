@@ -1,0 +1,42 @@
+@import '@/styles/_helpers.scss';
+
+.navbarWrapper {
+    @apply grid grid-cols-3 grid-rows-1 items-center justify-items-center px-[3rem] relative w-full z-10;
+    border-bottom: toRem(1) solid white;
+    height: toRem(90);
+    color: white;
+
+    &:hover {
+        color: black !important;
+    }
+
+    div {
+        z-index: 10;
+    }
+}
+
+.background {
+    @apply absolute bg-white top-0 left-0 h-full w-full;
+}
+
+.leftBtnWrapper {
+    @apply justify-self-start;
+}
+
+.rightBtnWrapper {
+    @apply justify-self-end;
+}
+
+.leftBtnWrapper,
+.rightBtnWrapper {
+    @apply flex items-center justify-center gap-3
+}
+
+// MEDIA QUERIES
+@media screen and (max-width: 992px) {
+
+    .leftBtnWrapper,
+    .rightBtnWrapper {
+        @apply invisible;
+    }
+}
