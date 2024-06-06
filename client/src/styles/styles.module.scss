@@ -9,3 +9,15 @@
         background: rgb(0, 0, 0, 0.3);
     }
 }
+
+.timelessContainer {
+    @apply absolute top-[23rem] w-full text-white whitespace-nowrap text-lg uppercase z-10 flex flex-col items-center justify-center;
+
+    span:first-child {
+        @apply text-[2.2rem] pb-5 font-bold;
+    }
+
+    div:last-child {
+        @apply flex justify-center items-center gap-10 pt-12;
+    }
+}
