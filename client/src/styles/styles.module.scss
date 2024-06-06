@@ -21,3 +21,35 @@
         @apply flex justify-center items-center gap-10 pt-12;
     }
 }
+
+.wrapper {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.wrapper {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.marquee {
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+    animation: marquee 50s linear infinite;
+}
+
+.marquee p {
+    @apply inline-block uppercase font-bold;
+    font-size: toRem(80);
+}
+
+@keyframes marquee {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+        transform: translate3d(-50%, 0, 0);
+    }
+}
