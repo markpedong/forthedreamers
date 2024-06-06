@@ -1,0 +1,25 @@
+@import '@/styles/_helpers.scss';
+
+.productContainer {
+    @apply flex flex-col items-center justify-center mx-5 gap-4;
+    min-width: toRem(300);
+    height: toRem(300);
+
+    div {
+        @apply flex flex-col text-center;
+    }
+}
+
+.textContainer {
+    @apply flex flex-col gap-1;
+
+    span:not(:last-child) {
+        @apply uppercase;
+        font-size: toRem(16);
+    }
+
+    span:last-child {
+        font-size: toRem(12);
+        font-weight: 300;
+    }
+}

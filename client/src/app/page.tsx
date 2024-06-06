@@ -23,7 +23,8 @@ const Home = () => {
 					</div>
 				</div>
 			</div>
-			{/* <Products /> */}
+			<Products />
+			<div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque, error.</div>
 		</div>
 	)
 }

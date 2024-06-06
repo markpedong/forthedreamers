@@ -1,7 +1,7 @@
 @import '@/styles/_helpers.scss';
 
 .mainWrapper {
-    @apply relative h-dvh w-dvw bg-[url('/assets/images/main-bg.webp')] bg-center bg-cover bg-no-repeat;
+    @apply relative h-dvh bg-[url('/assets/images/main-bg.webp')] bg-center bg-cover bg-no-repeat;
 
     &:after {
         @apply absolute top-0 left-0 size-full;

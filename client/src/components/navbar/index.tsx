@@ -19,7 +19,6 @@ const Navbar: FC = () => {
 	useEffect(() => {
 		const handleScroll = () => {
 			setScroll(window.scrollY)
-			console.log(scroll)
 		}
 
 		window.addEventListener('scroll', handleScroll)
