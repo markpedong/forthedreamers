@@ -1,0 +1,12 @@
+@import '@/styles/_helpers.scss';
+
+.testimonialContainer {
+    @apply flex flex-col items-center justify-center mx-5 gap-4;
+    min-width: toRem(300);
+    height: toRem(300);
+
+    h1 {
+        font-size: toRem(20);
+        font-weight: 500;
+    }
+}

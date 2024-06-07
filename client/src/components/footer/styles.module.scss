@@ -1,0 +1,43 @@
+@import '@/styles/_helpers.scss';
+
+.footerContainer {
+    @apply relative bg-[#151515] text-white p-12 py-24;
+    grid-template-columns: 1fr 3fr;
+
+    h2 {
+        @apply pb-10;
+        font-weight: 500;
+    }
+}
+
+.footerWrapper {
+    @apply flex gap-5 pb-14;
+
+
+    div:first-child {
+        width: toRem(300);
+    }
+}
+
+.menuContainer {
+    @apply flex flex-col gap-3;
+    font-weight: 300;
+    font-size: toRem(14);
+}
+
+.socmedContainer {
+    @apply flex gap-5;
+
+    svg {
+        @apply size-[1.2rem];
+    }
+}
+
+.dropdownContainer {
+    @apply flex gap-4 pb-5;
+}
+
+.tradeMark {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: toRem(12);
+}

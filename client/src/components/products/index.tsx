@@ -1,5 +1,5 @@
 import React from 'react'
-import Product from './components/product'
+import Product from '../product'
 import styles from './styles.module.scss'
 import ScrollContainer from 'react-indiana-drag-scroll'
 
