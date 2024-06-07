@@ -1,6 +1,5 @@
 'use client'
 
-import Navbar from '@/components/navbar'
 import styles from '../styles/styles.module.scss'
 import { GoDotFill } from 'react-icons/go'
 import { FaCircleDot } from 'react-icons/fa6'
@@ -10,9 +9,15 @@ import Image from 'next/image'
 import Product from '@/components/product'
 import Testimonials from '@/components/testimonials'
 import Footer from '@/components/footer'
+import dynamic from 'next/dynamic'
 
 const roboto = Roboto_Condensed({ weight: ['300', '800'], subsets: ['latin'] })
 const poppins = Poppins({ weight: ['400', '600', '800'], subsets: ['latin'] })
+
+const Navbar = dynamic(() => import('@/components/navbar'), {
+	loading: () => <></>,
+	ssr: false
+})
 
 const Home = () => {
 	return (

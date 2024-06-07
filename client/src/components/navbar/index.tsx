@@ -1,15 +1,14 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { FC, useEffect, useState } from 'react'
-import styles from './style.module.scss'
-import { IoSearchOutline } from 'react-icons/io5'
-import { CiShoppingCart } from 'react-icons/ci'
-import { Poppins, Roboto_Condensed } from 'next/font/google'
-import classNames from 'classnames'
 import useWindowWidth from '@/hooks/useWindowWidth'
 import { Drawer } from 'antd'
-import { IoMenu } from 'react-icons/io5'
+import classNames from 'classnames'
+import { motion } from 'framer-motion'
+import { Poppins, Roboto_Condensed } from 'next/font/google'
+import { FC, useEffect, useState } from 'react'
+import { CiShoppingCart } from 'react-icons/ci'
+import { IoMenu, IoSearchOutline } from 'react-icons/io5'
+import styles from './style.module.scss'
 
 const poppins = Poppins({ weight: ['400', '600'], subsets: ['latin'] })
 const roboto = Roboto_Condensed({ weight: '300', subsets: ['latin'] })
