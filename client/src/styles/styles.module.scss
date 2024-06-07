@@ -20,6 +20,16 @@
     div:last-child {
         @apply flex justify-center items-center gap-10 pt-12;
     }
+
+    @media screen and (max-width: 576px) {
+        span:first-child {
+            @apply text-[1.5rem];
+        }
+
+        span:nth-of-type(2) {
+            @apply text-[1rem];
+        }
+    }
 }
 
 .wrapper {
@@ -33,10 +43,8 @@
 }
 
 .dudeWrapper {
-    @apply h-dvh relative;
-
     img {
-        @apply object-cover size-full;
+        @apply object-contain size-full;
     }
 }
 
@@ -53,7 +61,7 @@
     }
 
     .productContainer {
-        @apply flex mt-12;
+        @apply flex flex-wrap items-center justify-center mt-12;
     }
 }
 

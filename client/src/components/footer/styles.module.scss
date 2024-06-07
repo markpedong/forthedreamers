@@ -8,6 +8,14 @@
         @apply pb-10;
         font-weight: 500;
     }
+
+    @media screen and (max-width: 576px) {
+        @apply p-6;
+
+        h2 {
+            @apply pb-5;
+        }
+    }
 }
 
 .footerWrapper {
@@ -16,6 +24,14 @@
 
     div:first-child {
         width: toRem(300);
+    }
+
+    @media screen and (max-width: 576px) {
+        @apply flex-col;
+
+        div:first-child {
+            width: auto;
+        }
     }
 }
 

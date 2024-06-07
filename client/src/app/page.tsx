@@ -41,7 +41,7 @@ const Home = () => {
 				</div>
 			</div>
 			<div className={styles.dudeWrapper}>
-				<Image src={'/assets/images/dude.webp'} alt="" fill />
+				<Image src={'/assets/images/dude.webp'} alt="" height={1000} width={1000} />
 			</div>
 			<div className={styles.afterProductWrapper}>
 				<div className={styles.header}>
@@ -56,7 +56,7 @@ const Home = () => {
 				</div>
 			</div>
 			<div className={styles.dudeWrapper}>
-				<Image src={'/assets/images/group.webp'} alt="" fill />
+				<Image src={'/assets/images/group.webp'} alt="" height={1000} width={1000} />
 			</div>
 			<Testimonials />
 			<Footer />

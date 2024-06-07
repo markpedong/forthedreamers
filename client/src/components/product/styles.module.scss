@@ -8,6 +8,10 @@
     div {
         @apply flex flex-col text-center;
     }
+
+    @media screen and (max-width: 992px) {
+        min-width: toRem(200);
+    }
 }
 
 .textContainer {

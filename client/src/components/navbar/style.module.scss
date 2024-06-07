@@ -1,14 +1,19 @@
 @import '@/styles/_helpers.scss';
 
 .navbarWrapper {
-    @apply grid grid-cols-3 grid-rows-1 items-center justify-items-center px-[3rem] fixed w-full z-10;
+    @apply flex gap-1 justify-between items-center px-[3rem] fixed w-full z-10;
     border-bottom: toRem(1) solid white;
     height: toRem(90);
     color: white;
     transition: all 0.3s ease-in;
+    grid-template-columns: 1fr 3fr 1fr;
 
     div {
         z-index: 10;
+    }
+
+    @media screen and (max-width: 576px) {
+        @apply px-[0.5rem];
     }
 }
 
@@ -22,6 +27,12 @@
 
 .rightBtnWrapper {
     @apply justify-self-end;
+
+    @media screen and (max-width: 576px) {
+        span {
+            display: none;
+        }
+    }
 }
 
 .leftBtnWrapper,
@@ -53,15 +64,14 @@
 }
 
 .navTitle {
-    @apply font-bold tracking-wider;
+    @apply font-bold tracking-wider whitespace-nowrap;
     font-size: toRem(30);
+
+    @media screen and (max-width: 576px) {
+        font-size: toRem(20);
+    }
 }
 
-// MEDIA QUERIES
-@media screen and (max-width: 992px) {
-
-    .leftBtnWrapper,
-    .rightBtnWrapper {
-        @apply invisible;
-    }
+.mobileBtnWrapper {
+    @apply justify-self-start;
 }
