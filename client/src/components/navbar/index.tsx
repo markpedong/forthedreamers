@@ -34,50 +34,52 @@ const Navbar: FC = () => {
 	}, [])
 
 	return (
-		<motion.div
-			className={styles.navbarWrapper}
-			onHoverStart={() => setIsHovering(true)}
-			onHoverEnd={() => setIsHovering(false)}
-			style={{ color: isWhiteBG ? 'black' : 'white' }}
-		>
+		<div>
 			<motion.div
-				className={styles.background}
-				initial={{ y: '-100%' }}
-				animate={{ y: isWhiteBG ? 0 : '-100%', transition: { duration: 0.15, ease: 'easeIn' } }}
-			/>
-			{windowWidth < 1068 ? (
-				<div className={styles.mobileBtnWrapper}>
-					<IoMenu
-						onClick={() => {
-							setOpen(true)
-						}}
-						size={30}
-					/>
-					<Drawer
-						title="Basic Drawer"
-						placement="bottom"
-						open={open}
-						onClose={() => {
-							setOpen(false)
-						}}
-					></Drawer>
+				className={styles.navbarWrapper}
+				onHoverStart={() => setIsHovering(true)}
+				onHoverEnd={() => setIsHovering(false)}
+				style={{ color: isWhiteBG ? 'black' : 'white' }}
+			>
+				<motion.div
+					className={styles.background}
+					initial={{ y: '-100%' }}
+					animate={{ y: isWhiteBG ? 0 : '-100%', transition: { duration: 0.15, ease: 'easeIn' } }}
+				/>
+				{windowWidth > 1068 && (
+					<div className={classNames(styles.leftBtnWrapper, roboto.className)}>
+						<span>HOME</span>
+						<span>SHOP</span>
+						<span>COLLECTIONS</span>
+						<span>SUPPORT</span>
+					</div>
+				)}
+				{windowWidth < 1068 && (
+					<div className={styles.mobileBtnWrapper}>
+						<IoMenu
+							onClick={() => {
+								setOpen(true)
+							}}
+							size={30}
+						/>
+						<Drawer
+							title="Basic Drawer"
+							placement="bottom"
+							open={open}
+							onClose={() => {
+								setOpen(false)
+							}}
+						></Drawer>
+					</div>
+				)}
+				<div className={classNames(styles.navTitle, poppins.className)}>FOR THE DREAMERS</div>
+				<div className={classNames(styles.rightBtnWrapper, roboto.className)}>
+					<span>LOGIN</span>
+					<IoSearchOutline />
+					<CiShoppingCart />
 				</div>
-			) : (
-				<div className={classNames(styles.leftBtnWrapper, roboto.className)}>
-					<span>HOME</span>
-					<span>SHOP</span>
-					<span>COLLECTIONS</span>
-					<span>SUPPORT</span>
-				</div>
-			)}
-
-			<div className={classNames(styles.navTitle, poppins.className)}>FOR THE DREAMERS</div>
-			<div className={classNames(styles.rightBtnWrapper, roboto.className)}>
-				<span>LOGIN</span>
-				<IoSearchOutline />
-				<CiShoppingCart />
-			</div>
-		</motion.div>
+			</motion.div>
+		</div>
 	)
 }
 

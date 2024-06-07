@@ -1,12 +1,10 @@
 @import '@/styles/_helpers.scss';
 
 .navbarWrapper {
-    @apply flex gap-1 justify-between items-center px-[3rem] fixed w-full z-10;
+    @apply gap-1 grid grid-cols-3 justify-items-center items-center px-[3rem] fixed w-full z-10;
     border-bottom: toRem(1) solid white;
     height: toRem(90);
-    color: white;
     transition: all 0.3s ease-in;
-    grid-template-columns: 1fr 3fr 1fr;
 
     div {
         z-index: 10;
