@@ -1,8 +1,7 @@
 import React from 'react'
 import styles from './styles.module.scss'
-type Props = {}
 
-const Page = (props: Props) => {
+const Page = () => {
 	return <div className={styles.mainWrapper}>Page</div>
 }
 

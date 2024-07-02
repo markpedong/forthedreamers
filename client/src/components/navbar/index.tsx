@@ -40,7 +40,7 @@ const Navbar: FC = () => {
 			className={styles.navbarWrapper}
 			onHoverStart={() => setIsHovering(true)}
 			onHoverEnd={() => setIsHovering(false)}
-			style={pathname === '' ? { color: isWhiteBG ? 'black' : 'white' } : {}}
+			style={pathname === '/' ? { color: isWhiteBG ? 'black' : 'white' } : {}}
 		>
 			<motion.div
 				className={styles.background}
@@ -51,8 +51,8 @@ const Navbar: FC = () => {
 				<div className={classNames(styles.leftBtnWrapper, roboto.className)}>
 					<span onClick={() => push('/')}>HOME</span>
 					<span onClick={() => push('/shop')}>SHOP</span>
-					<span>COLLECTIONS</span>
-					<span>SUPPORT</span>
+					<span onClick={() => push('/collections')}>COLLECTIONS</span>
+					<span onClick={() => push('/support')}>SUPPORT</span>
 				</div>
 			)}
 			{width < 1068 && (
