@@ -23,7 +23,6 @@ const Home = () => {
 	return (
 		<div>
 			<div className={styles.mainWrapper}>
-				<Navbar />
 				<div className={styles.timelessContainer}>
 					<span>timeless silhouettes</span>
 					<span className={roboto.className}>live now</span>

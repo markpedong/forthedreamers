@@ -15,10 +15,10 @@ const poppins = Poppins({ weight: ['400', '600'], subsets: ['latin'] })
 const roboto = Roboto_Condensed({ weight: '300', subsets: ['latin'] })
 
 const Navbar: FC = () => {
+	const pathname = usePathname()
 	const [isHovering, setIsHovering] = useState(false)
 	const [scroll, setScroll] = useState(0)
 	const [open, setOpen] = useState(false)
-	const pathname = usePathname()
 	const { width } = useWindowWidth()
 	const isWhiteBG = isHovering || scroll > 40
 	const { push } = useRouter()
@@ -40,16 +40,16 @@ const Navbar: FC = () => {
 			className={styles.navbarWrapper}
 			onHoverStart={() => setIsHovering(true)}
 			onHoverEnd={() => setIsHovering(false)}
-			style={pathname === '/' ? { color: isWhiteBG ? 'black' : 'white' } : {}}
+			style={pathname === '' ? { color: isWhiteBG ? 'black' : 'white' } : {}}
 		>
 			<motion.div
 				className={styles.background}
-				initial={pathname === '/' && { y: '-100%' }}
-				animate={pathname === '/' && { y: isWhiteBG ? 0 : '-100%', transition: { duration: 0.15, ease: 'easeIn' } }}
+				initial={{ y: '-100%' }}
+				animate={{ y: isWhiteBG ? 0 : '-100%', transition: { duration: 0.15, ease: 'easeIn' } }}
 			/>
 			{width > 1068 && (
 				<div className={classNames(styles.leftBtnWrapper, roboto.className)}>
-					<span>HOME</span>
+					<span onClick={() => push('/')}>HOME</span>
 					<span onClick={() => push('/shop')}>SHOP</span>
 					<span>COLLECTIONS</span>
 					<span>SUPPORT</span>
