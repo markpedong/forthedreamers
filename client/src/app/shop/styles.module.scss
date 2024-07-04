@@ -47,3 +47,23 @@
         font-size: toRem(14);
     }
 }
+
+.crowdWrapper {
+    @apply py-12 w-full text-center;
+}
+
+.crowdTitle {
+    @apply font-bold text-[2rem];
+}
+
+.crowdItemsContainer {
+    @apply flex justify-center items-center gap-10 mt-10 px-4;
+
+    >div {
+        @apply flex flex-col items-center gap-4;
+
+        img {
+            @apply object-cover size-full;
+        }
+    }
+}

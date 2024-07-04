@@ -5,6 +5,7 @@ import classNames from 'classnames'
 import { FaFilter } from 'react-icons/fa'
 import { FaAngleDown, FaArrowRight } from 'react-icons/fa6'
 import Product from '@/components/product'
+import Image from 'next/image'
 
 const roboto = Roboto_Condensed({ weight: ['300', '800'], subsets: ['latin'] })
 
@@ -53,6 +54,19 @@ const Page = () => {
 				<span>
 					<FaArrowRight />
 				</span>
+			</div>
+			<div className={styles.crowdWrapper}>
+				<span className={styles.crowdTitle}>CROWD FAVORITES</span>
+				<div className={styles.crowdItemsContainer}>
+					<div>
+						<Image src={'/assets/images/dog.jpg'} width={500} height={500} alt="img1" />
+						<span>LOGO1</span>
+					</div>
+					<div>
+						<Image src={'/assets/images/dog.jpg'} width={500} height={500} alt="img1" />
+						<span>LOGO2</span>
+					</div>
+				</div>
 			</div>
 		</div>
 	)
