@@ -51,7 +51,7 @@ const Navbar: FC = () => {
 				<div className={classNames(styles.leftBtnWrapper, roboto.className)}>
 					<span onClick={() => push('/')}>HOME</span>
 					<span onClick={() => push('/shop')}>SHOP</span>
-					<span onClick={() => push('/collections')}>COLLECTIONS</span>
+					<span onClick={() => push('/collection')}>COLLECTIONS</span>
 					<span onClick={() => push('/support')}>SUPPORT</span>
 				</div>
 			)}
