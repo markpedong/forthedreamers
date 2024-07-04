@@ -73,3 +73,15 @@
 .mobileBtnWrapper {
     @apply justify-self-start;
 }
+
+.supportContainer {
+    @apply flex items-center justify-center gap-1 relative;
+
+    .dropdownMenu {
+        @apply absolute left-[-0.3rem] top-6 bg-white text-black p-10 shadow-xl w-[15rem] grid gap-3;
+
+        >span {
+            @apply font-bold w-fit;
+        }
+    }
+}

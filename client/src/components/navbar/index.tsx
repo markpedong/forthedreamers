@@ -2,7 +2,7 @@
 
 import { Drawer } from 'antd'
 import classNames from 'classnames'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Poppins, Roboto_Condensed } from 'next/font/google'
 import { FC, useEffect, useState } from 'react'
 import { CiShoppingCart } from 'react-icons/ci'
@@ -21,6 +21,7 @@ const Navbar: FC = () => {
 	const [scroll, setScroll] = useState(0)
 	const [open, setOpen] = useState(false)
 	const { width } = useWindowSize()
+	const [showDropdown, setShowDropdown] = useState(false)
 	const isWhiteBG = isHovering || scroll > 40
 	const { push } = useRouter()
 
@@ -57,10 +58,32 @@ const Navbar: FC = () => {
 					<span onClick={() => push('/')}>HOME</span>
 					<span onClick={() => push('/shop')}>SHOP</span>
 					<span onClick={() => push('/collection')}>COLLECTIONS</span>
-					<span className="flex items-center justify-center gap-1" onClick={() => push('/support')}>
-						SUPPORT
+					<motion.div className={styles.supportContainer} onClick={() => push('/support')}>
+						<span
+							onMouseEnter={() => {
+								setShowDropdown(true)
+							}}
+						>
+							SUPPORT
+						</span>
 						<FaChevronDown />
-					</span>
+						<AnimatePresence>
+							{showDropdown && (
+								<motion.div
+									className={styles.dropdownMenu}
+									onMouseLeave={() => setShowDropdown(false)}
+									initial={{ opacity: 0 }}
+									exit={{ opacity: 0 }}
+									animate={{ opacity: 1, animation: 'ease-out', transition: { duration: 0.5 } }}
+								>
+									<span>ORDERS & PAYMENT</span>
+									<span>SHIPPING</span>
+									<span>RETURNS</span>
+									<span>GIFT CARD</span>
+								</motion.div>
+							)}
+						</AnimatePresence>
+					</motion.div>
 				</div>
 			)}
 			{width && width < 1068 && (
