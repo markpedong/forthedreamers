@@ -1,0 +1,26 @@
+@import '@/styles/_helpers.scss';
+
+.mainWrapper {
+    @apply p-5 mx-40;
+    margin-top: toRem(90);
+}
+
+.pageTitle {
+    @apply font-bold tracking-tight whitespace-nowrap text-center py-[3rem];
+    font-size: toRem(40);
+}
+
+.supportWrapper {
+    @apply flex flex-col justify-center items-start gap-5 pb-10;
+
+    >span {
+        @apply pr-3 font-bold underline underline-offset-4;
+        font-size: toRem(30);
+
+    }
+}
+
+.footer {
+    @apply font-bold;
+    font-size: toRem(15);
+}

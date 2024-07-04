@@ -10,6 +10,7 @@ import { IoMenu, IoSearchOutline } from 'react-icons/io5'
 import styles from './style.module.scss'
 import { usePathname, useRouter } from 'next/navigation'
 import { useWindowSize } from '@uidotdev/usehooks'
+import { FaChevronDown } from 'react-icons/fa'
 
 const poppins = Poppins({ weight: ['400', '600'], subsets: ['latin'] })
 const roboto = Roboto_Condensed({ weight: '300', subsets: ['latin'] })
@@ -56,7 +57,10 @@ const Navbar: FC = () => {
 					<span onClick={() => push('/')}>HOME</span>
 					<span onClick={() => push('/shop')}>SHOP</span>
 					<span onClick={() => push('/collection')}>COLLECTIONS</span>
-					<span onClick={() => push('/support')}>SUPPORT</span>
+					<span className="flex items-center justify-center gap-1" onClick={() => push('/support')}>
+						SUPPORT
+						<FaChevronDown />
+					</span>
 				</div>
 			)}
 			{width && width < 1068 && (
