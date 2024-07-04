@@ -1,5 +1,49 @@
 @import '@/styles/_helpers.scss';
 
 .mainWrapper {
+    @apply p-5;
     margin-top: toRem(90);
+}
+
+.header {
+
+    >span {
+        @apply pr-3 underline underline-offset-4 last:no-underline;
+        font-size: toRem(14);
+    }
+}
+
+.pageTitle {
+    @apply font-bold tracking-tight whitespace-nowrap text-center py-[3rem];
+    font-size: toRem(40);
+}
+
+.filterContainer {
+    @apply flex justify-between;
+
+
+    div {
+        @apply flex items-center gap-3;
+    }
+}
+
+.productWrapper {
+    @apply grid grid-cols-5;
+
+    @media screen and (max-width: 992px) {
+        @apply grid-cols-2;
+    }
+
+    @media screen and (max-width: 576px) {
+        @apply grid-cols-1;
+    }
+}
+
+.pagination {
+    @apply flex justify-center items-center gap-10;
+
+    >span {
+        @apply relative after:w-[1.5rem] after:h-[0.06rem] after:bg-black after:absolute after:bottom-[-0.1rem] after:left-[-0.5rem];
+        font-size: toRem(14);
+    }
 }

@@ -1,16 +1,11 @@
 @import '@/styles/_helpers.scss';
 
 .productContainer {
-    @apply flex flex-col items-center justify-center mx-5 gap-4;
-    min-width: toRem(300);
+    @apply flex flex-col items-center justify-center gap-4;
     height: toRem(300);
 
     div {
         @apply flex flex-col text-center;
-    }
-
-    @media screen and (max-width: 992px) {
-        min-width: toRem(200);
     }
 }
 

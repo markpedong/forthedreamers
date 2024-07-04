@@ -4,20 +4,13 @@ import styles from '../styles/styles.module.scss'
 import { GoDotFill } from 'react-icons/go'
 import { FaCircleDot } from 'react-icons/fa6'
 import { Poppins, Roboto_Condensed } from 'next/font/google'
-import Products from '@/components/products'
 import Image from 'next/image'
-import Product from '@/components/product'
 import Testimonials from '@/components/testimonials'
-import Footer from '@/components/footer'
-import dynamic from 'next/dynamic'
+import Products from './components/products'
+import CityProduct from './components/city-product'
 
 const roboto = Roboto_Condensed({ weight: ['300', '800'], subsets: ['latin'] })
 const poppins = Poppins({ weight: ['400', '600', '800'], subsets: ['latin'] })
-
-const Navbar = dynamic(() => import('@/components/navbar'), {
-	loading: () => <></>,
-	ssr: false
-})
 
 const Home = () => {
 	return (
@@ -54,16 +47,12 @@ const Home = () => {
 						Inspired by the vibrant aesthetics of the urban and the cozy spirit of a hometown.
 					</span>
 				</div>
-				<div className={styles.productContainer}>
-					<Product />
-					<Product />
-				</div>
+				<CityProduct />
 			</div>
 			<div className={styles.dudeWrapper}>
 				<Image src={'/assets/images/group.webp'} alt="" height={1000} width={1000} />
 			</div>
 			<Testimonials />
-			<Footer />
 		</div>
 	)
 }

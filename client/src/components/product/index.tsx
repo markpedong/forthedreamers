@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 import styles from './styles.module.scss'
 import Image from 'next/image'
 import { Roboto_Condensed } from 'next/font/google'
@@ -6,9 +6,9 @@ import classNames from 'classnames'
 
 const roboto = Roboto_Condensed({ weight: ['300', '400', '600'], subsets: ['latin'] })
 
-const Product = () => {
+const Product: FC<{ className?: string }> = props => {
 	return (
-		<div className={styles.productContainer}>
+		<div className={classNames(styles.productContainer, props.className)}>
 			<Image src={'/assets/images/dog.jpg'} alt="" height={150} width={150} />
 			<div className={classNames(styles.textContainer, roboto.className)}>
 				<span>Lorem ipsum dolor sit.</span>

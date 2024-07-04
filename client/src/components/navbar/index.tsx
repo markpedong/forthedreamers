@@ -44,8 +44,8 @@ const Navbar: FC = () => {
 		>
 			<motion.div
 				className={styles.background}
-				initial={{ y: '-100%' }}
-				animate={{ y: isWhiteBG ? 0 : '-100%', transition: { duration: 0.15, ease: 'easeIn' } }}
+				initial={{ y: pathname === '/' ? '-100%' : 0 }}
+				animate={pathname === '/' ? { y: isWhiteBG ? 0 : '-100%', transition: { duration: 0.15, ease: 'easeIn' } } : {}}
 			/>
 			{width > 1068 && (
 				<div className={classNames(styles.leftBtnWrapper, roboto.className)}>
