@@ -3,7 +3,7 @@ import styles from './styles.module.scss'
 import { Roboto_Condensed } from 'next/font/google'
 import classNames from 'classnames'
 
-const roboto = Roboto_Condensed({ weight: '300', subsets: ['latin'] })
+const roboto = Roboto_Condensed({ weight: ['300', '500', '800'], subsets: ['latin'] })
 
 const Page = () => {
 	return (
@@ -17,7 +17,8 @@ const Page = () => {
 			</div>
 			<span className={classNames(styles.footer, roboto.className)}>
 				We aim to ensure that our website content is user-friendly for everyone. If you encounter any difficulties
-				accessing or navigating our site, please send us a message on Instagram
+				accessing or navigating our site, please send us a message on Instagram{' '}
+				<span className="font-[800]">@forthedreamers</span>
 			</span>
 		</div>
 	)
