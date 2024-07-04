@@ -40,7 +40,7 @@ const Navbar: FC = () => {
 			className={styles.navbarWrapper}
 			onHoverStart={() => setIsHovering(true)}
 			onHoverEnd={() => setIsHovering(false)}
-			style={pathname === '/' ? { color: isWhiteBG ? 'black' : 'white' } : {}}
+			style={pathname === '/' ? { color: isWhiteBG ? 'black' : 'white' } : { borderBottom: '0.1rem solid rgba(0, 0, 0, 0.2)' }}
 		>
 			<motion.div
 				className={styles.background}
