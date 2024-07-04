@@ -1,0 +1,14 @@
+@import '@/styles/_helpers.scss';
+
+.categoryContainer {
+    @apply flex flex-col items-center justify-center;
+
+    >span {
+        @apply underline-offset-8 underline pt-5 uppercase text-center;
+        font-size: toRem(15)
+    }
+}
+
+.imgContainer {
+    @apply grid grid-cols-2 grid-rows-2 gap-0 justify-items-center w-fit;
+}
