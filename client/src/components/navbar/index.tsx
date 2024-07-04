@@ -1,16 +1,16 @@
 'use client'
 
-import { Drawer } from 'antd'
 import classNames from 'classnames'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Poppins, Roboto_Condensed } from 'next/font/google'
 import { FC, useEffect, useState } from 'react'
 import { CiShoppingCart } from 'react-icons/ci'
-import { IoMenu, IoSearchOutline } from 'react-icons/io5'
+import { IoMenu, IoSearchOutline, IoClose } from 'react-icons/io5'
 import styles from './style.module.scss'
 import { usePathname, useRouter } from 'next/navigation'
 import { useWindowSize } from '@uidotdev/usehooks'
 import { FaChevronDown } from 'react-icons/fa'
+import MobileMenu from './components/mobile-menu'
 
 const poppins = Poppins({ weight: ['400', '600'], subsets: ['latin'] })
 const roboto = Roboto_Condensed({ weight: '300', subsets: ['latin'] })
@@ -88,20 +88,16 @@ const Navbar: FC = () => {
 			)}
 			{width && width < 1068 && (
 				<div className={styles.mobileBtnWrapper}>
-					<IoMenu
-						onClick={() => {
-							setOpen(true)
-						}}
-						size={30}
-					/>
-					<Drawer
-						title="Basic Drawer"
-						placement="bottom"
-						open={open}
-						onClose={() => {
-							setOpen(false)
-						}}
-					/>
+					{open && <IoClose onClick={() => setOpen(false)} size={30} />}
+					{!open && (
+						<IoMenu
+							onClick={() => {
+								setOpen(true)
+							}}
+							size={30}
+						/>
+					)}
+					<MobileMenu open={open} />
 				</div>
 			)}
 			<div className={classNames(styles.navTitle, poppins.className)}>FOR THE DREAMERS</div>
