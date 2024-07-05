@@ -69,6 +69,10 @@
         >span {
             @apply bg-white text-black p-1 px-2
         }
+
+        @media screen and (max-width: 576px) {
+            @apply top-[-8.4rem]
+        }
     }
 }
 
