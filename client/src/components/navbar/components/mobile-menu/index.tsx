@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import styles from './styles.module.scss'
 import { useLockBodyScroll } from '@uidotdev/usehooks'
@@ -15,6 +15,13 @@ const MobileMenu: FC<{ open: boolean }> = ({ open }) => {
 	const [showSupport, setShowSupport] = useState(false)
 
 	useLockBodyScroll()
+
+	useEffect(() => {
+		return () => {
+			setShowSupport(false)
+		}
+	}, [open])
+
 	return (
 		<AnimatePresence>
 			{open && (
@@ -33,6 +40,7 @@ const MobileMenu: FC<{ open: boolean }> = ({ open }) => {
 							onClick={() => {
 								setShowSupport(true)
 							}}
+							color="black"
 						/>
 						<AnimatePresence>
 							{showSupport && (
