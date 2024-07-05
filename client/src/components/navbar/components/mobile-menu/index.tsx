@@ -45,7 +45,7 @@ const MobileMenu: FC<{ setOpen: () => void }> = ({ setOpen }) => {
 									<FaArrowLeft onClick={() => setShowSupport(false)} />
 									<p>Support</p>
 								</div>
-								<span>ORDERS & PAYMENT</span>
+								<span onClick={() => handlePush("/support/orders-payment")}>ORDERS & PAYMENT</span>
 								<span>SHIPPING</span>
 								<span>RETURNS</span>
 								<span>GIFT CARD</span>

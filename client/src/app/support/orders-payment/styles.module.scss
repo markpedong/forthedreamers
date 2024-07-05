@@ -1,0 +1,38 @@
+@import '@/styles/_helpers.scss';
+
+.mainWrapper {
+  @apply p-5 mx-40;
+  margin-top: toRem(90);
+
+  ul {
+    @apply list-disc mt-4;
+
+    li {
+      font-size: toRem(14);
+      margin-bottom: toRem(15)
+    }
+  }
+}
+
+.pageTitle {
+  @apply font-bold tracking-tight whitespace-nowrap text-center py-[3rem];
+  font-size: toRem(40);
+}
+
+.question {
+  @apply mb-5 font-bold;
+}
+
+.bullet {
+  &:before {
+    content: "\2022";
+    font-size: toRem(15);
+    font-weight: bold;
+    color: #333;
+    margin-right: toRem(10);
+  }
+}
+
+.payments {
+  @apply object-contain h-[30rem] w-auto my-4;
+}

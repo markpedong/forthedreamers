@@ -79,7 +79,7 @@ const Navbar: FC = () => {
 									exit={{ opacity: 0 }}
 									animate={{ opacity: 1, animation: 'ease-out', transition: { duration: 0.5 } }}
 								>
-									<span>ORDERS & PAYMENT</span>
+									<span onClick={() => handlePush("/support/orders-payment")}>ORDERS & PAYMENT</span>
 									<span>SHIPPING</span>
 									<span>RETURNS</span>
 									<span>GIFT CARD</span>
