@@ -22,7 +22,9 @@ const Page = () => {
 					items or modify the size, design, or color of an order. We can cancel the order instead so you can place a new one with the correct item. Once the cancellation is
 					processed, your refund will be credited back to the original payment method.
 				</li>
-				<li>Please get in touch with us on Instagram at @charlotte__folk to arrange this.</li>
+				<li>
+					Please get in touch with us on Instagram at <span className="underline">@forthedreamers</span> to arrange this.
+				</li>
 			</ul>
 		</div>
 	)

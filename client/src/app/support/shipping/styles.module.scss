@@ -13,11 +13,23 @@
   }
 
   ul {
-    @apply list-disc mt-4;
+    @apply list-disc mt-4 mb-4;
 
     li {
       font-size: toRem(14);
-      margin-bottom: toRem(15)
+      margin-bottom: toRem(10)
+    }
+  }
+
+  table {
+    @apply w-full border-collapse mt-3;
+    border: toRem(1) solid rgba(0, 0, 0, 0.3);
+    font-size: toRem(14);
+
+    td,
+    th {
+      @apply px-3 py-3;
+      border: toRem(1) solid rgba(0, 0, 0, 0.3)
     }
   }
 }
@@ -28,19 +40,5 @@
 }
 
 .question {
-  @apply mb-5 font-bold;
-}
-
-.bullet {
-  &:before {
-    content: "\2022";
-    font-size: toRem(15);
-    font-weight: bold;
-    color: #333;
-    margin-right: toRem(10);
-  }
-}
-
-.payments {
-  @apply object-contain h-[30rem] w-auto my-4;
+  @apply mb-1 font-bold;
 }

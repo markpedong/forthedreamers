@@ -45,17 +45,17 @@ const MobileMenu: FC<{ setOpen: () => void }> = ({ setOpen }) => {
 									<FaArrowLeft onClick={() => setShowSupport(false)} />
 									<p>Support</p>
 								</div>
-								<span onClick={() => handlePush("/support/orders-payment")}>ORDERS & PAYMENT</span>
-								<span>SHIPPING</span>
-								<span>RETURNS</span>
-								<span>GIFT CARD</span>
+								<span onClick={() => handlePush('/support/orders-payment')}>ORDERS & PAYMENT</span>
+								<span onClick={() => handlePush('/support/shipping')}>SHIPPING</span>
+								<span onClick={() => handlePush('/support/returns')}>RETURNS</span>
+								<span onClick={() => handlePush('/support/gift-card')}>GIFT CARD</span>
 							</motion.div>
 						)}
 					</AnimatePresence>
 				</motion.div>
 			</div>
 			<div className={styles.loginBtn}>
-				<FiUser size={25} color='black'/>
+				<FiUser size={25} color="black" />
 				<span>LOGIN</span>
 			</div>
 		</>

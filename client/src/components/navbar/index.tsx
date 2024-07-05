@@ -80,9 +80,9 @@ const Navbar: FC = () => {
 									animate={{ opacity: 1, animation: 'ease-out', transition: { duration: 0.5 } }}
 								>
 									<span onClick={() => handlePush("/support/orders-payment")}>ORDERS & PAYMENT</span>
-									<span>SHIPPING</span>
-									<span>RETURNS</span>
-									<span>GIFT CARD</span>
+									<span onClick={() => handlePush("/support/shipping")}>SHIPPING</span>
+									<span onClick={() => handlePush("/support/returns")}>RETURNS</span>
+									<span onClick={() => handlePush("/support/gift-card")}>GIFT CARD</span>
 								</motion.div>
 							)}
 						</AnimatePresence>
