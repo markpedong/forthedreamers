@@ -9,8 +9,9 @@
   }
 
   @media screen and (max-width: 576px) {
-    @apply m-5;
+    @apply m-10 my-14;
   }
+
 
   ul {
     @apply list-disc mt-4 mb-4;

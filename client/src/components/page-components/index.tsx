@@ -10,16 +10,18 @@ export const PageTitle: FC<{ title: string }> = ({ title }) => {
 	return <div className={classNames(styles.pageTitle, poppins.className)}>{title}</div>
 }
 
-export const Question: FC<{ question: string; className?: string; normal?: boolean }> = ({
+export const Question: FC<{ question?: string; className?: string; normal?: boolean; renderJSX?: () => ReactNode }> = ({
 	question,
 	className,
-	normal
+	normal,
+	renderJSX
 }) => {
-	return (
-		<div
-			className={classNames(className, roboto.className, `font-${normal ? 'normal' : 'bold'}`, styles.question)}
-			dangerouslySetInnerHTML={{ __html: question! }}
-		/>
+	const commonClassName = classNames(className, roboto.className, `font-${normal ? 'normal' : 'bold'}`, styles.question)
+
+	return question ? (
+		<div className={commonClassName} dangerouslySetInnerHTML={{ __html: question }} />
+	) : (
+		<div className={commonClassName}>{renderJSX?.()}</div>
 	)
 }
 

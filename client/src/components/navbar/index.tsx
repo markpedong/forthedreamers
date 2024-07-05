@@ -75,7 +75,7 @@ const Navbar: FC = () => {
 								<span onClick={() => handlePush('/support/orders-payment')}>ORDERS & PAYMENT</span>
 								<span onClick={() => handlePush('/support/shipping')}>SHIPPING</span>
 								<span onClick={() => handlePush('/support/returns')}>RETURNS</span>
-								<span onClick={() => handlePush('/support/gift-card')}>GIFT CARD</span>
+								<span onClick={() => handlePush('/support/gift-card-manual')}>gift card manual</span>
 							</motion.div>
 						)}
 					</AnimatePresence>
