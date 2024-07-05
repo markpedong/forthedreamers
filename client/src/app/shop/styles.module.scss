@@ -24,6 +24,13 @@
 
     div {
         @apply flex items-center gap-3;
+        font-size: toRem(13);
+    }
+
+    @media screen and (max-width: 992px) {
+        .sort {
+            @apply hidden
+        }
     }
 }
 

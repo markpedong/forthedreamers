@@ -24,7 +24,7 @@ const Page = () => {
 					<span>FILTER AND SORT</span>
 				</div>
 				<div>
-					<span>ALPHABETICALLY, A-Z</span>
+					<span className={styles.sort}>ALPHABETICALLY, A-Z</span>
 					<FaAngleDown />
 					<span>152 PRODUCTS</span>
 				</div>

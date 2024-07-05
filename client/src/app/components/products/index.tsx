@@ -18,7 +18,6 @@ const Products = () => {
 				slides: { perView: 1, spacing: 100 }
 			}
 		},
-	
 	})
 
 	return (
