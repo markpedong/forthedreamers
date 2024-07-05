@@ -5,11 +5,11 @@
   margin-top: toRem(90);
 
   @media screen and (max-width: 992px) {
-    @apply mx-20;
+    @apply m-20;
   }
 
   @media screen and (max-width: 576px) {
-    @apply mx-5;
+    @apply m-5;
   }
 
   ul {

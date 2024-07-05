@@ -13,7 +13,7 @@ import { FaChevronDown } from 'react-icons/fa'
 import MobileMenu from './components/mobile-menu'
 import { FiUser } from 'react-icons/fi'
 
-const poppins = Poppins({ weight: ['400', '600'], subsets: ['latin'] })
+const poppins = Poppins({ weight: ['400', '600', '800'], subsets: ['latin'] })
 const roboto = Roboto_Condensed({ weight: '300', subsets: ['latin'] })
 
 const Navbar: FC = () => {
@@ -49,7 +49,11 @@ const Navbar: FC = () => {
 			className={styles.navbarWrapper}
 			onHoverStart={() => setIsHovering(true)}
 			onHoverEnd={() => setIsHovering(false)}
-			style={pathname === '/' ? { color: isWhiteBG ? 'black' : 'white' } : { borderBottom: '0.1rem solid rgba(0, 0, 0, 0.2)' }}
+			style={
+				pathname === '/'
+					? { color: isWhiteBG ? 'black' : 'white' }
+					: { borderBottom: '0.1rem solid rgba(0, 0, 0, 0.2)' }
+			}
 		>
 			<motion.div
 				className={styles.background}
@@ -79,10 +83,10 @@ const Navbar: FC = () => {
 									exit={{ opacity: 0 }}
 									animate={{ opacity: 1, animation: 'ease-out', transition: { duration: 0.5 } }}
 								>
-									<span onClick={() => handlePush("/support/orders-payment")}>ORDERS & PAYMENT</span>
-									<span onClick={() => handlePush("/support/shipping")}>SHIPPING</span>
-									<span onClick={() => handlePush("/support/returns")}>RETURNS</span>
-									<span onClick={() => handlePush("/support/gift-card")}>GIFT CARD</span>
+									<span onClick={() => handlePush('/support/orders-payment')}>ORDERS & PAYMENT</span>
+									<span onClick={() => handlePush('/support/shipping')}>SHIPPING</span>
+									<span onClick={() => handlePush('/support/returns')}>RETURNS</span>
+									<span onClick={() => handlePush('/support/gift-card')}>GIFT CARD</span>
 								</motion.div>
 							)}
 						</AnimatePresence>
