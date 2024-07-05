@@ -63,11 +63,11 @@
     }
 
     .options {
-        @apply absolute top-[2.5rem] flex flex-col gap-1 overflow-y-auto w-full text-center;
+        @apply absolute top-[2.5rem] flex flex-col gap-1 overflow-y-auto w-full text-center bg-white;
         max-height: toRem(130);
 
         >span {
-            @apply bg-white text-black p-1 px-2
+            @apply bg-white text-black p-1 px-2 shadow-md;
         }
 
         @media screen and (max-width: 576px) {
