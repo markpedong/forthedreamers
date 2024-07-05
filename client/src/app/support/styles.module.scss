@@ -13,11 +13,6 @@
     }
 }
 
-.pageTitle {
-    @apply font-bold tracking-tight whitespace-nowrap text-center py-[3rem];
-    font-size: toRem(40);
-}
-
 .supportWrapper {
     @apply flex flex-col justify-center items-start gap-5 pb-10;
 

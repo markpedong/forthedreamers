@@ -4,13 +4,14 @@ import Category from './components/category'
 import classNames from 'classnames'
 import { FaArrowRight } from 'react-icons/fa'
 import { Roboto_Condensed } from 'next/font/google'
+import PageTitle from '@/components/pageTitle'
 
 const roboto = Roboto_Condensed({ weight: '300', subsets: ['latin'] })
 
 const Page = () => {
 	return (
 		<div className={styles.mainWrapper}>
-			<div className={styles.pageTitle}>SHOP BY CATEGORY</div>
+			<PageTitle title="SHOP BY CATEGORY" />
 			<div className={styles.categoryWrapper}>
 				<Category />
 				<Category />

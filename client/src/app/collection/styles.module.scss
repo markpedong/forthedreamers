@@ -5,11 +5,6 @@
     margin-top: toRem(90);
 }
 
-.pageTitle {
-    @apply font-bold tracking-tight whitespace-nowrap text-center py-[3rem];
-    font-size: toRem(30);
-}
-
 .categoryWrapper {
     @apply grid grid-cols-4 gap-[2rem] pb-10;
 

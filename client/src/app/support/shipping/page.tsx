@@ -3,6 +3,7 @@ import styles from './styles.module.scss'
 import { Poppins, Roboto_Condensed } from 'next/font/google'
 import Image from 'next/image'
 import classNames from 'classnames'
+import PageTitle from '@/components/pageTitle'
 
 const roboto = Roboto_Condensed({ weight: ['400', '600', '800'], subsets: ['latin'] })
 const poppins = Poppins({ weight: ['400', '600', '800'], subsets: ['latin'] })
@@ -10,7 +11,7 @@ const poppins = Poppins({ weight: ['400', '600', '800'], subsets: ['latin'] })
 const Page = () => {
 	return (
 		<div className={classNames(styles.mainWrapper, roboto.className)}>
-			<div className={classNames(styles.pageTitle, poppins.className)}>SHIPPING</div>
+			<PageTitle title="SHIPPING" />
 			<div className={styles.question}>WHAT PAYMENT METHODS DO YOU ACCEPT?</div>
 			<div className="font-[600]">STANDARD</div>
 			<ul className={roboto.className}>

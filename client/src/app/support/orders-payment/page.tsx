@@ -3,13 +3,14 @@ import styles from './styles.module.scss'
 import { Roboto_Condensed } from 'next/font/google'
 import Image from 'next/image'
 import classNames from 'classnames'
+import PageTitle from '@/components/pageTitle'
 
 const roboto = Roboto_Condensed({ weight: ['400', '800'], subsets: ['latin'] })
 
 const Page = () => {
 	return (
 		<div className={styles.mainWrapper}>
-			<div className={styles.pageTitle}>ORDERS & PAYMENT</div>
+			<PageTitle title="ORDERS & PAYMENT" />
 			<div className={classNames(styles.question, roboto.className)}>WHAT PAYMENT METHODS DO YOU ACCEPT?</div>
 			<span className={classNames(styles.bullet, roboto.className)}>
 				We support a wide range of different payment methods. Our payment options include Credit/Debit card, E-Wallets, Online banking.

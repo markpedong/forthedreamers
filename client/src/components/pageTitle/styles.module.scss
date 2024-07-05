@@ -1,0 +1,6 @@
+@import '@/styles/_helpers.scss';
+
+.pageTitle {
+  @apply font-bold tracking-tight text-center py-[3rem] uppercase;
+  font-size: toRem(40);
+}

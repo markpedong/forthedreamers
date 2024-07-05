@@ -5,14 +5,16 @@ import styles from './styles.module.scss'
 import { Roboto_Condensed } from 'next/font/google'
 import classNames from 'classnames'
 import { useRouter } from 'next/navigation'
+import PageTitle from '@/components/pageTitle'
 
 const roboto = Roboto_Condensed({ weight: ['300', '500', '800'], subsets: ['latin'] })
 
 const Page = () => {
 	const { push } = useRouter()
+
 	return (
 		<div className={styles.mainWrapper}>
-			<div className={styles.pageTitle}>SUPPORT</div>
+			<PageTitle title="SUPPORT" />
 			<div className={styles.supportWrapper}>
 				<span onClick={() => push('/support/orders-payment')}>ORDERS & PAYMENT</span>
 				<span onClick={() => push('/support/shipping')}>SHIPPING</span>

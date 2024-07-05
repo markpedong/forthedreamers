@@ -1,7 +1,7 @@
 @import '@/styles/_helpers.scss';
 
 .mainWrapper {
-  @apply p-5 mx-40;
+  @apply mx-40;
   margin-top: toRem(90);
 
   @media screen and (max-width: 992px) {
@@ -20,11 +20,6 @@
       margin-bottom: toRem(15)
     }
   }
-}
-
-.pageTitle {
-  @apply font-bold tracking-tight whitespace-nowrap text-center py-[3rem];
-  font-size: toRem(40);
 }
 
 .question {
