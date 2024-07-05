@@ -1,13 +1,8 @@
 'use client'
 
-import React from 'react'
-import styles from './styles.module.scss'
-import { Roboto_Condensed } from 'next/font/google'
-import classNames from 'classnames'
+import { PageTitle, Question } from '@/components/page-components'
 import { useRouter } from 'next/navigation'
-import PageTitle from '@/components/page-title'
-
-const roboto = Roboto_Condensed({ weight: ['300', '500', '800'], subsets: ['latin'] })
+import styles from './styles.module.scss'
 
 const Page = () => {
 	const { push } = useRouter()
@@ -21,10 +16,12 @@ const Page = () => {
 				<span onClick={() => push('/support/returns')}>RETURNS</span>
 				<span onClick={() => push('/support/gift-card')}>GIFT CARD</span>
 			</div>
-			<span className={classNames(styles.footer, roboto.className)}>
-				We aim to ensure that our website content is user-friendly for everyone. If you encounter any difficulties accessing or navigating our site, please send us a message on
-				Instagram <span className="font-[800]">@forthedreamers</span>
-			</span>
+			<Question
+				normal
+				question={`We aim to ensure that our website content is user-friendly for everyone. If you encounter any difficulties
+				accessing or navigating our site, please send us a message on Instagram
+				<span className="font-[800]">@forthedreamers</span>`}
+			/>
 		</div>
 	)
 }

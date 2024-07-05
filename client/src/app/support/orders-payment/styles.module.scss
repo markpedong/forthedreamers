@@ -11,31 +11,8 @@
   @media screen and (max-width: 576px) {
     @apply m-5;
   }
-
-  ul {
-    @apply list-disc mt-4;
-
-    li {
-      font-size: toRem(14);
-      margin-bottom: toRem(15)
-    }
-  }
-}
-
-.question {
-  @apply mb-5 font-bold;
-}
-
-.bullet {
-  &:before {
-    content: "\2022";
-    font-size: toRem(15);
-    font-weight: bold;
-    color: #333;
-    margin-right: toRem(10);
-  }
 }
 
 .payments {
-  @apply object-contain h-[30rem] w-auto my-4;
+  @apply object-contain h-[30rem] w-auto my-10;
 }

@@ -3,12 +3,12 @@
 import classNames from 'classnames'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Poppins, Roboto_Condensed } from 'next/font/google'
-import { FC, useEffect, useState } from 'react'
+import { FC, useState } from 'react'
 import { CiShoppingCart } from 'react-icons/ci'
 import { IoMenu, IoSearchOutline, IoClose } from 'react-icons/io5'
 import styles from './style.module.scss'
 import { usePathname, useRouter } from 'next/navigation'
-import { useWindowSize } from '@uidotdev/usehooks'
+import { useWindowScroll, useWindowSize } from '@uidotdev/usehooks'
 import { FaChevronDown } from 'react-icons/fa'
 import MobileMenu from './components/mobile-menu'
 import { FiUser } from 'react-icons/fi'
@@ -19,11 +19,11 @@ const roboto = Roboto_Condensed({ weight: '300', subsets: ['latin'] })
 const Navbar: FC = () => {
 	const pathname = usePathname()
 	const [isHovering, setIsHovering] = useState(false)
-	const [scroll, setScroll] = useState(0)
 	const [open, setOpen] = useState(false)
 	const { width } = useWindowSize()
+	const [{ y }] = useWindowScroll()
 	const [showDropdown, setShowDropdown] = useState(false)
-	const isWhiteBG = isHovering || scroll > 40
+	const isWhiteBG = isHovering || y! > 40
 	const { push } = useRouter()
 
 	const handlePush = (path: string) => {
@@ -31,18 +31,6 @@ const Navbar: FC = () => {
 		setShowDropdown(false)
 		push(path)
 	}
-
-	useEffect(() => {
-		const handleScroll = () => {
-			setScroll(window.scrollY)
-		}
-
-		window.addEventListener('scroll', handleScroll)
-
-		return () => {
-			window.removeEventListener('scroll', handleScroll)
-		}
-	}, [])
 
 	return (
 		<motion.div
@@ -60,7 +48,7 @@ const Navbar: FC = () => {
 				initial={{ y: pathname === '/' ? '-100%' : 0 }}
 				animate={pathname === '/' ? { y: isWhiteBG ? 0 : '-100%', transition: { duration: 0.15, ease: 'easeIn' } } : {}}
 			/>
-			{width && width > 1068 && (
+			{width! > 1068 && (
 				<div className={classNames(styles.leftBtnWrapper, roboto.className)}>
 					<span onClick={() => handlePush('/')}>HOME</span>
 					<span onClick={() => handlePush('/shop')}>SHOP</span>
@@ -74,26 +62,26 @@ const Navbar: FC = () => {
 							SUPPORT
 						</span>
 						<FaChevronDown />
-						<AnimatePresence>
-							{showDropdown && (
-								<motion.div
-									className={styles.dropdownMenu}
-									onMouseLeave={() => setShowDropdown(false)}
-									initial={{ opacity: 0 }}
-									exit={{ opacity: 0 }}
-									animate={{ opacity: 1, animation: 'ease-out', transition: { duration: 0.5 } }}
-								>
-									<span onClick={() => handlePush('/support/orders-payment')}>ORDERS & PAYMENT</span>
-									<span onClick={() => handlePush('/support/shipping')}>SHIPPING</span>
-									<span onClick={() => handlePush('/support/returns')}>RETURNS</span>
-									<span onClick={() => handlePush('/support/gift-card')}>GIFT CARD</span>
-								</motion.div>
-							)}
-						</AnimatePresence>
 					</motion.div>
+					<AnimatePresence>
+						{showDropdown && (
+							<motion.div
+								className={styles.dropdownMenu}
+								onMouseLeave={() => setShowDropdown(false)}
+								initial={{ opacity: 0 }}
+								exit={{ opacity: 0 }}
+								animate={{ opacity: 1, animation: 'ease-out', transition: { duration: 0.5 } }}
+							>
+								<span onClick={() => handlePush('/support/orders-payment')}>ORDERS & PAYMENT</span>
+								<span onClick={() => handlePush('/support/shipping')}>SHIPPING</span>
+								<span onClick={() => handlePush('/support/returns')}>RETURNS</span>
+								<span onClick={() => handlePush('/support/gift-card')}>GIFT CARD</span>
+							</motion.div>
+						)}
+					</AnimatePresence>
 				</div>
 			)}
-			{width && width < 1068 && (
+			{width! < 1068 && (
 				<div className={styles.mobileBtnWrapper}>
 					{open && <IoClose onClick={() => setOpen(false)} size={30} />}
 					{!open && (

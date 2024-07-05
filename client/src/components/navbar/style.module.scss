@@ -66,14 +66,16 @@
 }
 
 .supportContainer {
-    @apply flex items-center justify-center gap-1 relative;
+    @apply flex items-center justify-center gap-1;
 
-    .dropdownMenu {
-        @apply absolute left-[-0.3rem] top-6 bg-white text-black p-10 shadow-xl w-[15rem] grid gap-3;
 
-        >span {
-            @apply font-bold w-fit;
-        }
+}
+
+.dropdownMenu {
+    @apply absolute left-[13rem] top-[4rem] bg-white text-black p-10 shadow-xl w-[15rem] grid gap-3;
+
+    >span {
+        @apply font-bold w-fit;
     }
 }
 

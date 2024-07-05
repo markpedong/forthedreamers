@@ -4,3 +4,16 @@
   @apply font-bold tracking-tight text-center py-[3rem] uppercase;
   font-size: toRem(40);
 }
+
+.question {
+  @apply mb-1;
+}
+
+.answers {
+  @apply list-disc mt-4;
+
+  li {
+    font-size: toRem(14);
+    margin-bottom: toRem(15)
+  }
+}

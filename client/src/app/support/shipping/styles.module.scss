@@ -1,7 +1,7 @@
 @import '@/styles/_helpers.scss';
 
 .mainWrapper {
-  @apply p-5 m-40;
+  @apply m-40;
   margin-top: toRem(90);
 
   @media screen and (max-width: 992px) {
@@ -32,8 +32,4 @@
       border: toRem(1) solid rgba(0, 0, 0, 0.3)
     }
   }
-}
-
-.question {
-  @apply mb-1 font-bold;
 }

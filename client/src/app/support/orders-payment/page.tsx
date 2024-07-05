@@ -1,32 +1,23 @@
-import React from 'react'
-import styles from './styles.module.scss'
-import { Roboto_Condensed } from 'next/font/google'
+import { AMEND_ANSWERS, PAYMENT_ANSWERS } from '@/app/constants'
+import { ListAnswers, PageTitle, Question } from '@/components/page-components'
 import Image from 'next/image'
-import classNames from 'classnames'
-import PageTitle from '@/components/page-title'
-
-const roboto = Roboto_Condensed({ weight: ['400', '800'], subsets: ['latin'] })
+import styles from './styles.module.scss'
 
 const Page = () => {
 	return (
 		<div className={styles.mainWrapper}>
 			<PageTitle title="ORDERS & PAYMENT" />
-			<div className={classNames(styles.question, roboto.className)}>WHAT PAYMENT METHODS DO YOU ACCEPT?</div>
-			<span className={classNames(styles.bullet, roboto.className)}>
-				We support a wide range of different payment methods. Our payment options include Credit/Debit card, E-Wallets, Online banking.
-			</span>
-			<Image className={styles.payments} src={'/assets/images/payments.webp'} alt="payments" width={500} height={1000} />
-			<span className={classNames(styles.question, roboto.className)}>CAN I AMEND OR CANCEL MY ORDER?</span>
-			<ul className={roboto.className}>
-				<li>
-					Once an order has been placed in the system, we are unable to make any amendments. Our packing process begins shortly after an order is placed, which means we cannot add
-					items or modify the size, design, or color of an order. We can cancel the order instead so you can place a new one with the correct item. Once the cancellation is
-					processed, your refund will be credited back to the original payment method.
-				</li>
-				<li>
-					Please get in touch with us on Instagram at <span className="underline">@forthedreamers</span> to arrange this.
-				</li>
-			</ul>
+			<Question question="WHAT PAYMENT METHODS DO YOU ACCEPT?" />
+			<ListAnswers answers={PAYMENT_ANSWERS} />
+			<Image
+				className={styles.payments}
+				src={'/assets/images/payments.webp'}
+				alt="payments"
+				width={500}
+				height={1000}
+			/>
+			<Question question="CAN I AMEND OR CANCEL MY ORDER?" />
+			<ListAnswers answers={AMEND_ANSWERS} />
 		</div>
 	)
 }
