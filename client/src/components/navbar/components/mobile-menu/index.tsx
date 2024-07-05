@@ -23,7 +23,7 @@ const MobileMenu: FC<{ setOpen: () => void }> = ({ setOpen }) => {
 			<span onClick={() => handlePush('/')}>HOME</span>
 			<span onClick={() => handlePush('/shop')}>SHOP</span>
 			<span onClick={() => handlePush('/collection')}>COLLECTIONS</span>
-			<motion.div className={styles.supportContainer} onClick={() => handlePush('/support')}>
+			<motion.div className={styles.supportContainer}>
 				<span>SUPPORT</span>
 				<FaArrowRight
 					onClick={() => {

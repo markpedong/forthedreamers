@@ -8,7 +8,7 @@ const Products = () => {
 		loop: true,
 		mode: 'free',
 		slides: {
-			perView: 4,
+			perView: 'auto',
 			spacing: 300
 		}
 	})
