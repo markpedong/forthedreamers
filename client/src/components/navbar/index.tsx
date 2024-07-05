@@ -11,6 +11,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useWindowSize } from '@uidotdev/usehooks'
 import { FaChevronDown } from 'react-icons/fa'
 import MobileMenu from './components/mobile-menu'
+import { FiUser } from 'react-icons/fi'
 
 const poppins = Poppins({ weight: ['400', '600'], subsets: ['latin'] })
 const roboto = Roboto_Condensed({ weight: '300', subsets: ['latin'] })
@@ -115,9 +116,12 @@ const Navbar: FC = () => {
 			)}
 			<div className={classNames(styles.navTitle, poppins.className)}>FOR THE DREAMERS</div>
 			<div className={classNames(styles.rightBtnWrapper, roboto.className)}>
-				<span>LOGIN</span>
-				<IoSearchOutline />
-				<CiShoppingCart />
+				<div className={styles.loginBtn}>
+					<span>LOGIN</span>
+					<FiUser size={25} />
+				</div>
+				<IoSearchOutline size={25} />
+				<CiShoppingCart size={25} />
 			</div>
 		</motion.div>
 	)

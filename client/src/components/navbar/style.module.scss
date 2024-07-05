@@ -6,12 +6,9 @@
     height: toRem(90);
     transition: all 0.3s ease-in;
 
-    div {
-        z-index: 10;
-    }
-
     @media screen and (max-width: 576px) {
-        @apply px-[0.5rem];
+        @apply px-2;
+        grid-template-columns: 1fr 3fr 2fr;
     }
 }
 
@@ -25,12 +22,6 @@
 
 .rightBtnWrapper {
     @apply justify-self-end;
-
-    @media screen and (max-width: 576px) {
-        span {
-            display: none;
-        }
-    }
 }
 
 .leftBtnWrapper,
@@ -87,13 +78,18 @@
 }
 
 .drawerContainer {
-    @apply absolute top-[5.6rem] left-0 bg-white w-dvw h-dvh flex flex-col;
+    @apply absolute top-[5.6rem] left-0 bg-white w-dvw flex justify-between flex-col h-[89dvh] px-10 pb-10;
 
-    >span {
-        @apply font-[400] cursor-pointer pt-3 px-4 text-black;
-        border-bottom: toRem(1) solid rgba(0, 0, 0, 0.2);
-        height: toRem(60);
-        font-size: toRem(25);
-        text-decoration: none;
+
+    @media screen and (max-width: 576px) {
+        @apply px-2;
+    }
+}
+
+.loginBtn {
+    @apply flex justify-center items-center gap-3;
+
+    @media screen and (max-width: 992px) {
+        @apply hidden;
     }
 }

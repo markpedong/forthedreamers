@@ -7,10 +7,18 @@ const Products = () => {
 	const [ref] = useKeenSlider<HTMLDivElement>({
 		loop: true,
 		mode: 'free',
-		slides: {
-			perView: 'auto',
-			spacing: 300
-		}
+		breakpoints: {
+			'(min-width: 976px)': {
+				slides: { perView: 4, spacing: 150 }
+			},
+			'(max-width: 976px)': {
+				slides: { perView: 2, spacing: 150 }
+			},
+			'(max-width: 576px)': {
+				slides: { perView: 1, spacing: 100 }
+			}
+		},
+	
 	})
 
 	return (
