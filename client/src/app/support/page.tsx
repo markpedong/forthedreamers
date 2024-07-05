@@ -5,7 +5,7 @@ import styles from './styles.module.scss'
 import { Roboto_Condensed } from 'next/font/google'
 import classNames from 'classnames'
 import { useRouter } from 'next/navigation'
-import PageTitle from '@/components/pageTitle'
+import PageTitle from '@/components/page-title'
 
 const roboto = Roboto_Condensed({ weight: ['300', '500', '800'], subsets: ['latin'] })
 

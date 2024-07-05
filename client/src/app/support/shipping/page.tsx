@@ -3,7 +3,7 @@ import styles from './styles.module.scss'
 import { Poppins, Roboto_Condensed } from 'next/font/google'
 import Image from 'next/image'
 import classNames from 'classnames'
-import PageTitle from '@/components/pageTitle'
+import PageTitle from '@/components/page-title'
 
 const roboto = Roboto_Condensed({ weight: ['400', '600', '800'], subsets: ['latin'] })
 const poppins = Poppins({ weight: ['400', '600', '800'], subsets: ['latin'] })

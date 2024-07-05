@@ -6,7 +6,7 @@ import { FaFilter } from 'react-icons/fa'
 import { FaAngleDown, FaArrowRight } from 'react-icons/fa6'
 import Product from '@/components/product'
 import Image from 'next/image'
-import PageTitle from '@/components/pageTitle'
+import PageTitle from '@/components/page-title'
 
 const roboto = Roboto_Condensed({ weight: ['300', '800'], subsets: ['latin'] })
 

@@ -4,7 +4,7 @@ import Category from './components/category'
 import classNames from 'classnames'
 import { FaArrowRight } from 'react-icons/fa'
 import { Roboto_Condensed } from 'next/font/google'
-import PageTitle from '@/components/pageTitle'
+import PageTitle from '@/components/page-title'
 
 const roboto = Roboto_Condensed({ weight: '300', subsets: ['latin'] })
 
