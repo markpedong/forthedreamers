@@ -54,12 +54,21 @@
 }
 
 .dropdownContainer {
-    @apply flex gap-4 pb-5;
+    @apply flex gap-4 pb-5 relative;
 
-    div {
-        @apply flex items-center justify-center gap-1 border-2 p-2 px-3;
+    .dropdown {
+        @apply flex items-center justify-center gap-1 border-2 p-2 px-3 relative;
         border: toRem(0.3) solid rgba(255, 255, 255, 0.15);
         font-size: toRem(12);
+    }
+
+    .options {
+        @apply absolute top-[2.5rem] flex flex-col gap-1 overflow-y-auto w-full text-center;
+        max-height: toRem(130);
+
+        >span {
+            @apply bg-white text-black p-1 px-2
+        }
     }
 }
 

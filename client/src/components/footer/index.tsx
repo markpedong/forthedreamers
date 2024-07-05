@@ -15,6 +15,8 @@ const roboto = Roboto_Condensed({ weight: ['300', '400', '500', '800'], subsets:
 
 const Footer = () => {
 	const [open, setOpen] = useState(false)
+	const [showLanguage, setShowLanguage] = useState(false)
+	const [showCurrency, setShowCurrency] = useState(false)
 	const small = useMediaQuery('only screen and (min-width : 993px)')
 
 	return (
@@ -56,13 +58,59 @@ const Footer = () => {
 			</div>
 			<div>
 				<div className={styles.dropdownContainer}>
-					<motion.div>
+					<motion.div
+						className={styles.dropdown}
+						onClick={() => {
+							setShowCurrency(false)
+							setShowLanguage(!showLanguage)
+						}}
+					>
 						<span>English</span>
 						<FaAngleDown />
+						<AnimatePresence>
+							{showLanguage && (
+								<motion.div
+									className={styles.options}
+									initial={{ opacity: 0, height: 0, y: -10 }}
+									animate={{ opacity: 1, height: 'auto', y: 0 }}
+									exit={{ opacity: 0, height: 0, y: -10 }}
+									transition={{ duration: 0.3 }}
+								>
+									<span>Japanese</span>
+									<span>Japanese</span>
+									<span>Japanese</span>
+									<span>Japanese</span>
+									<span>Japanese</span>
+								</motion.div>
+							)}
+						</AnimatePresence>
 					</motion.div>
-					<motion.div>
+					<motion.div
+						className={styles.dropdown}
+						onClick={() => {
+							setShowLanguage(false)
+							setShowCurrency(!showCurrency)
+						}}
+					>
 						<span>Philippines (PHP ₱)</span>
 						<FaAngleDown />
+						<AnimatePresence>
+							{showCurrency && (
+								<motion.div
+									className={styles.options}
+									initial={{ opacity: 0, height: 0, y: -10 }}
+									animate={{ opacity: 1, height: 'auto', y: 0 }}
+									exit={{ opacity: 0, height: 0, y: -10 }}
+									transition={{ duration: 0.3 }}
+								>
+									<span>Philippines (PHP ₱)</span>
+									<span>Philippines (PHP ₱)</span>
+									<span>Philippines (PHP ₱)</span>
+									<span>Philippines (PHP ₱)</span>
+									<span>Philippines (PHP ₱)</span>
+								</motion.div>
+							)}
+						</AnimatePresence>
 					</motion.div>
 				</div>
 				<span className={styles.tradeMark}>© 2024 FOR THE DREAMERS, All rights reserved. Powered by Shopify</span>
