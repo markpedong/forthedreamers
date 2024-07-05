@@ -48,7 +48,7 @@ const MobileMenu: FC<{ setOpen: () => void }> = ({ setOpen }) => {
 								<span onClick={() => handlePush('/support/orders-payment')}>ORDERS & PAYMENT</span>
 								<span onClick={() => handlePush('/support/shipping')}>SHIPPING</span>
 								<span onClick={() => handlePush('/support/returns')}>RETURNS</span>
-								<span onClick={() => handlePush('/support/gift-card-manual')}>gift card manual</span>
+								<span onClick={() => handlePush('/support/gift-card-manual')}>GIFT CARD MANUAL</span>
 							</motion.div>
 						)}
 					</AnimatePresence>

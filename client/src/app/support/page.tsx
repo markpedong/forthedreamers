@@ -14,7 +14,7 @@ const Page = () => {
 				<span onClick={() => push('/support/orders-payment')}>ORDERS & PAYMENT</span>
 				<span onClick={() => push('/support/shipping')}>SHIPPING</span>
 				<span onClick={() => push('/support/returns')}>RETURNS</span>
-				<span onClick={() => push('/support/gift-card-manual')}>gift card manual</span>
+				<span onClick={() => push('/support/gift-card-manual')}>GIFT CARD MANUAL</span>
 			</div>
 			<Question
 				normal
