@@ -13,7 +13,7 @@
 }
 
 .background {
-    @apply absolute bg-white top-0 left-0 h-full w-full;
+    @apply absolute bg-white top-0 left-0 h-full w-full z-[-1];
 }
 
 .leftBtnWrapper {
