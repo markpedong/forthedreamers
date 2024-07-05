@@ -1,17 +1,5 @@
 @import '@/styles/_helpers.scss';
 
-.drawerContainer {
-    @apply absolute top-[5.6rem] left-0 bg-white w-dvw h-dvh flex flex-col;
-
-    >span {
-        @apply font-[400] cursor-pointer pt-3 px-4 text-black;
-        border-bottom: toRem(1) solid rgba(0, 0, 0, 0.2);
-        height: toRem(60);
-        font-size: toRem(25);
-        text-decoration: none;
-    }
-}
-
 .supportContainer {
     @apply flex justify-between items-center px-4;
     border-bottom: toRem(1) solid rgba(0, 0, 0, 0.2);

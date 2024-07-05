@@ -3,6 +3,14 @@
 .mainWrapper {
     @apply p-5 mx-40;
     margin-top: toRem(90);
+
+    @media screen and (max-width: 992px) {
+        @apply mx-20;
+    }
+
+    @media screen and (max-width: 576px) {
+        @apply mx-5;
+    }
 }
 
 .pageTitle {

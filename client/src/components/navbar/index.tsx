@@ -25,6 +25,12 @@ const Navbar: FC = () => {
 	const isWhiteBG = isHovering || scroll > 40
 	const { push } = useRouter()
 
+	const handlePush = (path: string) => {
+		setOpen(false)
+		setShowDropdown(false)
+		push(path)
+	}
+
 	useEffect(() => {
 		const handleScroll = () => {
 			setScroll(window.scrollY)
@@ -42,11 +48,7 @@ const Navbar: FC = () => {
 			className={styles.navbarWrapper}
 			onHoverStart={() => setIsHovering(true)}
 			onHoverEnd={() => setIsHovering(false)}
-			style={
-				pathname === '/'
-					? { color: isWhiteBG ? 'black' : 'white' }
-					: { borderBottom: '0.1rem solid rgba(0, 0, 0, 0.2)' }
-			}
+			style={pathname === '/' ? { color: isWhiteBG ? 'black' : 'white' } : { borderBottom: '0.1rem solid rgba(0, 0, 0, 0.2)' }}
 		>
 			<motion.div
 				className={styles.background}
@@ -55,9 +57,9 @@ const Navbar: FC = () => {
 			/>
 			{width && width > 1068 && (
 				<div className={classNames(styles.leftBtnWrapper, roboto.className)}>
-					<span onClick={() => push('/')}>HOME</span>
-					<span onClick={() => push('/shop')}>SHOP</span>
-					<span onClick={() => push('/collection')}>COLLECTIONS</span>
+					<span onClick={() => handlePush('/')}>HOME</span>
+					<span onClick={() => handlePush('/shop')}>SHOP</span>
+					<span onClick={() => handlePush('/collection')}>COLLECTIONS</span>
 					<motion.div className={styles.supportContainer} onClick={() => push('/support')}>
 						<span
 							onMouseEnter={() => {
@@ -97,7 +99,18 @@ const Navbar: FC = () => {
 							size={30}
 						/>
 					)}
-					<MobileMenu open={open} />
+					<AnimatePresence>
+						{open && (
+							<motion.div
+								className={classNames(styles.drawerContainer, roboto.className)}
+								initial={{ opacity: 0, top: '150%%' }}
+								exit={{ opacity: 0, top: '150%%' }}
+								animate={{ opacity: 1, top: '101%', animation: 'ease-out', transition: { duration: 0.5 } }}
+							>
+								<MobileMenu setOpen={() => setOpen(false)} />
+							</motion.div>
+						)}
+					</AnimatePresence>
 				</div>
 			)}
 			<div className={classNames(styles.navTitle, poppins.className)}>FOR THE DREAMERS</div>
