@@ -1,5 +1,5 @@
 export enum CARE_GUIDE {
-	SHIPPING = 'SHIPPING',
-	CARE_GUIDE = 'CARE_GUIDE',
-	RETURNS = 'RETURNS'
+	SHIPPING = 'shipping',
+	CARE_GUIDE = 'care guide',
+	RETURNS = 'returns'
 }

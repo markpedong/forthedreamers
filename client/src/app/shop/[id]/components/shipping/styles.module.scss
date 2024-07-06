@@ -1,17 +1,6 @@
-@import '@/styles/_helpers.scss';
+@import "@/styles/_helpers.scss";
 
-.mainWrapper {
-  @apply m-40;
-  margin-top: toRem(90);
-
-  @media screen and (max-width: 992px) {
-    @apply m-20;
-  }
-
-  @media screen and (max-width: 576px) {
-    @apply m-10 my-14;
-  }
-
+.wrapper {
   table {
     @apply w-full border-collapse mt-3;
     border: toRem(1) solid rgba(0, 0, 0, 0.3);

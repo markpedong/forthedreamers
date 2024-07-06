@@ -118,7 +118,7 @@
 }
 
 .guideContainer{
-    @apply flex gap-4 mt-10;
+    @apply flex gap-4 mt-10 flex-wrap;
 
     div {
         @apply flex gap-1 items-center justify-center;

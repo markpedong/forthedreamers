@@ -6,17 +6,27 @@ import { useLockBodyScroll } from '@uidotdev/usehooks'
 import classNames from 'classnames'
 import { Roboto_Condensed } from 'next/font/google'
 import { CARE_GUIDE } from '@/app/constants/enums'
+import { ListAnswers } from '@/components/page-components'
+import { CARE_GUIDE_ANSWERS } from '@/app/constants'
+import Shipping from '../shipping'
+import Returns from '../returns'
 
 const roboto = Roboto_Condensed({ weight: ['300', '800'], subsets: ['latin'] })
 
-const CareGuide: FC<{ setOpenCareGuide: () => void; activeTab: CARE_GUIDE }> = ({ setOpenCareGuide, activeTab }) => {
-	const [selectedTab, setSelectedTab] = useState('care guide')
+const CareGuide: FC<{ setOpenCareGuide: () => void; activeTab: string }> = ({ setOpenCareGuide, activeTab }) => {
+	const [selectedTab, setSelectedTab] = useState(activeTab)
 	const tabs = ['care guide', 'shipping', 'returns']
 
 	useLockBodyScroll()
 
 	return (
-		<>
+		<div className={styles.wrapper}>
+			<motion.div
+				className={styles.careGuideBG}
+				initial={{ opacity: 0 }}
+				exit={{ opacity: 0 }}
+				animate={{ opacity: 1, transition: { duration: 0.1, ease: 'easeIn' } }}
+			/>
 			<motion.div
 				className={styles.careGuideWrapper}
 				initial={{ x: 100, opacity: 0 }}
@@ -34,14 +44,13 @@ const CareGuide: FC<{ setOpenCareGuide: () => void; activeTab: CARE_GUIDE }> = (
 						</span>
 					))}
 				</div>
+				<div className={styles.content}>
+					{selectedTab === CARE_GUIDE.CARE_GUIDE && <ListAnswers answers={CARE_GUIDE_ANSWERS} />}
+					{selectedTab === CARE_GUIDE.SHIPPING && <Shipping />}
+					{selectedTab === CARE_GUIDE.RETURNS && <Returns />}
+				</div>
 			</motion.div>
-			<motion.div
-				className={styles.careGuideBG}
-				initial={{ opacity: 0 }}
-				exit={{ opacity: 0 }}
-				animate={{ opacity: 1, transition: { duration: 0.1, ease: 'easeIn' } }}
-			/>
-		</>
+		</div>
 	)
 }
 

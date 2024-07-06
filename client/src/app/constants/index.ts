@@ -62,3 +62,11 @@ export const FAQ_ANSWERS = [
 	`<span style="font-weight: 800;">Can I make my purchase using my gift card via Instagram DM?</span> <br /> <span>For the dreamers Gift Card is available in denominations of PHP 500, 1000, 3000, and 5000.</span>`,
 	`<span style="font-weight: 800;">What amounts are available?</span> <br /> <span>For logistic reasons, all gift card transactions will be strictly done through our webstore www.forthedreamers.com only.</span>`
 ]
+
+export const CARE_GUIDE_ANSWERS = [
+	`Do not wash immediately after purchase - wait for at least 24 hours.`,
+	'Make sure to fully close the zipper before washing',
+	`Turn printed garments inside out, use mild detergent with cold water when washing. Opt for gentle cycle when using a washing machine`,
+	`Avoid high heat and do not iron on print and on the zipper itself`,
+	`Do not bleach`
+]
