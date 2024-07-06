@@ -9,6 +9,19 @@
   }
 
   @media screen and (max-width: 576px) {
-    @apply m-10 my-14;
+    @apply m-5 my-7;
+  }
+}
+
+.answers {
+  @apply list-decimal mt-4;
+
+  li {
+    font-size: toRem(14);
+    margin-bottom: toRem(15)
+  }
+
+  img {
+    @apply mb-4 object-contain w-[30rem] h-auto;
   }
 }

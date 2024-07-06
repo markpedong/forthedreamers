@@ -3,6 +3,12 @@
 .pageTitle {
   @apply font-bold tracking-tight text-center py-[3rem] uppercase;
   font-size: toRem(40);
+
+  &[data-medium="true"] {
+    @apply py-[0.5rem] text-start;
+    font-size: toRem(30);
+    font-weight: 600
+  }
 }
 
 .question {
@@ -15,5 +21,9 @@
   li {
     font-size: toRem(14);
     margin-bottom: toRem(15)
+  }
+
+  &[data-numbers="true"] {
+    @apply list-decimal;
   }
 }

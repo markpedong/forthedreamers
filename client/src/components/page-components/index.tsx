@@ -6,8 +6,12 @@ import styles from './styles.module.scss'
 const poppins = Poppins({ weight: ['400', '600', '800'], subsets: ['latin'] })
 const roboto = Roboto_Condensed({ weight: ['400', '800'], subsets: ['latin'] })
 
-export const PageTitle: FC<{ title: string }> = ({ title }) => {
-	return <div className={classNames(styles.pageTitle, poppins.className)}>{title}</div>
+export const PageTitle: FC<{ title: string; medium?: boolean }> = ({ title, medium }) => {
+	return (
+		<div className={classNames(styles.pageTitle, poppins.className)} data-medium={medium}>
+			{title}
+		</div>
+	)
 }
 
 export const Question: FC<{ question?: string; className?: string; normal?: boolean; renderJSX?: () => ReactNode }> = ({
@@ -25,9 +29,9 @@ export const Question: FC<{ question?: string; className?: string; normal?: bool
 	)
 }
 
-export const ListAnswers: FC<{ answers: ReactNode[] }> = ({ answers }) => {
+export const ListAnswers: FC<{ answers: ReactNode[], numbers?: boolean }> = ({ answers, numbers }) => {
 	return (
-		<ul className={classNames(styles.answers, roboto.className)}>
+		<ul className={classNames(styles.answers, roboto.className)} data-numbers={numbers}>
 			{answers?.map(q => (
 				<li key={q?.toString()}>
 					<div dangerouslySetInnerHTML={{ __html: q! }} />

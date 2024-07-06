@@ -52,3 +52,13 @@ export const TERMS_CONDITIONS = [
 	`Your gift card code is redeemable for one transaction only. Any unused amount will be forfeited.`,
 	`Gift card code cannot be used with other promo codes. Gift cards are not transferable to cash. Gift cards are not refundable.`
 ]
+
+export const FAQ_ANSWERS = [
+	`<span style="font-weight: 800;">What amounts are available?</span> <br /> <span>For the dreamers Gift Card is available in denominations of PHP 500, 1000, 3000, and 5000.</span>`,
+	`<span style="font-weight: 800;">How will my gift card recipient receive his/her gift card code?</span> <br /> <span>After payment has been confirmed, our system will automatically send the gift card code via the email you provided when you checked out.</span>`,
+	`<span style="font-weight: 800;">If I use my gift card code and I still have a balance, can I reuse it?</span> <br /> <span>Unfortunately, any unused amount in the gift card will be forfeited. We suggest using the full amount in one order so you make the most out of it!</span>`,
+	`<span style="font-weight: 800;">Can my order amount exceed the gift card value?</span> <br /> <span>Yes, the gift card amount will be deducted on your sub-total. If your order exceeds the gift card value, you will only settle the exceeding amount.</span>`,
+	`<span style="font-weight: 800;">Is the shipping fee also applicable to the gift card amount?</span> <br /> <span>Yes, gift card value is applicable only to the standard shipping fee. (Not applicable for same-day delivery couriers)</span>`,
+	`<span style="font-weight: 800;">Can I make my purchase using my gift card via Instagram DM?</span> <br /> <span>For the dreamers Gift Card is available in denominations of PHP 500, 1000, 3000, and 5000.</span>`,
+	`<span style="font-weight: 800;">What amounts are available?</span> <br /> <span>For logistic reasons, all gift card transactions will be strictly done through our webstore www.forthedreamers.com only.</span>`
+]
