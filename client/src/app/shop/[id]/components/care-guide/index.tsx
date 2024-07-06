@@ -27,7 +27,7 @@ const CareGuide: FC<{ setOpenCareGuide: () => void; activeTab: string }> = ({ se
 			</div>
 			<div className={classNames(styles.tabs, roboto.className)}>
 				{tabs?.map(q => (
-					<span onClick={() => setSelectedTab(q)} data-isActive={q === selectedTab}>
+					<span key={q} onClick={() => setSelectedTab(q)} data-isActive={q === selectedTab}>
 						{q}
 					</span>
 				))}

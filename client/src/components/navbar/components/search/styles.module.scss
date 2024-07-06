@@ -1,0 +1,28 @@
+@import "@/styles/_helpers.scss";
+
+.header {
+  @apply p-4 flex justify-between items-center gap-5;
+  border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
+
+  input::placeholder{
+    color: rgba(0, 0, 0, 0.3);
+  }
+  input,
+  input:focus {
+    font-size: toRem(20);
+    color: black;
+    height: toRem(48)
+  }
+
+  input {
+    @apply w-full
+  }
+
+  svg {
+    @apply size-[2rem]
+  }
+}
+
+.content {
+  @apply pl-8 pr-4 py-5;
+}

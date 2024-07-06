@@ -12,6 +12,7 @@ import { useWindowScroll, useWindowSize } from '@uidotdev/usehooks'
 import { FaChevronDown } from 'react-icons/fa'
 import MobileMenu from './components/mobile-menu'
 import { FiUser } from 'react-icons/fi'
+import Search from './components/search'
 
 const poppins = Poppins({ weight: ['400', '600', '800'], subsets: ['latin'] })
 const roboto = Roboto_Condensed({ weight: '300', subsets: ['latin'] })
@@ -20,6 +21,7 @@ const Navbar: FC = () => {
 	const pathname = usePathname()
 	const [isHovering, setIsHovering] = useState(false)
 	const [open, setOpen] = useState(false)
+	const [search, setSearch] = useState(false)
 	const { width } = useWindowSize()
 	const [{ y }] = useWindowScroll()
 	const [showDropdown, setShowDropdown] = useState(false)
@@ -112,9 +114,12 @@ const Navbar: FC = () => {
 					<span>LOGIN</span>
 					<FiUser size={25} />
 				</div>
-				<IoSearchOutline size={25} />
+				<IoSearchOutline size={25} onClick={() => setSearch(true)} />
 				<CiShoppingCart size={25} />
 			</div>
+			<AnimatePresence>
+				{search && <Search setSearch={() => setSearch(false)}/>}
+			</AnimatePresence>
 		</motion.div>
 	)
 }
