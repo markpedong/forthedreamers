@@ -98,7 +98,7 @@
 }
 
 .quantityContainer {
-    @apply flex items-center justify-evenly gap-5 mt-10;
+    @apply flex items-center justify-evenly gap-5 mt-10 w-full;
 }
 
 .addMinusContainer {
@@ -111,7 +111,7 @@
 }
 
 .addToCart {
-    @apply flex h-10 w-[23rem] items-center justify-center uppercase font-bold cursor-pointer;
+    @apply flex h-10 items-center justify-center uppercase font-bold cursor-pointer flex-grow;
     font-size: toRem(12);
     border: toRem(1) solid rgba(0, 0, 0, 1);
     transition: background-color 0.25s linear, color 0.25s linear;

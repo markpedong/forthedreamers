@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import { motion } from 'framer-motion'
 import { IoIosCloseCircle } from 'react-icons/io'
 import styles from './styles.module.scss'
@@ -9,7 +9,10 @@ import { CARE_GUIDE } from '@/app/constants/enums'
 
 const roboto = Roboto_Condensed({ weight: ['300', '800'], subsets: ['latin'] })
 
-const CareGuide: FC<{ setOpenCareGuide: () => void, activeTab: CARE_GUIDE }> = ({ setOpenCareGuide, activeTab }) => {
+const CareGuide: FC<{ setOpenCareGuide: () => void; activeTab: CARE_GUIDE }> = ({ setOpenCareGuide, activeTab }) => {
+	const [selectedTab, setSelectedTab] = useState('care guide')
+	const tabs = ['care guide', 'shipping', 'returns']
+
 	useLockBodyScroll()
 
 	return (
@@ -24,11 +27,13 @@ const CareGuide: FC<{ setOpenCareGuide: () => void, activeTab: CARE_GUIDE }> = (
 					<span>PRODUCT INFORMATION</span>
 					<IoIosCloseCircle onClick={setOpenCareGuide} />
 				</div>
-				<div className={styles.tabs}>
-          <span>care guide</span>
-          <span>shipping</span>
-          <span>returns</span>
-        </div>
+				<div className={classNames(styles.tabs, roboto.className)}>
+					{tabs?.map(q => (
+						<span onClick={() => setSelectedTab(q)} data-isActive={q === selectedTab}>
+							{q}
+						</span>
+					))}
+				</div>
 			</motion.div>
 			<motion.div
 				className={styles.careGuideBG}
