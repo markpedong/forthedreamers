@@ -7,17 +7,14 @@ import { FaAngleDown, FaArrowRight } from 'react-icons/fa6'
 import Product from '@/components/product'
 import Image from 'next/image'
 import { PageTitle } from '@/components/page-components'
+import Header from '@/components/header'
 
 const roboto = Roboto_Condensed({ weight: ['300', '800'], subsets: ['latin'] })
 
 const Page = () => {
 	return (
 		<div className={styles.mainWrapper}>
-			<div className={classNames(styles.header, roboto.className)}>
-				<span>HOME</span>
-				<span>SHOP</span>
-				<span>PRODUCTS</span>
-			</div>
+			<Header arr={['HOME', 'SHOP', 'PRODUCTS']} />
 			<PageTitle title="PRODUCTS" />
 			<div className={classNames(styles.filterContainer, roboto.className)}>
 				<div>

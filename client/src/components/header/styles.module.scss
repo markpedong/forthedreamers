@@ -1,0 +1,10 @@
+@import "@/styles/_helpers.scss";
+
+.header {
+  @apply flex gap-3;
+
+  >div {
+    @apply underline underline-offset-4 last:no-underline;
+    font-size: toRem(14);
+  }
+}

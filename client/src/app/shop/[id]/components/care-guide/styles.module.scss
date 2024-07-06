@@ -1,0 +1,27 @@
+@import "@/styles/_helpers.scss";
+
+
+.careGuideBG {
+  @apply h-[100rem] w-[54.75rem] absolute top-[-1rem] left-0 z-50;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(toRem(2));
+}
+
+.careGuideWrapper {
+  @apply fixed top-0 right-0 h-full bg-white z-50 w-[30rem];
+}
+
+.header {
+  @apply p-4 flex justify-between items-center;
+  border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
+
+  span {
+    @apply -tracking-tight;
+    font-size: toRem(15);
+    font-weight: 600;
+  }
+
+  svg {
+    @apply size-[1.5rem]
+  }
+}
