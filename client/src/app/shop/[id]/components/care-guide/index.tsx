@@ -1,5 +1,4 @@
 import React, { FC, useState } from 'react'
-import { motion } from 'framer-motion'
 import { IoIosCloseCircle } from 'react-icons/io'
 import styles from './styles.module.scss'
 import { useLockBodyScroll } from '@uidotdev/usehooks'
@@ -10,6 +9,7 @@ import { ListAnswers } from '@/components/page-components'
 import { CARE_GUIDE_ANSWERS } from '@/app/constants'
 import Shipping from '../shipping'
 import Returns from '../returns'
+import Drawer from '@/components/drawer'
 
 const roboto = Roboto_Condensed({ weight: ['300', '800'], subsets: ['latin'] })
 
@@ -20,37 +20,24 @@ const CareGuide: FC<{ setOpenCareGuide: () => void; activeTab: string }> = ({ se
 	useLockBodyScroll()
 
 	return (
-		<div className={styles.wrapper}>
-			<motion.div
-				className={styles.careGuideBG}
-				initial={{ opacity: 0 }}
-				exit={{ opacity: 0 }}
-				animate={{ opacity: 1, transition: { duration: 0.1, ease: 'easeIn' } }}
-			/>
-			<motion.div
-				className={styles.careGuideWrapper}
-				initial={{ x: 100, opacity: 0 }}
-				exit={{ x: 100, opacity: 0 }}
-				animate={{ x: 0, opacity: 1, transition: { duration: 0.1, ease: 'easeIn' } }}
-			>
-				<div className={classNames(styles.header, roboto.className)}>
-					<span>PRODUCT INFORMATION</span>
-					<IoIosCloseCircle onClick={setOpenCareGuide} />
-				</div>
-				<div className={classNames(styles.tabs, roboto.className)}>
-					{tabs?.map(q => (
-						<span onClick={() => setSelectedTab(q)} data-isActive={q === selectedTab}>
-							{q}
-						</span>
-					))}
-				</div>
-				<div className={styles.content}>
-					{selectedTab === CARE_GUIDE.CARE_GUIDE && <ListAnswers answers={CARE_GUIDE_ANSWERS} />}
-					{selectedTab === CARE_GUIDE.SHIPPING && <Shipping />}
-					{selectedTab === CARE_GUIDE.RETURNS && <Returns />}
-				</div>
-			</motion.div>
-		</div>
+		<Drawer>
+			<div className={classNames(styles.header, roboto.className)}>
+				<span>PRODUCT INFORMATION</span>
+				<IoIosCloseCircle onClick={setOpenCareGuide} />
+			</div>
+			<div className={classNames(styles.tabs, roboto.className)}>
+				{tabs?.map(q => (
+					<span onClick={() => setSelectedTab(q)} data-isActive={q === selectedTab}>
+						{q}
+					</span>
+				))}
+			</div>
+			<div className={styles.content}>
+				{selectedTab === CARE_GUIDE.CARE_GUIDE && <ListAnswers answers={CARE_GUIDE_ANSWERS} />}
+				{selectedTab === CARE_GUIDE.SHIPPING && <Shipping />}
+				{selectedTab === CARE_GUIDE.RETURNS && <Returns />}
+			</div>
+		</Drawer>
 	)
 }
 

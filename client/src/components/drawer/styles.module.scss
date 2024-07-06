@@ -1,0 +1,23 @@
+@import "@/styles/_helpers.scss";
+
+.wrapper {
+  @apply flex gap-0;
+}
+
+.drawerBG {
+  @apply size-full fixed top-0 left-0 z-50;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(toRem(2));
+}
+
+.drawerWrapper {
+  @apply fixed top-0 right-0 h-full bg-white z-50 w-[30rem] overflow-auto;
+
+  @media screen and (max-width: 576px) {
+    @apply w-[25rem];
+  }
+
+  @media screen and (max-width: 430px) {
+    @apply w-[18rem];
+  }
+}
