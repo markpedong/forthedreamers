@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+const plugin = require('tailwindcss/plugin')
 
 const config: Config = {
 	content: ['./pages/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './app/**/*.{ts,tsx}', './src/**/*.{ts,tsx}'],
@@ -10,6 +11,15 @@ const config: Config = {
 			}
 		}
 	},
-	plugins: []
+	plugins: [
+		plugin(({ addUtilities }: any) => {
+			addUtilities({
+				'.fcol': {
+					display: 'flex',
+					'flex-direction': 'column'
+				}
+			})
+		})
+	]
 }
 export default config

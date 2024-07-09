@@ -54,7 +54,7 @@
     @apply flex justify-center items-center gap-10 mt-10 px-4;
 
     >div {
-        @apply flex flex-col items-center gap-4;
+        @apply fcol items-center gap-4;
 
         img {
             @apply object-cover size-full;

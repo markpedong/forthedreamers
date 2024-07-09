@@ -1,7 +1,7 @@
 @import '@/styles/_helpers.scss';
 
 .categoryContainer {
-    @apply flex flex-col items-center justify-center;
+    @apply fcol items-center justify-center;
 
     >span {
         @apply underline-offset-8 underline pt-5 uppercase text-center;

@@ -14,7 +14,7 @@
 }
 
 .supportWrapper {
-    @apply flex flex-col justify-center items-start gap-5 pb-10;
+    @apply fcol justify-center items-start gap-5 pb-10;
 
     >span {
         @apply pr-3 font-bold underline underline-offset-4 cursor-pointer;
