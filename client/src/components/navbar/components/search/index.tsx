@@ -56,12 +56,17 @@ const Search: FC<{ setSearch: () => void }> = ({ setSearch }) => {
 								</motion.div>
 							</div>
 							<Question normal question="PRODUCTS" className={styles.productHeader} />
-							<div className={styles.products}>
+							<motion.div
+								className={styles.products}
+								initial={{ y: 100, opacity: 0 }}
+								exit={{ y: 100, opacity: 0 }}
+								animate={{ y: 0, opacity: 1 }}
+							>
 								<SearchProduct />
 								<SearchProduct />
 								<SearchProduct />
 								<SearchProduct />
-							</div>
+							</motion.div>
 						</div>
 						<motion.span whileTap={{ scale: 0.97 }} className={classNames(styles.footer, roboto.className)}>
 							view all results
