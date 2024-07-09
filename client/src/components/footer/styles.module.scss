@@ -40,7 +40,7 @@
 }
 
 .menuContainer {
-    @apply flex flex-col gap-3;
+    @apply fcol  gap-3;
     font-weight: 300;
     font-size: toRem(14);
 }
@@ -63,7 +63,7 @@
     }
 
     .options {
-        @apply absolute top-[2.5rem] flex flex-col gap-1 overflow-y-auto w-full text-center bg-white;
+        @apply absolute top-[2.5rem] fcol gap-1 overflow-y-auto w-full text-center bg-white;
         max-height: toRem(130);
 
         >span {

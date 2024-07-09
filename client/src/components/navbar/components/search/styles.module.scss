@@ -1,17 +1,19 @@
 @import "@/styles/_helpers.scss";
 
 .header {
-  @apply p-4 flex justify-between items-center gap-5;
+  @apply p-3 px-6 flex justify-between items-center gap-5;
   border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
 
-  input::placeholder{
+  input::placeholder {
     color: rgba(0, 0, 0, 0.3);
   }
+
   input,
   input:focus {
-    font-size: toRem(20);
+    font-size: toRem(16);
     color: black;
-    height: toRem(48)
+    height: toRem(48);
+    outline: none
   }
 
   input {
@@ -19,10 +21,59 @@
   }
 
   svg {
-    @apply size-[2rem]
+    @apply size-[1.6rem]
   }
 }
 
-.content {
-  @apply pl-8 pr-4 py-5;
+.suggestions {
+  @apply text-black fcol gap-4 items-start justify-center p-5 px-7;
+
+  &__header {
+    @apply tracking-widest font-[600];
+    font-size: toRem(12);
+  }
+
+  &__container {
+    @apply flex gap-3 overflow-x-auto w-full;
+  }
+
+  &__item {
+    @apply py-1 px-4 rounded-full uppercase font-[500] tracking-wide cursor-pointer;
+    border: toRem(1) solid rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease-in;
+    font-size: toRem(12);
+
+    &:hover {
+      @apply bg-black text-white
+    }
+  }
+
+}
+
+.footer {
+  @apply h-[5.5rem] grid place-content-center bg-black text-white uppercase font-bold tracking-wider m-5;
+  border-top: toRem(1) solid rgba(0, 0, 0, 0.1);
+}
+
+.productHeader {
+  @apply w-full text-center py-4 tracking-wider self-start text-black;
+  font-size: toRem(12);
+}
+
+.products {
+  @apply px-5 overflow-y-auto fcol max-h-[39rem];
+  border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
+
+  &__item {
+    @apply py-5 flex gap-5;
+
+    img {
+      @apply size-[5rem] object-contain;
+    }
+  }
+
+  &__textContainer {
+    @apply fcol gap-2 font-[400] text-black;
+    font-size: toRem(14);
+  }
 }

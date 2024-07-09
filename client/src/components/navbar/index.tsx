@@ -37,7 +37,7 @@ const Navbar: FC = () => {
 	return (
 		<motion.div
 			className={styles.navbarWrapper}
-			onHoverStart={() => setIsHovering(true)}
+			onHoverStart={() => setIsHovering(!search && true)}
 			onHoverEnd={() => setIsHovering(false)}
 			style={
 				pathname === '/'
@@ -117,9 +117,7 @@ const Navbar: FC = () => {
 				<IoSearchOutline size={25} onClick={() => setSearch(true)} />
 				<CiShoppingCart size={25} />
 			</div>
-			<AnimatePresence>
-				{search && <Search setSearch={() => setSearch(false)}/>}
-			</AnimatePresence>
+			<AnimatePresence>{search && <Search setSearch={() => setSearch(false)} />}</AnimatePresence>
 		</motion.div>
 	)
 }
