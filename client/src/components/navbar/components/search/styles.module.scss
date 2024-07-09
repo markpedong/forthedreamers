@@ -30,7 +30,7 @@
 }
 
 .suggestions {
-  @apply text-black flex flex-col gap-4 items-start justify-center p-5;
+  @apply text-black flex flex-col gap-4 items-start justify-center p-5 px-7;
   border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
 
   &__header {
@@ -45,10 +45,25 @@
     @apply py-1 px-4 rounded-full uppercase font-[500] tracking-wide cursor-pointer;
     border: toRem(1) solid rgba(0, 0, 0, 0.1);
     transition: background 0.3s ease-in;
+    font-size: toRem(12);
 
     &:hover {
       @apply bg-black text-white
     }
   }
 
+}
+
+.footer {
+  @apply h-20 flex items-center justify-center;
+  border-top: toRem(1) solid rgba(0, 0, 0, 0.1);
+
+  span {
+    @apply bg-black text-white w-[90%] h-[60%] grid place-content-center uppercase font-bold tracking-wider;
+  }
+}
+
+.productHeader{
+  @apply w-full text-center py-4 tracking-wider ;
+  font-size: toRem(12);
 }

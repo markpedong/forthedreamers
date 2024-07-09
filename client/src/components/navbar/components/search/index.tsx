@@ -5,6 +5,7 @@ import { IoIosCloseCircle } from 'react-icons/io'
 import styles from './styles.module.scss'
 import { Roboto_Condensed } from 'next/font/google'
 import { AnimatePresence, motion } from 'framer-motion'
+import { Question } from '@/components/page-components'
 
 const roboto = Roboto_Condensed({ weight: ['300', '800'], subsets: ['latin'] })
 
@@ -14,34 +15,44 @@ const Search: FC<{ setSearch: () => void }> = ({ setSearch }) => {
 
 	return (
 		<Drawer>
-			<div className={classNames(styles.header, roboto.className)}>
-				<input placeholder="Search for anything" value={value} onChange={e => setValue(e.target.value)} />
-				<IoIosCloseCircle onClick={setSearch} color="black" />
-			</div>
-			<AnimatePresence>
-				{sample.some(word => !!value && word.includes(value)) && (
-					<div className={classNames(styles.suggestions, roboto.className)}>
-						<motion.span
-							className={styles.suggestions__header}
-							initial={{ opacity: 0 }}
-							exit={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-						>
-							SUGGESTIONS
-						</motion.span>
-						<motion.div
-							className={styles.suggestions__container}
-							initial={{ x: 100, opacity: 0 }}
-							exit={{ x: 100, opacity: 0 }}
-							animate={{ x: 0, opacity: 1 }}
-						>
-							{sample?.map(q => (
-								<span className={styles.suggestions__item}>{q}</span>
-							))}
-						</motion.div>
+			<div className="flex flex-col justify-between h-full">
+				<div>
+					<div className={classNames(styles.header, roboto.className)}>
+						<input placeholder="Search for anything" value={value} onChange={e => setValue(e.target.value)} />
+						<IoIosCloseCircle onClick={setSearch} color="black" />
 					</div>
-				)}
-			</AnimatePresence>
+					<AnimatePresence>
+						{sample.some(word => !!value && word.includes(value)) && (
+							<div className={classNames(styles.suggestions, roboto.className)}>
+								<motion.span
+									className={styles.suggestions__header}
+									initial={{ opacity: 0 }}
+									exit={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+								>
+									SUGGESTIONS
+								</motion.span>
+								<motion.div
+									className={styles.suggestions__container}
+									initial={{ x: 100, opacity: 0 }}
+									exit={{ x: 100, opacity: 0 }}
+									animate={{ x: 0, opacity: 1 }}
+								>
+									{sample?.map(q => (
+										<span className={styles.suggestions__item}>{q}</span>
+									))}
+								</motion.div>
+							</div>
+						)}
+						<Question normal question="PRODUCTS" className={styles.productHeader} />
+					</AnimatePresence>
+				</div>
+				<div className={styles.footer}>
+					<motion.span whileTap={{ scale: 0.97 }} className={roboto.className}>
+						view all results
+					</motion.span>
+				</div>
+			</div>
 		</Drawer>
 	)
 }
