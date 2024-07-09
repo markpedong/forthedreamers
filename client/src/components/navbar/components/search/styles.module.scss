@@ -30,7 +30,7 @@
 }
 
 .suggestions {
-  @apply text-black flex flex-col gap-4 items-start justify-center p-5 px-7;
+  @apply text-black fcol gap-4 items-start justify-center p-5 px-7;
   border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
 
   &__header {
@@ -55,15 +55,29 @@
 }
 
 .footer {
-  @apply h-20 flex items-center justify-center;
-  border-top: toRem(1) solid rgba(0, 0, 0, 0.1);
-
-  span {
-    @apply bg-black text-white w-[90%] h-[60%] grid place-content-center uppercase font-bold tracking-wider;
-  }
+  @apply h-14 grid place-content-center bg-black text-white uppercase font-bold tracking-wider m-5;
 }
 
-.productHeader{
-  @apply w-full text-center py-4 tracking-wider ;
+.productHeader {
+  @apply w-full text-center py-4 tracking-wider self-start;
   font-size: toRem(12);
+}
+
+.products {
+  @apply px-5 overflow-y-auto fcol;
+  height: toRem(400);
+  border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
+
+  &__item {
+    @apply py-5 flex gap-5;
+
+    img {
+      @apply size-[5rem] object-contain;
+    }
+  }
+
+  &__textContainer {
+    @apply fcol gap-2 font-[400] text-black;
+    font-size: toRem(14);
+  }
 }

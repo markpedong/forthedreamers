@@ -6,23 +6,35 @@ import styles from './styles.module.scss'
 import { Roboto_Condensed } from 'next/font/google'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Question } from '@/components/page-components'
+import Image from 'next/image'
 
-const roboto = Roboto_Condensed({ weight: ['300', '800'], subsets: ['latin'] })
+const roboto = Roboto_Condensed({ weight: ['300', '400', '800'], subsets: ['latin'] })
 
+const SearchProduct: FC = () => {
+	return (
+		<div className={styles.products__item}>
+			<Image src={'/assets/images/dog.jpg'} alt="" height={100} width={100} />
+			<div className={classNames(styles.products__textContainer, roboto.className)}>
+				<span>DOG PRODUCT TITLE</span>
+				<span>₱9999.00</span>
+			</div>
+		</div>
+	)
+}
 const Search: FC<{ setSearch: () => void }> = ({ setSearch }) => {
 	const [value, setValue] = useState('')
 	const sample = ['hoodie', 'hoodies', 'casual', 'apparel']
 
 	return (
 		<Drawer>
-			<div className="flex flex-col justify-between h-full">
-				<div>
-					<div className={classNames(styles.header, roboto.className)}>
-						<input placeholder="Search for anything" value={value} onChange={e => setValue(e.target.value)} />
-						<IoIosCloseCircle onClick={setSearch} color="black" />
-					</div>
-					<AnimatePresence>
-						{sample.some(word => !!value && word.includes(value)) && (
+			<div className={classNames(styles.header, roboto.className)}>
+				<input placeholder="Search for anything" value={value} onChange={e => setValue(e.target.value)} />
+				<IoIosCloseCircle onClick={setSearch} color="black" />
+			</div>
+			<AnimatePresence>
+				{sample.some(word => !!value && word.includes(value)) && (
+					<div className="fcol justify-between">
+						<div>
 							<div className={classNames(styles.suggestions, roboto.className)}>
 								<motion.span
 									className={styles.suggestions__header}
@@ -43,16 +55,20 @@ const Search: FC<{ setSearch: () => void }> = ({ setSearch }) => {
 									))}
 								</motion.div>
 							</div>
-						)}
-						<Question normal question="PRODUCTS" className={styles.productHeader} />
-					</AnimatePresence>
-				</div>
-				<div className={styles.footer}>
-					<motion.span whileTap={{ scale: 0.97 }} className={roboto.className}>
-						view all results
-					</motion.span>
-				</div>
-			</div>
+							<Question normal question="PRODUCTS" className={styles.productHeader} />
+							<div className={styles.products}>
+								<SearchProduct />
+								<SearchProduct />
+								<SearchProduct />
+								<SearchProduct />
+							</div>
+						</div>
+						<motion.span whileTap={{ scale: 0.97 }} className={classNames(styles.footer, roboto.className)}>
+							view all results
+						</motion.span>
+					</div>
+				)}
+			</AnimatePresence>
 		</Drawer>
 	)
 }
