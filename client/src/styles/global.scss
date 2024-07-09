@@ -36,4 +36,10 @@
 *,
 html {
   @apply p-0 m-0;
+
+}
+
+::-webkit-scrollbar {
+  display: none;
+  /* for Chrome, Safari, and Opera */
 }
