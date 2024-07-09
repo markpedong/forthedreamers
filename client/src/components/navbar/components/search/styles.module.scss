@@ -4,14 +4,16 @@
   @apply p-4 flex justify-between items-center gap-5;
   border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
 
-  input::placeholder{
+  input::placeholder {
     color: rgba(0, 0, 0, 0.3);
   }
+
   input,
   input:focus {
     font-size: toRem(20);
     color: black;
-    height: toRem(48)
+    height: toRem(48);
+    outline: none
   }
 
   input {
@@ -25,4 +27,28 @@
 
 .content {
   @apply pl-8 pr-4 py-5;
+}
+
+.suggestions {
+  @apply text-black flex flex-col gap-4 items-start justify-center p-5;
+  border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
+
+  &__header {
+    @apply tracking-widest font-[600];
+  }
+
+  &__container {
+    @apply flex gap-3;
+  }
+
+  &__item {
+    @apply py-1 px-4 rounded-full uppercase font-[500] tracking-wide cursor-pointer;
+    border: toRem(1) solid rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease-in;
+
+    &:hover {
+      @apply bg-black text-white
+    }
+  }
+
 }
