@@ -1,7 +1,7 @@
 @import "@/styles/_helpers.scss";
 
 .header {
-  @apply p-4 flex justify-between items-center gap-5;
+  @apply p-3 px-6 flex justify-between items-center gap-5;
   border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
 
   input::placeholder {
@@ -10,7 +10,7 @@
 
   input,
   input:focus {
-    font-size: toRem(20);
+    font-size: toRem(16);
     color: black;
     height: toRem(48);
     outline: none
@@ -21,24 +21,20 @@
   }
 
   svg {
-    @apply size-[2rem]
+    @apply size-[1.6rem]
   }
-}
-
-.content {
-  @apply pl-8 pr-4 py-5;
 }
 
 .suggestions {
   @apply text-black fcol gap-4 items-start justify-center p-5 px-7;
-  border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
 
   &__header {
     @apply tracking-widest font-[600];
+    font-size: toRem(12);
   }
 
   &__container {
-    @apply flex gap-3;
+    @apply flex gap-3 overflow-x-auto w-full;
   }
 
   &__item {
@@ -55,7 +51,8 @@
 }
 
 .footer {
-  @apply h-14 grid place-content-center bg-black text-white uppercase font-bold tracking-wider m-5;
+  @apply h-[5.5rem] grid place-content-center bg-black text-white uppercase font-bold tracking-wider m-5;
+  border-top: toRem(1) solid rgba(0, 0, 0, 0.1);
 }
 
 .productHeader {
@@ -64,7 +61,7 @@
 }
 
 .products {
-  @apply px-5 overflow-y-auto fcol h-full;
+  @apply px-5 overflow-y-auto fcol max-h-[39rem];
   border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
 
   &__item {

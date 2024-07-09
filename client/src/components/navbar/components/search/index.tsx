@@ -29,35 +29,35 @@ const Search: FC<{ setSearch: () => void }> = ({ setSearch }) => {
 	useLockBodyScroll()
 	return (
 		<Drawer>
-			<div className={classNames(styles.header, roboto.className)}>
-				<input placeholder="Search for anything" value={value} onChange={e => setValue(e.target.value)} />
-				<IoIosCloseCircle onClick={setSearch} color="black" />
-			</div>
-			<AnimatePresence>
-				{sample.some(word => !!value && word.includes(value)) && (
-					<div>
-						<div className={classNames(styles.suggestions, roboto.className)}>
-							<motion.span
-								className={styles.suggestions__header}
-								initial={{ opacity: 0 }}
-								exit={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-							>
-								SUGGESTIONS
-							</motion.span>
-							<motion.div
-								className={styles.suggestions__container}
-								initial={{ x: 100, opacity: 0 }}
-								exit={{ x: 100, opacity: 0 }}
-								animate={{ x: 0, opacity: 1 }}
-							>
-								{sample?.map(q => (
-									<span className={styles.suggestions__item}>{q}</span>
-								))}
-							</motion.div>
-						</div>
-						<Question normal question="PRODUCTS" className={styles.productHeader} />
-						<div className="fcol justify-between h-full">
+			<div className="fcol h-full">
+				<div className={classNames(styles.header, roboto.className)}>
+					<input placeholder="Search for anything" value={value} onChange={e => setValue(e.target.value)} />
+					<IoIosCloseCircle onClick={setSearch} color="black" />
+				</div>
+				<AnimatePresence>
+					{sample.some(word => !!value && word.includes(value)) && (
+						<>
+							<div className={classNames(styles.suggestions, roboto.className)}>
+								<motion.span
+									className={styles.suggestions__header}
+									initial={{ opacity: 0 }}
+									exit={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+								>
+									SUGGESTIONS
+								</motion.span>
+								<motion.div
+									className={styles.suggestions__container}
+									initial={{ x: 100, opacity: 0 }}
+									exit={{ x: 100, opacity: 0 }}
+									animate={{ x: 0, opacity: 1 }}
+								>
+									{sample?.map(q => (
+										<span className={styles.suggestions__item}>{q}</span>
+									))}
+								</motion.div>
+							</div>
+							<Question normal question="PRODUCTS" className={styles.productHeader} />
 							<motion.div
 								className={styles.products}
 								initial={{ y: 100, opacity: 0 }}
@@ -68,14 +68,21 @@ const Search: FC<{ setSearch: () => void }> = ({ setSearch }) => {
 								<SearchProduct />
 								<SearchProduct />
 								<SearchProduct />
+								<SearchProduct />
+								<SearchProduct />
+								<SearchProduct />
+								<SearchProduct />
+								<SearchProduct />
+								<SearchProduct />
+								<SearchProduct />
 							</motion.div>
-							<motion.span whileTap={{ scale: 0.97 }} className={classNames(styles.footer, roboto.className)}>
+							<motion.div whileTap={{ scale: 0.97 }} className={classNames(styles.footer, roboto.className)}>
 								view all results
-							</motion.span>
-						</div>
-					</div>
-				)}
-			</AnimatePresence>
+							</motion.div>
+						</>
+					)}
+				</AnimatePresence>
+			</div>
 		</Drawer>
 	)
 }
