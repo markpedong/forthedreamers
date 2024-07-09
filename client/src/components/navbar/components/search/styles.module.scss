@@ -59,13 +59,12 @@
 }
 
 .productHeader {
-  @apply w-full text-center py-4 tracking-wider self-start;
+  @apply w-full text-center py-4 tracking-wider self-start text-black;
   font-size: toRem(12);
 }
 
 .products {
-  @apply px-5 overflow-y-auto fcol;
-  height: toRem(400);
+  @apply px-5 overflow-y-auto fcol h-full;
   border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
 
   &__item {
