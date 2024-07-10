@@ -1,5 +1,11 @@
 @import '@/styles/_helpers.scss';
 
-.mainWrapper {
-  @apply absolute  bg-red-500 top-0 left-0 size-full z-[9999];
+// .mainWrapper {
+//   @apply absolute top-[3rem] left-0 right-0 size-[90%] z-[9999] mx-auto bg-white rounded-lg;
+// }
+
+.BG {
+  @apply absolute left-0 top-0 w-dvw h-dvh mx-auto right-0  z-[9998];
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(toRem(2));
 }

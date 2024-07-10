@@ -1,9 +1,15 @@
 import React, { FC } from 'react'
 import styles from './styles.module.scss'
+import { useLockBodyScroll } from '@uidotdev/usehooks'
 
 const ShippingModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
+	
+	useLockBodyScroll()
+	
 	return (
-		<div className={styles.mainWrapper}>
+		<>
+		<div className={styles.BG}/>
+		{/* <div className={styles.mainWrapper}>
 			Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum nesciunt qui, sunt quis odit incidunt consectetur
 			nulla omnis aut rem mollitia quaerat voluptatum nobis excepturi deleniti voluptatibus, debitis praesentium soluta
 			quibusdam sapiente libero, laborum tempora distinctio. Asperiores nobis quasi iure debitis tenetur. Sequi odio
@@ -11,7 +17,8 @@ const ShippingModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 			ullam quas eum quia repellendus necessitatibus, accusantium quo deserunt minima tempora, dolore asperiores. Vitae
 			saepe cum veniam eos labore voluptatem amet modi illo blanditiis nemo! Architecto, reiciendis quasi pariatur rem
 			itaque non provident cupiditate modi facilis nisi at? Repellendus itaque exercitationem non!
-		</div>
+		</div> */}
+		</>
 	)
 }
 
