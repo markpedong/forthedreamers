@@ -1,7 +1,7 @@
 @import '@/styles/_helpers.scss';
 
 .navbarWrapper {
-    @apply gap-1 grid grid-cols-3 justify-items-center items-center px-[3rem] fixed w-full z-40 top-0;
+    @apply gap-1 grid grid-cols-3 justify-items-center items-center px-[3rem] fixed w-full z-30 top-0;
     border-bottom: toRem(1) solid white;
     height: toRem(90);
     transition: all 0.3s ease-in;
@@ -80,7 +80,8 @@
 }
 
 .drawerContainer {
-    @apply absolute top-[5.6rem] left-0 bg-white w-dvw flex justify-between flex-col h-[89dvh] px-10 pb-10;
+    @apply fixed top-0 left-0 bg-white w-full fcol justify-between px-10 pb-10 z-[9999];
+    height: calc(100% - 5.5rem);
 
 
     @media screen and (max-width: 576px) {

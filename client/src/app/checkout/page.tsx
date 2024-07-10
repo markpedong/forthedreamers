@@ -148,26 +148,7 @@ const Page = () => {
 					<span className={styles.price__shipping}>
 						Shipping <HiOutlineQuestionMarkCircle onClick={() => setModal(true)} />
 					</span>
-					<AnimatePresence>
-						{modal && (
-							<motion.div
-								initial={{
-									y: 100,
-									opacity: 0
-								}}
-								exit={{
-									y: 100,
-									opacity: 0
-								}}
-								animate={{
-									y: 0,
-									opacity: 1
-								}}
-							>
-								<ShippingModal closeModal={() => setModal(false)} />
-							</motion.div>
-						)}
-					</AnimatePresence>
+
 					<span className={styles.price__enterShipping}>Enter Shipping address</span>
 					<span className={styles.price__totalTitle}>Total</span>
 					<div className={styles.price__total}>
@@ -176,6 +157,21 @@ const Page = () => {
 					</div>
 				</div>
 			</div>
+			<AnimatePresence>
+				{modal && (
+					<motion.div
+						className="absolute top-0 left-0 size-full"
+						initial={{ y: 100, opacity: 0 }}
+						exit={{ y: 100, opacity: 0 }}
+						animate={{
+							y: 0,
+							opacity: 1
+						}}
+					>
+						<ShippingModal closeModal={() => setModal(false)} />
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</div>
 	)
 }
