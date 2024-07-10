@@ -65,25 +65,9 @@ const Navbar: FC = () => {
 						</span>
 						<FaChevronDown />
 					</motion.div>
-					<AnimatePresence>
-						{showDropdown && (
-							<motion.div
-								className={styles.dropdownMenu}
-								onMouseLeave={() => setShowDropdown(false)}
-								initial={{ opacity: 0 }}
-								exit={{ opacity: 0 }}
-								animate={{ opacity: 1, animation: 'ease-out', transition: { duration: 0.5 } }}
-							>
-								<span onClick={() => handlePush('/support/orders-payment')}>ORDERS & PAYMENT</span>
-								<span onClick={() => handlePush('/support/shipping')}>SHIPPING</span>
-								<span onClick={() => handlePush('/support/returns')}>RETURNS</span>
-								<span onClick={() => handlePush('/support/gift-card-manual')}>GIFT CARD MANUAL</span>
-							</motion.div>
-						)}
-					</AnimatePresence>
 				</div>
 			)}
-			{width! < 1068 && (
+			{width! < 1069 && (
 				<div className={styles.mobileBtnWrapper}>
 					{open && <IoClose onClick={() => setOpen(false)} size={30} />}
 					{!open && (
@@ -100,7 +84,7 @@ const Navbar: FC = () => {
 								className={classNames(styles.drawerContainer, roboto.className)}
 								initial={{ opacity: 0, top: '150%%' }}
 								exit={{ opacity: 0, top: '150%%' }}
-								animate={{ opacity: 1, top: '101%', animation: 'ease-out', transition: { duration: 0.5 } }}
+								animate={{ opacity: 1, top: '5.6rem', animation: 'ease-out', transition: { duration: 0.5 } }}
 							>
 								<MobileMenu setOpen={() => setOpen(false)} />
 							</motion.div>
@@ -118,6 +102,22 @@ const Navbar: FC = () => {
 				<CiShoppingCart size={25} />
 			</div>
 			<AnimatePresence>{search && <Search setSearch={() => setSearch(false)} />}</AnimatePresence>
+			<AnimatePresence>
+				{width! > 1068 && showDropdown && (
+					<motion.div
+						className={styles.dropdownMenu}
+						onMouseLeave={() => setShowDropdown(false)}
+						initial={{ opacity: 0 }}
+						exit={{ opacity: 0 }}
+						animate={{ opacity: 1, animation: 'ease-out', transition: { duration: 0.5 } }}
+					>
+						<span onClick={() => handlePush('/support/orders-payment')}>ORDERS & PAYMENT</span>
+						<span onClick={() => handlePush('/support/shipping')}>SHIPPING</span>
+						<span onClick={() => handlePush('/support/returns')}>RETURNS</span>
+						<span onClick={() => handlePush('/support/gift-card-manual')}>GIFT CARD MANUAL</span>
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</motion.div>
 	)
 }

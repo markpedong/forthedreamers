@@ -1,0 +1,11 @@
+@import '@/styles/_helpers.scss';
+
+.mainWrapper {
+  @apply fixed top-[2rem] left-0 right-0 size-[90%] z-[9999] mx-auto bg-white rounded-lg;
+}
+
+.BG {
+  @apply fixed top-0 left-0 size-full right-0 z-[9998];
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(toRem(2));
+}

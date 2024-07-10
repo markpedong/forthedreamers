@@ -59,6 +59,10 @@
             font-weight: 600;
         }
     }
+
+    @media screen and (max-width:576px) {
+        @apply p-5;
+    }
 }
 
 .marqueeWrapper {

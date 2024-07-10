@@ -1,0 +1,300 @@
+@import '@/styles/_helpers.scss';
+
+.mainWrapper {
+    @apply grid grid-cols-2 max-w-[85rem] mx-auto;
+    margin-top: toRem(90);
+
+    @media screen and (max-width: 992px) {
+        @apply grid-cols-1;
+    }
+}
+
+.section1 {
+    order: 1;
+
+    @media screen and (max-width: 992px) {
+        @apply order-2;
+    }
+}
+
+.section1,
+.productsWrapper {
+    @apply p-5 px-12;
+}
+
+.productsWrapper {
+    @apply py-10;
+    background-color: #f5f5f5;
+}
+
+.products {
+    @apply fcol gap-4;
+
+    &__container {
+        @apply flex gap-5 items-center relative;
+    }
+
+    &__img {
+        @apply object-contain size-[4rem] p-1 bg-white;
+    }
+
+    &__quantity {
+        @apply absolute top-[-0.4rem] left-14 text-white bg-gray-500 rounded-full size-[1.25rem] flex items-center justify-center;
+        font-size: toRem(12);
+        line-height: toRem(12)
+    }
+
+    &__textContainer {
+        @apply flex items-center justify-between w-full;
+
+        div:first-child {
+            @apply fcol;
+
+            span:first-child {
+                @apply font-[600];
+                font-size: toRem(16);
+            }
+
+            span:last-child {
+                @apply font-[300];
+                font-size: toRem(14);
+            }
+        }
+    }
+
+    &__price {
+        @apply font-[600];
+        font-size: toRem(16);
+    }
+}
+
+.discount {
+    @apply py-5 flex justify-between items-center gap-5;
+
+    >* {
+        font-size: toRem(14);
+    }
+
+    input {
+        @apply flex-1 h-[3rem] pl-4 rounded-sm;
+        outline: toRem(0.5) solid rgba(0, 0, 0, 0.2);
+    }
+
+    &__btn {
+        @apply text-black px-4 py-[0.79rem] font-[600] rounded-sm;
+        outline: toRem(0.5) solid rgba(0, 0, 0, 0.2);
+        background-color: #f5f5f5;
+        color: rgba(0, 0, 0, 0.8);
+    }
+}
+
+.price {
+    @apply grid grid-cols-2 justify-items-end gap-3;
+    font-size: toRem(14);
+
+    :nth-child(odd) {
+        @apply justify-self-start;
+    }
+
+    &__shipping {
+        @apply flex items-center gap-1;
+
+        svg {
+            @apply size-[1rem]
+        }
+    }
+
+    &__enterShipping {
+        @apply font-[400];
+        color: rgba(0, 0, 0, 0.8)
+    }
+
+    &__totalTitle {
+        font-size: toRem(20);
+        line-height: toRem(20);
+    }
+
+    &__total {
+        @apply flex items-end gap-3;
+
+
+        span:first-child {
+            @apply font-[300];
+            font-size: toRem(12);
+            line-height: toRem(12);
+        }
+
+        span:last-child {
+            @apply font-[600];
+            font-size: toRem(20);
+            line-height: toRem(20);
+        }
+    }
+}
+
+.header {
+    @apply flex justify-between;
+    font-size: toRem(14);
+
+    :last-child {
+        @apply underline;
+    }
+}
+
+.email {
+    @apply fcol gap-2;
+
+    &__input {
+        @apply pl-2 rounded-sm py-1;
+        outline: toRem(1) solid rgba(0, 0, 0, 0.1);
+        font-size: toRem(12);
+        transition: 0.5s;
+
+        &::placeholder {
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        &:focus {
+            border: toRem(1) solid rgba(0, 0, 0, 1);
+        }
+    }
+}
+
+.saveInformation {
+    @apply mt-4;
+}
+
+.saveInformation,
+.email__checkbox {
+    @apply flex items-center gap-2;
+    font-size: toRem(12);
+}
+
+.delivery {
+    @apply pt-4;
+    font-size: toRem(14);
+}
+
+.region {
+    @apply mt-4;
+    font-size: toRem(14);
+}
+
+.region,
+.delivery__selectContainer {
+    @apply relative w-full border border-gray-500 rounded-sm px-1.5 bg-white border-none;
+    outline: toRem(1) solid rgba(0, 0, 0, 0.1);
+
+    label {
+        @apply absolute top-0 text-xs uppercase text-gray-500 outline-none;
+        font-size: toRem(10);
+    }
+
+    select {
+        @apply w-full bg-white border-0 h-8 pt-2 outline-none;
+        font-size: toRem(12);
+    }
+}
+
+.twoInputs {
+    @apply pt-5 flex gap-4;
+
+    input {
+        @apply w-full py-2 pl-1 rounded-sm;
+        font-size: toRem(12);
+        outline: toRem(1) solid rgba(0, 0, 0, 0.1);
+    }
+}
+
+.address,
+.apartment,
+.shippingMethod,
+.phone input {
+    @apply mt-5 w-full py-2 pl-1 rounded-sm;
+    outline: toRem(1) solid rgba(0, 0, 0, 0.1);
+    font-size: toRem(12);
+}
+
+.shippingMethod {
+    @apply mt-1 outline-none bg-[#e7e7e7] px-3 text-gray-700;
+}
+
+.phone {
+    @apply relative;
+
+    svg {
+        @apply absolute right-2 top-7;
+    }
+}
+
+.shipping {
+    @apply pt-4;
+    font-size: toRem(14);
+}
+
+.payment {
+    @apply pt-8
+}
+
+.paymentNote {
+    font-size: toRem(12);
+}
+
+.addTip,
+.billing {
+    @apply mt-8;
+    font-size: toRem(12);
+}
+
+.tip {
+    @apply rounded-sm fcol;
+    outline: toRem(1) solid rgba(0, 0, 0, 0.1);
+
+    &__header {
+        @apply px-3 py-4 font-medium;
+        font-size: toRem(12);
+    }
+
+    &__content {
+        @apply p-3;
+        background-color: #f5f5f5;
+    }
+
+    &__amountContainer {
+        @apply grid grid-cols-4 gap-0 bg-white;
+
+        div {
+            @apply w-full h-14 grid place-content-center text-center gap-0 select-none;
+            border: toRem(1) solid rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease-in;
+
+            span {
+                font-size: toRem(12);
+            }
+
+            &.selected {
+                border: toRem(1) solid rgba(0, 0, 0, 1);
+            }
+        }
+    }
+
+    &__footer {
+        @apply flex pt-3;
+        font-size: toRem(14);
+    }
+}
+
+.payNowBtn {
+    @apply w-full text-white bg-black grid place-content-center h-10 rounded-sm mt-6 mb-6;
+    font-size: toRem(14);
+}
+
+.rules {
+    @apply mt-16 pt-3 flex gap-3;
+    border-top: toRem(1) solid rgba(0, 0, 0, 0.2);
+    font-size: toRem(12);
+
+    span {
+        @apply underline
+    }
+}
