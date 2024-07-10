@@ -1,0 +1,5 @@
+@import '@/styles/_helpers.scss';
+
+.mainWrapper {
+  @apply absolute  bg-red-500 top-0 left-0 size-full z-[9999];
+}
