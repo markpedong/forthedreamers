@@ -72,10 +72,11 @@
 }
 
 .dropdownMenu {
-    @apply absolute left-[13rem] top-[4rem] bg-white text-black p-10 shadow-xl w-[15rem] grid gap-3;
+    @apply absolute left-[13rem] top-[4rem] bg-white text-black p-4 py-8 shadow-xl w-[15rem] grid gap-3;
 
     >span {
         @apply font-bold w-fit;
+        font-size: toRem(14)
     }
 }
 

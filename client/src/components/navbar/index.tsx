@@ -103,7 +103,7 @@ const Navbar: FC = () => {
 			</div>
 			<AnimatePresence>{search && <Search setSearch={() => setSearch(false)} />}</AnimatePresence>
 			<AnimatePresence>
-				{showDropdown && (
+				{width! > 1068 && showDropdown && (
 					<motion.div
 						className={styles.dropdownMenu}
 						onMouseLeave={() => setShowDropdown(false)}
