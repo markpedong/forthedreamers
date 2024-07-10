@@ -83,7 +83,7 @@ const Navbar: FC = () => {
 					</AnimatePresence>
 				</div>
 			)}
-			{width! < 1068 && (
+			{width! < 1069 && (
 				<div className={styles.mobileBtnWrapper}>
 					{open && <IoClose onClick={() => setOpen(false)} size={30} />}
 					{!open && (
