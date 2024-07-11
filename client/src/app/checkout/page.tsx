@@ -10,6 +10,7 @@ import { HiOutlineQuestionMarkCircle } from 'react-icons/hi'
 import ShippingModal from './components/shippingModal'
 import { Question } from '@/components/page-components'
 import { FaQuestionCircle } from 'react-icons/fa'
+import Inputs from './components/inputs'
 
 const roboto = Roboto_Condensed({ weight: ['200', '300', '400', '500', '600', '800'], subsets: ['latin'] })
 
@@ -33,7 +34,7 @@ const Page = () => {
 	const [code, setCode] = useState('')
 	const [modal, setModal] = useState(false)
 	const [selected, setSelected] = useState<number>()
-
+	const [address, setAddress] = useState('')
 	const handleSelect = (index: number) => {
 		setSelected(index)
 	}
@@ -46,50 +47,7 @@ const Page = () => {
 						<Question question="Contact" />
 						<span>Login</span>
 					</div>
-					<div className={styles.email}>
-						<input type="text" placeholder="Email" className={styles.email__input} />
-						<div className={styles.email__checkbox}>
-							<input type="checkbox" id="check3" /> Email me with news and offers
-							<label htmlFor="check3">
-								<span className="fa fa-check" />
-							</label>
-						</div>
-					</div>
-					<div className={styles.delivery}>
-						<Question question="Delivery" />
-						<div className={styles.delivery__selectContainer}>
-							<label>Country</label>
-							<select name="country">
-								<option value="">---</option>
-								<option value="Philippines">Philippines</option>
-							</select>
-						</div>
-					</div>
-					<div className={styles.twoInputs}>
-						<input type="text" placeholder="First Name" />
-						<input type="text" placeholder="Last Name" />
-					</div>
-					<input
-						type="text"
-						className={styles.address}
-						placeholder="Address (Please do not forget to include your Barangay)"
-					/>
-					<input type="text" className={styles.apartment} placeholder="Apartment, suite, etc. (optional)" />
-					<div className={styles.twoInputs}>
-						<input type="text" placeholder="Postal Code" />
-						<input type="text" placeholder="City" />
-					</div>
-					<div className={styles.region}>
-						<label>Region</label>
-						<select name="country">
-							<option value="">---</option>
-							<option value="abra">Abra</option>
-						</select>
-					</div>
-					<div className={styles.phone}>
-						<input type="text" placeholder="Phone" />
-						<FaQuestionCircle />
-					</div>
+					<Inputs />
 					<div className={styles.saveInformation}>
 						<input type="checkbox" id="check3" />
 						Save this information for next time
@@ -107,6 +65,28 @@ const Page = () => {
 					<Question question="Payment" className={styles.payment} />
 					<span className={styles.paymentNote}>All transactions are secure and encrypted.</span>
 					<Question question="Billing Address" className={styles.billing} />
+					<div className={styles.radioContainer}>
+						<label className={classNames({ [styles.activeAddress]: address === '1' })}>
+							<input type="radio" value="1" checked={address === '1'} onChange={() => setAddress('1')} />
+							<span className={roboto.className}>Same as shipping address</span>
+						</label>
+						<label className={classNames({ [styles.activeAddress]: address === '2' })}>
+							<input type="radio" value="2" checked={address === '2'} onChange={() => setAddress('2')} />
+							<span className={roboto.className}>Use a different billing address</span>
+						</label>
+					</div>
+					<AnimatePresence>
+						{address === '2' && (
+							<motion.div
+								initial={{ opacity: 0, height: '0' }}
+								exit={{ opacity: 0, height: '0' }}
+								animate={{ opacity: 1, height: 'auto', transition: { duration: 0.2, ease: 'easeOut' } }}
+								className={styles.newBillingAddress}
+							>
+								<Inputs />
+							</motion.div>
+						)}
+					</AnimatePresence>
 					<Question question="Add Tip" className={styles.addTip} />
 					<div className={styles.tip}>
 						<span className={styles.tip__header}>Show your support for the team at For the Dreamers</span>
@@ -128,7 +108,7 @@ const Page = () => {
 					</div>
 					<div className={styles.payNowBtn}>Pay Now</div>
 					<div className={styles.rules}>
-						<span>Shipping Policy</span>
+						<span onClick={() => setModal(true)}>Shipping Policy</span>
 						<span>Terms of Service</span>
 					</div>
 				</div>

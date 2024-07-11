@@ -141,91 +141,15 @@
     }
 }
 
-.email {
-    @apply fcol gap-2;
-
-    &__input {
-        @apply pl-2 rounded-sm py-1;
-        outline: toRem(1) solid rgba(0, 0, 0, 0.1);
-        font-size: toRem(12);
-        transition: 0.5s;
-
-        &::placeholder {
-            color: rgba(0, 0, 0, 0.5);
-        }
-
-        &:focus {
-            border: toRem(1) solid rgba(0, 0, 0, 1);
-        }
-    }
-}
-
 .saveInformation {
     @apply mt-4;
 }
 
-.saveInformation,
-.email__checkbox {
+.saveInformation {
     @apply flex items-center gap-2;
     font-size: toRem(12);
 }
 
-.delivery {
-    @apply pt-4;
-    font-size: toRem(14);
-}
-
-.region {
-    @apply mt-4;
-    font-size: toRem(14);
-}
-
-.region,
-.delivery__selectContainer {
-    @apply relative w-full border border-gray-500 rounded-sm px-1.5 bg-white border-none;
-    outline: toRem(1) solid rgba(0, 0, 0, 0.1);
-
-    label {
-        @apply absolute top-0 text-xs uppercase text-gray-500 outline-none;
-        font-size: toRem(10);
-    }
-
-    select {
-        @apply w-full bg-white border-0 h-8 pt-2 outline-none;
-        font-size: toRem(12);
-    }
-}
-
-.twoInputs {
-    @apply pt-5 flex gap-4;
-
-    input {
-        @apply w-full py-2 pl-1 rounded-sm;
-        font-size: toRem(12);
-        outline: toRem(1) solid rgba(0, 0, 0, 0.1);
-    }
-}
-
-.address,
-.apartment,
-.shippingMethod,
-.phone input {
-    @apply mt-5 w-full py-2 pl-1 rounded-sm;
-    outline: toRem(1) solid rgba(0, 0, 0, 0.1);
-    font-size: toRem(12);
-}
-
-.shippingMethod {
-    @apply mt-1 outline-none bg-[#e7e7e7] px-3 text-gray-700;
-}
-
-.phone {
-    @apply relative;
-
-    svg {
-        @apply absolute right-2 top-7;
-    }
-}
 
 .shipping {
     @apply pt-4;
@@ -297,4 +221,40 @@
     span {
         @apply underline
     }
+}
+
+.shippingMethod {
+    @apply w-full py-2 pl-1 rounded-sm mt-1 px-3 text-gray-700;
+    outline: toRem(1) solid rgba(0, 0, 0, 0.1);
+    font-size: toRem(12);
+}
+
+.radioContainer {
+    @apply fcol bg-white;
+
+    label {
+        @apply rounded-sm w-full flex items-center gap-2 py-2 mb-[0.1rem] pl-2 bg-white;
+        outline: toRem(0.5) solid rgba(0, 0, 0, 0.2);
+
+        input {
+            color: black;
+
+            &[type='radio'] {
+                accent-color: #232323;
+            }
+        }
+
+        span {
+            font-size: toRem(12);
+        }
+
+        &.activeAddress {
+            @apply bg-[#e1e1e1];
+            outline: toRem(1) solid rgba(0, 0, 0, 1);
+        }
+    }
+}
+
+.newBillingAddress {
+    @apply bg-[#e1e1e1] p-3;
 }
