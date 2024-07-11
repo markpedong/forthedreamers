@@ -29,13 +29,15 @@ export const Question: FC<{ question?: string; className?: string; normal?: bool
 	)
 }
 
-export const ListAnswers: FC<{ answers: ReactNode[], numbers?: boolean, className?: string }> = ({ answers, numbers, className }) => {
+export const ListAnswers: FC<{ answers: ReactNode[]; numbers?: boolean; className?: string }> = ({
+	answers,
+	numbers,
+	className
+}) => {
 	return (
 		<ul className={classNames(styles.answers, roboto.className, className)} data-numbers={numbers}>
 			{answers?.map(q => (
-				<li key={q?.toString()}>
-					<div dangerouslySetInnerHTML={{ __html: q! }} />
-				</li>
+				<li key={q?.toString()} dangerouslySetInnerHTML={{ __html: q! }} />
 			))}
 		</ul>
 	)

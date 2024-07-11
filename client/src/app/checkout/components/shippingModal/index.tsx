@@ -26,7 +26,7 @@ const ShippingModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
 						className="!mt-0"
 						answers={[
 							`Metro Manila: Within 3-5 business days`,
-							`Provincial: Please check J&T's shipping timeframe chart.`
+							`Provincial: Please check J&T's shipping <a class="text-blue-600" href="https://www.jtexpress.ph/trajectoryQuery?flag=3" target="_blank">timeframe chart</a>.`
 						]}
 					/>
 					<Question normal question="DO YOU SHIP INTERNATIONALLY?" />
