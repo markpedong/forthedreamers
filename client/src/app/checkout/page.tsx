@@ -9,8 +9,9 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { HiOutlineQuestionMarkCircle } from 'react-icons/hi'
 import ShippingModal from './components/shippingModal'
 import { Question } from '@/components/page-components'
-import { FaQuestionCircle } from 'react-icons/fa'
+import { FaChevronDown } from 'react-icons/fa'
 import Inputs from './components/inputs'
+import { useWindowSize } from '@uidotdev/usehooks'
 
 const roboto = Roboto_Condensed({ weight: ['200', '300', '400', '500', '600', '800'], subsets: ['latin'] })
 
@@ -35,6 +36,8 @@ const Page = () => {
 	const [modal, setModal] = useState(false)
 	const [selected, setSelected] = useState<number>()
 	const [address, setAddress] = useState('')
+	const [summary, setSummary] = useState(false)
+	const { width } = useWindowSize()
 	const handleSelect = (index: number) => {
 		setSelected(index)
 	}
@@ -113,30 +116,54 @@ const Page = () => {
 					</div>
 				</div>
 				<div className={classNames(styles.productsWrapper, roboto.className)}>
-					<div className={styles.products}>
-						<Products />
-						<Products />
-					</div>
-					<div className={styles.discount}>
-						<input value={code} onChange={e => setCode(e.target.value)} placeholder="Discount code or gift card" />
-						<motion.span className={styles.discount__btn} whileTap={{ scale: 0.9 }}>
-							Apply
-						</motion.span>
-					</div>
-					<div className={styles.price}>
-						<span>Subtotal</span>
-						<span>₱ 1,590.00</span>
-						<span className={styles.price__shipping}>
-							Shipping <HiOutlineQuestionMarkCircle onClick={() => setModal(true)} />
-						</span>
-
-						<span className={styles.price__enterShipping}>Enter Shipping address</span>
-						<span className={styles.price__totalTitle}>Total</span>
+					<div className={styles.showSummary}>
+						<div className="flex gap-2 items-center text-[0.9rem]" onClick={() => setSummary(!summary)}>
+							<span>Show order summary</span> <FaChevronDown size={10} className={`transition-all rotate-${summary ? '180' : '0'}`} />
+						</div>
 						<div className={styles.price__total}>
 							<span>PHP</span>
 							<span>₱ 1,590.00</span>
 						</div>
 					</div>
+					<AnimatePresence>
+						{(width! > 993 || (width! <= 993 && summary)) && (
+							<motion.div
+								initial={width! > 993 ? {} : { opacity: 0, height: 0, y: -10 }}
+								animate={width! > 993 ? {} : { opacity: 1, height: 'auto', y: 0 }}
+								exit={width! > 993 ? {} : { opacity: 0, height: 0, y: -10 }}
+								transition={width! > 993 ? {} : { duration: 0.3 }}
+							>
+								<div className={styles.products}>
+									<Products />
+									<Products />
+								</div>
+								<div className={styles.discount}>
+									<input
+										value={code}
+										onChange={e => setCode(e.target.value)}
+										placeholder="Discount code or gift card"
+									/>
+									<motion.span className={styles.discount__btn} whileTap={{ scale: 0.9 }}>
+										Apply
+									</motion.span>
+								</div>
+								<div className={styles.price}>
+									<span>Subtotal</span>
+									<span>₱ 1,590.00</span>
+									<span className={styles.price__shipping}>
+										Shipping <HiOutlineQuestionMarkCircle onClick={() => setModal(true)} />
+									</span>
+
+									<span className={styles.price__enterShipping}>Enter Shipping address</span>
+									<span className={styles.price__totalTitle}>Total</span>
+									<div className={styles.price__total}>
+										<span>PHP</span>
+										<span>₱ 1,590.00</span>
+									</div>
+								</div>
+							</motion.div>
+						)}
+					</AnimatePresence>
 				</div>
 			</div>
 			<AnimatePresence>{modal && <ShippingModal closeModal={() => setModal(false)} />}</AnimatePresence>

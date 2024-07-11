@@ -25,6 +25,10 @@
 .productsWrapper {
     @apply py-10;
     background-color: #f5f5f5;
+
+    @media screen and (max-width: 576px) {
+        @apply p-2 py-6 px-6;
+    }
 }
 
 .products {
@@ -257,4 +261,12 @@
 
 .newBillingAddress {
     @apply bg-[#e1e1e1] p-3;
+}
+
+.showSummary {
+    @apply flex justify-between pb-4;
+
+    @media screen and (min-width: 992px) {
+        display: none;
+    }
 }
