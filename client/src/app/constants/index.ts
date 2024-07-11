@@ -70,3 +70,11 @@ export const CARE_GUIDE_ANSWERS = [
 	`Avoid high heat and do not iron on print and on the zipper itself`,
 	`Do not bleach`
 ]
+
+export const SHIPPING_MODAL = [
+	`We offer Same-Day delivery but this is only available for Metro Manila, Rizal, Bulacan and Cavite addresses only. Although you will find this option available at checkout for free, please note that you are responsible for arranging and covering the costs of the courier service.`,
+	`Your order must be placed before 4pm. `,
+	`We will send you an SMS text confirming that the order is ready for courier pick-up. Only then should you book a courier to pick up your parcel.`,
+	`Booking schedule is between Monday to Saturday, 1:30pm to 5:30pm.`,
+	`For Self Pick-up, you can visit our HQ between 1:30pm and 5:30pm, Monday to Saturday to collect your order. Please remember to place your order online before coming and prior to your visit, kindly send us a message on Instagram so we can prepare your items.`
+]
