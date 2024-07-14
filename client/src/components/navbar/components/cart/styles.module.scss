@@ -53,6 +53,12 @@
     outline: toRem(1) solid rgba(0, 0, 0, 0.2);
   }
 
+  @media screen and (max-width: 992px) {
+    height: toRem(250);
+
+    @apply p-4;
+  }
+
 }
 
 .noteBG {
