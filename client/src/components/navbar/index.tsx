@@ -52,7 +52,7 @@ const Navbar: FC = () => {
 				initial={{ y: pathname === '/' ? '-100%' : 0 }}
 				animate={pathname === '/' ? { y: isWhiteBG ? 0 : '-100%', transition: { duration: 0.15, ease: 'easeIn' } } : {}}
 			/>
-			{width! > 1068 && (
+			{width! > 992 && (
 				<div className={classNames(styles.leftBtnWrapper, roboto.className)}>
 					<span onClick={() => handlePush('/')}>HOME</span>
 					<span onClick={() => handlePush('/shop')}>SHOP</span>
@@ -69,7 +69,7 @@ const Navbar: FC = () => {
 					</motion.div>
 				</div>
 			)}
-			{width! < 1069 && (
+			{width! < 993 && (
 				<div className={styles.mobileBtnWrapper}>
 					{open && <IoClose onClick={() => setOpen(false)} size={30} />}
 					{!open && (

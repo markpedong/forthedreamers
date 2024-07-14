@@ -24,7 +24,7 @@
 }
 
 .addNoteContainer {
-  @apply flex justify-between px-4 py-3 font-[400];
+  @apply flex justify-between px-4 py-3 font-[400] text-black;
   font-size: toRem(14);
   border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
 }
@@ -33,7 +33,8 @@
   @apply py-4 px-6 fcol gap-3 items-center justify-center;
 
   >* {
-    font-size: toRem(12)
+    font-size: toRem(12);
+    color: black
   }
 }
 

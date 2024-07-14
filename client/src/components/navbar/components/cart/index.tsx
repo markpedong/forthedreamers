@@ -8,11 +8,13 @@ import { IoMdClose } from 'react-icons/io'
 import SearchProduct from '../../products'
 import { FaPlus } from 'react-icons/fa6'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 
 const roboto = Roboto_Condensed({ weight: ['300', '400', '800'], subsets: ['latin'] })
 
 const Cart: FC<{ setShowCart: () => void }> = ({ setShowCart }) => {
 	const [showNote, setShowNote] = useState(false)
+	const { push } = useRouter()
 
 	useLockBodyScroll()
 	return (
@@ -50,7 +52,15 @@ const Cart: FC<{ setShowCart: () => void }> = ({ setShowCart }) => {
 						</label>
 					</div>
 					<div className={styles.btn}>checkout • ₱1,590.00</div>
-					<div className="underline underline-offset-8 uppercase tracking-wider">view cart</div>
+					<div
+						className="underline underline-offset-8 uppercase tracking-wider"
+						onClick={() => {
+							push('/cart')
+							setShowCart()
+						}}
+					>
+						view cart
+					</div>
 				</div>
 				<AnimatePresence>
 					{showNote && (
