@@ -6,9 +6,9 @@ import styles from './styles.module.scss'
 const poppins = Poppins({ weight: ['400', '600', '800'], subsets: ['latin'] })
 const roboto = Roboto_Condensed({ weight: ['400', '800'], subsets: ['latin'] })
 
-export const PageTitle: FC<{ title: string; medium?: boolean }> = ({ title, medium }) => {
+export const PageTitle: FC<{ title: string; medium?: boolean, className?: string }> = ({ title, medium, className }) => {
 	return (
-		<div className={classNames(styles.pageTitle, poppins.className)} data-medium={medium}>
+		<div className={classNames(styles.pageTitle, poppins.className, className)} data-medium={medium}>
 			{title}
 		</div>
 	)

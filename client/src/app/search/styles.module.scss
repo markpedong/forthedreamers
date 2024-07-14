@@ -1,0 +1,47 @@
+.mainWrapper {
+  @apply max-w-[85rem] mx-auto p-5;
+  margin-top: toRem(120);
+}
+
+.inputContainer {
+  @apply flex items-center justify-center pb-5 relative;
+
+  div:first-child {
+    @apply w-[35rem] relative;
+
+    input {
+      @apply h-10 pl-3 py-7 w-full;
+      font-size: toRem(16);
+      outline: toRem(0.5) solid rgba(0, 0, 0, 0.2);
+    }
+
+    svg {
+      @apply absolute right-[1rem] top-[1rem] size-[1.5rem];
+    }
+  }
+}
+
+.searchText {
+  @apply flex items-center justify-center w-full text-center;
+}
+
+.productWrapper {
+  @apply grid grid-cols-4 justify-items-center items-center;
+
+  @media screen and (max-width: 992px) {
+    @apply grid-cols-2
+  }
+
+  @media screen and (max-width: 576px) {
+    @apply grid-cols-1
+  }
+}
+
+.filterContainer {
+  @apply flex justify-between items-center py-10;
+  font-size: toRem(14);
+
+  div {
+    @apply flex gap-4 justify-center items-center;
+  }
+}

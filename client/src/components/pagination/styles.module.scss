@@ -1,0 +1,8 @@
+.pagination {
+  @apply flex justify-center items-center gap-10 pb-24;
+
+  >span {
+    @apply relative after:w-[1.5rem] after:h-[0.06rem] after:bg-black after:absolute after:bottom-[-0.1rem] after:left-[-0.5rem] last:after:hidden;
+    font-size: toRem(14);
+  }
+}
