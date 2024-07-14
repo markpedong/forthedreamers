@@ -56,7 +56,7 @@ const Navbar: FC = () => {
 				style={
 					pathname === '/'
 						? { color: isWhiteBG ? 'black' : 'white' }
-						: { borderBottom: '0.1rem solid rgba(0, 0, 0, 0.2)', top: y! > 40 ? 0 : 40 }
+						: { borderBottom: '0.1rem solid rgba(0, 0, 0, 0.2)', top: y! > 15 ? 0 : 40 }
 				}
 			>
 				<motion.div
