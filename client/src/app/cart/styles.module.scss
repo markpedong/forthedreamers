@@ -1,0 +1,60 @@
+.mainWrapper {
+    @apply max-w-[85rem] mx-auto p-5;
+    margin-top: toRem(90);
+}
+
+.cartWrapper {
+    @apply grid grid-cols-2 pt-5;
+}
+
+.section {
+    &__title {
+        @apply flex justify-between pb-3 uppercase tracking-wide;
+        border-bottom: toRem(1) solid rgba(0, 0, 0, 0.2);
+        font-size: toRem(14);
+    }
+
+    &__productContainer {
+        @apply flex gap-3 items-center justify-start;
+
+        img {
+            @apply size-[5rem] object-contain;
+        }
+    }
+
+    &__textContainer {
+        @apply fcol gap-1 uppercase;
+
+        span:last-child {
+            font-size: toRem(12);
+        }
+    }
+
+}
+
+.section__productWrapper,
+.section__quantityWrapper {
+    @apply mt-5 fcol gap-5;
+}
+
+.section__productContainer,
+.quantityContainer {
+    height: toRem(80)
+}
+
+.quantityContainer {
+    @apply flex items-center justify-between;
+}
+
+.addMinusContainer {
+    @apply flex gap-1 h-9 w-24 items-center justify-evenly select-none;
+    border: toRem(1) solid rgba(0, 0, 0, 0.2);
+
+    .qty {
+        @apply font-bold;
+    }
+
+    svg {
+        @apply opacity-25 size-3;
+    }
+}
