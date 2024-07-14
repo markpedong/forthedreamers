@@ -9,9 +9,9 @@
 
 .section {
     &__title {
-        @apply flex justify-between pb-3 uppercase tracking-wide;
-        border-bottom: toRem(1) solid rgba(0, 0, 0, 0.2);
+        @apply flex justify-between uppercase tracking-wide;
         font-size: toRem(12);
+        line-height: toRem(12)
     }
 
     &__productContainer {
@@ -31,11 +31,27 @@
         }
     }
 
+    &__footer {
+        @apply pt-10;
+
+        @media screen and (max-width: 992px) {
+            @apply pt-5;
+        }
+    }
+
+    &__footerTitle {
+        font-size: toRem(14);
+    }
+
+    &__addNotesContainer {
+        @apply flex justify-between items-center pb-3;
+    }
 }
 
 .section__productWrapper,
 .section__quantityWrapper {
-    @apply mt-5 fcol gap-5;
+    @apply mt-5 fcol gap-5 py-5;
+    border-block: toRem(1) solid rgba(0, 0, 0, 0.2);
 }
 
 .section__productContainer,
@@ -48,6 +64,10 @@
 
     span:last-child {
         font-size: toRem(14)
+    }
+
+    @media screen and (max-width: 992px) {
+        @apply justify-end
     }
 }
 
@@ -62,5 +82,42 @@
 
     svg {
         @apply opacity-25 size-2;
+    }
+}
+
+.addNoteContainer {
+    @apply mt-3;
+
+    textarea {
+        @apply w-full p-3;
+        outline: toRem(1) solid rgba(0, 0, 0, 0.2);
+
+        &:focus {
+            outline: toRem(1) solid rgba(0, 0, 0, 1);
+        }
+    }
+}
+
+.checkbox {
+    @apply flex gap-1;
+    font-size: toRem(12);
+}
+
+
+.btn {
+    @apply bg-black text-white w-full h-10 uppercase flex items-center justify-center tracking-widest font-bold mt-5;
+    font-size: toRem(12);
+}
+
+.footerTxt {
+    @apply mt-5 text-center;
+    font-size: toRem(12);
+}
+
+.suggestionsContainer {
+    @apply grid grid-cols-4;
+
+    @media screen and (max-width: 992px) {
+        @apply grid-cols-2
     }
 }
