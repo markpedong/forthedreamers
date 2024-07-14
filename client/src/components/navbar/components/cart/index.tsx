@@ -46,7 +46,9 @@ const Cart: FC<{ setShowCart: () => void }> = ({ setShowCart }) => {
 					<span>Taxes and shipping calculated at checkout</span>
 					<div className={styles.footer__checkbox}>
 						<input type="checkbox" id="agree_checkbox" /> I agree with the{' '}
-						<span className="underline underline-offset-4">terms and conditions</span>
+						<span className="underline underline-offset-4" onClick={() => push('/support/terms-of-service')}>
+							terms and conditions
+						</span>
 						<label htmlFor="agree_checkbox">
 							<span className="fa fa-check" />
 						</label>

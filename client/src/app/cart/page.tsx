@@ -39,7 +39,9 @@ const CheckoutSection = () => {
 			</AnimatePresence>
 			<div className={styles.checkbox}>
 				<input type="checkbox" id="agree_checkbox" /> I agree with the{' '}
-				<span className="underline underline-offset-4">terms and conditions</span>
+				<span className="underline underline-offset-4" onClick={() => push('/support/terms-of-service')}>
+					terms and conditions
+				</span>
 				<label htmlFor="agree_checkbox">
 					<span className="fa fa-check" />
 				</label>
