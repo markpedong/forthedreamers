@@ -6,22 +6,11 @@ import styles from './styles.module.scss'
 import { Roboto_Condensed } from 'next/font/google'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Question } from '@/components/page-components'
-import Image from 'next/image'
 import { useLockBodyScroll } from '@uidotdev/usehooks'
+import SearchProduct from '../../products'
 
 const roboto = Roboto_Condensed({ weight: ['300', '400', '800'], subsets: ['latin'] })
 
-const SearchProduct: FC = () => {
-	return (
-		<div className={styles.products__item}>
-			<Image src={'/assets/images/dog.jpg'} alt="" height={100} width={100} />
-			<div className={classNames(styles.products__textContainer, roboto.className)}>
-				<span>DOG PRODUCT TITLE</span>
-				<span>₱9999.00</span>
-			</div>
-		</div>
-	)
-}
 const Search: FC<{ setSearch: () => void }> = ({ setSearch }) => {
 	const [value, setValue] = useState('')
 	const sample = ['hoodie', 'hoodies', 'casual', 'apparel']
@@ -64,17 +53,19 @@ const Search: FC<{ setSearch: () => void }> = ({ setSearch }) => {
 								exit={{ y: 100, opacity: 0 }}
 								animate={{ y: 0, opacity: 1 }}
 							>
-								<SearchProduct />
-								<SearchProduct />
-								<SearchProduct />
-								<SearchProduct />
-								<SearchProduct />
-								<SearchProduct />
-								<SearchProduct />
-								<SearchProduct />
-								<SearchProduct />
-								<SearchProduct />
-								<SearchProduct />
+								<SearchProduct isCart={false} />
+								<SearchProduct isCart={false} />
+								<SearchProduct isCart={false} />
+								<SearchProduct isCart={false} />
+								<SearchProduct isCart={false} />
+								<SearchProduct isCart={false} />
+								<SearchProduct isCart={false} />
+								<SearchProduct isCart={false} />
+								<SearchProduct isCart={false} />
+								<SearchProduct isCart={false} />
+								<SearchProduct isCart={false} />
+								<SearchProduct isCart={false} />
+								<SearchProduct isCart={false} />
 							</motion.div>
 							<motion.div whileTap={{ scale: 0.97 }} className={classNames(styles.footer, roboto.className)}>
 								view all results

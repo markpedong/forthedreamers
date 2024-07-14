@@ -63,17 +63,4 @@
 .products {
   @apply px-5 overflow-y-auto fcol max-h-[39rem];
   border-bottom: toRem(1) solid rgba(0, 0, 0, 0.1);
-
-  &__item {
-    @apply py-5 flex gap-5;
-
-    img {
-      @apply size-[5rem] object-contain;
-    }
-  }
-
-  &__textContainer {
-    @apply fcol gap-2 font-[400] text-black;
-    font-size: toRem(14);
-  }
 }

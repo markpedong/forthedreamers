@@ -1,0 +1,55 @@
+.products {
+  &__item {
+    @apply py-5 flex gap-5;
+
+    img {
+      @apply size-[5rem] object-contain;
+    }
+  }
+
+  &__textContainer {
+    @apply fcol gap-2 font-[400] text-black;
+    font-size: toRem(14);
+  }
+
+}
+
+.products__item {
+  &[data-isCart="true"] {
+    .products__titleContainer {
+      @apply flex justify-between w-full
+    }
+
+    .products__textContainer {
+      @apply w-full gap-1;
+    }
+
+    .products__variation{
+      @apply w-full font-[300] uppercase;
+      font-size: toRem(11)
+    }
+  }
+
+  &[data-isCart="false"] {
+    .products__titleContainer {
+      @apply fcol;
+    }
+  }
+}
+
+.quantityContainer{
+  @apply flex items-center gap-3;
+}
+
+.addMinusContainer {
+  @apply flex gap-1 h-9 w-24 items-center justify-evenly select-none;
+  border: toRem(1) solid rgba(0, 0, 0, 0.2);
+
+  .qty {
+    @apply font-bold;
+  }
+
+  svg {
+      @apply opacity-25 size-3;
+  }
+}

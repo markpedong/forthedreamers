@@ -13,6 +13,7 @@ import { FaChevronDown } from 'react-icons/fa'
 import MobileMenu from './components/mobile-menu'
 import { FiUser } from 'react-icons/fi'
 import Search from './components/search'
+import Cart from './components/cart'
 
 const poppins = Poppins({ weight: ['400', '600', '800'], subsets: ['latin'] })
 const roboto = Roboto_Condensed({ weight: '300', subsets: ['latin'] })
@@ -22,6 +23,7 @@ const Navbar: FC = () => {
 	const [isHovering, setIsHovering] = useState(false)
 	const [open, setOpen] = useState(false)
 	const [search, setSearch] = useState(false)
+	const [showCart, setShowCart] = useState(false)
 	const { width } = useWindowSize()
 	const [{ y }] = useWindowScroll()
 	const [showDropdown, setShowDropdown] = useState(false)
@@ -99,8 +101,9 @@ const Navbar: FC = () => {
 					<FiUser size={25} />
 				</div>
 				<IoSearchOutline size={25} onClick={() => setSearch(true)} />
-				<CiShoppingCart size={25} />
+				<CiShoppingCart size={25} onClick={() => setShowCart(true)} />
 			</div>
+			<AnimatePresence>{showCart && <Cart setShowCart={() => setShowCart(false)} />}</AnimatePresence>
 			<AnimatePresence>{search && <Search setSearch={() => setSearch(false)} />}</AnimatePresence>
 			<AnimatePresence>
 				{width! > 1068 && showDropdown && (
