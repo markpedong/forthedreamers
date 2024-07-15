@@ -99,20 +99,13 @@ const Navbar: FC = () => {
 						)}
 						<AnimatePresence>
 							{open && (
-								<motion.div
-									className={classNames(styles.drawerContainer, roboto.className)}
-									initial={{ opacity: 0, top: '150%%' }}
-									exit={{ opacity: 0, top: '150%%' }}
-									animate={{ opacity: 1, top: '5.6rem', animation: 'ease-out', transition: { duration: 0.5 } }}
-								>
-									<MobileMenu
-										setOpen={() => setOpen(false)}
-										setShowLogin={() => {
-											setOpen(false)
-											setShowLogin(true)
-										}}
-									/>
-								</motion.div>
+								<MobileMenu
+									setOpen={() => setOpen(false)}
+									setShowLogin={() => {
+										setOpen(false)
+										setShowLogin(true)
+									}}
+								/>
 							)}
 						</AnimatePresence>
 					</div>

@@ -1,5 +1,5 @@
 .mainContainer {
-    @apply fixed top-[2rem] left-0 right-0 w-[95%] z-[9999] h-[90%] mx-auto bg-white text-black p-5 py-10 rounded-md flex justify-between items-center gap-5;
+    @apply fixed top-[2rem] left-0 right-0 w-[40rem] z-[9999] h-[90%] mx-auto bg-white text-black p-5 py-10 rounded-md flex justify-between items-center gap-5;
 
 
     .imgCover {
@@ -11,6 +11,10 @@
         .imgCover {
             @apply hidden;
         }
+    }
+
+    @media screen and (max-width: 700px) {
+        @apply w-[90%] mx-auto;
     }
 }
 

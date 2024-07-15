@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { FaArrowRight } from 'react-icons/fa'
 import { FaArrowLeft } from 'react-icons/fa6'
 import { FiUser } from 'react-icons/fi'
+import classNames from 'classnames'
 
 const MobileMenu: FC<{ setOpen: () => void; setShowLogin: () => void }> = ({ setOpen, setShowLogin }) => {
 	const { push } = useRouter()
@@ -20,7 +21,12 @@ const MobileMenu: FC<{ setOpen: () => void; setShowLogin: () => void }> = ({ set
 	useLockBodyScroll()
 
 	return (
-		<>
+		<motion.div
+			className={classNames(styles.drawerContainer)}
+			initial={{ opacity: 0, top: '150%%' }}
+			exit={{ opacity: 0, top: '150%%' }}
+			animate={{ opacity: 1, top: '8.6rem', animation: 'ease-out', transition: { duration: 0.5 } }}
+		>
 			<div className={styles.menuContainer}>
 				<span onClick={() => handlePush('/')}>HOME</span>
 				<span onClick={() => handlePush('/shop')}>SHOP</span>
@@ -56,9 +62,11 @@ const MobileMenu: FC<{ setOpen: () => void; setShowLogin: () => void }> = ({ set
 			</div>
 			<div className={styles.loginBtn}>
 				<FiUser size={25} color="black" />
-				<motion.span whileTap={{ scale: 0.95 }} onClick={setShowLogin}>LOGIN</motion.span>
+				<motion.span whileTap={{ scale: 0.95 }} onClick={setShowLogin}>
+					LOGIN
+				</motion.span>
 			</div>
-		</>
+		</motion.div>
 	)
 }
 
