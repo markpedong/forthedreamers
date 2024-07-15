@@ -2,15 +2,14 @@
 import React, { FC, useEffect } from 'react'
 import styles from './styles.module.scss'
 import Image from 'next/image'
-import { Roboto_Condensed } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import classNames from 'classnames'
 import { GoogleSignInButton } from 'firebase-nextjs/client/components'
 import GOOGLE from '../../../../../public/assets/images/google.svg'
 import { motion } from 'framer-motion'
 import { IoMdClose } from 'react-icons/io'
-import { useLockBodyScroll } from '@uidotdev/usehooks'
 
-const roboto = Roboto_Condensed({ weight: ['300', '400', '800'], subsets: ['latin'] })
+const inter = Inter({ weight: ['300', '400', '800'], subsets: ['latin'] })
 
 const Login: FC<{ setShowLogin: () => void }> = ({ setShowLogin }) => {
 	useEffect(() => {
@@ -26,7 +25,7 @@ const Login: FC<{ setShowLogin: () => void }> = ({ setShowLogin }) => {
 	return (
 		<>
 			<div className={styles.BG} />
-			<div className={classNames(styles.mainContainer, roboto.className)}>
+			<div className={classNames(styles.mainContainer, inter.className)}>
 				<IoMdClose className={styles.closeBtn} onClick={setShowLogin} size={30} color="black" />
 				<Image
 					className={styles.imgCover}
@@ -42,11 +41,15 @@ const Login: FC<{ setShowLogin: () => void }> = ({ setShowLogin }) => {
 					<input type="text" />
 					<span className={styles.login__label}>Password</span>
 					<input type="password" />
-					<div className={styles.btn}>Continue</div>
+					<div className="flex justify-between w-full pt-1 text-[1rem]">
+						<span className="capitalize text-red-500 font-bold mt-1">forgot password?</span>
+						<span className="capitalize text-black font-bold mt-1">Create Account</span>
+					</div>
+					<div className={styles.btn}>Login</div>
 					<GoogleSignInButton className="w-full">
 						<motion.div className={styles.googleBtnContainer} whileTap={{ scale: 0.9 }}>
 							<Image src={GOOGLE} alt="google" width={100} height={100} />
-							<span>Log in with Google</span>
+							<span>Google</span>
 						</motion.div>
 					</GoogleSignInButton>
 				</div>
