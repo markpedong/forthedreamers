@@ -13,7 +13,15 @@ import { useLockBodyScroll } from '@uidotdev/usehooks'
 const roboto = Roboto_Condensed({ weight: ['300', '400', '800'], subsets: ['latin'] })
 
 const Login: FC<{ setShowLogin: () => void }> = ({ setShowLogin }) => {
-	useLockBodyScroll()
+	useEffect(() => {
+		setTimeout(() => {
+			document.body.style.overflow = 'hidden'
+		}, 400)
+
+		return () => {
+			document.body.style.overflow = ''
+		}
+	}, [])
 
 	return (
 		<>

@@ -146,7 +146,19 @@ const Navbar: FC = () => {
 				</div>
 				<AnimatePresence>{showCart && <Cart setShowCart={() => setShowCart(false)} />}</AnimatePresence>
 				<AnimatePresence>{search && <Search setSearch={() => setSearch(false)} />}</AnimatePresence>
-				<AnimatePresence>{showLogin && <Login setShowLogin={() => setShowLogin(false)} />}</AnimatePresence>
+				<AnimatePresence>
+					{showLogin && (
+						<Login
+							setShowLogin={() => {
+								if (width! < 992) {
+									setOpen(true)
+								}
+
+								setShowLogin(false)
+							}}
+						/>
+					)}
+				</AnimatePresence>
 				<AnimatePresence>
 					{width! > 1068 && showDropdown && (
 						<motion.div
