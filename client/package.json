@@ -12,6 +12,7 @@
 		"@uidotdev/usehooks": "^2.4.1",
 		"antd": "^5.19.1",
 		"classnames": "^2.5.1",
+		"firebase-nextjs": "^1.6.5",
 		"framer-motion": "^11.3.2",
 		"keen-slider": "^6.8.6",
 		"next": "14.2.5",
