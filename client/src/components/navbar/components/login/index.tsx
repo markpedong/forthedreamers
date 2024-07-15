@@ -15,7 +15,7 @@ const Login: FC<{ setShowLogin: () => void }> = ({ setShowLogin }) => {
 
 	return (
 		<>
-			<div className={styles.loginBG} />
+			<div className={styles.BG} />
 			<div className={classNames(styles.mainContainer, roboto.className)}>
 				<IoMdClose className={styles.closeBtn} onClick={setShowLogin} size={30} color="black" />
 				<Image
