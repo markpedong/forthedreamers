@@ -7,6 +7,9 @@ import { FaArrowRight } from 'react-icons/fa'
 import { FaArrowLeft } from 'react-icons/fa6'
 import { FiUser } from 'react-icons/fi'
 import classNames from 'classnames'
+import { Roboto_Condensed } from 'next/font/google'
+
+const roboto = Roboto_Condensed({ weight: ['300', '400'], subsets: ['latin'] })
 
 const MobileMenu: FC<{ setOpen: () => void; setShowLogin: () => void }> = ({ setOpen, setShowLogin }) => {
 	const { push } = useRouter()
@@ -22,10 +25,10 @@ const MobileMenu: FC<{ setOpen: () => void; setShowLogin: () => void }> = ({ set
 
 	return (
 		<motion.div
-			className={classNames(styles.drawerContainer)}
+			className={classNames(styles.drawerContainer, roboto.className)}
 			initial={{ opacity: 0, top: '150%%' }}
 			exit={{ opacity: 0, top: '150%%' }}
-			animate={{ opacity: 1, top: '8.6rem', animation: 'ease-out', transition: { duration: 0.5 } }}
+			animate={{ opacity: 1, top: '5.6rem', animation: 'ease-out', transition: { duration: 0.5 } }}
 		>
 			<div className={styles.menuContainer}>
 				<span onClick={() => handlePush('/')}>HOME</span>

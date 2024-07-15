@@ -52,7 +52,7 @@
 
 .drawerContainer {
     @apply fixed top-[2rem] left-0 bg-white w-full fcol justify-between px-10 pb-10 z-[9999];
-    height: calc(100% - 8.6rem);
+    height: calc(100dvh - 5.6rem);
 
 
     @media screen and (max-width: 576px) {
