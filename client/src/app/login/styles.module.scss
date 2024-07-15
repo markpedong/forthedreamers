@@ -1,0 +1,42 @@
+.mainWrapper {
+    @apply flex justify-center items-center h-dvh bg-[#FAFAFA];
+}
+
+.login {
+    @apply fcol items-start bg-white p-5 py-10 rounded-md w-[30rem];
+
+    img {
+        @apply self-center object-contain size-[7rem];
+    }
+
+    span {
+        @apply whitespace-nowrap;
+        font-size: toRem(12);
+    }
+
+    &__header {
+        @apply pt-10 pb-3 font-bold;
+        font-size: toRem(18) !important;
+    }
+
+    &__sub {
+        @apply mb-5 font-[400];
+    }
+
+    &__label {
+        font-size: toRem(10);
+    }
+
+    input {
+        @apply h-6 mt-1 w-[95%] p-1 px-2 rounded-[0.25rem];
+        border: toRem(1) solid #202223;
+
+        &:focus {
+            outline: toRem(1) solid #1879b9
+        }
+    }
+
+    .btn {
+        @apply bg-[#1879b9] text-white w-full flex items-center justify-center py-3 mt-4 rounded-sm;
+    }
+}
