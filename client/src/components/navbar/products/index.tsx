@@ -11,7 +11,7 @@ const SearchProduct: FC<{ isCart?: boolean }> = ({ isCart }) => {
 	const [quantity, setQuantity] = useState(1)
 
 	return (
-		<div className={styles.products__item} data-isCart={isCart}>
+		<div className={styles.products__item} data-iscart={isCart}>
 			<Image src={'/assets/images/dog.jpg'} alt="" height={100} width={100} />
 			<div className={classNames(styles.products__textContainer, roboto.className)}>
 				<div className={styles.products__titleContainer}>

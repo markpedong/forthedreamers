@@ -29,12 +29,13 @@ const Navbar: FC = () => {
 	const [{ y }] = useWindowScroll()
 	const [showDropdown, setShowDropdown] = useState(false)
 	const isWhiteBG = isHovering || y! > 40
-	const { push } = useRouter()
+	const { push, refresh } = useRouter()
 
 	const handlePush = (path: string) => {
 		setOpen(false)
 		setShowDropdown(false)
 		push(path)
+		refresh()
 	}
 
 	return (
@@ -71,7 +72,7 @@ const Navbar: FC = () => {
 						<span onClick={() => handlePush('/')}>HOME</span>
 						<span onClick={() => handlePush('/shop')}>SHOP</span>
 						<span onClick={() => handlePush('/collection')}>COLLECTIONS</span>
-						<motion.div className={styles.supportContainer} onClick={() => push('/support')}>
+						<motion.div className={styles.supportContainer} onClick={() => handlePush('/support')}>
 							<span
 								onMouseEnter={() => {
 									setShowDropdown(true)
@@ -111,7 +112,7 @@ const Navbar: FC = () => {
 				<div className={classNames(styles.navTitle, poppins.className)}>FOR THE DREAMERS</div>
 				<div className={classNames(styles.rightBtnWrapper, roboto.className)}>
 					<div className={styles.loginBtn}>
-						<span>LOGIN</span>
+						<span onClick={() => handlePush('/login')}>LOGIN</span>
 						<FiUser size={25} />
 					</div>
 					<IoSearchOutline size={25} onClick={() => setSearch(true)} />

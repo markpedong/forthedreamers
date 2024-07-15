@@ -3,7 +3,7 @@
 }
 
 .login {
-    @apply fcol items-start bg-white p-5 py-10 rounded-md w-[30rem];
+    @apply fcol items-start bg-white p-5 py-10 rounded-md w-[30rem] mx-2;
 
     img {
         @apply self-center object-contain size-[7rem];
@@ -37,6 +37,16 @@
     }
 
     .btn {
-        @apply bg-[#1879b9] text-white w-full flex items-center justify-center py-3 mt-4 rounded-sm;
+        @apply bg-[#1879b9] text-white w-full flex items-center justify-center py-3 my-4 rounded-sm;
+    }
+}
+
+.googleBtnContainer {
+    @apply flex items-center justify-center gap-2 p-2 rounded-md shadow-lg;
+    font-size: toRem(14);
+    border: toRem(1) solid rgba(0, 0, 0, 0.15);
+
+    img {
+        @apply size-[1.5rem]
     }
 }

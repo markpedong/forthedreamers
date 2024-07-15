@@ -56,7 +56,9 @@ const MobileMenu: FC<{ setOpen: () => void }> = ({ setOpen }) => {
 			</div>
 			<div className={styles.loginBtn}>
 				<FiUser size={25} color="black" />
-				<span>LOGIN</span>
+				<motion.span whileTap={{ scale: 0.95 }} onClick={() => push('/login')}>
+					LOGIN
+				</motion.span>
 			</div>
 		</>
 	)

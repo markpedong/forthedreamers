@@ -1,4 +1,5 @@
 import './styles.module.scss'
+import { FirebaseNextJSProvider } from 'firebase-nextjs/client/auth'
 
 export const metadata = {
 	title: 'Next.js',
@@ -8,7 +9,9 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en">
-			<body style={{ margin: 0 }}>{children}</body>
+			<FirebaseNextJSProvider>
+				<body style={{ margin: 0 }}>{children}</body>
+			</FirebaseNextJSProvider>
 		</html>
 	)
 }

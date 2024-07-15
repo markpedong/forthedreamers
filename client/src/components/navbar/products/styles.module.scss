@@ -15,7 +15,7 @@
 }
 
 .products__item {
-  &[data-isCart="true"] {
+  &[data-iscart="true"] {
     .products__titleContainer {
       @apply flex justify-between w-full
     }
@@ -30,7 +30,7 @@
     }
   }
 
-  &[data-isCart="false"] {
+  &[data-iscart="false"] {
     .products__titleContainer {
       @apply fcol;
     }
