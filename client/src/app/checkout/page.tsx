@@ -12,7 +12,6 @@ import { Question } from '@/components/page-components'
 import { FaChevronDown } from 'react-icons/fa'
 import Inputs from './components/inputs'
 import { useWindowSize } from '@uidotdev/usehooks'
-import { useRouter } from 'next/navigation'
 
 const roboto = Roboto_Condensed({ weight: ['200', '300', '400', '500', '600', '800'], subsets: ['latin'] })
 
@@ -33,7 +32,6 @@ const Products: FC = () => {
 }
 
 const Page = () => {
-	const { push } = useRouter()
 	const [code, setCode] = useState('')
 	const [modal, setModal] = useState(false)
 	const [selected, setSelected] = useState<number>()
