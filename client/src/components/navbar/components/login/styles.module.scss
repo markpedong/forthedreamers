@@ -1,0 +1,81 @@
+.mainContainer {
+    @apply relative bg-white text-black p-5 py-10 rounded-md w-[50rem] h-auto flex justify-between items-center gap-5;
+
+    .imgCover {
+        @apply object-cover object-center h-full max-w-[15rem] w-full rounded-md;
+
+    }
+
+    @media screen and (max-width: 976px) {
+        @apply w-[40rem];
+
+        .imgCover {
+            @apply hidden;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        @apply w-[35rem];
+    }
+
+    @media screen and (max-width: 576px) {
+        @apply w-[25rem];
+    }
+
+    @media screen and (max-width: 400px) {
+        @apply w-auto;
+    }
+}
+
+.login {
+    @apply fcol items-start flex-1;
+
+    img {
+        @apply self-center object-contain size-[7rem];
+    }
+
+    span {
+        @apply whitespace-nowrap;
+        font-size: toRem(12);
+    }
+
+    &__header {
+        @apply pb-3 font-bold;
+        font-size: toRem(18) !important;
+    }
+
+    &__sub {
+        @apply mb-5 font-[400];
+    }
+
+    &__label {
+        font-size: toRem(10);
+    }
+
+    input {
+        @apply h-6 mt-1 w-[100%] p-1 px-2 rounded-[0.25rem];
+        border: toRem(1) solid #202223;
+
+        &:focus {
+            outline: toRem(1) solid #1879b9
+        }
+    }
+
+    .btn {
+        @apply bg-[#1879b9] text-white w-full flex items-center justify-center py-3 my-4 rounded-sm;
+    }
+}
+
+.googleBtnContainer {
+    @apply flex items-center justify-center gap-2 p-2 rounded-md shadow-lg;
+    font-size: toRem(14);
+    border: toRem(1) solid rgba(0, 0, 0, 0.15);
+
+    img {
+        @apply size-[1.5rem]
+    }
+}
+
+.closeBtn {
+    @apply absolute top-3 right-3
+}

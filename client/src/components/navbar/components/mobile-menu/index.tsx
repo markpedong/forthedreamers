@@ -7,7 +7,7 @@ import { FaArrowRight } from 'react-icons/fa'
 import { FaArrowLeft } from 'react-icons/fa6'
 import { FiUser } from 'react-icons/fi'
 
-const MobileMenu: FC<{ setOpen: () => void }> = ({ setOpen }) => {
+const MobileMenu: FC<{ setOpen: () => void; setShowLogin: () => void }> = ({ setOpen, setShowLogin }) => {
 	const { push } = useRouter()
 	const [showSupport, setShowSupport] = useState(false)
 
@@ -56,9 +56,7 @@ const MobileMenu: FC<{ setOpen: () => void }> = ({ setOpen }) => {
 			</div>
 			<div className={styles.loginBtn}>
 				<FiUser size={25} color="black" />
-				<motion.span whileTap={{ scale: 0.95 }} onClick={() => push('/login')}>
-					LOGIN
-				</motion.span>
+				<motion.span whileTap={{ scale: 0.95 }} onClick={setShowLogin}>LOGIN</motion.span>
 			</div>
 		</>
 	)

@@ -15,6 +15,7 @@ import { FiUser } from 'react-icons/fi'
 import Search from './components/search'
 import Cart from './components/cart'
 import Marquee from 'react-fast-marquee'
+import Login from './components/login'
 
 const poppins = Poppins({ weight: ['400', '600', '800'], subsets: ['latin'] })
 const roboto = Roboto_Condensed({ weight: '300', subsets: ['latin'] })
@@ -25,6 +26,7 @@ const Navbar: FC = () => {
 	const [open, setOpen] = useState(false)
 	const [search, setSearch] = useState(false)
 	const [showCart, setShowCart] = useState(false)
+	const [showLogin, setShowLogin] = useState(false)
 	const { width } = useWindowSize()
 	const [{ y }] = useWindowScroll()
 	const [showDropdown, setShowDropdown] = useState(false)
@@ -103,7 +105,10 @@ const Navbar: FC = () => {
 									exit={{ opacity: 0, top: '150%%' }}
 									animate={{ opacity: 1, top: '5.6rem', animation: 'ease-out', transition: { duration: 0.5 } }}
 								>
-									<MobileMenu setOpen={() => setOpen(false)} />
+									<MobileMenu setOpen={() => setOpen(false)} setShowLogin={() => {
+										setOpen(false)
+										setShowLogin(true)
+									}} />
 								</motion.div>
 							)}
 						</AnimatePresence>
@@ -112,7 +117,7 @@ const Navbar: FC = () => {
 				<div className={classNames(styles.navTitle, poppins.className)}>FOR THE DREAMERS</div>
 				<div className={classNames(styles.rightBtnWrapper, roboto.className)}>
 					<div className={styles.loginBtn}>
-						<span onClick={() => handlePush('/login')}>LOGIN</span>
+						<span onClick={() => setShowLogin(true)}>LOGIN</span>
 						<FiUser size={25} />
 					</div>
 					<IoSearchOutline size={25} onClick={() => setSearch(true)} />
@@ -120,6 +125,26 @@ const Navbar: FC = () => {
 				</div>
 				<AnimatePresence>{showCart && <Cart setShowCart={() => setShowCart(false)} />}</AnimatePresence>
 				<AnimatePresence>{search && <Search setSearch={() => setSearch(false)} />}</AnimatePresence>
+				<AnimatePresence>
+					{showLogin && (
+						<>
+							<motion.div
+								className={styles.loginBG}
+								initial={{ opacity: 0 }}
+								exit={{ opacity: 0 }}
+								animate={{ opacity: 1, transition: { duration: 0.15, ease: 'easeIn' } }}
+							/>
+							<motion.div
+								initial={{ opacity: 0, scale: 0.15 }}
+								exit={{ opacity: 0, scale: 0.15 }}
+								animate={{ opacity: 1, scale: 1, transition: { duration: 0.15, ease: 'easeIn' } }}
+								className={styles.loginWrapper}
+							>
+								<Login setShowLogin={() => setShowLogin(false)} />
+							</motion.div>
+						</>
+					)}
+				</AnimatePresence>
 				<AnimatePresence>
 					{width! > 1068 && showDropdown && (
 						<motion.div
