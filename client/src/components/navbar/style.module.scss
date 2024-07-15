@@ -95,12 +95,3 @@
         @apply hidden;
     }
 }
-
-.loginWrapper {
-    @apply fixed top-[15%];
-}
-
-.loginBG {
-    @apply w-dvw h-dvh fixed top-0 left-0;
-    background-color: rgba(0, 0, 0, 0.8);
-}

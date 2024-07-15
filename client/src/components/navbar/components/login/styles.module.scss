@@ -1,5 +1,6 @@
 .mainContainer {
-    @apply relative bg-white text-black p-5 py-10 rounded-md w-[50rem] h-auto flex justify-between items-center gap-5;
+    @apply fixed top-[2rem] left-0 right-0 w-[95%] z-[9999] h-[90%] mx-auto bg-white text-black p-5 py-10 rounded-md flex justify-between items-center gap-5;
+
 
     .imgCover {
         @apply object-cover object-center h-full max-w-[15rem] w-full rounded-md;
@@ -7,24 +8,24 @@
     }
 
     @media screen and (max-width: 976px) {
-        @apply w-[40rem];
+        // @apply w-[40rem];
 
         .imgCover {
             @apply hidden;
         }
     }
 
-    @media screen and (max-width: 768px) {
-        @apply w-[35rem];
-    }
+    // @media screen and (max-width: 768px) {
+    //     @apply w-[35rem];
+    // }
 
-    @media screen and (max-width: 576px) {
-        @apply w-[25rem];
-    }
+    // @media screen and (max-width: 576px) {
+    //     @apply w-[25rem];
+    // }
 
-    @media screen and (max-width: 400px) {
-        @apply w-auto;
-    }
+    // @media screen and (max-width: 400px) {
+    //     @apply w-auto;
+    // }
 }
 
 .login {
@@ -78,4 +79,10 @@
 
 .closeBtn {
     @apply absolute top-3 right-3
+}
+
+.BG {
+    @apply fixed top-0 left-0 size-full right-0 z-[9998];
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(toRem(2));
 }
