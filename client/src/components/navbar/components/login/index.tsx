@@ -4,16 +4,23 @@ import styles from './styles.module.scss'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import classNames from 'classnames'
-import { GoogleSignInButton } from 'firebase-nextjs/client/components'
+import { GoogleSignInButton, LogoutButton } from 'firebase-nextjs/client/components'
 import GOOGLE from '../../../../../public/assets/images/google.svg'
 import { motion } from 'framer-motion'
 import { IoMdClose } from 'react-icons/io'
 import { LOGIN_STATE } from '@/app/constants/enums'
+import { getUserCS } from 'firebase-nextjs/client/auth'
 
 const inter = Inter({ weight: ['300', '400', '800'], subsets: ['latin'] })
 
 const Login: FC<{ setShowLogin: () => void }> = ({ setShowLogin }) => {
 	const [loginState, setLoginState] = useState(LOGIN_STATE.LOGIN)
+	const { currentUser } = getUserCS()
+
+	useEffect(() => {
+		currentUser?.uid && console.log(currentUser)
+	}, [currentUser?.uid])
+
 	useEffect(() => {
 		setTimeout(() => {
 			document.body.style.overflow = 'hidden'
