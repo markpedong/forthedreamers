@@ -25,6 +25,7 @@ const reducer = combineReducers({
 	appData: appDataReducer
 })
 
+//@ts-ignore
 const persistedReducer = persistReducer(persistConfig, reducer)
 
 export const store = configureStore({
