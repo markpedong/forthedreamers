@@ -22,11 +22,11 @@ const Page = () => {
 					<div className={styles.twoInputContainer}>
 						<div className="grid w-full max-w-sm items-center gap-1.5">
 							<Label htmlFor="first_name">First Name</Label>
-							<Input type="first_name" id="first_name" placeholder="eg: John" />
+							<Input type="first_name" id="first_name" placeholder="eg: John" value="John" />
 						</div>{' '}
 						<div className="grid w-full max-w-sm items-center gap-1.5">
 							<Label htmlFor="last_name">Last Name</Label>
-							<Input type="last_name" id="last_name" placeholder="eg: Doe" />
+							<Input type="last_name" id="last_name" placeholder="eg: Doe" value="Doe" />
 						</div>
 					</div>
 				</div>
