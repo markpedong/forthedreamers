@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from './styles.module.scss'
 import { ListAnswers, PageTitle } from '@/components/page-components'
-import { FAQ_ANSWERS, TERMS_CONDITIONS } from '@/app/(main)/constants'
+import { FAQ_ANSWERS, TERMS_CONDITIONS } from '@/app/constants'
 import { Roboto_Condensed } from 'next/font/google'
 import classNames from 'classnames'
 import Image from 'next/image'

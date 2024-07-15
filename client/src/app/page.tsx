@@ -1,6 +1,6 @@
 'use client'
 
-import styles from '../../styles/styles.module.scss'
+import styles from '@/styles/styles.module.scss'
 import { GoDotFill } from 'react-icons/go'
 import { FaCircleDot } from 'react-icons/fa6'
 import { Poppins, Roboto_Condensed } from 'next/font/google'

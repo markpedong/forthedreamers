@@ -3,7 +3,7 @@ import styles from './styles.module.scss'
 import { Roboto_Condensed } from 'next/font/google'
 import classNames from 'classnames'
 import { ListAnswers, PageTitle, Question } from '@/components/page-components'
-import { SAMEDAY_ANSWERS, SHIPPING_ANSWERS } from '@/app/(main)/constants'
+import { SAMEDAY_ANSWERS, SHIPPING_ANSWERS } from '@/app/constants'
 
 const roboto = Roboto_Condensed({ weight: ['400', '600', '800'], subsets: ['latin'] })
 

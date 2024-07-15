@@ -18,7 +18,7 @@ import {
 	SITE_INFORMATION_TERMS,
 	TERMS_ARRAY,
 	USER_GENERATED_CONTENT_TERMS
-} from '@/app/(main)/constants'
+} from '@/app/constants'
 import { FC } from 'react'
 
 const roboto = Roboto_Condensed({ weight: ['400', '600', '800'], subsets: ['latin'] })

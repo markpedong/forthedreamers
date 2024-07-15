@@ -1,4 +1,4 @@
-import { AMEND_ANSWERS, PAYMENT_ANSWERS } from '@/app/(main)/constants'
+import { AMEND_ANSWERS, PAYMENT_ANSWERS } from '@/app/constants'
 import { ListAnswers, PageTitle, Question } from '@/components/page-components'
 import Image from 'next/image'
 import styles from './styles.module.scss'

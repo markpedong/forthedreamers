@@ -14,7 +14,7 @@ import { MdLocalLaundryService } from 'react-icons/md'
 import { IoIosReturnLeft } from 'react-icons/io'
 import { BsBox } from 'react-icons/bs'
 import CareGuide from './components/care-guide'
-import { CARE_GUIDE } from '@/app/(main)/constants/enums'
+import { CARE_GUIDE } from '@/app/constants/enums'
 
 const roboto = Roboto_Condensed({ weight: ['300', '800'], subsets: ['latin'] })
 

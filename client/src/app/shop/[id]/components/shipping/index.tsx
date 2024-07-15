@@ -1,4 +1,4 @@
-import { SAMEDAY_ANSWERS, SHIPPING_ANSWERS } from '@/app/(main)/constants'
+import { SAMEDAY_ANSWERS, SHIPPING_ANSWERS } from '@/app/constants'
 import { ListAnswers, Question } from '@/components/page-components'
 import React from 'react'
 import styles from './styles.module.scss'
