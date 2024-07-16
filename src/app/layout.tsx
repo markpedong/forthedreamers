@@ -3,7 +3,6 @@ import { Inter } from 'next/font/google'
 import '@/styles/global.scss'
 import Navbar from '@/components/navbar'
 import dynamic from 'next/dynamic'
-import { FirebaseNextJSProvider } from 'firebase-nextjs/client/auth'
 import ReduxProvider from './redux/provider'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -24,15 +23,13 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<FirebaseNextJSProvider>
-				<ReduxProvider>
-					<body className={inter.className}>
-						<Navbar />
-						{children}
-						<Footer />
-					</body>
-				</ReduxProvider>
-			</FirebaseNextJSProvider>
+			<ReduxProvider>
+				<body className={inter.className}>
+					<Navbar />
+					{children}
+					<Footer />
+				</body>
+			</ReduxProvider>
 		</html>
 	)
 }
