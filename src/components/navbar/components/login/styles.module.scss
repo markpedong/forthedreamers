@@ -60,6 +60,7 @@
     @apply flex items-center justify-center gap-2 p-2 mt-4 rounded-md shadow-lg;
     font-size: toRem(14);
     border: toRem(1) solid rgba(0, 0, 0, 0.15);
+    font-weight: 800;
 
     img {
         @apply size-[1.5rem]
