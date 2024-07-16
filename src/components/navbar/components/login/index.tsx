@@ -4,12 +4,11 @@ import styles from './styles.module.scss'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import classNames from 'classnames'
-import GOOGLE from '../../../../../public/assets/images/google.svg'
 import { motion } from 'framer-motion'
 import { IoMdClose } from 'react-icons/io'
 import { LOGIN_STATE } from '@/app/constants/enums'
 import { FcGoogle } from 'react-icons/fc'
-import { handleGoogleSignin } from '@/lib/auth/googleSigninServerAction'
+import { handleGoogleSignin } from '@/lib/auth/googleSignInServerAction'
 
 const inter = Inter({ weight: ['300', '400', '800'], subsets: ['latin'] })
 
@@ -97,8 +96,12 @@ const Login: FC<{ setShowLogin: () => void }> = ({ setShowLogin }) => {
 								</span>
 							</div>
 							<div className={styles.btn}>Register</div>
-							<motion.div className={styles.googleBtnContainer} whileTap={{ scale: 0.9 }}>
-								<Image src={GOOGLE} alt="google" width={100} height={100} />
+							<motion.div
+								className={styles.googleBtnContainer}
+								whileTap={{ scale: 0.9 }}
+								onClick={() => handleGoogleSignin()}
+							>
+								<FcGoogle />
 								<span>Google</span>
 							</motion.div>
 						</>
