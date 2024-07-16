@@ -23,13 +23,13 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<ReduxProvider>
-				<body className={inter.className}>
+			<body className={inter.className}>
+				<ReduxProvider>
 					<Navbar />
 					{children}
 					<Footer />
-				</body>
-			</ReduxProvider>
+				</ReduxProvider>
+			</body>
 		</html>
 	)
 }
