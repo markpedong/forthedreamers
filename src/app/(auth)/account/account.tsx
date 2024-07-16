@@ -8,12 +8,15 @@ import { PageTitle } from '@/components/page-components'
 import Image from 'next/image'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { handleSignout } from '@/lib/auth/signOutServerAction'
 
 const roboto = Roboto_Condensed({ weight: ['200', '300', '400', '500', '600', '800'], subsets: ['latin'] })
 
 const AccountPage = () => {
 	return (
 		<div className={classNames(styles.mainWrapper, roboto.className)}>
+			<h1>SAMPLE SIGNOUT BUTTON</h1>
+			<button onClick={() => handleSignout()}>SIGNOUT BUTTON</button>
 			<PageTitle title="account" medium className="!capitalize" />
 			<div className={styles.details}>
 				<Image src={'/assets/images/dog.jpg'} alt="dog" width={100} height={100} />
