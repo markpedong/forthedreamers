@@ -6,9 +6,9 @@ import { Inter } from 'next/font/google'
 import classNames from 'classnames'
 import { motion } from 'framer-motion'
 import { IoMdClose } from 'react-icons/io'
-import { LOGIN_STATE } from '@/app/constants/enums'
 import { FcGoogle } from 'react-icons/fc'
 import { handleGoogleSignin } from '@/lib/auth/googleSignInServerAction'
+import { LOGIN_STATE } from '@/app/(main)/constants/enums'
 
 const inter = Inter({ weight: ['300', '400', '800'], subsets: ['latin'] })
 

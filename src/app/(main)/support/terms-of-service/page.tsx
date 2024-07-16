@@ -18,7 +18,7 @@ import {
 	SITE_INFORMATION_TERMS,
 	TERMS_ARRAY,
 	USER_GENERATED_CONTENT_TERMS
-} from '@/app/constants'
+} from '@/app/(main)/constants'
 import { FC } from 'react'
 
 const roboto = Roboto_Condensed({ weight: ['400', '600', '800'], subsets: ['latin'] })
@@ -41,15 +41,16 @@ const Page = () => {
 			<div className="fcol gap-3">
 				<span className="font-bold">Welcome to CHARLOTTE FOLK.</span>
 				<span>
-					The website https://charlottefolk.co/ and its associated features (“Site") is owned and operated by CHARLOTTE
-					FOLK (“CHARLOTTE FOLK”, "we", "our", "us").
+					The website https://charlottefolk.co/ and its associated features (“Site") is owned and operated by
+					CHARLOTTE FOLK (“CHARLOTTE FOLK”, "we", "our", "us").
 				</span>
 				<span>
-					These Terms and Conditions (“Terms”), which incorporate our Privacy Policy and other documents referred to
-					within these Terms, govern the supply of any products ordered by you on the Site and your use of the Site. By
-					browsing, accessing, using the Site or ordering a product (“Order”), you agree to be legally bound by these
-					Terms. We may change these Terms at any time, and the revised Terms will be made available on our Site. By
-					continuing to use the Site you agree to be bound by such revised Terms.
+					These Terms and Conditions (“Terms”), which incorporate our Privacy Policy and other documents
+					referred to within these Terms, govern the supply of any products ordered by you on the Site and
+					your use of the Site. By browsing, accessing, using the Site or ordering a product (“Order”), you
+					agree to be legally bound by these Terms. We may change these Terms at any time, and the revised
+					Terms will be made available on our Site. By continuing to use the Site you agree to be bound by
+					such revised Terms.
 				</span>
 			</div>
 			<TermsSection title="1. ACCESS AND USE OF THE SITE" terms={TERMS_ARRAY} />

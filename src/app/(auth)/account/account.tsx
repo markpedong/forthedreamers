@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 
 const roboto = Roboto_Condensed({ weight: ['200', '300', '400', '500', '600', '800'], subsets: ['latin'] })
 
-const Page = () => {
+const AccountPage = () => {
 	return (
 		<div className={classNames(styles.mainWrapper, roboto.className)}>
 			<PageTitle title="account" medium className="!capitalize" />
@@ -35,4 +35,4 @@ const Page = () => {
 	)
 }
 
-export default Page
+export default AccountPage

@@ -3,7 +3,7 @@ import styles from './styles.module.scss'
 import { Roboto_Condensed } from 'next/font/google'
 import classNames from 'classnames'
 import { ListAnswers, PageTitle, Question } from '@/components/page-components'
-import { SAMEDAY_ANSWERS, SHIPPING_ANSWERS } from '@/app/constants'
+import { SAMEDAY_ANSWERS, SHIPPING_ANSWERS } from '@/app/(main)/constants'
 
 const roboto = Roboto_Condensed({ weight: ['400', '600', '800'], subsets: ['latin'] })
 
@@ -29,7 +29,8 @@ const Page = () => {
 					<tr>
 						<td>Standard</td>
 						<td>
-							Metro Manila: Within 3-5 business days <br /> Provincial: Please check J&T's shipping timeframe chart.
+							Metro Manila: Within 3-5 business days <br /> Provincial: Please check J&T's shipping
+							timeframe chart.
 						</td>
 					</tr>
 					<tr>
@@ -47,11 +48,11 @@ const Page = () => {
 				normal
 				renderJSX={() => (
 					<>
-						Yes we do! You may place an order thru this <span className="underline">form</span>. Please note that
-						shipping rates are subject to change as additional charges may apply. We accept payments via GCash, Bank
-						Transfer, Sendwave, Wise and Remitly. You may send your proof of payment via Instagram or Email. Feel free
-						to send us a message on Instagram at <span className="underline">@forthedreamers</span> if you have
-						questions.
+						Yes we do! You may place an order thru this <span className="underline">form</span>. Please note
+						that shipping rates are subject to change as additional charges may apply. We accept payments
+						via GCash, Bank Transfer, Sendwave, Wise and Remitly. You may send your proof of payment via
+						Instagram or Email. Feel free to send us a message on Instagram at{' '}
+						<span className="underline">@forthedreamers</span> if you have questions.
 					</>
 				)}
 				className="text-[0.8rem]"
@@ -59,9 +60,9 @@ const Page = () => {
 			<div className="text-[0.8rem]"></div>
 			<Question question="MY ITEM IS MISSING." className="mt-10" />
 			<div className="text-[0.8rem]">
-				For substantial orders, we typically divide the items into two or more parcels. As a result, your items may be
-				shipped with multiple tracking numbers. This means you will receive separate parcels, possibly at different
-				times and dates. If this isn't the case, please contact our Support team on Instagram.
+				For substantial orders, we typically divide the items into two or more parcels. As a result, your items
+				may be shipped with multiple tracking numbers. This means you will receive separate parcels, possibly at
+				different times and dates. If this isn't the case, please contact our Support team on Instagram.
 			</div>
 		</div>
 	)

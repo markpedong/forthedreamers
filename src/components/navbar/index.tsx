@@ -66,7 +66,9 @@ const Navbar: FC = () => {
 					className={styles.background}
 					initial={{ y: pathname === '/' ? '-100%' : 0 }}
 					animate={
-						pathname === '/' ? { y: isWhiteBG ? 0 : '-100%', transition: { duration: 0.15, ease: 'easeIn' } } : {}
+						pathname === '/'
+							? { y: isWhiteBG ? 0 : '-100%', transition: { duration: 0.15, ease: 'easeIn' } }
+							: {}
 					}
 				/>
 				{width! > 992 && (

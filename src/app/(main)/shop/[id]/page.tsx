@@ -14,7 +14,7 @@ import { MdLocalLaundryService } from 'react-icons/md'
 import { IoIosReturnLeft } from 'react-icons/io'
 import { BsBox } from 'react-icons/bs'
 import CareGuide from './components/care-guide'
-import { CARE_GUIDE } from '@/app/constants/enums'
+import { CARE_GUIDE } from '@/app/(main)/constants/enums'
 
 const roboto = Roboto_Condensed({ weight: ['300', '800'], subsets: ['latin'] })
 
@@ -39,13 +39,15 @@ const Page = () => {
 						<span onClick={() => push('/support/shipping')}>Shipping</span> calculated at checkout.
 					</p>
 					<span className={styles.description}>
-						From our all time best-selling collection, the 1996 Hoodie is a crowd-favorite for a reason. This hoodie
-						with a regular fit offers that cozy but lightweight feeling while its classic silhouette ensures a
-						flattering fit for all body types. With adjustable hood and wide front pocket. Featuring the iconic
-						collection design in full front print.
+						From our all time best-selling collection, the 1996 Hoodie is a crowd-favorite for a reason.
+						This hoodie with a regular fit offers that cozy but lightweight feeling while its classic
+						silhouette ensures a flattering fit for all body types. With adjustable hood and wide front
+						pocket. Featuring the iconic collection design in full front print.
 					</span>
 					<div className={styles.features}>
-						<ListAnswers answers={['60% Cotton 40% Polyester', 'Regular Fit', 'Unisex', 'Silkscreen Print']} />
+						<ListAnswers
+							answers={['60% Cotton 40% Polyester', 'Regular Fit', 'Unisex', 'Silkscreen Print']}
+						/>
 					</div>
 					<div className={styles.sizeContainer}>
 						<span>SIZE:</span>
@@ -123,7 +125,9 @@ const Page = () => {
 				</div>
 			</div>
 			<AnimatePresence>
-				{openCareGuide && <CareGuide setOpenCareGuide={() => setOpenCareGuide(false)} activeTab={selectedCare} />}
+				{openCareGuide && (
+					<CareGuide setOpenCareGuide={() => setOpenCareGuide(false)} activeTab={selectedCare} />
+				)}
 			</AnimatePresence>
 		</div>
 	)

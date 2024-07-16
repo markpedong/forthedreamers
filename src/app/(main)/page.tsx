@@ -1,6 +1,6 @@
 'use client'
 
-import styles from '../styles/styles.module.scss'
+import styles from '../../styles/styles.module.scss'
 import { GoDotFill } from 'react-icons/go'
 import { FaCircleDot } from 'react-icons/fa6'
 import { Poppins, Roboto_Condensed } from 'next/font/google'
@@ -28,13 +28,14 @@ const Home = () => {
 			<Products />
 			<div className={styles.marqueeWrapper}>
 				<div className={roboto.className}>
-					Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid et optio unde id ullam quis, similique,
-					voluptatum, corporis eligendi aperiam reprehenderit distinctio? Natus culpa suscipit ea ex quae voluptate
-					quaerat. Quae nostrum modi dolor quasi minus, dolorum, recusandae iste optio facere numquam laboriosam
-					possimus velit adipisci voluptas necessitatibus placeat tenetur harum corrupti repellat. Sit repellendus, in
-					expedita odit aperiam possimus eum ad explicabo fugit ipsum tempora, sint sequi placeat eius culpa, pariatur
-					voluptatum eaque eos labore unde modi. Eum repellendus neque nemo blanditiis autem? Placeat suscipit fugit
-					numquam eos minus magnam ipsum, repellat, officiis dolores voluptatibus animi error voluptatum inventore.
+					Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid et optio unde id ullam quis,
+					similique, voluptatum, corporis eligendi aperiam reprehenderit distinctio? Natus culpa suscipit ea
+					ex quae voluptate quaerat. Quae nostrum modi dolor quasi minus, dolorum, recusandae iste optio
+					facere numquam laboriosam possimus velit adipisci voluptas necessitatibus placeat tenetur harum
+					corrupti repellat. Sit repellendus, in expedita odit aperiam possimus eum ad explicabo fugit ipsum
+					tempora, sint sequi placeat eius culpa, pariatur voluptatum eaque eos labore unde modi. Eum
+					repellendus neque nemo blanditiis autem? Placeat suscipit fugit numquam eos minus magnam ipsum,
+					repellat, officiis dolores voluptatibus animi error voluptatum inventore.
 				</div>
 			</div>
 			<div className={styles.dudeWrapper}>
