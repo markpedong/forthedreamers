@@ -34,9 +34,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-#database
-/database/pgadmin_data
-/database/postgres_data
-
-.env
