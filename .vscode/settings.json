@@ -1,0 +1,17 @@
+{
+  "css.customData": [".vscode/tailwind.json"],
+  "scss.lint.unknownAtRules": "ignore",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "editor.wordWrap": "on",
+  "prettier.printWidth": 120,
+  "prettier.tabWidth": 2,
+  "prettier.trailingComma": "none",
+  "prettier.singleQuote": true,
+  "prettier.semi": false,
+  "prettier.arrowParens": "avoid",
+  "editor.indentSize": "tabSize",
+  "editor.codeActionsOnSave": {
+    "source.removeUnusedImports": "explicit"
+  }
+}
