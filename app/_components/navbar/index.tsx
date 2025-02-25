@@ -66,17 +66,20 @@ const NavBar: FC = () => {
 						</Link>
 					</NavbarItem>
 				</NavbarContent>
-				<NavbarMenu className="px-0">
-					{menuItems.map((item, index) => (
-						<NavbarMenuItem
-							key={`${item}-${index}`}
-							className="py-5 uppercase border-[rgba(0,0,0,0.75)] border-b-1 px-3"
-						>
-							<Link className="w-full tracking-wide" color="foreground" href="#" size="lg">
-								{item}
-							</Link>
-						</NavbarMenuItem>
-					))}
+				<NavbarMenu className="flex flex-col justify-between px-0">
+					<div>
+						{menuItems.map((item, index) => (
+							<NavbarMenuItem
+								key={`${item}-${index}`}
+								className="py-5 uppercase border-[rgba(0,0,0,0.75)] border-b-1 px-3"
+							>
+								<Link className="w-full tracking-wide" color="foreground" href="#" size="lg">
+									{item}
+								</Link>
+							</NavbarMenuItem>
+						))}
+					</div>
+					<Link color="foreground" className='ml-2 mb-2 uppercase tracking-wide' href='/login'>Login</Link>
 				</NavbarMenu>
 			</Navbar>
 		)
