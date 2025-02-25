@@ -14,7 +14,7 @@ const Login = () => {
 	const [_, startTransition] = useTransition()
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault() // Evita el reload de la página
+		e.preventDefault()
 		const formData = new FormData(e.currentTarget)
 
 		startTransition(() => {
