@@ -1,6 +1,6 @@
 'use client'
 
-import { persistor, store } from '@/app/_redux/store'
+import { persistor, store } from '@/redux/store'
 import { HeroUIProvider } from '@heroui/react'
 import React, { FC } from 'react'
 import { Provider as ReduxProvider } from 'react-redux'

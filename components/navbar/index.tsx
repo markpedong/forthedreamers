@@ -1,6 +1,5 @@
 'use client'
 
-import { NO_NAVBAR_PAGES } from '@/app/_constants'
 import { poppins } from '@/public/fonts'
 import {
 	Link,
@@ -16,6 +15,7 @@ import { usePathname } from 'next/navigation'
 import { FC, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
 import SearchDrawer from '../searchDrawer'
+import { NO_NAVBAR_PAGES } from '@/constants'
 
 const NavBar: FC = () => {
 	const pathname = usePathname()
