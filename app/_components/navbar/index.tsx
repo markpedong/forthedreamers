@@ -1,6 +1,7 @@
 'use client'
 
 import { NO_NAVBAR_PAGES } from '@/app/_constants'
+import { poppins } from '@/public/fonts'
 import {
 	Link,
 	Navbar,
@@ -10,6 +11,7 @@ import {
 	NavbarMenuItem,
 	NavbarMenuToggle
 } from '@heroui/react'
+import classNames from 'classnames'
 import { usePathname } from 'next/navigation'
 import { FC, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
@@ -28,7 +30,7 @@ const NavBar: FC = () => {
 						className="md:hidden"
 					/>
 					<NavbarContent className="hidden md:flex gap-4" justify="center">
-						<NavbarItem className="bg-red-500">
+						<NavbarItem>
 							<Link color="foreground" href="#">
 								Home
 							</Link>
@@ -51,7 +53,9 @@ const NavBar: FC = () => {
 					</NavbarContent>
 				</NavbarContent>
 				<NavbarContent justify="center">
-					<p className="font-bold text-inherit">For the Dreamers</p>
+					<p className={classNames('font-bold text-inherit tracking-wider', poppins.className)}>
+						For the Dreamers
+					</p>
 				</NavbarContent>
 				<NavbarContent justify="end">
 					<FaSearch />
@@ -59,11 +63,14 @@ const NavBar: FC = () => {
 						<Link href="/login">Login</Link>
 					</NavbarItem>
 				</NavbarContent>
-				<NavbarMenu>
+				<NavbarMenu className="px-0">
 					{menuItems.map((item, index) => (
-						<NavbarMenuItem key={`${item}-${index}`}>
+						<NavbarMenuItem
+							key={`${item}-${index}`}
+							className="py-5 uppercase border-[rgba(0,0,0,0.75)] border-b-2 px-5"
+						>
 							<Link
-								className="w-full"
+								className="w-full tracking-widest"
 								color={
 									index === 2 ? 'primary' : index === menuItems.length - 1 ? 'danger' : 'foreground'
 								}
