@@ -23,9 +23,9 @@ const NavBar: FC = () => {
 			<NavbarContent>
 				<NavbarMenuToggle
 					aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-					className="sm:hidden"
+					className="md:hidden"
 				/>
-				<NavbarContent className="hidden sm:flex gap-4" justify="center">
+				<NavbarContent className="hidden md:flex gap-4" justify="center">
 					<NavbarItem>
 						<Link color="foreground" href="#">
 							Home
@@ -53,7 +53,7 @@ const NavBar: FC = () => {
 			</NavbarContent>
 			<NavbarContent justify="end">
 				<FaSearch />
-				<NavbarItem className="hidden lg:flex">
+				<NavbarItem className="hidden md:flex">
 					<Link href="#">Login</Link>
 				</NavbarItem>
 			</NavbarContent>
