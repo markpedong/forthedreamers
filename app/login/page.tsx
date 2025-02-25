@@ -5,15 +5,14 @@ import styles from './styles.module.scss'
 import { useActionState } from 'react'
 import { FormState, register } from '@/actions/auth'
 import { Button, Form, Input } from '@heroui/react'
-type Props = {}
 
-const Login = (props: Props) => {
+const Login = () => {
   const [state, action, isPending] = useActionState<FormState, FormData>(register, {
     errors: {},
     values: { confirmPassword: '', email: '', password: '' }
   })
 
-  console.log("state", state)
+  console.log('state', state)
   return (
     <div className={styles.loginWrapper}>
       <div className={styles.loginContainer}>
