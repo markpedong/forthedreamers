@@ -15,6 +15,7 @@ import classNames from 'classnames'
 import { usePathname } from 'next/navigation'
 import { FC, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
+import SearchDrawer from '../searchDrawer'
 
 const NavBar: FC = () => {
 	const pathname = usePathname()
@@ -36,7 +37,7 @@ const NavBar: FC = () => {
 							</Link>
 						</NavbarItem>
 						<NavbarItem>
-							<Link aria-current="page" href="#">
+							<Link color="foreground" href="#">
 								Shop
 							</Link>
 						</NavbarItem>
@@ -58,9 +59,11 @@ const NavBar: FC = () => {
 					</p>
 				</NavbarContent>
 				<NavbarContent justify="end">
-					<FaSearch />
+					<SearchDrawer />
 					<NavbarItem className="hidden md:flex">
-						<Link href="/login">Login</Link>
+						<Link color="foreground" href="/login">
+							Login
+						</Link>
 					</NavbarItem>
 				</NavbarContent>
 				<NavbarMenu className="px-0">
