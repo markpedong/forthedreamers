@@ -1,9 +1,8 @@
-import Provider from '@/app/_components/provider'
-import './globals.scss'
-import { Inter } from 'next/font/google'
 import NavBar from '@/app/_components/navbar'
+import Provider from '@/app/_components/provider'
+import { SF_PRO_DISPLAY } from '@/public/fonts'
+import './globals.scss'
 
-const inter = Inter({ subsets: ['latin'] })
 export default function RootLayout({
 	children
 }: Readonly<{
@@ -11,7 +10,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={inter.className}>
+			<body className={SF_PRO_DISPLAY.className}>
 				<Provider>
 					<NavBar />
 					{children}
