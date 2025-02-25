@@ -70,16 +70,9 @@ const NavBar: FC = () => {
 					{menuItems.map((item, index) => (
 						<NavbarMenuItem
 							key={`${item}-${index}`}
-							className="py-5 uppercase border-[rgba(0,0,0,0.75)] border-b-2 px-5"
+							className="py-5 uppercase border-[rgba(0,0,0,0.75)] border-b-1 px-3"
 						>
-							<Link
-								className="w-full tracking-widest"
-								color={
-									index === 2 ? 'primary' : index === menuItems.length - 1 ? 'danger' : 'foreground'
-								}
-								href="#"
-								size="lg"
-							>
+							<Link className="w-full tracking-wide" color="foreground" href="#" size="lg">
 								{item}
 							</Link>
 						</NavbarMenuItem>

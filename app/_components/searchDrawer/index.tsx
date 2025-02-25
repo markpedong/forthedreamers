@@ -38,7 +38,7 @@ const SearchDrawer: FC = () => {
 						<>
 							<DrawerHeader className="flex justify-between items-center gap-5">
 								<Input label="Search for a product" />
-								<IoClose onClick={onClose} />
+								<IoClose onClick={onClose} className='cursor-pointer'/>
 							</DrawerHeader>
 							{/* <DrawerBody>
 								<p>This drawer has custom enter/exit animations.</p>
