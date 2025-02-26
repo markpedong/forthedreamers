@@ -12,11 +12,11 @@
 
 .formWrapper {
   h1 {
-    @apply w-full text-center text-[2rem] font-[500] text-[#0C1421];
+    @apply w-full text-center text-[2rem] font-[500];
   }
 
   .subHeader {
-    @apply text-center font-normal  w-full;
+    @apply text-center font-normal w-full;
   }
 
   form {
