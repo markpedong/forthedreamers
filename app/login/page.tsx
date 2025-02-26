@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import styles from './styles.module.scss'
-import { useActionState, useEffect, useTransition } from 'react'
+import { useActionState, useCallback, useEffect, useTransition } from 'react'
 import { addToast, Button, Form, Input } from '@heroui/react'
 import { FcGoogle } from 'react-icons/fc'
 import { signIn } from 'next-auth/react'
@@ -24,48 +24,64 @@ const Login = () => {
   const { push } = useRouter()
 
   const handleRegister = async (formData: FormData) => {
-    var object: any = {}
-    formData.forEach(function (value, key) {
-      object[key] = value
-    })
-    await registerUser(object)
-    const callback = await signIn('credentials', {
-      email: formData.get('email'),
-      password: formData.get('password'),
-      redirect: false
-    })
+    try {
+      const object: Record<string, string> = {}
+      formData.forEach((value, key) => {
+        object[key] = value.toString()
+      })
 
-    if (callback?.ok) {
-      addToast({ title: 'Success', description: 'Registration successful', color: 'success' })
-      push('/profile')
-    }
-  }
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    if (loginFormState === LOGINFORM_STATE.REGISTER) {
-      handleRegister(formData)
-      return
-    }
+      const res = await registerUser(object)
 
-    if (loginFormState === LOGINFORM_STATE.LOGIN) {
-      startTransition(() => {
-        action(formData)
+      if (res?.error) {
+        addToast({ title: 'Error', description: res.error, color: 'danger' })
+        return
+      }
+
+      const { email, password } = object
+
+      const callback = await signIn('credentials', {
+        email,
+        password,
+        redirect: false
+      })
+
+      if (callback?.ok) {
+        addToast({ title: 'Success', description: 'Registration successful', color: 'success' })
+        push('/profile')
+      } else {
+        addToast({ title: 'Error', description: callback?.error || 'Login failed after registration', color: 'danger' })
+      }
+    } catch (error) {
+      addToast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Unexpected error',
+        color: 'danger'
       })
     }
   }
+
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      const formData = new FormData(e.currentTarget)
+
+      startTransition(() => {
+        if (loginFormState === LOGINFORM_STATE.REGISTER) {
+          handleRegister(formData)
+        } else {
+          action(formData)
+        }
+      })
+    },
+    [loginFormState, handleRegister, action]
+  )
 
   useEffect(() => {
     if (state.success) {
-      addToast({
-        title: 'Success',
-        description: 'Login successful',
-        color: 'success'
-      })
-
+      addToast({ title: 'Success', description: 'Login successful', color: 'success' })
       push('/profile')
     }
-  }, [state.success])
+  }, [state.success, push])
 
   return (
     <div className={styles.loginWrapper}>
@@ -197,6 +213,10 @@ const Login = () => {
                 ? isPending
                   ? 'Submitting...'
                   : 'Submit'
+                : loginFormState === LOGINFORM_STATE.REGISTER
+                ? isPending
+                  ? 'Registering...'
+                  : 'Sign up'
                 : isPending
                 ? 'Signing in...'
                 : 'Sign in'}
@@ -210,7 +230,7 @@ const Login = () => {
                 className="mt-2"
                 onPress={async () => await signIn('google', { callbackUrl: '/profile', redirect: true })}
               >
-                Sign in with Google
+                {loginFormState === LOGINFORM_STATE.REGISTER ? 'Sign up with Google' : 'Sign in with Google'}
               </Button>
             )}
           </Form>
