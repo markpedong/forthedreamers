@@ -1,80 +1,26 @@
 'use client'
 
-import Image from 'next/image'
-import styles from './styles.module.scss'
-import { useActionState, useCallback, useEffect, useTransition } from 'react'
-import { addToast, Button, Form, Input } from '@heroui/react'
-import { FcGoogle } from 'react-icons/fc'
-import { signIn } from 'next-auth/react'
-import { FormState, LOGINFORM_STATE } from '@/constants/types'
-import { useRouter } from 'next/navigation'
 import { login } from '@/actions/auth'
-import { useAppDispatch, useAppSelector } from '@/redux/store'
-import { setLoginFormState } from '@/redux/slices/appSlice'
-import { registerUser } from '@/utils/request'
+import { useActionState, useEffect } from 'react'
+import styles from './styles.module.scss'
+import AuthForm from './form'
+import AuthToggle from './footer'
+import AuthButtons from './button'
+import { useAuthHandlers } from '@/hooks/useLoginAuthHandler'
+import { addToast, Form } from '@heroui/react'
+import { useRouter } from 'next/navigation'
+import { useAppSelector } from '@/redux/store'
+import { LOGINFORM_STATE } from '@/constants/types'
+import Image from 'next/image'
 
 const Login = () => {
-  const loginFormState = useAppSelector(s => s.app.loginFormState)
-  const [state, action, isPending] = useActionState<FormState, FormData>(login, {
+  const loginFormState = useAppSelector(state => state.app.loginFormState)
+  const [state, action, isPending] = useActionState(login, {
     errors: {},
-    values: { confirmPassword: '', email: '', password: '', firstName: '', lastName: '', username: '' }
+    values: { confirmPassword: '', email: '', password: '' }
   })
-  const [_, startTransition] = useTransition()
-  const dispatch = useAppDispatch()
+  const { handleSubmit } = useAuthHandlers(action)
   const { push } = useRouter()
-
-  const handleRegister = async (formData: FormData) => {
-    try {
-      const object: Record<string, string> = {}
-      formData.forEach((value, key) => {
-        object[key] = value.toString()
-      })
-
-      const res = await registerUser(object)
-
-      if (res?.error) {
-        addToast({ title: 'Error', description: res.error, color: 'danger' })
-        return
-      }
-
-      const { email, password } = object
-
-      const callback = await signIn('credentials', {
-        email,
-        password,
-        redirect: false
-      })
-
-      if (callback?.ok) {
-        addToast({ title: 'Success', description: 'Registration successful', color: 'success' })
-        push('/profile')
-      } else {
-        addToast({ title: 'Error', description: callback?.error || 'Login failed after registration', color: 'danger' })
-      }
-    } catch (error) {
-      addToast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Unexpected error',
-        color: 'danger'
-      })
-    }
-  }
-
-  const handleSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault()
-      const formData = new FormData(e.currentTarget)
-
-      startTransition(() => {
-        if (loginFormState === LOGINFORM_STATE.REGISTER) {
-          handleRegister(formData)
-        } else {
-          action(formData)
-        }
-      })
-    },
-    [loginFormState, handleRegister, action]
-  )
 
   useEffect(() => {
     if (state.success) {
@@ -102,137 +48,9 @@ const Login = () => {
               : 'Fill all the details below to get started, and let the shopping begin!'}
           </div>
           <Form action={action} validationErrors={state?.errors} onSubmit={handleSubmit}>
-            {loginFormState === LOGINFORM_STATE.FORGOT_PASSWORD ? (
-              <Input
-                defaultValue={state?.values?.email || ''}
-                errorMessage={state?.errors?.email?.[0]}
-                label="Email"
-                name="email"
-                type="email"
-                variant="bordered"
-                isRequired
-              />
-            ) : (
-              <>
-                {loginFormState === LOGINFORM_STATE.REGISTER && (
-                  <div className="flex gap-4 w-full">
-                    <Input
-                      defaultValue={state?.values?.firstName || ''}
-                      errorMessage={state?.errors?.firstName?.[0]}
-                      label="First Name"
-                      name="firstName"
-                      type="text"
-                      variant="bordered"
-                      isRequired
-                    />
-                    <Input
-                      defaultValue={state?.values?.lastName || ''}
-                      errorMessage={state?.errors?.lastName?.[0]}
-                      label="Last Name"
-                      name="lastName"
-                      type="text"
-                      variant="bordered"
-                      isRequired
-                    />
-                  </div>
-                )}
-                <div className="flex gap-4 w-full">
-                  <Input
-                    defaultValue={state?.values?.email || ''}
-                    errorMessage={state?.errors?.email?.[0]}
-                    label="Email"
-                    name="email"
-                    type="email"
-                    variant="bordered"
-                    isRequired
-                  />
-                  {loginFormState === LOGINFORM_STATE.REGISTER && (
-                    <Input
-                      defaultValue={state?.values?.username || ''}
-                      errorMessage={state?.errors?.username?.[0]}
-                      label="User Name"
-                      name="username"
-                      type="username"
-                      variant="bordered"
-                      isRequired
-                    />
-                  )}
-                </div>
-
-                <Input
-                  defaultValue={state?.values?.password || ''}
-                  errorMessage={state?.errors?.password?.[0]}
-                  label="Password"
-                  name="password"
-                  type="password"
-                  variant="bordered"
-                  isRequired
-                />
-                <Input
-                  defaultValue={state?.values?.confirmPassword || ''}
-                  errorMessage={state?.errors?.confirmPassword?.[0]}
-                  label="Confirm Password"
-                  name="confirmPassword"
-                  type="password"
-                  variant="bordered"
-                  isRequired
-                />
-              </>
-            )}
-            <div className="flex justify-end w-full text-sm">
-              <span
-                className="cursor-pointer "
-                onClick={() =>
-                  dispatch(
-                    setLoginFormState(
-                      loginFormState === LOGINFORM_STATE.LOGIN
-                        ? LOGINFORM_STATE.FORGOT_PASSWORD
-                        : loginFormState === LOGINFORM_STATE.FORGOT_PASSWORD
-                        ? LOGINFORM_STATE.REGISTER
-                        : LOGINFORM_STATE.LOGIN
-                    )
-                  )
-                }
-              >
-                {loginFormState === LOGINFORM_STATE.LOGIN
-                  ? 'Forgot password'
-                  : loginFormState === LOGINFORM_STATE.FORGOT_PASSWORD
-                  ? 'Create an account'
-                  : 'Already have an account?'}
-              </span>
-            </div>
-            <Button
-              type="submit"
-              isLoading={isPending}
-              fullWidth
-              className="mt-5 bg-black text-white"
-              variant="shadow"
-              radius="sm"
-            >
-              {loginFormState === LOGINFORM_STATE.FORGOT_PASSWORD
-                ? isPending
-                  ? 'Submitting...'
-                  : 'Submit'
-                : loginFormState === LOGINFORM_STATE.REGISTER
-                ? isPending
-                  ? 'Registering...'
-                  : 'Sign up'
-                : isPending
-                ? 'Signing in...'
-                : 'Sign in'}
-            </Button>
-            {loginFormState !== LOGINFORM_STATE.FORGOT_PASSWORD && (
-              <Button
-                color="default"
-                startContent={<FcGoogle />}
-                variant="bordered"
-                fullWidth
-                className="mt-2"
-                onPress={async () => await signIn('google', { callbackUrl: '/profile', redirect: true })}
-              >
-                {loginFormState === LOGINFORM_STATE.REGISTER ? 'Sign up with Google' : 'Sign in with Google'}
-              </Button>
-            )}
+            <AuthForm state={state} />
+            <AuthToggle />
+            <AuthButtons isPending={isPending} />
           </Form>
         </div>
         <div className={styles.imgWrapper}>
