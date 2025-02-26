@@ -13,8 +13,7 @@ import {
 import classNames from 'classnames'
 import { usePathname } from 'next/navigation'
 import { FC, useState } from 'react'
-import { FaSearch } from 'react-icons/fa'
-import SearchDrawer from '../searchDrawer'
+import SearchDrawer from '../search-drawer'
 import { NO_NAVBAR_PAGES } from '@/constants'
 
 const NavBar: FC = () => {
