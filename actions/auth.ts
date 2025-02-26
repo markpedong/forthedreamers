@@ -13,7 +13,7 @@ export type FormState = {
   message?: string
 }
 
-export const register = async (state: FormState, formData: FormData): Promise<FormState> => {
+export const login = async (state: FormState, formData: FormData): Promise<FormState> => {
   const rawFormData = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
@@ -26,6 +26,16 @@ export const register = async (state: FormState, formData: FormData): Promise<Fo
       errors: result.error.flatten().fieldErrors,
       values: rawFormData
     }
+  }
+
+  const res = await fetch('http://localhost:3000/api/auth/callback/credentials', {
+    method: 'POST',
+    body: JSON.stringify(rawFormData),
+    headers: { 'Content-Type': 'application/json' }
+  })
+
+  if (!res.ok) {
+    return { message: 'Authentication failed' }
   }
 
   return {

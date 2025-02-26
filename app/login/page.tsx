@@ -3,19 +3,17 @@
 import Image from 'next/image'
 import styles from './styles.module.scss'
 import { useActionState, useTransition } from 'react'
-import { FormState, register } from '@/actions/auth'
+import { FormState, login } from '@/actions/auth'
 import { Button, Form, Input } from '@heroui/react'
 import { FcGoogle } from 'react-icons/fc'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 
 const Login = () => {
-  const [state, action, isPending] = useActionState<FormState, FormData>(register, {
+  const [state, action, isPending] = useActionState<FormState, FormData>(login, {
     errors: {},
     values: { confirmPassword: '', email: '', password: '' }
   })
   const [_, startTransition] = useTransition()
-  const { push } = useRouter()
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
