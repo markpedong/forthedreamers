@@ -26,3 +26,9 @@ export type FormState = {
   success?: boolean
   message?: string
 }
+
+export enum LOGINFORM_STATE {
+  REGISTER = 'register',
+  LOGIN = 'login',
+  FORGOT_PASSWORD = 'forgot-password'
+}

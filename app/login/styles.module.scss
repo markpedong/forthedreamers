@@ -16,10 +16,10 @@
   }
 
   .subHeader {
-    @apply my-6 text-center font-normal ;
+    @apply text-center font-normal  w-full;
   }
 
   form {
-    @apply mt-10
+    @apply mt-10;
   }
 }
