@@ -1,29 +1,40 @@
 import { FormState } from '@/constants/types'
 import { loginSchema } from '@/lib/rules'
+import { registerUser } from '@/utils/request'
 import { signIn } from 'next-auth/react'
 
 export const login = async (_: any, formData: FormData): Promise<FormState> => {
-  const rawFormData = {
+  const object = {
     email: formData.get('email') as string,
+    username: formData.get('username') as string | undefined,
+    firstName: formData.get('firstName') as string | undefined,
+    lastName: formData.get('lastName') as string | undefined,
     password: formData.get('password') as string,
-    confirmPassword: formData.get('confirmPassword') as string
+    confirmPassword: formData.get('confirmPassword') as string,
+    register: formData.get('register')
   }
-  const validation = loginSchema.safeParse(rawFormData)
 
-  if (!validation.success) {
-    return {
-      errors: validation.error.flatten().fieldErrors,
-      values: rawFormData
+  const result = loginSchema.safeParse(object)
+  if (!result.success) {
+    return { errors: result.error.flatten().fieldErrors, values: object }
+  }
+
+  if (!!object.register) {
+    const res = await registerUser(object)
+    if (res.error) {
+      return { errors: { email: [res.error] }, values: object }
     }
   }
 
   const callback = await signIn('credentials', {
-    email: rawFormData.email,
-    password: rawFormData.password,
+    email: object.email,
+    password: object.password,
     redirect: false
   })
 
-  return {
-    success: callback?.ok
+  if (!callback?.ok) {
+    return { errors: { email: ['Invalid credentials'] }, values: object }
   }
+
+  return { success: true, errors: {}, values: object }
 }

@@ -1,17 +1,17 @@
 'use client'
 
 import { login } from '@/actions/auth'
-import { useActionState, useEffect } from 'react'
+import { useActionState, useEffect, useTransition } from 'react'
 import styles from './styles.module.scss'
 import AuthForm from './form'
 import AuthToggle from './footer'
 import AuthButtons from './button'
-import { useAuthHandlers } from '@/hooks/useLoginAuthHandler'
 import { addToast, Form } from '@heroui/react'
 import { useRouter } from 'next/navigation'
 import { useAppSelector } from '@/redux/store'
 import { LOGINFORM_STATE } from '@/constants/types'
 import Image from 'next/image'
+import Title from './title'
 
 const Login = () => {
   const loginFormState = useAppSelector(state => state.app.loginFormState)
@@ -19,8 +19,21 @@ const Login = () => {
     errors: {},
     values: { confirmPassword: '', email: '', password: '' }
   })
-  const { handleSubmit } = useAuthHandlers(action)
+  const [_, startTransition] = useTransition()
   const { push } = useRouter()
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+
+    if (loginFormState === LOGINFORM_STATE.REGISTER) {
+      formData.append('register', 'true')
+    }
+
+    startTransition(() => {
+      action(formData)
+    })
+  }
 
   useEffect(() => {
     if (state.success) {
@@ -33,20 +46,7 @@ const Login = () => {
     <div className={styles.loginWrapper}>
       <div className={styles.loginContainer}>
         <div className={styles.formWrapper}>
-          <h1>
-            {loginFormState === LOGINFORM_STATE.LOGIN
-              ? 'Welcome to For the Dreamers!👋'
-              : loginFormState === LOGINFORM_STATE.FORGOT_PASSWORD
-              ? 'Forgot Password'
-              : 'Sign up'}
-          </h1>
-          <div className={styles.subHeader}>
-            {loginFormState === LOGINFORM_STATE.LOGIN
-              ? "Discover the latest trends. It's shopping time. You choose it. Sign in to start exploring our products."
-              : loginFormState === LOGINFORM_STATE.FORGOT_PASSWORD
-              ? "Did you forgot your password? We're here to help you retrieve your account!"
-              : 'Fill all the details below to get started, and let the shopping begin!'}
-          </div>
+          <Title />
           <Form action={action} validationErrors={state?.errors} onSubmit={handleSubmit}>
             <AuthForm state={state} />
             <AuthToggle />
