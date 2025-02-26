@@ -1,34 +1,30 @@
 'use client'
 
 import { poppins } from '@/public/fonts'
-import {
-	Link,
-	Navbar,
-	NavbarContent,
-	NavbarItem,
-	NavbarMenu,
-	NavbarMenuItem,
-	NavbarMenuToggle
-} from '@heroui/react'
+import { Link, Navbar, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle } from '@heroui/react'
 import classNames from 'classnames'
 import { usePathname } from 'next/navigation'
 import { FC, useState } from 'react'
 import SearchDrawer from '../search-drawer'
 import { NO_NAVBAR_PAGES } from '@/constants'
+import { IoMoon } from 'react-icons/io5'
+import { FaSun } from 'react-icons/fa'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { toggleDarkmode } from '@/redux/slices/appSlice'
 
 const NavBar: FC = () => {
 	const pathname = usePathname()
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
 	const menuItems = ['Home', 'Shop', 'Collection', 'Support']
+	const darkMode = useAppSelector(s => s.app.darkMode)
+	const dispatch = useAppDispatch()
+	const toggle = () => dispatch(toggleDarkmode())
 
 	return (
-		!NO_NAVBAR_PAGES.includes(pathname) && (
+		NO_NAVBAR_PAGES.includes(pathname) && (
 			<Navbar onMenuOpenChange={setIsMenuOpen} isBordered>
 				<NavbarContent>
-					<NavbarMenuToggle
-						aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-						className="md:hidden"
-					/>
+					<NavbarMenuToggle aria-label={isMenuOpen ? 'Close menu' : 'Open menu'} className="md:hidden" />
 					<NavbarContent className="hidden md:flex gap-4" justify="center">
 						<NavbarItem>
 							<Link color="foreground" href="#">
@@ -53,12 +49,11 @@ const NavBar: FC = () => {
 					</NavbarContent>
 				</NavbarContent>
 				<NavbarContent justify="center">
-					<p className={classNames('font-bold text-inherit tracking-wider', poppins.className)}>
-						For the Dreamers
-					</p>
+					<p className={classNames('font-bold text-inherit tracking-wider', poppins.className)}>For the Dreamers</p>
 				</NavbarContent>
 				<NavbarContent justify="end">
 					<SearchDrawer />
+					{darkMode ? <IoMoon onClick={toggle} /> : <FaSun onClick={toggle} />}
 					<NavbarItem className="hidden md:flex">
 						<Link color="foreground" href="/login">
 							Login
@@ -78,7 +73,9 @@ const NavBar: FC = () => {
 							</NavbarMenuItem>
 						))}
 					</div>
-					<Link color="foreground" className='ml-2 mb-2 uppercase tracking-wide' href='/login'>Login</Link>
+					<Link color="foreground" className="ml-2 mb-2 uppercase tracking-wide" href="/login">
+						Login
+					</Link>
 				</NavbarMenu>
 			</Navbar>
 		)
