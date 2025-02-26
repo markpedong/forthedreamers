@@ -20,20 +20,29 @@ export const login = async (_: any, formData: FormData): Promise<FormState> => {
   }
 
   if (!!object.register) {
-    const res = await registerUser(object)
-    if (res.error) {
-      return { errors: { email: [res.error] }, values: object }
+    try {
+      const res = await registerUser(object)
+      if (res.error) {
+        return { errors: { email: [res.error] }, values: object }
+      }
+    } catch (error) {
+      return { errors: { email: ['There is already a user with this email'] }, values: object }
     }
   }
 
-  const callback = await signIn('credentials', {
-    email: object.email,
-    password: object.password,
-    redirect: false
-  })
+  try {
+    const callback = await signIn('credentials', {
+      email: object.email,
+      password: object.password,
+      redirect: false
+    })
 
-  if (!callback?.ok) {
-    return { errors: { email: ['Invalid credentials'] }, values: object }
+    if (!callback?.ok) {
+      return { errors: { email: ['Invalid credentials'] }, values: object }
+    }
+  } catch (error) {
+    console.error('Sign-in error:', error)
+    return { errors: { email: ['Authentication error. Please try again.'] }, values: object }
   }
 
   return { success: true, errors: {}, values: object }

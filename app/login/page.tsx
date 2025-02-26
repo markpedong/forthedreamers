@@ -35,6 +35,8 @@ const Login = () => {
     })
   }
 
+  console.log("state", state)
+
   useEffect(() => {
     if (state.success) {
       addToast({ title: 'Success', description: 'Login successful', color: 'success' })

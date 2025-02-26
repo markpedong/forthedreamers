@@ -12,7 +12,7 @@ const AuthToggle: FC = () => {
       case LOGINFORM_STATE.LOGIN:
         return 'Forgot password'
       case LOGINFORM_STATE.FORGOT_PASSWORD:
-        return 'Create an account'
+        return 'Back to login'
       default:
         return 'Already have an account?'
     }
@@ -21,18 +21,24 @@ const AuthToggle: FC = () => {
   const handleToggle = () => {
     dispatch(
       setLoginFormState(
-        loginFormState === LOGINFORM_STATE.LOGIN
-          ? LOGINFORM_STATE.FORGOT_PASSWORD
-          : loginFormState === LOGINFORM_STATE.FORGOT_PASSWORD
-          ? LOGINFORM_STATE.REGISTER
-          : LOGINFORM_STATE.LOGIN
+        loginFormState === LOGINFORM_STATE.LOGIN ? LOGINFORM_STATE.FORGOT_PASSWORD : LOGINFORM_STATE.LOGIN
       )
     )
   }
 
   return (
-    <div className="flex justify-end w-full text-sm">
-      <span className="cursor-pointer" onClick={handleToggle}>
+    <div className="flex justify-between w-full text-sm">
+      <span
+        className="cursor-pointer"
+        onClick={() => {
+          if (loginFormState === LOGINFORM_STATE.LOGIN) {
+            dispatch(setLoginFormState(LOGINFORM_STATE.REGISTER))
+          }
+        }}
+      >
+        {loginFormState === LOGINFORM_STATE.LOGIN ? "Don't have an account?" : ''}
+      </span>
+      <span className="cursor-pointer " onClick={handleToggle}>
         {getFormToggleText()}
       </span>
     </div>
