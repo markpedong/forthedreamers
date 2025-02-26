@@ -25,26 +25,10 @@ const NavBar: FC = () => {
 				<NavbarContent>
 					<NavbarMenuToggle aria-label={isMenuOpen ? 'Close menu' : 'Open menu'} className="md:hidden" />
 					<NavbarContent className="hidden md:flex gap-4" justify="center">
-						<NavbarItem>
-							<Link color="foreground" href="#">
-								Home
-							</Link>
-						</NavbarItem>
-						<NavbarItem>
-							<Link color="foreground" href="#">
-								Shop
-							</Link>
-						</NavbarItem>
-						<NavbarItem>
-							<Link color="foreground" href="#">
-								Collection
-							</Link>
-						</NavbarItem>
-						<NavbarItem>
-							<Link color="foreground" href="#">
-								Support
-							</Link>
-						</NavbarItem>
+						<NavbarItem>Home</NavbarItem>
+						<NavbarItem>Shop</NavbarItem>
+						<NavbarItem>Collection</NavbarItem>
+						<NavbarItem>Support</NavbarItem>
 					</NavbarContent>
 				</NavbarContent>
 				<NavbarContent justify="center">
@@ -52,7 +36,11 @@ const NavBar: FC = () => {
 				</NavbarContent>
 				<NavbarContent justify="end">
 					<SearchDrawer />
-					{isDarkMode ? <IoMoon onClick={toggle} /> : <FaSun onClick={toggle} />}
+					{isDarkMode ? (
+						<IoMoon className="cursor-pointer" onClick={toggle} />
+					) : (
+						<FaSun className="cursor-pointer" onClick={toggle} />
+					)}
 					<NavbarItem className="hidden md:flex">
 						<Link color="foreground" href="/login">
 							Login

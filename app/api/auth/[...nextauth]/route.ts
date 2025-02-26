@@ -33,12 +33,32 @@ const authOptions: AuthOptions = {
       }
     }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!
+      clientId: `${process.env.GOOGLE_CLIENT_ID}`,
+      clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`,
     })
   ],
   secret: `${process.env.AUTH_SECRET}`,
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === 'google') {
+        const existingUser = await prisma.users.findUnique({
+          where: { email: `${user.email}` }
+        })
+
+
+        if (!existingUser) {
+          await prisma.users.create({
+            data: {
+              name: user.name,
+              email: user.email?.replace('@gmail.com', ''),
+              username: `${user.email}`,
+              password: '',
+            }
+          })
+        }
+      }
+      return true
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
