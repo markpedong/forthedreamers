@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const RegisterFormSchema = z
+export const loginSchema = z
   .object({
     email: z.string().email('Please enter a valid email address').trim(),
     password: z

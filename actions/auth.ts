@@ -1,17 +1,7 @@
 'use server'
 
-import { RegisterFormSchema } from '@/lib/rules'
-
-export type FormState = {
-  errors?: Record<string, string[]>
-  values?: {
-    email: string
-    password: string
-    confirmPassword: string
-  }
-  success?: boolean
-  message?: string
-}
+import { FormState } from '@/constants/types'
+import { loginSchema } from '@/lib/rules'
 
 export const login = async (state: FormState, formData: FormData): Promise<FormState> => {
   const rawFormData = {
@@ -20,7 +10,7 @@ export const login = async (state: FormState, formData: FormData): Promise<FormS
     confirmPassword: formData.get('confirmPassword') as string
   }
 
-  const result = RegisterFormSchema.safeParse(rawFormData)
+  const result = loginSchema.safeParse(rawFormData)
   if (!result.success) {
     return {
       errors: result.error.flatten().fieldErrors,

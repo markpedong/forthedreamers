@@ -2,63 +2,77 @@
 
 import Image from 'next/image'
 import styles from './styles.module.scss'
-import { FormEvent, useState } from 'react'
+import { useActionState, useEffect, useTransition } from 'react'
 import { addToast, Button, Form, Input } from '@heroui/react'
 import { FcGoogle } from 'react-icons/fc'
 import { signIn } from 'next-auth/react'
+import { FormState } from '@/constants/types'
+import { loginSchema } from '@/lib/rules'
 import { useRouter } from 'next/navigation'
 
-const Login = () => {
-  // const [state, action, isPending] = useActionState<FormState, FormData>(login, {
-  //   errors: {},
-  //   values: { confirmPassword: '', email: '', password: '' }
-  // })
-  // const [_, startTransition] = useTransition()
+const login = async (_: FormState, formData: FormData): Promise<FormState> => {
+  const rawFormData = {
+    email: formData.get('email') as string,
+    password: formData.get('password') as string,
+    confirmPassword: formData.get('confirmPassword') as string
+  }
+  const validation = loginSchema.safeParse(rawFormData)
 
-  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault()
-  //   const formData = new FormData(e.currentTarget)
-
-  //   startTransition(() => {
-  //     action(formData)
-  //   })
-  // }
-  const [isLoading, setIsLoading] = useState(false)
-  const { push } = useRouter()
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    try {
-      setIsLoading(true)
-      const callback = await signIn('credentials', {
-        email: e.currentTarget.email.value,
-        password: e.currentTarget.password.value,
-        redirect: false
-      })
-
-      if (callback?.ok) {
-        addToast({
-          title: 'Success',
-          description: 'Login successful',
-          color: 'success'
-        })
-        push('/profile')
-      } else {
-        addToast({ title: 'Error', description: callback?.error!, color: 'danger' })
-      }
-    } finally {
-      setIsLoading(false)
+  if (!validation.success) {
+    return {
+      errors: validation.error.flatten().fieldErrors,
+      values: rawFormData
     }
   }
+
+  const callback = await signIn('credentials', {
+    email: rawFormData.email,
+    password: rawFormData.password,
+    redirect: false
+  })
+
+  return {
+    success: callback?.ok
+  }
+}
+
+const Login = () => {
+  const [state, action, isPending] = useActionState<FormState, FormData>(login, {
+    errors: {},
+    values: { confirmPassword: '', email: '', password: '' }
+  })
+  const [_, startTransition] = useTransition()
+  const { push } = useRouter()
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+
+    startTransition(() => {
+      action(formData)
+    })
+  }
+
+  useEffect(() => {
+    if (state.success) {
+      addToast({
+        title: 'Success',
+        description: 'Login successful',
+        color: 'success'
+      })
+
+      push('/profile')
+    }
+  }, [state.success])
 
   return (
     <div className={styles.loginWrapper}>
       <div className={styles.loginContainer}>
         <div className={styles.formWrapper}>
-          <Form onSubmit={handleSubmit}>
+          <Form action={action} validationErrors={state?.errors} onSubmit={handleSubmit}>
             <Input
-              // defaultValue={state?.values?.email || ''}
-              // errorMessage={state?.errors?.email?.[0]}
+              defaultValue={state?.values?.email || ''}
+              errorMessage={state?.errors?.email?.[0]}
               label="Email"
               name="email"
               type="email"
@@ -66,8 +80,8 @@ const Login = () => {
               isRequired
             />
             <Input
-              // defaultValue={state?.values?.password || ''}
-              // errorMessage={state?.errors?.password?.[0]}
+              defaultValue={state?.values?.password || ''}
+              errorMessage={state?.errors?.password?.[0]}
               label="Password"
               name="password"
               type="password"
@@ -75,16 +89,16 @@ const Login = () => {
               isRequired
             />
             <Input
-              // defaultValue={state?.values?.confirmPassword || ''}
-              // errorMessage={state?.errors?.confirmPassword?.[0]}
+              defaultValue={state?.values?.confirmPassword || ''}
+              errorMessage={state?.errors?.confirmPassword?.[0]}
               label="Confirm Password"
               name="confirmPassword"
               type="password"
               variant="bordered"
               isRequired
             />
-            <Button type="submit" isLoading={isLoading}>
-              {isLoading ? 'Submitting...' : 'Submit'}
+            <Button type="submit" isLoading={isPending}>
+              {isPending ? 'Submitting...' : 'Submit'}
             </Button>
             <Button
               color="default"

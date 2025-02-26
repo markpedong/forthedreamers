@@ -15,3 +15,14 @@ export type ApiResponseType<T> = {
     totalPages: number
   }
 }
+
+export type FormState = {
+  errors?: Record<string, string[]>
+  values?: {
+    email: string
+    password: string
+    confirmPassword: string
+  }
+  success?: boolean
+  message?: string
+}
