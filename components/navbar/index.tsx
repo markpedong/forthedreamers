@@ -9,16 +9,15 @@ import SearchDrawer from '../search-drawer'
 import { NO_NAVBAR_PAGES } from '@/constants'
 import { IoMoon } from 'react-icons/io5'
 import { FaSun } from 'react-icons/fa'
-import { useAppDispatch, useAppSelector } from '@/redux/store'
-import { toggleDarkmode } from '@/redux/slices/appSlice'
+import { useTheme } from 'next-themes'
 
 const NavBar: FC = () => {
 	const pathname = usePathname()
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
 	const menuItems = ['Home', 'Shop', 'Collection', 'Support']
-	const darkMode = useAppSelector(s => s.app.darkMode)
-	const dispatch = useAppDispatch()
-	const toggle = () => dispatch(toggleDarkmode())
+	const { theme, setTheme } = useTheme()
+	const isDarkMode = theme === 'dark'
+	const toggle = () => setTheme(isDarkMode ? 'light' : 'dark')
 
 	return (
 		NO_NAVBAR_PAGES.includes(pathname) && (
@@ -53,7 +52,7 @@ const NavBar: FC = () => {
 				</NavbarContent>
 				<NavbarContent justify="end">
 					<SearchDrawer />
-					{darkMode ? <IoMoon onClick={toggle} /> : <FaSun onClick={toggle} />}
+					{isDarkMode ? <IoMoon onClick={toggle} /> : <FaSun onClick={toggle} />}
 					<NavbarItem className="hidden md:flex">
 						<Link color="foreground" href="/login">
 							Login

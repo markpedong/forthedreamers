@@ -6,19 +6,27 @@ import { SessionProvider } from 'next-auth/react'
 import React, { FC } from 'react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
-import DarkModeProvider from './darkmode-provider'
+import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes'
+import NavBar from '../navbar'
+
 type Props = {
 	children: React.ReactNode
 }
 
 const Provider: FC<Props> = ({ children }) => {
+	const { theme } = useTheme()
+	const isDarkMode = theme === 'dark'
+
 	return (
 		<ReduxProvider store={store}>
 			<SessionProvider>
 				<PersistGate loading={null} persistor={persistor}>
 					<HeroUIProvider>
 						<ToastProvider />
-						<DarkModeProvider>{children}</DarkModeProvider>
+						<NextThemesProvider attribute="class" defaultTheme={isDarkMode ? 'dark' : 'light'}>
+							<NavBar />
+							{children}
+						</NextThemesProvider>
 					</HeroUIProvider>
 				</PersistGate>
 			</SessionProvider>
