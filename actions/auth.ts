@@ -1,40 +1,29 @@
-'use server'
-
 import { FormState } from '@/constants/types'
 import { loginSchema } from '@/lib/rules'
+import { signIn } from 'next-auth/react'
 
-export const login = async (state: FormState, formData: FormData): Promise<FormState> => {
+export const login = async (_: FormState, formData: FormData): Promise<FormState> => {
   const rawFormData = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
     confirmPassword: formData.get('confirmPassword') as string
   }
+  const validation = loginSchema.safeParse(rawFormData)
 
-  const result = loginSchema.safeParse(rawFormData)
-  if (!result.success) {
+  if (!validation.success) {
     return {
-      errors: result.error.flatten().fieldErrors,
+      errors: validation.error.flatten().fieldErrors,
       values: rawFormData
     }
   }
 
-  const res = await fetch('http://localhost:3000/api/auth/callback/credentials', {
-    method: 'POST',
-    body: JSON.stringify(rawFormData),
-    headers: { 'Content-Type': 'application/json' }
+  const callback = await signIn('credentials', {
+    email: rawFormData.email,
+    password: rawFormData.password,
+    redirect: false
   })
 
-  if (!res.ok) {
-    return { message: 'Authentication failed' }
-  }
-
   return {
-    success: true,
-    message: 'Form submitted successfully!',
-    values: {
-      email: '',
-      password: '',
-      confirmPassword: ''
-    }
+    success: callback?.ok
   }
 }
