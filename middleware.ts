@@ -4,14 +4,15 @@ import { getToken } from 'next-auth/jwt'
 export const middleware = async (request: NextRequest) => {
   const token = await getToken({ req: request, secret: process.env.AUTH_SECRET })
   const path = request.nextUrl.pathname
-  const isRootPath = path === '/'
 
-  if (!token && !isRootPath && path !== '/login') {
-    return NextResponse.redirect(new URL('/login', request.url))
+  // Redirect logged-in users away from /login
+  if (token && path === '/login') {
+    return NextResponse.redirect(new URL('/', request.url))
   }
 
-  if (token && isRootPath) {
-    return NextResponse.redirect(new URL('/profile', request.url))
+  // Redirect unauthenticated users from protected routes to /login
+  if (!token && path !== '/' && path !== '/login') {
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
   return NextResponse.next()
