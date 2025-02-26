@@ -43,7 +43,7 @@ const Login = () => {
     <div className={styles.loginWrapper}>
       <div className={styles.loginContainer}>
         <div className={styles.formWrapper}>
-          <h1>Welcome 👋</h1>
+          <h1>Welcome to For the Dreamers!👋</h1>
           <span className={styles.subHeader}>
             Discover the latest trends. It's shopping time. You choose it. Sign in to start exploring our products.
           </span>
