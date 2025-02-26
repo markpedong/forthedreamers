@@ -30,7 +30,7 @@ const NavBar: FC = () => {
 					<NavbarMenuToggle aria-label={isMenuOpen ? 'Close menu' : 'Open menu'} className="md:hidden" />
 					<NavbarContent className="hidden md:flex gap-4" justify="center">
 						{menuItems?.map(w => (
-							<NavbarItem className="cursor-pointer" onClick={() => p(w?.toLowerCase())}>
+							<NavbarItem key={w} className="cursor-pointer" onClick={() => p(w?.toLowerCase())}>
 								{w}
 							</NavbarItem>
 						))}
