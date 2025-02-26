@@ -4,7 +4,7 @@ import Image from 'next/image'
 import styles from './styles.module.scss'
 import { useActionState, useTransition } from 'react'
 import { FormState, register } from '@/actions/auth'
-import { addToast, Button, Form, Input } from '@heroui/react'
+import { Button, Form, Input } from '@heroui/react'
 import { FcGoogle } from 'react-icons/fc'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -65,14 +65,7 @@ const Login = () => {
               color="default"
               startContent={<FcGoogle />}
               variant="bordered"
-              onPress={async () => {
-                const callback = await signIn('google', { callbackUrl: '/profile' })
-
-                if (callback?.ok) {
-                  addToast({ title: 'Login successful', description: 'You have successfully logged in' })
-                  push('/profile')
-                }
-              }}
+              onPress={async () => await signIn('google', { callbackUrl: '/profile', redirect: true })}
             >
               Sign in with Google
             </Button>
