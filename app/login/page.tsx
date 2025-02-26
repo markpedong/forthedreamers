@@ -67,7 +67,6 @@ const Login = () => {
               variant="bordered"
               onPress={async () => {
                 const callback = await signIn('google', { callbackUrl: '/profile' })
-                push('/profile')
 
                 if (callback?.ok) {
                   addToast({ title: 'Login successful', description: 'You have successfully logged in' })
