@@ -3,7 +3,6 @@ import NextAuth, { AuthOptions } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import bcrypt from 'bcrypt'
-import { TSessionUser } from '@/constants/types'
 
 const authOptions: AuthOptions = {
   providers: [
@@ -67,7 +66,7 @@ const authOptions: AuthOptions = {
       return token
     },
     async session({ session, token }) {
-      const { ...resToken } = token as TSessionUser
+      const { ...resToken } = token
       session.user = { ...session.user, ...resToken }
       return session
     }
