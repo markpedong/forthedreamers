@@ -29,7 +29,6 @@ const Login = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-
       setIsLoading(true)
       const callback = await signIn('credentials', {
         email: e.currentTarget.email.value,
@@ -37,7 +36,6 @@ const Login = () => {
         redirect: false
       })
 
-      console.log('callback', callback)
       if (callback?.ok) {
         addToast({
           title: 'Success',
@@ -45,10 +43,9 @@ const Login = () => {
           color: 'success'
         })
         push('/profile')
+      } else {
+        addToast({ title: 'Error', description: callback?.error!, color: 'danger' })
       }
-    } catch (error) {
-      setIsLoading(false)
-      addToast({ description: (error as Error).message, title: 'Error', color: 'danger' })
     } finally {
       setIsLoading(false)
     }
