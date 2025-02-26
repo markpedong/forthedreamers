@@ -2,7 +2,7 @@ import { FormState } from '@/constants/types'
 import { loginSchema } from '@/lib/rules'
 import { signIn } from 'next-auth/react'
 
-export const login = async (_: FormState, formData: FormData): Promise<FormState> => {
+export const login = async (_: any, formData: FormData): Promise<FormState> => {
   const rawFormData = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,

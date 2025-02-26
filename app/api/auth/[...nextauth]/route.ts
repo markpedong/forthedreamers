@@ -10,7 +10,7 @@ const authOptions: AuthOptions = {
       name: 'credentials',
       credentials: {
         email: { label: 'email', type: 'text' },
-        password: { label: 'password', type: 'password' },
+        password: { label: 'password', type: 'password' }
       },
       authorize: async credentials => {
         if (!credentials?.email || !credentials?.password) throw new Error('Email and password are required')
@@ -26,14 +26,15 @@ const authOptions: AuthOptions = {
 
         return {
           id: user.id,
-          name: user.name,
-          email: user.email
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName
         }
       }
     }),
     GoogleProvider({
       clientId: `${process.env.GOOGLE_CLIENT_ID}`,
-      clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`,
+      clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`
     })
   ],
   secret: `${process.env.AUTH_SECRET}`,
@@ -44,14 +45,14 @@ const authOptions: AuthOptions = {
           where: { email: `${user.email}` }
         })
 
-
         if (!existingUser) {
           await prisma.users.create({
             data: {
-              name: user.name,
+              firstName: user.name?.split(' ')[0],
+              lastName: user.name?.split(' ')[1],
               email: user.email?.replace('@gmail.com', ''),
               username: `${user.email}`,
-              password: '',
+              password: ''
             }
           })
         }

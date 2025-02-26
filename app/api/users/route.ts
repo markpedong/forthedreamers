@@ -4,8 +4,7 @@ import bcrypt from 'bcrypt'
 
 export async function POST(request: Request) {
   const body = await request.json()
-
-  const { name, email, password, username } = body
+  const { firstName, lastName, email, password, username } = body
   const hashedPassword = await bcrypt.hash(password, 12)
 
   try {
@@ -17,7 +16,8 @@ export async function POST(request: Request) {
 
     const user = await prisma?.users.create({
       data: {
-        name,
+        firstName,
+        lastName,
         username,
         email,
         password: hashedPassword

@@ -1,6 +1,6 @@
 import { Users } from '@prisma/client'
 
-export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' | 'name'>
+export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' | 'firstName' | 'lastName'>
 
 export type ApiResponseType<T> = {
   data: T
@@ -20,6 +20,9 @@ export type FormState = {
   errors?: Record<string, string[]>
   values?: {
     email: string
+    username?: string
+    firstName?: string
+    lastName?: string
     password: string
     confirmPassword: string
   }

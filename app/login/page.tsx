@@ -11,24 +11,48 @@ import { useRouter } from 'next/navigation'
 import { login } from '@/actions/auth'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { setLoginFormState } from '@/redux/slices/appSlice'
+import { registerUser } from '@/utils/request'
 
 const Login = () => {
   const loginFormState = useAppSelector(s => s.app.loginFormState)
   const [state, action, isPending] = useActionState<FormState, FormData>(login, {
     errors: {},
-    values: { confirmPassword: '', email: '', password: '' }
+    values: { confirmPassword: '', email: '', password: '', firstName: '', lastName: '', username: '' }
   })
   const [_, startTransition] = useTransition()
   const dispatch = useAppDispatch()
   const { push } = useRouter()
 
+  const handleRegister = async (formData: FormData) => {
+    var object: any = {}
+    formData.forEach(function (value, key) {
+      object[key] = value
+    })
+    await registerUser(object)
+    const callback = await signIn('credentials', {
+      email: formData.get('email'),
+      password: formData.get('password'),
+      redirect: false
+    })
+
+    if (callback?.ok) {
+      addToast({ title: 'Success', description: 'Registration successful', color: 'success' })
+      push('/profile')
+    }
+  }
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
+    if (loginFormState === LOGINFORM_STATE.REGISTER) {
+      handleRegister(formData)
+      return
+    }
 
-    startTransition(() => {
-      action(formData)
-    })
+    if (loginFormState === LOGINFORM_STATE.LOGIN) {
+      startTransition(() => {
+        action(formData)
+      })
+    }
   }
 
   useEffect(() => {
@@ -74,15 +98,51 @@ const Login = () => {
               />
             ) : (
               <>
-                <Input
-                  defaultValue={state?.values?.email || ''}
-                  errorMessage={state?.errors?.email?.[0]}
-                  label="Email"
-                  name="email"
-                  type="email"
-                  variant="bordered"
-                  isRequired
-                />
+                {loginFormState === LOGINFORM_STATE.REGISTER && (
+                  <div className="flex gap-4 w-full">
+                    <Input
+                      defaultValue={state?.values?.firstName || ''}
+                      errorMessage={state?.errors?.firstName?.[0]}
+                      label="First Name"
+                      name="firstName"
+                      type="text"
+                      variant="bordered"
+                      isRequired
+                    />
+                    <Input
+                      defaultValue={state?.values?.lastName || ''}
+                      errorMessage={state?.errors?.lastName?.[0]}
+                      label="Last Name"
+                      name="lastName"
+                      type="text"
+                      variant="bordered"
+                      isRequired
+                    />
+                  </div>
+                )}
+                <div className="flex gap-4 w-full">
+                  <Input
+                    defaultValue={state?.values?.email || ''}
+                    errorMessage={state?.errors?.email?.[0]}
+                    label="Email"
+                    name="email"
+                    type="email"
+                    variant="bordered"
+                    isRequired
+                  />
+                  {loginFormState === LOGINFORM_STATE.REGISTER && (
+                    <Input
+                      defaultValue={state?.values?.username || ''}
+                      errorMessage={state?.errors?.username?.[0]}
+                      label="User Name"
+                      name="username"
+                      type="username"
+                      variant="bordered"
+                      isRequired
+                    />
+                  )}
+                </div>
+
                 <Input
                   defaultValue={state?.values?.password || ''}
                   errorMessage={state?.errors?.password?.[0]}
