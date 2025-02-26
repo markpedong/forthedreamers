@@ -43,6 +43,10 @@ const Login = () => {
     <div className={styles.loginWrapper}>
       <div className={styles.loginContainer}>
         <div className={styles.formWrapper}>
+          <h1>Welcome 👋</h1>
+          <span className={styles.subHeader}>
+            Discover the latest trends. It's shopping time. You choose it. Sign in to start exploring our products.
+          </span>
           <Form action={action} validationErrors={state?.errors} onSubmit={handleSubmit}>
             <Input
               defaultValue={state?.values?.email || ''}
@@ -71,13 +75,22 @@ const Login = () => {
               variant="bordered"
               isRequired
             />
-            <Button type="submit" isLoading={isPending}>
+            <Button
+              type="submit"
+              isLoading={isPending}
+              fullWidth
+              className="mt-5 bg-black text-white"
+              variant="shadow"
+              radius="sm"
+            >
               {isPending ? 'Submitting...' : 'Submit'}
             </Button>
             <Button
               color="default"
               startContent={<FcGoogle />}
               variant="bordered"
+              fullWidth
+              className='mt-2'
               onPress={async () => await signIn('google', { callbackUrl: '/profile', redirect: true })}
             >
               Sign in with Google

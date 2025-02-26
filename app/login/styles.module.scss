@@ -9,3 +9,17 @@
 .loginContainer {
   @apply grid md:grid-cols-2 items-center gap-8 h-full;
 }
+
+.formWrapper {
+  h1 {
+    @apply w-full text-center text-[2rem] font-[500] text-[#0C1421];
+  }
+
+  .subHeader {
+    @apply my-6 text-center font-normal ;
+  }
+
+  form {
+    @apply mt-10
+  }
+}
