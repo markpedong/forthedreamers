@@ -5,13 +5,13 @@ export const middleware = async (request: NextRequest) => {
   const token = await getToken({ req: request, secret: process.env.AUTH_SECRET })
   const path = request.nextUrl.pathname
 
-  // Redirect logged-in users away from /login
+  const protectedRoutes = ['/profile', '/checkout', '/cart']
+
   if (token && path === '/login') {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
-  // Redirect unauthenticated users from protected routes to /login
-  if (!token && path !== '/' && path !== '/login') {
+  if (!token && protectedRoutes.includes(path)) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
