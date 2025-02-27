@@ -18,10 +18,10 @@ export const generateResponse = <T>({
 
 export const isAuthenticated = async (req: NextRequest) => {
   const session = await getServerSession(authOptions)
-  if (session) return { user: session.user }
+  if (session?.user) return { user: session.user }
 
   const authHeader = req.headers.get('Authorization')
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!authHeader?.startsWith('Bearer ')) {
     return { error: 'Unauthorized', status: 401 }
   }
 
