@@ -97,12 +97,7 @@ export const deleteFunc = async <T>({ url, accessToken, body, isJson }: Params):
   return apiRequest<T>(url, 'DELETE', accessToken, body, isJson)
 }
 
-export const useRequest = () => {
-  const registerUser = async (body: any) => post<Users>({ url: '/api/users', body, isJson: true, isSecured: false })
-
-  return {
-    registerUser
-  }
-}
+export const registerUser = async (body: any) =>
+  post<Users>({ url: '/api/users', body, isJson: true, isSecured: false })
 
 export const getUserData = async (id: string) => get<Users>({ url: `/api/users/${id}`, isSecured: false })
