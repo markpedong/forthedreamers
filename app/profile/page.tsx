@@ -1,44 +1,15 @@
-'use client'
-
-import { Button, Divider } from '@heroui/react'
-import { signOut, useSession } from 'next-auth/react'
-import styles from './styles.module.scss'
+import Profile from './components'
+import { getServerSession } from 'next-auth'
 import { getUserData } from '@/utils/request'
-import { useEffect } from 'react'
 
 type Props = {}
 
-const Page = (props: Props) => {
-  const { data: session } = useSession()
-  const fetchData = async () => {
-    const res = await getUserData(session?.user?.id as string)
+const Page = async (props: Props) => {
+  const session = await getServerSession()
+  const res = await getUserData(session?.user?.id as string)
 
-    console.log('res', res)
-  }
-
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  return (
-    <div className={styles.profileWrapper}>
-      <div className={styles.profileContainer}>
-        <div className="border-r-1 h-full border-[rgba(0, 0, 0, 0.1)]">
-          <div>{/* <Image src={}/> */}</div>
-          <Divider />
-          <Button
-            onPress={() => {
-              localStorage.clear()
-              signOut()
-            }}
-          >
-            Signout
-          </Button>
-        </div>
-        <div>Profile</div>
-      </div>
-    </div>
-  )
+  console.log("res", res)
+  return <Profile />
 }
 
 export default Page

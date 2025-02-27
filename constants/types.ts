@@ -1,8 +1,8 @@
-import { Users } from '@prisma/client';
+import { Users } from '@prisma/client'
 
 export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' | 'firstName' | 'lastName'>
 
-export type TDecodedToken = Pick<Users, 'id' | 'email' | 'firstName' | 'lastName'>;
+export type TDecodedToken = Pick<Users, 'id' | 'email' | 'firstName' | 'lastName'>
 
 export type ApiResponseType<T> = {
   data: T
@@ -36,4 +36,18 @@ export enum LOGINFORM_STATE {
   REGISTER = 'register',
   LOGIN = 'login',
   FORGOT_PASSWORD = 'forgot-password'
+}
+
+export type UserItem = {
+  id: string
+  email: string | null
+  username: string
+  firstName: string | null
+  lastName: string | null
+  image: string | null
+  password: string
+  refreshToken: string | null
+  createdAt: Date
+  updatedAt: Date
+  deletedAt: Date | null
 }

@@ -1,7 +1,7 @@
 import { Button } from '@heroui/react'
 import { FcGoogle } from 'react-icons/fc'
 import { LOGINFORM_STATE } from '@/constants/types'
-import { getSession, signIn } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { useAppSelector } from '@/redux/store'
 import { FC } from 'react'
 import { useTheme } from 'next-themes'
@@ -47,13 +47,7 @@ const AuthButtons: FC<AuthButtonsProps> = ({ isPending }) => {
           variant="bordered"
           fullWidth
           className="mt-2"
-          onPress={async () => {
-            const callback = await signIn('google', { callbackUrl: '/profile', redirect: false })
-            if (callback?.ok) {
-              const session = await getSession()
-              localStorage.setItem('accessToken', session?.accessToken || '')
-            }
-          }}
+          onPress={async () => await signIn('google', { redirect: true, callbackUrl: '/profile' })}
         >
           {loginFormState === LOGINFORM_STATE.REGISTER ? 'Sign up with Google' : 'Sign in with Google'}
         </Button>
