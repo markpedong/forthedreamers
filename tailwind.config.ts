@@ -17,5 +17,20 @@ export default {
     }
   },
   darkMode: 'class',
-  plugins: [heroui()]
+  plugins: [
+    heroui({
+      themes: {
+        light: {
+          colors: {
+            'typography-1': '#3F3F46'
+          }
+        },
+        dark: {
+          colors: {
+            'typography-1': '#F4F4F5'
+          }
+        }
+      }
+    })
+  ]
 } satisfies Config

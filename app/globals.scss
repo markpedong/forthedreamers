@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.ant-qrcode.footer-qr {
+  padding: 1px;
+  border-radius: 0px;
+  height: 65px !important;
+  width: 75px !important;
+}
