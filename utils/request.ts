@@ -22,6 +22,28 @@ const handleResponse = async <T>(response: Response): Promise<ApiResponseType<T>
   return responseData
 }
 
+const refreshToken = async (): Promise<string | null> => {
+  try {
+    const refreshToken = localStorage.getItem('refreshToken')
+    if (!refreshToken) return null
+
+    const response = await post<{ accessToken: string }>({
+      url: '/api/auth/refresh',
+      body: { refreshToken },
+      isJson: true,
+      isSecured: false
+    })
+
+    if (!response || !response.data?.accessToken) return null
+
+    localStorage.setItem('accessToken', response.data.accessToken)
+    return response.data.accessToken
+  } catch (error) {
+    console.error('Failed to refresh token:', error)
+    return null
+  }
+}
+
 const apiRequest = async <T>(
   url: string,
   method: 'GET' | 'POST' | 'DELETE',
@@ -30,9 +52,13 @@ const apiRequest = async <T>(
   isJson: boolean = false,
   attempt: number = 1
 ): Promise<ApiResponseType<T>> => {
-  const headers = {
+  const headers: Record<string, string> = {
     Authorization: `Bearer ${accessToken}`,
     'Accept-Language': typeof window !== 'undefined' ? localStorage.getItem('language') || 'en' : 'en'
+  }
+
+  if (isJson) {
+    headers['Content-Type'] = 'application/json'
   }
 
   const response = await fetch(url, {
@@ -44,11 +70,10 @@ const apiRequest = async <T>(
   if (response.status !== 401) return handleResponse(response)
   if (attempt >= 2) throw new Error('Failed to refresh token after 2 attempts')
 
-  // const newToken = await refreshToken()
-  // if (!newToken) throw new Error('Failed to refresh token')
-  // localStorage.setItem('accessToken', newToken)
+  const newToken = await refreshToken()
+  if (!newToken) throw new Error('Failed to refresh token')
 
-  return apiRequest(url, method, '', body, isJson, attempt + 1)
+  return apiRequest(url, method, newToken, body, isJson, attempt + 1)
 }
 
 export const get = async <T>({ url, accessToken, isSecured }: Params): Promise<ApiResponseType<T>> => {

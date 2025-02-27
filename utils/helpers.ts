@@ -1,7 +1,8 @@
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { ApiResponseType } from '@/constants/types'
 import { getServerSession } from 'next-auth'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import jwt from 'jsonwebtoken'
 
 export const generateResponse = <T>({
   data = null,
@@ -15,12 +16,20 @@ export const generateResponse = <T>({
   return NextResponse.json({ data, error, success, status, message, meta }, { status })
 }
 
-export const isAuthenticated = async () => {
+export const isAuthenticated = async (req: NextRequest) => {
   const session = await getServerSession(authOptions)
+  if (session) return { user: session.user }
 
-  if (!session) {
-    return generateResponse({ error: 'Unauthorized', status: 401 })
+  const authHeader = req.headers.get('Authorization')
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return { error: 'Unauthorized', status: 401 }
   }
 
-  return null
+  const token = authHeader.split(' ')[1]
+  try {
+    const decoded = jwt.verify(token, `${process.env.AUTH_SECRET}`)
+    return { user: decoded }
+  } catch (error) {
+    return { error: 'Invalid or expired token', status: 403 }
+  }
 }

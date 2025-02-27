@@ -18,7 +18,7 @@ const Page = (props: Props) => {
   }
 
   useEffect(() => {
-    fetchData()
+    // fetchData()
   }, [])
 
   return (

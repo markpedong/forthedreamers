@@ -3,6 +3,7 @@ import NextAuth, { AuthOptions } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import bcrypt from 'bcrypt'
+import { generateAccessToken, generateRefreshToken } from '@/utils/tokens'
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -53,7 +54,6 @@ export const authOptions: AuthOptions = {
             }
           })
         }
-        return true
       }
       return true
     },
@@ -62,13 +62,19 @@ export const authOptions: AuthOptions = {
         const dbUser = await prisma.users.findUnique({
           where: { email: user.email! }
         })
+        if (!dbUser) throw new Error('User not found in database')
 
-        if (dbUser) {
-          token.id = dbUser.id
-          token.firstName = `${dbUser.firstName}`
-          token.lastName = `${dbUser.lastName}`
-          token.username = dbUser.username
-        }
+        const accessToken = generateAccessToken(dbUser.id, `${dbUser.email}`)
+        const refreshToken = generateRefreshToken()
+
+        await prisma.users.update({
+          where: { id: dbUser.id },
+          data: { refreshToken }
+        })
+
+        token.id = dbUser.id
+        token.accessToken = accessToken
+        token.refreshToken = refreshToken
       }
       return token
     },
@@ -76,10 +82,11 @@ export const authOptions: AuthOptions = {
       session.user = {
         ...session.user,
         id: token.id,
-        firstName: token.firstName,
-        lastName: token.lastName,
-        username: token.username
+        username: token.username,
+        email: `${token.email}`
       }
+      session.accessToken = `${token.accessToken}`
+
       return session
     }
   }
