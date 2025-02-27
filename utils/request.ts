@@ -61,7 +61,7 @@ const apiRequest = async <T>(
     headers['Content-Type'] = 'application/json'
   }
 
-  const response = await fetch(url, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
     method,
     headers,
     body: body ? (isJson ? JSON.stringify(body) : (body as BodyInit)) : undefined
