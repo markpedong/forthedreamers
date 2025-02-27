@@ -1,0 +1,7 @@
+.profileWrapper {
+  @apply max-w-5xl mx-auto h-screen;
+}
+
+.profileContainer {
+  @apply grid md:grid-cols-[1fr_2fr] items-center gap-4 h-full px-6;
+}

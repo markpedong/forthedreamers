@@ -7,3 +7,5 @@ export const FOOTER_TITLE = [
   "Quick Link",
   "Download App"
 ]
+
+export const JWT_SECRET = `${process.env.JWT_SECRET}`

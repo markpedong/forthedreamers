@@ -1,6 +1,8 @@
-import { Users } from '@prisma/client'
+import { Users } from '@prisma/client';
 
 export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' | 'firstName' | 'lastName'>
+
+export type TDecodedToken = Pick<Users, 'id' | 'email' | 'firstName' | 'lastName'>;
 
 export type ApiResponseType<T> = {
   data: T
