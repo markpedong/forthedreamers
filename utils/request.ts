@@ -100,4 +100,4 @@ export const deleteFunc = async <T>({ url, accessToken, body, isJson }: Params):
 export const registerUser = async (body: any) =>
   post<Users>({ url: '/api/users', body, isJson: true, isSecured: false })
 
-export const getUserData = async (id: string) => get<Users>({ url: `/api/users/${id}`, isSecured: false })
+export const getUserData = async (id: string, accessToken?: string) => get<Users>({ url: `/api/users/${id}`, accessToken })
