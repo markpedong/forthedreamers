@@ -10,7 +10,6 @@ type Props = {}
 
 const Page = (props: Props) => {
   const { data: session } = useSession()
-  console.log('session', session)
   const fetchData = async () => {
     const res = await getUserData(session?.user?.id as string)
 
@@ -18,7 +17,7 @@ const Page = (props: Props) => {
   }
 
   useEffect(() => {
-    // fetchData()
+    fetchData()
   }, [])
 
   return (
@@ -27,7 +26,14 @@ const Page = (props: Props) => {
         <div className="border-r-1 h-full border-[rgba(0, 0, 0, 0.1)]">
           <div>{/* <Image src={}/> */}</div>
           <Divider />
-          <Button onPress={() => signOut()}>Signout</Button>
+          <Button
+            onPress={() => {
+              localStorage.clear()
+              signOut()
+            }}
+          >
+            Signout
+          </Button>
         </div>
         <div>Profile</div>
       </div>
