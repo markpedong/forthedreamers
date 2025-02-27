@@ -3,6 +3,7 @@ import { ApiResponseType } from '@/constants/types'
 import { getServerSession } from 'next-auth'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
+import { uuidSchema } from '@/lib/rules'
 
 export const generateResponse = <T>({
   data = null,
@@ -33,3 +34,8 @@ export const isAuthenticated = async (req: NextRequest) => {
     return { error: 'Invalid or expired token', status: 403 }
   }
 }
+
+export const validateUUID = (id: string) => {
+  const result = uuidSchema.safeParse(id);
+  return result.success;
+};

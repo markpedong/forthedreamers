@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const loginSchema = z
   .object({
@@ -17,3 +17,5 @@ export const loginSchema = z
     message: 'Passwords do not match',
     path: ['confirmPassword']
   })
+
+export const uuidSchema = z.string().uuid();

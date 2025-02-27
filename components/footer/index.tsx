@@ -52,8 +52,8 @@ const Footer = () => {
 						<div className="flex justify-between gap-2 mb-3">
 							<QRCode value={'test'} size={75} errorLevel="M" className="footer-qr" bgColor="white" />
 							<div className="flex flex-col justify-around">
-								<Image src={'/images/googleplay.png'} width={100} height={100} alt="googleplay" />
-								<Image src={'/images/appstore.png'} width={100} height={100} alt="appstore" />
+								<Image src={'/images/googleplay.png'} width={100} height={100} alt="googleplay" priority />
+								<Image src={'/images/appstore.png'} width={100} height={100} alt="appstore" priority />
 							</div>
 						</div>
 						<div className="flex gap-5 mt-5">
