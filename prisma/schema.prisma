@@ -21,7 +21,6 @@ model Users {
   lastName    String?
   image       String?
   password    String
-  accessToken String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?

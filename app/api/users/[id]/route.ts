@@ -1,8 +1,9 @@
-import { generateResponse, withAuth } from "@/utils/helpers";
-import { NextApiRequest } from "next";
+import { generateResponse, isAuthenticated } from '@/utils/helpers'
+import { NextRequest } from 'next/server'
 
-export const GET = withAuth(async (req: NextApiRequest) => {
-  const { id } = req.query;
+export const GET = async (req: NextRequest, { params }: { params: { id: string } }) => {
+  const auth = await isAuthenticated()
+  if (auth) return auth
 
-  return generateResponse({ data: { id } });
-});
+  return generateResponse({ data: params.id })
+}

@@ -51,9 +51,9 @@ const apiRequest = async <T>(
   return apiRequest(url, method, '', body, isJson, attempt + 1)
 }
 
-export const get = async <T>({ url, accessToken }: Params): Promise<ApiResponseType<T>> => {
-  if (!accessToken) throw new Error('Authorization token is missing')
-  return apiRequest<T>(url, 'GET', accessToken)
+export const get = async <T>({ url, accessToken, isSecured }: Params): Promise<ApiResponseType<T>> => {
+  if (isSecured && !accessToken) throw new Error('Authorization token is missing')
+  return apiRequest<T>(url, 'GET', `${accessToken}`)
 }
 
 export const post = async <T>({
@@ -74,3 +74,5 @@ export const deleteFunc = async <T>({ url, accessToken, body, isJson }: Params):
 
 export const registerUser = async (body: any) =>
   post<Users>({ url: '/api/users', body, isJson: true, isSecured: false })
+
+export const getUserData = async (id: string) => get<Users>({ url: `/api/users/${id}`, isSecured: false })
