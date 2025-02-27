@@ -1,7 +1,6 @@
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { ApiResponseType } from '@/constants/types'
 import { getServerSession } from 'next-auth'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import { uuidSchema } from '@/lib/rules'
 
@@ -17,8 +16,8 @@ export const generateResponse = <T>({
   return NextResponse.json({ data, error, success, status, message, meta }, { status })
 }
 
-export const isAuthenticated = async (req: NextRequest) => {
-  const session = await getServerSession(authOptions)
+export const isAuthenticated = async (req: Request) => {
+  const session = await getServerSession()
   if (session?.user) return { user: session.user }
 
   const authHeader = req.headers.get('Authorization')

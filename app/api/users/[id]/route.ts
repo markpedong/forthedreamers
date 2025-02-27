@@ -1,8 +1,7 @@
 import prisma from '@/db'
 import { generateResponse, isAuthenticated, validateUUID } from '@/utils/helpers'
-import { NextRequest } from 'next/server'
 
-export const GET = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const auth = await isAuthenticated(req)
   const { id } = await params
 

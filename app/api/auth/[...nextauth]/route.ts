@@ -5,7 +5,7 @@ import GoogleProvider from 'next-auth/providers/google'
 import bcrypt from 'bcrypt'
 import { generateAccessToken, generateRefreshToken } from '@/utils/tokens'
 
-export const authOptions: AuthOptions = {
+const authOptions: AuthOptions = {
   providers: [
     Credentials({
       name: 'credentials',
