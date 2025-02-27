@@ -12,6 +12,7 @@ import { useAppSelector } from '@/redux/store'
 import { LOGINFORM_STATE } from '@/constants/types'
 import Image from 'next/image'
 import Title from './title'
+import { getSession } from 'next-auth/react'
 
 const Login = () => {
   const loginFormState = useAppSelector(state => state.app.loginFormState)
@@ -35,11 +36,10 @@ const Login = () => {
     })
   }
 
-  console.log("state", state)
-
   useEffect(() => {
     if (state.success) {
       addToast({ title: 'Success', description: 'Login successful', color: 'success' })
+      getSession().then(res => localStorage.setItem('accessToken', res?.accessToken || ''))
       push('/profile')
     }
   }, [state.success, push])
