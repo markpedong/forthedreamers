@@ -1,20 +1,18 @@
 'use client'
 
 import { clearUserData } from '@/lib'
+import { getUserData, uploadProfile } from '@/utils/request'
 import { Button, Divider } from '@heroui/react'
 import { Users } from '@prisma/client'
+import classNames from 'classnames'
 import { signOut, useSession } from 'next-auth/react'
-import { experimental_useEffectEvent, FC, use, useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
+import NextImage from 'next/image'
+import { useRouter } from 'next/navigation'
+import { FC, useEffect, useState } from 'react'
+import { FaPlus } from 'react-icons/fa'
 import { IoArrowBack } from 'react-icons/io5'
 import styles from '../styles.module.scss'
-import classNames from 'classnames'
-import dynamic from 'next/dynamic'
-import Image from 'next/image'
-import { getUserData } from '@/utils/request'
-import { Upload } from 'antd'
-import { beforeUpload } from '@/utils/antd'
-import { FaPlus } from 'react-icons/fa'
-import { CldImage } from 'next-cloudinary'
 
 const PersonalInformation = dynamic(() => import('./personal-information'), { ssr: false })
 const Addresses = dynamic(() => import('./addresses'), { ssr: false })
@@ -26,7 +24,19 @@ const Profile: FC = () => {
 	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
 	const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
 	const [userData, setUserData] = useState<Users>()
+	const [image, setImage] = useState('')
 	const { data: session } = useSession()
+	const router = useRouter()
+
+	const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0]
+		if (!file) return
+
+		const response = await uploadProfile(file)
+		if (response?.success) {
+			setImage(response?.data.secure_url)
+		}
+	}
 
 	const fetchUserData = async () => {
 		if (!session?.user?.id || !session?.accessToken) return
@@ -49,17 +59,12 @@ const Profile: FC = () => {
 						</div>
 						<div className="flex flex-col gap-1 text-sm pl-3">
 							{userData?.image ? (
-								<Image
-									alt="sample"
-									src={userData?.image} // Use this sample image or upload your own via the Media Explorer
-									width="50" // Transform the image: auto-crop to square aspect_ratio
-									height="50"
-								/>
+								<NextImage alt="sample" src={userData?.image} width="50" height="50" className="rounded-full" />
 							) : (
 								<label className="w-12 h-12 flex flex-col items-center justify-center bg-gray-400 text-white rounded-full cursor-pointer relative">
 									<FaPlus className="text-lg absolute top-2" size={10} />
 									<span className="text-xs mt-4">Upload</span>
-									<input type="file" className="hidden" />
+									<input type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
 								</label>
 							)}
 							<span className="capitalize pt-2">
