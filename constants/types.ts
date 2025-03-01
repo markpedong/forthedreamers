@@ -1,4 +1,5 @@
 import { Users } from '@prisma/client'
+import { GetProp, UploadProps } from 'antd'
 
 export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' | 'firstName' | 'lastName'>
 
@@ -65,3 +66,5 @@ export type RequestParams = {
   tags?: string
   accessToken?: string
 }
+
+export type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];

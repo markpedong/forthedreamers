@@ -11,6 +11,9 @@ import classNames from 'classnames'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { getUserData } from '@/utils/request'
+import { Upload } from 'antd'
+import { beforeUpload } from '@/utils/antd'
+import { FaPlus } from 'react-icons/fa'
 
 const PersonalInformation = dynamic(() => import('./personal-information'), { ssr: false })
 const Addresses = dynamic(() => import('./addresses'), { ssr: false })
@@ -20,20 +23,19 @@ const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 
 const Profile: FC = () => {
 	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
-	const [activeMenu, setActiveMenu] = useState<string | null>(null)
+	const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
 	const [userData, setUserData] = useState<any>(null)
 	const { data: session } = useSession()
 
-	// Create a stable function reference for fetching user data
-	const fetchUserData = experimental_useEffectEvent(async () => {
+	const fetchUserData = async () => {
 		if (!session?.user?.id || !session?.accessToken) return
 		const res = await getUserData(`${session.user.id}`, session.accessToken)
 		setUserData(res?.data)
-	})
+	}
 
 	useEffect(() => {
 		fetchUserData()
-	}, [fetchUserData])
+	}, [session])
 
 	return (
 		<div className={styles.profileWrapper}>
@@ -45,8 +47,14 @@ const Profile: FC = () => {
 							<span>Back</span>
 						</div>
 						<div className="flex flex-col gap-1 text-sm pl-3">
-							{userData?.image && (
+							{userData?.image ? (
 								<Image src={userData?.image} alt="" width={50} height={50} className="rounded-full" />
+							) : (
+								<label className="w-12 h-12 flex flex-col items-center justify-center bg-gray-400 text-white rounded-full cursor-pointer relative">
+									<FaPlus className="text-lg absolute top-2" />
+									<span className="text-xs mt-4">Upload</span>
+									<input type="file" className="hidden" />
+								</label>
 							)}
 							<span className="capitalize pt-2">
 								{userData?.firstName} {userData?.lastName}
