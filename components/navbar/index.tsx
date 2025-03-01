@@ -6,7 +6,7 @@ import classNames from 'classnames'
 import { usePathname, useRouter } from 'next/navigation'
 import { FC, useState } from 'react'
 import SearchDrawer from '../search-drawer'
-import { NO_NAVBAR_PAGES } from '@/constants'
+import { NO_NAVBAR_FOOTER_PAGES } from '@/constants'
 import { IoMoon } from 'react-icons/io5'
 import { FaSun } from 'react-icons/fa'
 import { useTheme } from 'next-themes'
@@ -24,7 +24,7 @@ const NavBar: FC = () => {
 	const p = (name: string) => push(`/${name === 'home' ? '' : name}`)
 
 	return (
-		!NO_NAVBAR_PAGES.includes(pathname) && (
+		!NO_NAVBAR_FOOTER_PAGES.includes(pathname) && (
 			<Navbar onMenuOpenChange={setIsMenuOpen} isBordered>
 				<NavbarContent>
 					<NavbarMenuToggle aria-label={isMenuOpen ? 'Close menu' : 'Open menu'} className="md:hidden" />

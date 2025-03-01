@@ -1,4 +1,4 @@
-import { ApiResponseType } from '@/constants/types'
+import { ApiResponse } from '@/constants/types'
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
@@ -10,7 +10,7 @@ export const generateResponse = <T>({
   status = 200,
   message = '',
   meta
-}: Partial<Omit<ApiResponseType<T | null>, 'success'>>) => {
+}: Partial<Omit<ApiResponse<T | null>, 'success'>>) => {
   const success = status >= 200 && status < 300
   if (!success) console.error('API ERROR', error || message)
   return NextResponse.json({ data, error, success, status, message, meta }, { status })

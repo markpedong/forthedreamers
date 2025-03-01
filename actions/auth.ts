@@ -1,3 +1,4 @@
+'use server'
 import { FormState } from '@/constants/types'
 import { loginSchema } from '@/lib/rules'
 import { registerUser } from '@/utils/request'

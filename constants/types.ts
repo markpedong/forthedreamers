@@ -4,7 +4,7 @@ export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' 
 
 export type TDecodedToken = Pick<Users, 'id' | 'email' | 'firstName' | 'lastName'>
 
-export type ApiResponseType<T> = {
+export type ApiResponse<T> = {
   data: T
   error?: any
   status?: number
@@ -50,4 +50,18 @@ export type UserItem = {
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
+}
+
+export const serverErr = {
+  message: 'server error',
+  data: {},
+  status: 500,
+  success: false
+} satisfies ApiResponse<any>
+
+export type RequestParams = {
+  url: string
+  data?: any
+  tags?: string
+  passCookies?: boolean
 }

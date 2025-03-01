@@ -1,6 +1,6 @@
 'use client'
 
-import { FOOTER_TITLE, NO_NAVBAR_PAGES } from '@/constants'
+import { FOOTER_TITLE, NO_NAVBAR_FOOTER_PAGES } from '@/constants'
 import { Input, Link } from '@heroui/react'
 import styles from '../styles.module.scss'
 import { IoSend } from 'react-icons/io5'
@@ -12,7 +12,7 @@ import { usePathname } from 'next/navigation'
 const Footer = () => {
   const pathname = usePathname()
   return (
-    !NO_NAVBAR_PAGES.includes(pathname) && (
+    !NO_NAVBAR_FOOTER_PAGES.includes(pathname) && (
       <div className={styles.footerWrapper}>
         <div className="w-full p-6">
           <div className="grid grid-cols-5 gap-10">
