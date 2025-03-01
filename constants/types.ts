@@ -63,5 +63,5 @@ export type RequestParams = {
   url: string
   data?: any
   tags?: string
-  passCookies?: boolean
+  accessToken?: string
 }
