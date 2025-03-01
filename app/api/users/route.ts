@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       where: { OR: [{ email }, { username }] }
     })
 
-    if (isExist) throw new Error('User already exists')
+    if (isExist) throw generateResponse({ error: 'User already exists' })
 
     const user = await prisma?.users.create({
       data: {

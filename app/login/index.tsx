@@ -5,7 +5,7 @@ import { setCookie } from '@/lib/server'
 import { useAppSelector } from '@/redux/store'
 import { setLocalStorage } from '@/utils/xLocalStorage'
 import { addToast, Form } from '@heroui/react'
-import { getSession } from 'next-auth/react'
+import { getSession, signIn } from 'next-auth/react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useActionState, useEffect, useTransition } from 'react'
@@ -39,10 +39,20 @@ const Login = () => {
 
 	const handleSuccess = async () => {
 		try {
+			const callback = await signIn('credentials', {
+				email: state.values?.email,
+				password: state.values?.password,
+				redirect: false
+			})
+
+			if (!callback?.ok) {
+				addToast({ title: 'Error', description: 'Login failed', color: 'danger' })
+				return
+			}
+
 			const token = `${(await getSession())?.accessToken}`
 
 			addToast({ title: 'Success', description: 'Login successful', color: 'success' })
-			setCookie('accessToken', token)
 			setLocalStorage('accessToken', token)
 			push('/profile')
 		} catch (error) {
