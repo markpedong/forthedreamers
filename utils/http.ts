@@ -8,6 +8,7 @@ import { ApiResponse, RequestParams, serverErr } from '@/constants/types'
 import { getLocalStorage } from './xLocalStorage'
 import { getServerSession } from 'next-auth'
 import authOptions from '@/app/api/auth/[...nextauth]/options'
+import { getSession } from 'next-auth/react'
 
 export const throttleAlert = (msg: string) =>
   throttle(() => console.error(msg), 1500, { trailing: false, leading: true })
@@ -42,7 +43,10 @@ const handleResponse = async <T>(response: Response, url?: string): Promise<ApiR
 }
 
 const fetchWithToken = async (url: string, options: RequestInit) => {
-  const token = typeof window !== 'undefined' ? getLocalStorage('accessToken') : (await getServerSession(authOptions))?.accessToken
+  const token = typeof window !== "undefined"
+    ? getLocalStorage("accessToken") || (await getSession())?.accessToken
+    : (await getServerSession(authOptions))?.accessToken;
+
   return fetch(url, {
     ...options,
     headers: {

@@ -6,8 +6,6 @@ import React, { FC } from 'react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes'
-import NavBar from '../navbar'
-import Footer from '../footer'
 import AuthProvider from '../auth'
 import { SessionProvider } from 'next-auth/react'
 
@@ -27,9 +25,7 @@ const Provider: FC<Props> = ({ children }) => {
 						<HeroUIProvider>
 							<ToastProvider />
 							<NextThemesProvider attribute="class" defaultTheme={isDarkMode ? 'dark' : 'light'}>
-								<NavBar />
 								{children}
-								<Footer />
 							</NextThemesProvider>
 						</HeroUIProvider>
 					</PersistGate>

@@ -4,7 +4,6 @@ import { getToken } from 'next-auth/jwt'
 export const middleware = async (request: NextRequest) => {
   const token = await getToken({ req: request, secret: process.env.AUTH_SECRET })
   const path = request.nextUrl.pathname
-
   const protectedRoutes = ['/profile', '/checkout', '/cart']
 
   if (token && path === '/login') {
