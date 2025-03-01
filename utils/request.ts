@@ -1,8 +1,6 @@
-import authOptions from '@/app/api/auth/[...nextauth]/options'
 import { ApiResponseType } from '@/constants/types'
 import { addToast } from '@heroui/react'
 import { Users } from '@prisma/client'
-import { getServerSession } from 'next-auth'
 
 type Params = {
   body?: Record<string, any>
@@ -24,43 +22,36 @@ const handleResponse = async <T>(response: Response): Promise<ApiResponseType<T>
   return responseData
 }
 
-// const refreshToken = async (): Promise<string | null> => {
-//   try {
-//     const refreshToken = localStorage.getItem('refreshToken')
-//     if (!refreshToken) return null
+const refreshToken = async (): Promise<string | null> => {
+  try {
+    const refreshToken = localStorage.getItem('refreshToken')
+    if (!refreshToken) return null
 
-//     const response = await post<{ accessToken: string }>({
-//       url: '/api/auth/refresh',
-//       body: { refreshToken },
-//       isJson: true,
-//       isSecured: false
-//     })
+    const response = await post<{ accessToken: string }>({
+      url: '/api/auth/refresh',
+      body: { refreshToken },
+      isJson: true,
+      isSecured: false
+    })
 
-//     if (!response || !response.data?.accessToken) return null
+    if (!response || !response.data?.accessToken) return null
 
-//     localStorage.setItem('accessToken', response.data.accessToken)
-//     return response.data.accessToken
-//   } catch (error) {
-//     console.error('Failed to refresh token:', error)
-//     return null
-//   }
-// }
+    localStorage.setItem('accessToken', response.data.accessToken)
+    return response.data.accessToken
+  } catch (error) {
+    console.error('Failed to refresh token:', error)
+    return null
+  }
+}
 
 const apiRequest = async <T>(
   url: string,
   method: 'GET' | 'POST' | 'DELETE',
+  accessToken: string,
   body?: unknown,
   isJson: boolean = false,
-  isServer = false
+  attempt: number = 1
 ): Promise<ApiResponseType<T>> => {
-  let accessToken: string
-  if (isServer) {
-    const session = await getServerSession(authOptions)
-    accessToken = `${session?.accessToken}`
-  } else {
-    accessToken = `${localStorage.getItem('accessToken')}`
-  }
-
   const headers: Record<string, string> = {
     Authorization: `Bearer ${accessToken}`,
     'Accept-Language': typeof window !== 'undefined' ? localStorage.getItem('language') || 'en' : 'en'
@@ -77,12 +68,12 @@ const apiRequest = async <T>(
   })
 
   if (response.status !== 401) return handleResponse(response)
-  // if (attempt >= 2) throw new Error('Failed to refresh token after 2 attempts')
+  if (attempt >= 2) throw new Error('Failed to refresh token after 2 attempts')
 
-  // const newToken = await refreshToken()
-  // if (!newToken) throw new Error('Failed to refresh token')
+  const newToken = await refreshToken()
+  if (!newToken) throw new Error('Failed to refresh token')
 
-  return apiRequest(url, method, body, isJson)
+  return apiRequest(url, method, newToken, body, isJson, attempt + 1)
 }
 
 export const get = async <T>({ url, accessToken, isSecured }: Params): Promise<ApiResponseType<T>> => {
@@ -98,14 +89,15 @@ export const post = async <T>({
   isSecured = true
 }: Params): Promise<ApiResponseType<T>> => {
   if (isSecured && !accessToken) throw new Error('Authorization token is missing')
-  return apiRequest<T>(url, 'POST', body, isJson)
+  return apiRequest<T>(url, 'POST', accessToken || '', body, isJson)
 }
 
-export const deleteFunc = async <T>({ url, body, isJson }: Params): Promise<ApiResponseType<T>> => {
-  return apiRequest<T>(url, 'DELETE', body, isJson)
+export const deleteFunc = async <T>({ url, accessToken, body, isJson }: Params): Promise<ApiResponseType<T>> => {
+  if (!accessToken) throw new Error('Authorization token is missing')
+  return apiRequest<T>(url, 'DELETE', accessToken, body, isJson)
 }
 
 export const registerUser = async (body: any) =>
   post<Users>({ url: '/api/users', body, isJson: true, isSecured: false })
 
-export const getUserData = async (id: string) => get<Users>({ url: `/api/users/${id}` })
+export const getUserData = async (id: string, accessToken?: string) => get<Users>({ url: `/api/users/${id}`, accessToken })
