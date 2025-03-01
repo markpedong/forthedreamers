@@ -1,15 +1,27 @@
-import Profile from './components'
-import { getServerSession } from 'next-auth'
-import authOptions from '../../api/auth/[...nextauth]/options'
 import { getUserData } from '@/utils/request'
+import { getServerSession } from 'next-auth'
+import { Suspense } from 'react'
+import authOptions from '../../api/auth/[...nextauth]/options'
+import Profile from './components'
 
-type Props = {}
+const ProfileLoader = async () => {
+	const session = await getServerSession(authOptions)
+
+	// Ensure we have a valid user ID before fetching data
+	const userId = session?.user?.id
+	if (!userId) return <div>Error: User not found</div>
+
+	// Fetch user data
+	const userData = await getUserData(userId)
+
+	// Ensure we have valid user data before rendering
+	if (!userData?.data) return <div>Loading profile...</div>
+
+	return <Profile data={userData.data} />
+}
 
 const Page = async () => {
-	const session = await getServerSession(authOptions)
-	const res = await getUserData(`${session?.user?.id}`)
-
-	return <Profile data={res?.data} />
+	return <ProfileLoader />
 }
 
 export default Page

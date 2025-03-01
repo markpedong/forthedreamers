@@ -2,8 +2,6 @@ import { STALE_TIME } from '@/constants'
 import throttle from 'lodash/throttle'
 import { stringify } from 'qs'
 import { addToast } from '@heroui/react'
-// import { unauthorized } from '@/lib/helper'
-// import { getCookie, setCookie } from '@/lib/server'
 import { ApiResponse, RequestParams, serverErr } from '@/constants/types'
 import { getLocalStorage } from './xLocalStorage'
 import { getServerSession } from 'next-auth'
@@ -19,23 +17,8 @@ const handleResponse = async <T>(response: Response, url?: string): Promise<ApiR
   const isClient = typeof window !== 'undefined'
   const data: ApiResponse<T> = await response.json()
 
-  // if (!!url && ['/login'].includes(url)) {
-  //   const token = `${(await getSession())?.accessToken}`
-
-  //   setCookie('accessToken', token)
-  //   setLocalStorage('accessToken', token)
-  // }
-
   if (data.status !== 200) {
     isClient && addToast({ title: data.message })
-
-    // if (data.status === 401) {
-    //   if (isClient) {
-    //     unauthorized()
-    //   } else {
-    //     redirect('/login')
-    //   }
-    // }
     return data
   }
 
@@ -47,6 +30,7 @@ const fetchWithToken = async (url: string, options: RequestInit) => {
     ? getLocalStorage("accessToken") || (await getSession())?.accessToken
     : (await getServerSession(authOptions))?.accessToken;
 
+  console.log("token", token)
   return fetch(url, {
     ...options,
     headers: {

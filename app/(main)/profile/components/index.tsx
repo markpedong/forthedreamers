@@ -1,7 +1,7 @@
 'use client'
 
 import { clearUserData } from '@/lib'
-import { Button, Divider, Image } from '@heroui/react'
+import { Button, Divider } from '@heroui/react'
 import { Users } from '@prisma/client'
 import { signOut } from 'next-auth/react'
 import { FC, useState } from 'react'
@@ -9,6 +9,7 @@ import { IoArrowBack } from 'react-icons/io5'
 import styles from '../styles.module.scss'
 import classNames from 'classnames'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 
 type Props = {
 	data: Users
@@ -24,6 +25,8 @@ const Profile: FC<Props> = ({ data }) => {
 	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
 	const [activeMenu, setActiveMenu] = useState<string | null>(null)
 
+	console.log("data", data)
+
 	return (
 		<div className={styles.profileWrapper}>
 			<div className={styles.profileContainer}>
@@ -34,7 +37,7 @@ const Profile: FC<Props> = ({ data }) => {
 							<span>Back</span>
 						</div>
 						<div className="flex flex-col gap-1 text-sm pl-3">
-							<Image src={`${data?.image}`} alt="" width={50} height={50} className="rounded-full" />
+							{/* <Image src={`${data?.image}`} alt="" width={50} height={50} className="rounded-full" /> */}
 							<span className="capitalize pt-2">
 								{data?.firstName} {data?.lastName}
 							</span>

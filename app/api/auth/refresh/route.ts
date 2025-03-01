@@ -1,17 +1,15 @@
-import { NextRequest } from 'next/server'
 import prisma from '@/db'
 import { generateAccessToken } from '@/utils/tokens'
 import { generateResponse } from '@/utils/helpers'
+import { getServerSession } from 'next-auth'
+import authOptions from '../[...nextauth]/options'
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
-    const { refreshToken } = await req.json()
-    if (!refreshToken) {
-      return generateResponse({ error: 'No refresh token provided', status: 401 })
-    }
+    const currSession = await getServerSession(authOptions)
 
     const user = await prisma.users.findFirst({
-      where: { refreshToken }
+      where: { id: currSession?.user?.id }
     })
 
     if (!user) {
