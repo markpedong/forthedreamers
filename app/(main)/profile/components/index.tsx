@@ -8,15 +8,17 @@ import { FC, useState } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
 import styles from '../styles.module.scss'
 import classNames from 'classnames'
-import PersonalInformation from './personal-information'
-import Addresses from './addresses'
-import PaymentMethods from './payment-methods'
-import Orders from './orders'
-import Reviews from './reviews'
+import dynamic from 'next/dynamic'
 
 type Props = {
 	data: Users
 }
+
+const PersonalInformation = dynamic(() => import('./personal-information'), { ssr: false })
+const Addresses = dynamic(() => import('./addresses'), { ssr: false })
+const PaymentMethods = dynamic(() => import('./payment-methods'), { ssr: false })
+const Orders = dynamic(() => import('./orders'), { ssr: false })
+const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 
 const Profile: FC<Props> = ({ data }) => {
 	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
