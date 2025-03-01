@@ -1,6 +1,8 @@
 import type { Config } from 'tailwindcss'
 
 const { heroui } = require('@heroui/react')
+const plugin = require("tailwindcss/plugin");
+
 export default {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -12,12 +14,22 @@ export default {
     extend: {
       colors: {
         background: 'var(--background)',
-        foreground: 'var(--foreground)'
+        foreground: 'var(--foreground)',
       }
     }
   },
   darkMode: 'class',
   plugins: [
+    plugin(({ addComponents }: any) => {
+      addComponents({
+        ".customButton1": {
+          "@apply bg-black text-white": {},
+          ".dark &": {
+            "@apply bg-white text-black": {},
+          },
+        },
+      });
+    }),
     heroui({
       themes: {
         light: {
@@ -27,7 +39,7 @@ export default {
         },
         dark: {
           colors: {
-            'typography-1': '#F4F4F5'
+            'typography-1': '#F4F4F5',
           }
         }
       }
