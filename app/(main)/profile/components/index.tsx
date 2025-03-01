@@ -1,13 +1,18 @@
 'use client'
 
-import { Button, Divider, Image } from '@heroui/react'
-import { signOut } from 'next-auth/react'
-import styles from '../styles.module.scss'
-import { Users } from '@prisma/client'
-import { FC, useState } from 'react'
 import { clearUserData } from '@/lib'
+import { Button, Divider, Image } from '@heroui/react'
+import { Users } from '@prisma/client'
+import { signOut } from 'next-auth/react'
+import { FC, useState } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
-import { Listbox, ListboxItem } from '@heroui/react'
+import styles from '../styles.module.scss'
+import classNames from 'classnames'
+import PersonalInformation from './personal-information'
+import Addresses from './addresses'
+import PaymentMethods from './payment-methods'
+import Orders from './orders'
+import Reviews from './reviews'
 
 type Props = {
 	data: Users
@@ -22,7 +27,7 @@ const Profile: FC<Props> = ({ data }) => {
 			<div className={styles.profileContainer}>
 				<div className="border-r-1 h-full border-[rgba(0, 0, 0, 0.1)]">
 					<div className="p-5 mb-10">
-						<div className='flex gap-2 items-center justify-start mb-16 text-sm text-neutral-400'>
+						<div className="flex gap-2 items-center justify-start mb-16 text-sm text-neutral-400">
 							<IoArrowBack />
 							<span>Back</span>
 						</div>
@@ -38,12 +43,10 @@ const Profile: FC<Props> = ({ data }) => {
 								<span
 									key={index}
 									onClick={() => setActiveMenu(menu)}
-									className={`cursor-pointer px-3 py-2 transition-all 
-            ${
-							activeMenu === menu
-								? 'border-l-2 border-gray-500 text-black bg-gray-100' // Active state
-								: 'text-neutral-400 hover:border-l-2 hover:border-gray-400 hover:text-black'
-						}`}
+									className={classNames('cursor-pointer px-3 py-2 transition-all', {
+										'border-l-2 border-gray-500 text-black bg-gray-100': activeMenu === menu,
+										'text-neutral-400 hover:border-l-2 hover:border-gray-400 hover:text-black': activeMenu !== menu
+									})}
 								>
 									{menu}
 								</span>
@@ -63,7 +66,13 @@ const Profile: FC<Props> = ({ data }) => {
 						Signout
 					</Button>
 				</div>
-				<div>Profile</div>
+				<div className="p-5">
+					{activeMenu === 'Personal Information' && <PersonalInformation />}
+					{activeMenu === 'Addresses' && <Addresses />}
+					{activeMenu === 'Payment Methods' && <PaymentMethods />}
+					{activeMenu === 'Orders' && <Orders />}
+					{activeMenu === 'Reviews' && <Reviews />}
+				</div>
 			</div>
 		</div>
 	)
