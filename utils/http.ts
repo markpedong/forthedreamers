@@ -1,5 +1,4 @@
 import { STALE_TIME } from '@/constants'
-import throttle from 'lodash/throttle'
 import { stringify } from 'qs'
 import { addToast } from '@heroui/react'
 import { ApiResponse, RequestParams, serverErr } from '@/constants/types'
@@ -7,24 +6,7 @@ import { getLocalStorage } from './xLocalStorage'
 import { getServerSession } from 'next-auth'
 import authOptions from '@/app/api/auth/[...nextauth]/options'
 import { getSession, signOut } from 'next-auth/react'
-import Error from 'next/error'
-
-export const throttleAlert = (msg: string) =>
-  throttle(() => console.error(msg), 1500, { trailing: false, leading: true })
-
-export const refreshToken = async () => {
-  try {
-    const res = await fetch('/api/auth/refresh', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-    })
-    const { data } = (await res.json()) as ApiResponse<string>
-    return data
-  } catch (error) {
-    console.log('Error refreshing token:', error)
-    await signOut({ callbackUrl: '/', redirect: true })
-  }
-}
+import { refreshToken } from './request'
 
 const handleResponse = async <T>(response: Response): Promise<ApiResponse<T>> => {
   if (!response.ok) return serverErr as ApiResponse<T>
@@ -44,7 +26,7 @@ const fetchWithToken = async (url: string, options: RequestInit, attempt: number
   // token
   const token =
     typeof window !== 'undefined'
-      ? getLocalStorage('accessToken') || (await getSession())?.accessToken
+      ? !!getLocalStorage('accessToken') || (await getSession())?.accessToken
       : (await getServerSession(authOptions))?.accessToken
 
   // main fetch
@@ -57,13 +39,11 @@ const fetchWithToken = async (url: string, options: RequestInit, attempt: number
   })
 
   if (response.status !== 401) return response
-  //@ts-expect-error type error
   if (attempt >= 2) throw new Error('Unauthorized')
 
-  const newToken = await refreshToken()
-  //@ts-expect-error type error
-  if (!newToken) throw new Error('Failed to refresh token')
-  localStorage.setItem('accessToken', newToken)
+  const tokenRes = await refreshToken()
+  if (!tokenRes) throw new Error('Failed to refresh token')
+  localStorage.setItem('accessToken', tokenRes?.data)
 
   return fetchWithToken(url, options, attempt + 1)
 }

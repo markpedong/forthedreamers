@@ -7,7 +7,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
   if (auth.error) return generateResponse({ error: auth.error, status: auth.status })
 
-  console.log('auth', auth)
   if (!validateUUID(id)) {
     return generateResponse({ error: 'Invalid user id', status: 400 })
   }

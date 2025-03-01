@@ -52,7 +52,7 @@ const Login = () => {
       const token = `${(await getSession())?.accessToken}`
 
       addToast({ title: 'Success', description: 'Login successful', color: 'success' })
-      setLocalStorage('accessToken', token)
+      setLocalStorage('accessToken', token?.replaceAll('"', ''))
       push('/profile')
     } catch (error) {
       addToast({ title: 'Error', description: `${error}`, color: 'danger' })

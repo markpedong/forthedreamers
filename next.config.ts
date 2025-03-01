@@ -7,15 +7,15 @@ const nextConfig: NextConfig = {
   },
   webpack(config, { isServer }) {
     if (!isServer) {
-      // config.resolve.fallback = {
-      //   fs: false,
+      config.resolve.fallback = {
+        fs: false,
       //   tls: false,
       //   net: false,
       //   child_process: false,
       //   nock: false,
       //   "mock-aws-s3": false,
       //   "aws-sdk": false
-      // }
+      }
     }
     return config;
   }
