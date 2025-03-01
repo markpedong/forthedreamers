@@ -4,7 +4,7 @@ import { clearUserData } from '@/lib'
 import { Button, Divider } from '@heroui/react'
 import { Users } from '@prisma/client'
 import { signOut, useSession } from 'next-auth/react'
-import { FC, useEffect, useState } from 'react'
+import { experimental_useEffectEvent, FC, use, useEffect, useState } from 'react'
 import { IoArrowBack } from 'react-icons/io5'
 import styles from '../styles.module.scss'
 import classNames from 'classnames'
@@ -18,11 +18,22 @@ const PaymentMethods = dynamic(() => import('./payment-methods'), { ssr: false }
 const Orders = dynamic(() => import('./orders'), { ssr: false })
 const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 
-const Profile: FC<{ data: Users }> = ({ data }) => {
+const Profile: FC = () => {
 	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
 	const [activeMenu, setActiveMenu] = useState<string | null>(null)
+	const [userData, setUserData] = useState<any>(null)
+	const { data: session } = useSession()
 
-	console.log("data", data)
+	// Create a stable function reference for fetching user data
+	const fetchUserData = experimental_useEffectEvent(async () => {
+		if (!session?.user?.id || !session?.accessToken) return
+		const res = await getUserData(`${session.user.id}`, session.accessToken)
+		setUserData(res?.data)
+	})
+
+	useEffect(() => {
+		fetchUserData()
+	}, [fetchUserData])
 
 	return (
 		<div className={styles.profileWrapper}>
@@ -34,9 +45,11 @@ const Profile: FC<{ data: Users }> = ({ data }) => {
 							<span>Back</span>
 						</div>
 						<div className="flex flex-col gap-1 text-sm pl-3">
-							{data?.image && <Image src={data?.image} alt="" width={50} height={50} className="rounded-full" />}
+							{userData?.image && (
+								<Image src={userData?.image} alt="" width={50} height={50} className="rounded-full" />
+							)}
 							<span className="capitalize pt-2">
-								{data?.firstName} {data?.lastName}
+								{userData?.firstName} {userData?.lastName}
 							</span>
 							<span className="text-neutral-400">Customer</span>
 						</div>

@@ -4,10 +4,7 @@ import authOptions from '@/app/api/auth/[...nextauth]/options'
 import { getUserData } from '@/utils/request'
 
 const Page = async () => {
-	const res = await getServerSession(authOptions)
-	const data = await getUserData(`${res?.user?.id}`, res?.accessToken)
-
-return <Profile data={data?.data} />
+	return <Profile />
 }
 
 export default Page
