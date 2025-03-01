@@ -14,6 +14,7 @@ import { getUserData } from '@/utils/request'
 import { Upload } from 'antd'
 import { beforeUpload } from '@/utils/antd'
 import { FaPlus } from 'react-icons/fa'
+import { CldImage } from 'next-cloudinary'
 
 const PersonalInformation = dynamic(() => import('./personal-information'), { ssr: false })
 const Addresses = dynamic(() => import('./addresses'), { ssr: false })
@@ -24,7 +25,7 @@ const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 const Profile: FC = () => {
 	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
 	const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
-	const [userData, setUserData] = useState<any>(null)
+	const [userData, setUserData] = useState<Users>()
 	const { data: session } = useSession()
 
 	const fetchUserData = async () => {
@@ -48,10 +49,15 @@ const Profile: FC = () => {
 						</div>
 						<div className="flex flex-col gap-1 text-sm pl-3">
 							{userData?.image ? (
-								<Image src={userData?.image} alt="" width={50} height={50} className="rounded-full" />
+								<Image
+									alt="sample"
+									src={userData?.image} // Use this sample image or upload your own via the Media Explorer
+									width="50" // Transform the image: auto-crop to square aspect_ratio
+									height="50"
+								/>
 							) : (
 								<label className="w-12 h-12 flex flex-col items-center justify-center bg-gray-400 text-white rounded-full cursor-pointer relative">
-									<FaPlus className="text-lg absolute top-2" />
+									<FaPlus className="text-lg absolute top-2" size={10} />
 									<span className="text-xs mt-4">Upload</span>
 									<input type="file" className="hidden" />
 								</label>
