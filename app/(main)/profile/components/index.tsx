@@ -79,7 +79,7 @@ const Profile: FC = () => {
 									onClick={() => setActiveMenu(menu)}
 									className={classNames('cursor-pointer px-3 py-2 transition-all', {
 										'border-l-2 border-gray-500 text-black bg-gray-100': activeMenu === menu,
-										'text-neutral-400 hover:border-l-2 hover:border-gray-400 hover:text-black': activeMenu !== menu
+										'text-neutral-400': activeMenu !== menu
 									})}
 								>
 									{menu}
