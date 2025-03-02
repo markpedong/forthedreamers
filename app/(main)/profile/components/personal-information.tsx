@@ -1,11 +1,11 @@
 import { personalInformation } from '@/actions/auth'
-import { Button, DatePicker, Form, Input } from '@heroui/react'
+import { Button, Form, Input } from '@heroui/react'
 import { Users } from '@prisma/client'
-import { Typography } from 'antd'
+import { DatePicker, Typography } from 'antd'
 import classNames from 'classnames'
 import { useTheme } from 'next-themes'
-import { FC, useActionState, useTransition } from 'react'
-
+import { FC, useActionState, useEffect, useTransition } from 'react'
+import dayjs from 'dayjs'
 const PersonalInformation: FC<{ user: Users | undefined }> = ({ user }) => {
   const [state, action, isPending] = useActionState(personalInformation, {
     errors: {},
@@ -23,7 +23,12 @@ const PersonalInformation: FC<{ user: Users | undefined }> = ({ user }) => {
     })
   }
 
-  console.log('user', user)
+  useEffect(() => {
+    console.log('state', state)
+    if (state.success) {
+      console.log('success')
+    }
+  }, [state])
 
   return (
     <div>
@@ -34,7 +39,14 @@ const PersonalInformation: FC<{ user: Users | undefined }> = ({ user }) => {
           <Input name="lastName" label="Last Name" size="sm" defaultValue={`${user?.lastName}`} />
         </div>
         <div className="grid grid-cols-2 gap-3 w-full">
-          <DatePicker label="Birth date" size="sm" />
+          <DatePicker
+            name="birthday"
+            allowClear={false}
+            size="small"
+            maxDate={dayjs()}
+            defaultValue={!!user?.birthday && dayjs(user?.birthday)}
+            format="MM/DD/YYYY"
+          />
           <Input name="email" label="Email" size="sm" defaultValue={`${user?.email}`} readOnly />
         </div>
         <Button

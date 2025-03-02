@@ -14,7 +14,7 @@ const ThemesProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
         <ConfigProvider
           theme={{
             algorithm: darkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-            token: { fontFamily: 'Poppins' }
+            token: { fontFamily: 'Poppins', colorPrimary: '#000' },
           }}
         >
           {children}

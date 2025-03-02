@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const loginSchema = z
   .object({
@@ -18,10 +18,25 @@ export const loginSchema = z
     path: ['confirmPassword']
   })
 
-export const uuidSchema = z.string().uuid();
+export const uuidSchema = z.string().uuid()
 
 export const infoSchema = z.object({
-  firstName: z.string().trim(),
-  lastName: z.string().trim(),
-  birthday: z.string().trim()
+  firs: z
+    .string()
+    .trim()
+    .min(1, "First name can't be empty")
+    .max(20, "First name can't be longer than 20 characters")
+    .regex(/^[a-zA-Z]+$/, 'First name can only contain letters'),
+  lastName: z
+    .string()
+    .trim()
+    .min(1, "Last name can't be empty")
+    .max(20, "Last name can't be longer than 20 characters")
+    .regex(/^[a-zA-Z]+$/, 'Last name can only contain letters'),
+  birthday: z
+    .string()
+    .trim()
+    .min(1, "Birthday can't be empty")
+    .max(20, "Birthday can't be longer than 20 characters")
+    .regex(/^[a-zA-Z]+$/, 'Birthday can only contain letters')
 })

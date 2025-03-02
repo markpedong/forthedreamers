@@ -39,7 +39,7 @@ export const personalInformation = async (_: any, formData: FormData): Promise<F
   const object = {
     firstName: formData.get('firstName') as string,
     lastName: formData.get('lastName') as string,
-    birthday: formData.get('birthday') as string,
+    birthday: formData.get('birthday') as string
   }
 
   const result = infoSchema.safeParse(object)
@@ -47,5 +47,5 @@ export const personalInformation = async (_: any, formData: FormData): Promise<F
     return { errors: result.error.flatten().fieldErrors, values: object }
   }
 
-  return { success: true, errors: {}, values: {} }
+  return { success: true, errors: {}, values: object }
 }
