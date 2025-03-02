@@ -32,7 +32,7 @@ const PersonalInformation: FC<{ user: Users | undefined }> = ({ user }) => {
 	}
 
 	const handleUpdate = async () => {
-		const res = await updateProfile({ ...state.values, id: session?.user?.id } as Users)
+		const res = await updateProfile({ ...state.values, id: session?.user?.id })
 
 		if (res.success) {
 			dispatch(setUserData(res.data))
