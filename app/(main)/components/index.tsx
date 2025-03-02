@@ -30,13 +30,13 @@ const Home: FC = () => {
 				animate="visible"
 				variants={imageVariants}
 				transition={{ duration: 1, delay: 0.2, ease: 'easeOut' }}
+				className="absolute right-0 top-1/2 rounded-sm"
 			>
 				<Image
 					src="/images/shirt1.png"
 					alt="shirt1"
 					width={240}
 					height={240}
-					className="absolute right-0 top-1/2 rounded-sm"
 					sizes="(max-width: 600px) 5vw, (max-width: 1024px) 33vw, 240px"
 				/>
 			</motion.div>
@@ -45,13 +45,13 @@ const Home: FC = () => {
 				animate="visible"
 				variants={imageVariants}
 				transition={{ duration: 1, delay: 0.4, ease: 'easeOut' }}
+				className="absolute left-0 top-[15%] rounded-sm"
 			>
 				<Image
 					src="/images/shirt2.png"
 					alt="shirt2"
 					width={150}
 					height={150}
-					className="absolute left-0 top-[15%] rounded-sm"
 					sizes="(max-width: 600px) 5vw, (max-width: 1024px) 33vw, 240px"
 				/>
 			</motion.div>
@@ -60,13 +60,13 @@ const Home: FC = () => {
 				animate="visible"
 				variants={imageVariants}
 				transition={{ duration: 1, delay: 0.6, ease: 'easeOut' }}
+				className="md:absolute left-0 top-3/4 rounded-sm md:block hidden"
 			>
 				<Image
 					src="/images/shirt3.png"
 					alt="shirt3"
 					width={150}
 					height={150}
-					className="md:absolute left-0 top-3/4 rounded-sm md:block hidden"
 					sizes="(max-width: 600px) 5vw, (max-width: 1024px) 33vw, 240px"
 				/>
 			</motion.div>
@@ -75,13 +75,13 @@ const Home: FC = () => {
 				animate="visible"
 				variants={imageVariants}
 				transition={{ duration: 1, delay: 0.8, ease: 'easeOut' }}
+				className="md:absolute right-[35%] top-[-10%] rounded-sm md:block hidden"
 			>
 				<Image
 					src="/images/shirt4.png"
 					alt="shirt4"
 					width={150}
 					height={150}
-					className="md:absolute right-[35%] top-[-10%] rounded-sm md:block hidden"
 					sizes="(max-width: 600px) 5vw, (max-width: 1024px) 33vw, 240px"
 				/>
 			</motion.div>
