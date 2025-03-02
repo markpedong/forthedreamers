@@ -30,7 +30,7 @@ export const validateToken = (token: string) => {
 export const isAuthenticated = async (request: NextRequest) => {
   const token = request.headers.get('Authorization')?.replace('Bearer ', '') || ''
   try {
-    const { valid, error } = validateToken(token)
+    const { valid } = validateToken(token)
     if (!valid) return generateResponse({ status: 401, message: 'Unauthorized' })
     else {
       const decoded = jwt.verify(token, JWT_SECRET) as TDecodedToken
