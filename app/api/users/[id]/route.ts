@@ -1,12 +1,12 @@
 import prisma from '@/db'
 import { generateResponse, isAuthenticated, validateUUID } from '@/utils/helpers'
+import { NextRequest } from 'next/server'
 
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await isAuthenticated(req)
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authRes = await isAuthenticated(req)
+  if (!authRes.ok) return authRes
+
   const { id } = await params
-
-  if (auth.error) return generateResponse({ error: auth.error, status: auth.status })
-
   if (!validateUUID(id)) {
     return generateResponse({ error: 'Invalid user id', status: 400 })
   }

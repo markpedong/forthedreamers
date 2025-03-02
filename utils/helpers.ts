@@ -1,6 +1,6 @@
-import { ApiResponse } from '@/constants/types'
+import { ApiResponse, TDecodedToken } from '@/constants/types'
 import { getServerSession } from 'next-auth'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import { uuidSchema } from '@/lib/rules'
 
@@ -16,25 +16,32 @@ export const generateResponse = <T>({
   return NextResponse.json({ data, error, success, status, message, meta }, { status })
 }
 
-export const isAuthenticated = async (req: Request) => {
-  const session = await getServerSession()
-  if (session?.user) return { user: session.user }
-
-  const authHeader = req.headers.get('Authorization')
-  if (!authHeader?.startsWith('Bearer ')) {
-    return { error: 'Unauthorized', status: 401 }
-  }
-
-  const token = authHeader.split(' ')[1]
+export const validateToken = (token: string) => {
+  const JWT_SECRET = process.env.JWT_SECRET || ''
+  if (!token) return { valid: false, error: 'Authorization token missing' }
   try {
-    const decoded = jwt.verify(token, `${process.env.AUTH_SECRET}`)
-    return { user: decoded }
+    const decoded = jwt.verify(token, JWT_SECRET)
+    return { valid: true, decoded }
   } catch (error) {
-    return { error: 'Invalid or expired token', status: 403 }
+    return { valid: false, error: `Invalid or expired token: ${error}` }
+  }
+}
+
+export const isAuthenticated = async (request: NextRequest) => {
+  const token = request.headers.get('Authorization')?.replace('Bearer ', '') || ''
+  try {
+    const { valid } = validateToken(token)
+    if (!valid) return generateResponse({ status: 401, message: 'Unauthorized' })
+    else {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as TDecodedToken
+      return generateResponse({ data: decoded })
+    }
+  } catch (error) {
+    return generateResponse({ error, status: 500, message: 'Server error' })
   }
 }
 
 export const validateUUID = (id: string) => {
-  const result = uuidSchema.safeParse(id);
-  return result.success;
-};
+  const result = uuidSchema.safeParse(id)
+  return result.success
+}
