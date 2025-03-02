@@ -1,21 +1,20 @@
-import prisma from '@/db'
-import jwt from 'jsonwebtoken'
+import { JWT_SECRET } from '@/constants';
+import { Users } from '@prisma/client';
+import jwt from 'jsonwebtoken';
 
-export const generateAccessToken = (userId: string, email: string) => {
-  return jwt.sign({ id: userId, email }, process.env.AUTH_SECRET!, {
-    expiresIn: 30
-  })
-}
+export const generateRefreshToken = (user: Users) => {
+  return jwt.sign(
+    { id: user.id },
+    JWT_SECRET,
+    { expiresIn: '7d' }
+  );
+};
 
-export const generateRefreshToken = () => {
-  return jwt.sign({}, process.env.AUTH_SECRET!, {
-    expiresIn: '7d'
-  })
-}
-
-export async function saveRefreshToken(userId: string, refreshToken: string) {
-  await prisma.users.update({
-    where: { id: userId },
-    data: { refreshToken }
-  })
-}
+export const generateAccessToken = (user: Users) => {
+  const { id, username, firstName, lastName, email } = user;
+  return jwt.sign(
+    { id, username, firstName, lastName, email },
+    JWT_SECRET,
+    { expiresIn: 30 }
+  );
+};

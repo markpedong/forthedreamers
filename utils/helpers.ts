@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import { uuidSchema } from '@/lib/rules'
+import { JWT_SECRET } from '@/constants'
 
 export const generateResponse = <T>({
   data = null,
@@ -17,7 +18,6 @@ export const generateResponse = <T>({
 }
 
 export const validateToken = (token: string) => {
-  const JWT_SECRET = process.env.JWT_SECRET || ''
   if (!token) return { valid: false, error: 'Authorization token missing' }
   try {
     const decoded = jwt.verify(token, JWT_SECRET)
@@ -30,10 +30,11 @@ export const validateToken = (token: string) => {
 export const isAuthenticated = async (request: NextRequest) => {
   const token = request.headers.get('Authorization')?.replace('Bearer ', '') || ''
   try {
-    const { valid } = validateToken(token)
+    const { valid, error } = validateToken(token)
+    console.log("error", error)
     if (!valid) return generateResponse({ status: 401, message: 'Unauthorized' })
     else {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as TDecodedToken
+      const decoded = jwt.verify(token, JWT_SECRET) as TDecodedToken
       return generateResponse({ data: decoded })
     }
   } catch (error) {

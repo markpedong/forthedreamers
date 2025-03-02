@@ -3,6 +3,8 @@ import { GetProp, UploadProps } from 'antd'
 
 export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' | 'firstName' | 'lastName'>
 
+export type TCustomToken = TSessionUser & { accessToken: string };
+
 export type TDecodedToken = Pick<Users, 'id' | 'email' | 'firstName' | 'lastName'>
 
 export type ApiResponse<T> = {

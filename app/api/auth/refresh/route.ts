@@ -1,25 +1,35 @@
-import prisma from '@/db'
-import { generateAccessToken } from '@/utils/tokens'
-import { generateResponse } from '@/utils/helpers'
-import { getServerSession } from 'next-auth'
-import authOptions from '../[...nextauth]/options'
+import prisma from '@/db';
+import { generateResponse } from '@/utils/helpers';
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '@/constants';
+import { generateAccessToken } from '@/utils/tokens';
 
-export async function POST() {
+export async function POST(req: Request) {
   try {
-    const currSession = await getServerSession(authOptions)
-
-    const user = await prisma.users.findFirst({
-      where: { id: currSession?.user?.id }
-    })
-
-    if (!user) {
-      return generateResponse({ error: 'Invalid refresh token', status: 401 })
+    const { refreshToken } = await req.json();
+    if (!refreshToken) {
+      return generateResponse({ error: 'Refresh token required', status: 400 });
     }
 
-    const newAccessToken = generateAccessToken(user.id, `${user.email}`)
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, JWT_SECRET) as { id: string };
+    } catch (error) {
+      return generateResponse({ error: 'Invalid refresh token', status: 401 });
+    }
 
-    return generateResponse({ data: { accessToken: newAccessToken }, status: 200 })
+    const user = await prisma.users.findUnique({
+      where: { id: decoded.id }
+    });
+
+    if (!user || user.refreshToken !== refreshToken) {
+      return generateResponse({ error: 'Invalid refresh token', status: 401 });
+    }
+
+    const newAccessToken = generateAccessToken(user);
+
+    return generateResponse({ data: { accessToken: newAccessToken }, status: 200 });
   } catch (error) {
-    return generateResponse({ error: 'Server error', status: 500 })
+    return generateResponse({ error: 'Server error', status: 500 });
   }
 }

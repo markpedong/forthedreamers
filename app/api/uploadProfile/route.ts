@@ -20,8 +20,8 @@ export async function POST(req: Request) {
 
     const cloudinaryFormData = new FormData()
     cloudinaryFormData.append("file", file)
-    cloudinaryFormData.append("api_key", process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY!) // Replace with your Cloudinary API Key
-    cloudinaryFormData.append("folder", "forthedreamers")
+    cloudinaryFormData.append("api_key", process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY!)
+    cloudinaryFormData.append("folder", "forthedreamers/profiles")
     cloudinaryFormData.append("upload_preset", "forthedreamers")
 
     const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     const data = await response.json()
     const imageUrl = data.secure_url;
 
-  
+
     const updatedUser = await prisma.users.update({
       where: { id: session?.user?.id },
       data: { image: imageUrl },

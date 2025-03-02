@@ -19,33 +19,46 @@ const handleResponse = async <T>(response: Response): Promise<ApiResponse<T>> =>
   return data
 }
 
-const fetchWithToken = async ({ url, options, attempt = 1, accessToken }: {
-  url: string
-  options: RequestInit
-  attempt?: number
-  accessToken?: string
+const fetchWithToken = async ({
+  url,
+  options,
+  attempt = 1,
+  accessToken
+}: {
+  url: string;
+  options: RequestInit;
+  attempt?: number;
+  accessToken?: string;
 }) => {
-  const token =
-    typeof window !== 'undefined'
-      ? !!getLocalStorage('accessToken') || (await getSession())?.accessToken
-      : accessToken || ''
-  const response = await fetch(`${process.env.NEXTAUTH_URL}${url}`, {
+  let token = accessToken;
+  if (typeof window !== 'undefined') {
+    token = getLocalStorage('accessToken') || (await getSession())?.accessToken;
+  }
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
     ...options,
     headers: {
       ...options.headers,
       Authorization: `Bearer ${token}`
     }
-  })
+  });
 
-  if (response.status !== 401) return response
-  if (attempt >= 2) throw new Error('Unauthorized')
+  if (response.status !== 401) return response;
+  if (attempt >= 2) throw new Error('Failed to refresh token after 2 attempts');
 
-  const tokenRes = await refreshToken()
-  if (!tokenRes) throw new Error('Failed to refresh token')
-  setLocalStorage('accessToken', tokenRes?.data)
+  const tokenRes = await refreshToken();
+  if (!tokenRes?.data?.accessToken) throw new Error('Failed to refresh token');
 
-  return fetchWithToken({ url, options, attempt: attempt + 1, accessToken: tokenRes?.data })
-}
+  setLocalStorage('accessToken', tokenRes.data.accessToken);
+
+  return fetchWithToken({
+    url,
+    options,
+    attempt: attempt + 1,
+    accessToken: tokenRes.data.accessToken
+  });
+};
+
 
 const upload = async <T>(url: string, file: File): Promise<ApiResponse<T>> => {
   const form = new FormData()
