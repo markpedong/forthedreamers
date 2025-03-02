@@ -4,7 +4,7 @@ import { TSessionUser } from './constants/types'
 
 declare module 'next-auth' {
   interface Session {
-    user: TSessionUser;
+    user: TSessionUser & { refreshToken?: string };
     accessToken?: string;
   }
 }

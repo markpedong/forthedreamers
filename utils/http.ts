@@ -35,7 +35,7 @@ const fetchWithToken = async ({
     token = getLocalStorage('accessToken') || (await getSession())?.accessToken;
   }
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
+  const response = await fetch(`${process.env.NEXTAUTH_URL}${url}`, {
     ...options,
     headers: {
       ...options.headers,

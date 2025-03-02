@@ -3,17 +3,16 @@ import { generateResponse } from '@/utils/helpers';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '@/constants';
 import { generateAccessToken } from '@/utils/tokens';
+import { getServerSession } from 'next-auth';
+import authOptions from '../[...nextauth]/options';
 
 export async function POST(req: Request) {
   try {
-    const { refreshToken } = await req.json();
-    if (!refreshToken) {
-      return generateResponse({ error: 'Refresh token required', status: 400 });
-    }
+    const refreshToken = (await getServerSession(authOptions))?.user.refreshToken
 
     let decoded;
     try {
-      decoded = jwt.verify(refreshToken, JWT_SECRET) as { id: string };
+      decoded = jwt.verify(`${refreshToken}`, JWT_SECRET) as { id: string };
     } catch (error) {
       return generateResponse({ error: 'Invalid refresh token', status: 401 });
     }

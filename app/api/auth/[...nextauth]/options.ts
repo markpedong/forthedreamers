@@ -94,8 +94,9 @@ const authOptions: AuthOptions = {
       return { ...token, accessToken: newAccessToken };
     },
     async session({ session, token }) {
-      session.user = { ...session.user, ...token };
-      token.accessToken as string | undefined
+      const { accessToken, ...resToken } = token as TCustomToken;
+      session.user = { ...session.user, ...resToken };
+      session.accessToken = accessToken;
       return session;
     },
   }
