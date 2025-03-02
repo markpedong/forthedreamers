@@ -1,9 +1,9 @@
-'ues client'
+'use client'
 
 import Image from 'next/image'
 import { FC } from 'react'
 import { FaArrowRight } from 'react-icons/fa'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 
 const Home: FC = () => {
 	const imageVariants = {
@@ -29,7 +29,7 @@ const Home: FC = () => {
 				initial="hidden"
 				animate="visible"
 				variants={imageVariants}
-				transition={{ duration: 0.5, delay: 0.2 }}
+				transition={{ duration: 1, delay: 0.2, ease: 'easeOut' }}
 			>
 				<Image
 					src="/images/shirt1.png"
@@ -44,7 +44,7 @@ const Home: FC = () => {
 				initial="hidden"
 				animate="visible"
 				variants={imageVariants}
-				transition={{ duration: 0.5, delay: 0.4 }}
+				transition={{ duration: 1, delay: 0.4, ease: 'easeOut' }}
 			>
 				<Image
 					src="/images/shirt2.png"
@@ -59,7 +59,7 @@ const Home: FC = () => {
 				initial="hidden"
 				animate="visible"
 				variants={imageVariants}
-				transition={{ duration: 0.5, delay: 0.6 }}
+				transition={{ duration: 1, delay: 0.6, ease: 'easeOut' }}
 			>
 				<Image
 					src="/images/shirt3.png"
@@ -74,7 +74,7 @@ const Home: FC = () => {
 				initial="hidden"
 				animate="visible"
 				variants={imageVariants}
-				transition={{ duration: 0.5, delay: 0.8 }}
+				transition={{ duration: 1, delay: 0.8, ease: 'easeOut' }}
 			>
 				<Image
 					src="/images/shirt4.png"
