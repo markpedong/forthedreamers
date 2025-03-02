@@ -44,10 +44,12 @@ const fetchWithToken = async ({
   });
 
   if (response.status !== 401) return response;
-  if (attempt >= 2) throw new Error('Failed to refresh token after 2 attempts');
+  if (attempt > 2) return response;
 
   const tokenRes = await refreshToken();
-  if (!tokenRes?.data?.accessToken) throw new Error('Failed to refresh token');
+  if (!tokenRes?.data?.accessToken) {
+    throw new Error('Failed to refresh token');
+  }
 
   setLocalStorage('accessToken', tokenRes.data.accessToken);
 
@@ -86,7 +88,7 @@ const post = async <T>({ url, data = {} }: RequestParams): Promise<ApiResponse<T
   return handleResponse<T>(response)
 }
 
-const get = async <T>({ url, data, tags, accessToken }: RequestParams): Promise<ApiResponse<T>> => {
+const get = async <T>({ url, data, tags }: RequestParams): Promise<ApiResponse<T>> => {
   const response = await fetchWithToken({
     url: `${url}${!!stringify(data) ? '?' + stringify(data) : ''}`,
     options: {

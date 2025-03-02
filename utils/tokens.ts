@@ -15,6 +15,6 @@ export const generateAccessToken = (user: Users) => {
   return jwt.sign(
     { id, username, firstName, lastName, email },
     JWT_SECRET,
-    { expiresIn: 30 }
+    { expiresIn: '30s' }
   );
 };

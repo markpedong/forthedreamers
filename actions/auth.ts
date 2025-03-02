@@ -1,10 +1,11 @@
 'use server'
 
-import { FormState } from '@/constants/types'
-import { loginSchema } from '@/lib/rules'
+import { FormState, LoginFormState } from '@/constants/types'
+import { infoSchema, loginSchema } from '@/lib/rules'
 import { registerUser } from '@/utils/request'
+import { first } from 'lodash'
 
-export const login = async (_: any, formData: FormData): Promise<FormState> => {
+export const login = async (_: any, formData: FormData): Promise<FormState<LoginFormState>> => {
   const object = {
     email: formData.get('email') as string,
     username: formData.get('username') as string | undefined,
@@ -32,4 +33,19 @@ export const login = async (_: any, formData: FormData): Promise<FormState> => {
   }
 
   return { success: true, errors: {}, values: object }
+}
+
+export const personalInformation = async (_: any, formData: FormData): Promise<FormState<any>> => {
+  const object = {
+    firstName: formData.get('firstName') as string,
+    lastName: formData.get('lastName') as string,
+    birthday: formData.get('birthday') as string,
+  }
+
+  const result = infoSchema.safeParse(object)
+  if (!result.success) {
+    return { errors: result.error.flatten().fieldErrors, values: object }
+  }
+
+  return { success: true, errors: {}, values: {} }
 }

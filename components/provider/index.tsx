@@ -8,6 +8,8 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes'
 import AuthProvider from '../auth'
 import { SessionProvider } from 'next-auth/react'
+import { AntdRegistry } from '@ant-design/nextjs-registry'
+import { ConfigProvider } from 'antd'
 
 type Props = {
 	children: React.ReactNode
@@ -25,7 +27,9 @@ const Provider: FC<Props> = ({ children }) => {
 						<HeroUIProvider>
 							<ToastProvider />
 							<NextThemesProvider attribute="class" defaultTheme={isDarkMode ? 'dark' : 'light'}>
-								{children}
+								<AntdRegistry>
+									<ConfigProvider theme={{ token: { fontFamily: 'Poppins' } }}>{children}</ConfigProvider>
+								</AntdRegistry>
 							</NextThemesProvider>
 						</HeroUIProvider>
 					</PersistGate>

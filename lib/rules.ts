@@ -19,3 +19,9 @@ export const loginSchema = z
   })
 
 export const uuidSchema = z.string().uuid();
+
+export const infoSchema = z.object({
+  firstName: z.string().trim(),
+  lastName: z.string().trim(),
+  birthday: z.string().trim()
+})

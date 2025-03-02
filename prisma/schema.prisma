@@ -14,15 +14,16 @@ datasource db {
 }
 
 model Users {
-  id          String    @unique @default(uuid()) @db.Uuid
-  email       String?   @unique
-  username    String    @unique
-  firstName   String?
-  lastName    String?
-  image       String?
-  password    String
+  id           String    @unique @default(uuid()) @db.Uuid
+  email        String?   @unique
+  username     String    @unique
+  firstName    String?
+  lastName     String?
+  birthday     String?
+  image        String?
+  password     String
   refreshToken String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
 }
