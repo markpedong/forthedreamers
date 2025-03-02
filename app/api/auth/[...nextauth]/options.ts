@@ -78,57 +78,62 @@ const authOptions: AuthOptions = {
       return true
     },
     async jwt({ token, user, account }) {
-      if (account?.provider === 'google') {
+      if (account?.provider === "google") {
         let existingUser = await prisma.users.findUnique({
           where: { email: user?.email! }
-        })
+        });
 
         if (!existingUser) {
           existingUser = await prisma.users.create({
             data: {
-              firstName: user?.name?.split(' ')[0],
-              lastName: user?.name?.split(' ')[1] || '',
+              firstName: user?.name?.split(" ")[0],
+              lastName: user?.name?.split(" ")[1] || "",
               email: user?.email!,
-              username: user?.email!.replace('@gmail.com', ''),
+              username: user?.email!.replace("@gmail.com", ""),
               image: user?.image!,
-              password: ''
+              password: "",
             }
-          })
+          });
         }
 
-        const refreshToken = generateRefreshToken(existingUser)
-        const accessToken = generateAccessToken(existingUser)
+        const refreshToken = generateRefreshToken(existingUser);
+        const accessToken = generateAccessToken(existingUser);
 
         await prisma.users.update({
           where: { id: existingUser.id },
           data: { refreshToken }
-        })
+        });
 
         return {
           ...token,
           id: existingUser.id,
           accessToken,
           refreshToken,
-          provider: 'google'
-        }
+          provider: "google",
+        };
       }
 
-      if (!token.provider || token.provider !== 'google') {
-        const existingUser = await prisma.users.findUnique({
-          where: { id: token.id as string }
-        })
-
-        if (!existingUser) throw new Error('User not found')
-
-        const newAccessToken = generateAccessToken(existingUser)
-
+      if (user) {
         return {
           ...token,
-          accessToken: newAccessToken
-        }
+          id: user.id,
+        };
       }
 
-      return token
+      if (!token.id) throw new Error("User ID is missing in JWT token");
+
+      const existingUser = await prisma.users.findUnique({
+        where: { id: token.id as string }
+      });
+
+      if (!existingUser) throw new Error("User not found");
+
+      const newAccessToken = generateAccessToken(existingUser);
+
+      return {
+        ...token,
+        accessToken: newAccessToken,
+      };
     },
     async session({ session, token }) {
       const { accessToken, ...resToken } = token as TCustomToken
