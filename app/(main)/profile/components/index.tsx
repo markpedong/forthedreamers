@@ -39,6 +39,7 @@ const Profile: FC = () => {
 	}
 
 	const fetchUserData = async () => {
+		console.log("session", session)
 		if (!session?.user?.id || !session?.accessToken) return
 		const res = await getUserData(`${session.user.id}`, session.accessToken)
 		setUserData(res?.data)
