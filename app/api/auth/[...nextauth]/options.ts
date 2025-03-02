@@ -4,8 +4,6 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import bcrypt from 'bcrypt';
 import { TCustomToken } from '@/constants/types';
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '@/constants';
 import { generateRefreshToken, generateAccessToken } from '@/utils/tokens';
 
 const authOptions: AuthOptions = {
@@ -17,30 +15,30 @@ const authOptions: AuthOptions = {
         password: { label: 'password', type: 'password' }
       },
       authorize: async credentials => {
-        if (!credentials?.email || !credentials?.password) throw new Error('Email and password are required');
+        if (!credentials?.email || !credentials?.password) throw new Error('Email and password are required')
 
         const user = await prisma.users.findUnique({
           where: { email: credentials.email }
-        });
+        })
 
-        if (!user || !user.password) throw new Error('Invalid credentials');
+        if (!user || !user.password) throw new Error('Invalid credentials')
 
-        const isCorrectPassword = await bcrypt.compare(credentials.password, user.password);
-        if (!isCorrectPassword) throw new Error('Invalid credentials');
+        const isCorrectPassword = await bcrypt.compare(credentials.password, user.password)
+        if (!isCorrectPassword) throw new Error('Invalid credentials')
 
-        const refreshToken = generateRefreshToken(user);
-        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user)
+        const accessToken = generateAccessToken(user)
 
         await prisma.users.update({
           where: { id: user.id },
           data: { refreshToken }
-        });
+        })
 
         return {
           ...user,
           accessToken,
-          refreshToken,
-        };
+          refreshToken
+        }
       }
     }),
     GoogleProvider({
@@ -55,7 +53,7 @@ const authOptions: AuthOptions = {
       if (account?.provider === 'google') {
         let existingUser = await prisma.users.findUnique({
           where: { email: user.email! }
-        });
+        })
 
         if (!existingUser) {
           existingUser = await prisma.users.create({
@@ -65,41 +63,80 @@ const authOptions: AuthOptions = {
               email: user.email!,
               username: user.email!.replace('@gmail.com', ''),
               image: user.image!,
-              password: '',
+              password: ''
             }
-          });
+          })
         }
 
-        const refreshToken = generateRefreshToken(existingUser!);
+        const refreshToken = generateRefreshToken(existingUser!)
 
         await prisma.users.update({
           where: { id: existingUser!.id },
           data: { refreshToken }
-        });
+        })
       }
-      return true;
+      return true
     },
-    async jwt({ token, user }) {
-      if (user) {
-        return { ...token, ...user };
+    async jwt({ token, user, account }) {
+      if (account?.provider === 'google') {
+        let existingUser = await prisma.users.findUnique({
+          where: { email: user?.email! }
+        })
+
+        if (!existingUser) {
+          existingUser = await prisma.users.create({
+            data: {
+              firstName: user?.name?.split(' ')[0],
+              lastName: user?.name?.split(' ')[1] || '',
+              email: user?.email!,
+              username: user?.email!.replace('@gmail.com', ''),
+              image: user?.image!,
+              password: ''
+            }
+          })
+        }
+
+        const refreshToken = generateRefreshToken(existingUser)
+        const accessToken = generateAccessToken(existingUser)
+
+        await prisma.users.update({
+          where: { id: existingUser.id },
+          data: { refreshToken }
+        })
+
+        return {
+          ...token,
+          id: existingUser.id,
+          accessToken,
+          refreshToken,
+          provider: 'google'
+        }
       }
 
-      const existingUser = await prisma.users.findUnique({
-        where: { id: token.id as string }
-      });
+      if (!token.provider || token.provider !== 'google') {
+        const existingUser = await prisma.users.findUnique({
+          where: { id: token.id as string }
+        })
 
-      if (!existingUser) throw new Error('User not found');
+        if (!existingUser) throw new Error('User not found')
 
-      const newAccessToken = generateAccessToken(existingUser);
-      return { ...token, accessToken: newAccessToken };
+        const newAccessToken = generateAccessToken(existingUser)
+
+        return {
+          ...token,
+          accessToken: newAccessToken
+        }
+      }
+
+      return token
     },
     async session({ session, token }) {
-      const { accessToken, ...resToken } = token as TCustomToken;
-      session.user = { ...session.user, ...resToken };
-      session.accessToken = accessToken;
-      return session;
-    },
+      const { accessToken, ...resToken } = token as TCustomToken
+      session.user = { ...session.user, ...resToken }
+      session.accessToken = accessToken
+      return session
+    }
   }
-};
+}
 
 export default authOptions;

@@ -13,6 +13,7 @@ import { FC, useEffect, useState } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { IoArrowBack } from 'react-icons/io5'
 import styles from '../styles.module.scss'
+import { getLocalStorage, setLocalStorage } from '@/utils/xLocalStorage'
 
 const PersonalInformation = dynamic(() => import('./personal-information'), { ssr: false })
 const Addresses = dynamic(() => import('./addresses'), { ssr: false })
@@ -39,8 +40,9 @@ const Profile: FC = () => {
 	}
 
 	const fetchUserData = async () => {
-		console.log("session", session)
 		if (!session?.user?.id || !session?.accessToken) return
+		if (!getLocalStorage('accessToken')) setLocalStorage('accessToken', session.accessToken)
+
 		const res = await getUserData(`${session.user.id}`, session.accessToken)
 		setUserData(res?.data)
 	}
