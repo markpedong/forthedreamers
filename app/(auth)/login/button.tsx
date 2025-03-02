@@ -1,11 +1,13 @@
-import { Button } from '@heroui/react'
+import { addToast, Button } from '@heroui/react'
 import { FcGoogle } from 'react-icons/fc'
 import { LOGINFORM_STATE } from '@/constants/types'
-import { signIn } from 'next-auth/react'
+import { getSession, signIn } from 'next-auth/react'
 import { useAppSelector } from '@/redux/store'
 import { FC } from 'react'
 import { useTheme } from 'next-themes'
 import classNames from 'classnames'
+import { setLocalStorage } from '@/utils/xLocalStorage'
+import { useRouter } from 'next/navigation'
 
 interface AuthButtonsProps {
   isPending: boolean
@@ -14,6 +16,27 @@ interface AuthButtonsProps {
 const AuthButtons: FC<AuthButtonsProps> = ({ isPending }) => {
   const loginFormState = useAppSelector(state => state.app.loginFormState)
   const { theme } = useTheme()
+  const { push } = useRouter()
+
+  const handleGoogleLogin = async () => {
+    try {
+      const callback = await signIn('google', { redirect: false })
+
+      if (!callback?.ok) {
+        addToast({ title: 'Error', description: 'Google login failed', color: 'danger' })
+        return
+      }
+
+      const token = (await getSession())?.accessToken?.replaceAll('"', '')
+
+      setLocalStorage('accessToken', token)
+
+      addToast({ title: 'Success', description: 'Google login successful', color: 'success' })
+      push('/profile')
+    } catch (error) {
+      addToast({ title: 'Error', description: `${error}`, color: 'danger' })
+    }
+  }
 
   return (
     <>
@@ -47,7 +70,7 @@ const AuthButtons: FC<AuthButtonsProps> = ({ isPending }) => {
           variant="bordered"
           fullWidth
           className="mt-2"
-          onPress={async () => await signIn('google', { redirect: true, callbackUrl: '/profile' })}
+          onPress={handleGoogleLogin}
         >
           {loginFormState === LOGINFORM_STATE.REGISTER ? 'Sign up with Google' : 'Sign in with Google'}
         </Button>
