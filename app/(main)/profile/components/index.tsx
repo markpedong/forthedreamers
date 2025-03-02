@@ -42,7 +42,7 @@ const Profile: FC = () => {
 		if (!session?.user?.id || !session?.accessToken) return
 		if (!getLocalStorage('accessToken')) setLocalStorage('accessToken', session.accessToken)
 
-		const res = await getUserData(`${session.user.id}`, session.accessToken)
+		const res = await getUserData(`${session.user.id}`)
 		setUserData(res?.data)
 	}
 
