@@ -1,7 +1,6 @@
 import { LOGINFORM_STATE } from '@/constants/types'
 import { Users } from '@prisma/client'
 import { createSlice } from '@reduxjs/toolkit'
-import { m } from 'framer-motion'
 
 interface AppState {
   loginFormState: LOGINFORM_STATE
