@@ -8,9 +8,11 @@ import { QRCode } from 'antd'
 import Image from 'next/image'
 import { FaFacebookF, FaGoogle, FaInstagram, FaLinkedin } from 'react-icons/fa'
 import { usePathname } from 'next/navigation'
+import { useAppSelector } from '@/redux/store'
 
 const Footer = () => {
 	const pathname = usePathname()
+	const darkMode = useAppSelector(state => state.app.darkMode)
 	return (
 		!NO_NAVBAR_FOOTER_PAGES.includes(pathname) && (
 			<div className={styles.footerWrapper}>
@@ -72,7 +74,7 @@ const Footer = () => {
 							<div className="mt-4">
 								<div className="text-typography-1 text-xs mb-3">Save $3 with App, new user only</div>
 								<div className="flex justify-between gap-2 mb-3">
-									<QRCode value={'test'} size={75} errorLevel="M" className="footer-qr" bgColor="white" />
+									<QRCode value={'test'} size={75} errorLevel="M" className="footer-qr" bgColor={darkMode ? 'black' : 'white'} />
 									<div className="flex flex-col justify-around">
 										<Image src={'/images/googleplay.png'} width={100} height={100} alt="googleplay" priority />
 										<Image src={'/images/appstore.png'} width={100} height={100} alt="appstore" priority />

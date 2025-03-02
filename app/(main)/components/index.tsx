@@ -32,7 +32,15 @@ const Home = (props: Props) => {
 				alt="shirt2"
 				width={150}
 				height={150}
-				className="absolute left-0 top-1/4 rounded-sm"
+				className="absolute left-0 top-[15%] rounded-sm"
+				sizes="(max-width: 600px) 5vw, (max-width: 1024px) 33vw, 240px"
+			/>
+      <Image
+				src="/images/shirt3.png"
+				alt="shirt3"
+				width={150}
+				height={150}
+				className="absolute left-0 top-3/4 rounded-sm"
 				sizes="(max-width: 600px) 5vw, (max-width: 1024px) 33vw, 240px"
 			/>
 		</div>
