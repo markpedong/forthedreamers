@@ -21,7 +21,7 @@ export const loginSchema = z
 export const uuidSchema = z.string().uuid()
 
 export const infoSchema = z.object({
-  firs: z
+  firstName: z
     .string()
     .trim()
     .min(1, "First name can't be empty")
