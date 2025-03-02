@@ -37,6 +37,4 @@ export const infoSchema = z.object({
     .string()
     .trim()
     .min(1, "Birthday can't be empty")
-    .max(20, "Birthday can't be longer than 20 characters")
-    .regex(/^[a-zA-Z]+$/, 'Birthday can only contain letters')
 })
