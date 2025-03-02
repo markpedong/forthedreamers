@@ -8,8 +8,7 @@ import classNames from 'classnames'
 import { signOut, useSession } from 'next-auth/react'
 import dynamic from 'next/dynamic'
 import NextImage from 'next/image'
-import { useRouter } from 'next/navigation'
-import { FC, useEffect, useState } from 'react'
+import { FC, Suspense, useEffect, useState } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { IoArrowBack } from 'react-icons/io5'
 import styles from '../styles.module.scss'
@@ -22,96 +21,102 @@ const Orders = dynamic(() => import('./orders'), { ssr: false })
 const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 
 const Profile: FC = () => {
-	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
-	const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
-	const [userData, setUserData] = useState<Users>()
-	const [image, setImage] = useState('')
-	const { data: session } = useSession()
+  const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
+  const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
+  const [userData, setUserData] = useState<Users>()
+  const [image, setImage] = useState('')
+  const { data: session } = useSession()
 
-	const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		const file = event.target.files?.[0]
-		if (!file) return
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
 
-		const response = await uploadProfile(file)
-		if (response?.success) {
-			setImage(response?.data.secure_url)
-		}
-	}
+    const response = await uploadProfile(file)
+    if (response?.success) {
+      setImage(response?.data.secure_url)
+    }
+  }
 
-	const fetchUserData = async () => {
-		if (!session?.user?.id || !session?.accessToken) return
-		if (!getLocalStorage('accessToken')) setLocalStorage('accessToken', session.accessToken)
+  const fetchUserData = async () => {
+    if (!session?.user?.id || !session?.accessToken) return
+    if (!getLocalStorage('accessToken')) setLocalStorage('accessToken', session.accessToken)
 
-		const res = await getUserData(`${session.user.id}`)
-		setUserData(res?.data)
-	}
+    const res = await getUserData(`${session.user.id}`)
+    setUserData(res?.data)
+  }
 
-	useEffect(() => {
-		fetchUserData()
-	}, [session])
+  useEffect(() => {
+    fetchUserData()
+  }, [session])
 
-	return (
-		<div className={styles.profileWrapper}>
-			<div className={styles.profileContainer}>
-				<div className="border-r-1 h-full border-[rgba(0, 0, 0, 0.1)]">
-					<div className="p-5 mb-10">
-						<div className="flex gap-2 items-center justify-start mb-16 text-sm text-neutral-400 hover:text-black cursor-pointer transition">
-							<IoArrowBack />
-							<span>Back</span>
-						</div>
-						<div className="flex flex-col gap-1 text-sm pl-3">
-							{userData?.image ? (
-								<NextImage alt="sample" src={image  || userData?.image} width="50" height="50" className="rounded-full" />
-							) : (
-								<label className="w-12 h-12 flex flex-col items-center justify-center bg-gray-400 text-white rounded-full cursor-pointer relative">
-									<FaPlus className="text-lg absolute top-2" size={10} />
-									<span className="text-xs mt-4">Upload</span>
-									<input type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
-								</label>
-							)}
-							<span className="capitalize pt-2">
-								{userData?.firstName} {userData?.lastName}
-							</span>
-							<span className="text-neutral-400">Customer</span>
-						</div>
-						<div className="flex flex-col gap-1 text-sm mt-7">
-							{menus.map((menu, index) => (
-								<span
-									key={index}
-									onClick={() => setActiveMenu(menu)}
-									className={classNames('cursor-pointer px-3 py-2 transition-all', {
-										'border-l-2 border-gray-500 text-black bg-gray-100': activeMenu === menu,
-										'text-neutral-400': activeMenu !== menu
-									})}
-								>
-									{menu}
-								</span>
-							))}
-						</div>
-					</div>
-					<Divider />
-					<Button
-						size="sm"
-						className="m-5"
-						color="default"
-						onPress={() => {
-							clearUserData()
-							signOut()
-						}}
-					>
-						Signout
-					</Button>
-				</div>
-				<div className="p-5 h-full">
-					{activeMenu === 'Personal Information' && <PersonalInformation />}
-					{activeMenu === 'Addresses' && <Addresses />}
-					{activeMenu === 'Payment Methods' && <PaymentMethods />}
-					{activeMenu === 'Orders' && <Orders />}
-					{activeMenu === 'Reviews' && <Reviews />}
-				</div>
-			</div>
-		</div>
-	)
+  return (
+    <div className={styles.profileWrapper}>
+      <div className={styles.profileContainer}>
+        <div className="border-r-1 h-full border-[rgba(0, 0, 0, 0.1)]">
+          <div className="p-5 mb-10">
+            <div className="flex gap-2 items-center justify-start mb-16 text-sm text-neutral-400 hover:text-black cursor-pointer transition">
+              <IoArrowBack />
+              <span>Back</span>
+            </div>
+            <div className="flex flex-col gap-1 text-sm pl-3">
+              {userData?.image ? (
+                <NextImage
+                  alt="sample"
+                  src={image || userData?.image}
+                  width="50"
+                  height="50"
+                  className="rounded-full"
+                />
+              ) : (
+                <label className="w-12 h-12 flex flex-col items-center justify-center bg-gray-400 text-white rounded-full cursor-pointer relative">
+                  <FaPlus className="text-lg absolute top-2" size={10} />
+                  <span className="text-xs mt-4">Upload</span>
+                  <input type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
+                </label>
+              )}
+              <span className="capitalize pt-2">
+                {userData?.firstName} {userData?.lastName}
+              </span>
+              <span className="text-neutral-400">Customer</span>
+            </div>
+            <div className="flex flex-col gap-1 text-sm mt-7">
+              {menus.map((menu, index) => (
+                <span
+                  key={index}
+                  onClick={() => setActiveMenu(menu)}
+                  className={classNames('cursor-pointer px-3 py-2 transition-all', {
+                    'border-l-2 border-gray-500 text-black bg-gray-100': activeMenu === menu,
+                    'text-neutral-400': activeMenu !== menu
+                  })}
+                >
+                  {menu}
+                </span>
+              ))}
+            </div>
+          </div>
+          <Divider />
+          <Button
+            size="sm"
+            className="m-5"
+            color="default"
+            onPress={() => {
+              clearUserData()
+              signOut()
+            }}
+          >
+            Signout
+          </Button>
+        </div>
+        <div className="p-5 h-full">
+          {activeMenu === 'Personal Information' && <>{userData && <PersonalInformation user={userData} />}</>}
+          {activeMenu === 'Addresses' && <Addresses />}
+          {activeMenu === 'Payment Methods' && <PaymentMethods />}
+          {activeMenu === 'Orders' && <Orders />}
+          {activeMenu === 'Reviews' && <Reviews />}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default Profile

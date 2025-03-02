@@ -3,10 +3,12 @@ import { createSlice } from '@reduxjs/toolkit'
 
 interface AppState {
   loginFormState: LOGINFORM_STATE
+  darkMode: boolean
 }
 
 const initialState: AppState = {
-  loginFormState: LOGINFORM_STATE.LOGIN
+  loginFormState: LOGINFORM_STATE.LOGIN,
+  darkMode: false
 }
 
 export const appSlice = createSlice({
@@ -15,9 +17,12 @@ export const appSlice = createSlice({
   reducers: {
     setLoginFormState: (state, action) => {
       state.loginFormState = action.payload
+    },
+    toggleDarkMode: state => {
+      state.darkMode = !state.darkMode
     }
   }
 })
 
-export const { setLoginFormState } = appSlice.actions
+export const { setLoginFormState, toggleDarkMode } = appSlice.actions
 export default appSlice.reducer
