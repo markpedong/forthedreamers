@@ -1,4 +1,5 @@
+import Home from './components'
 
-export default function Home() {
-  return <div>Hello World</div>
+export default function Page() {
+	return <Home />
 }
