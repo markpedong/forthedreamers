@@ -58,12 +58,12 @@ const NavBar: FC = () => {
             </Link>
           )}
           {!session?.user?.id && (
-            <Link color="foreground" href="/login">
+            <Link color="foreground" href="/login" className='hidden md:block'>
               Login
             </Link>
           )}
         </NavbarContent>
-        <NavbarMenu className="flex flex-col justify-between px-0">
+        <NavbarMenu className="flex flex-col justify-between p-6">
           <div>
             {menuItems.map((item, index) => (
               <NavbarMenuItem
