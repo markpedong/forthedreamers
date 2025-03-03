@@ -13,6 +13,7 @@ import AuthToggle from './footer'
 import AuthForm from './form'
 import styles from './styles.module.scss'
 import Title from './title'
+import { registerUser } from '@/utils/request'
 
 const Login = () => {
 	const loginFormState = useAppSelector(state => state.app.loginFormState)
@@ -38,6 +39,17 @@ const Login = () => {
 
 	const handleSuccess = async () => {
 		try {
+			if (loginFormState === LOGINFORM_STATE.REGISTER) {
+				const res = await registerUser(state.values)
+
+				if (!res.success) {
+					addToast({ title: 'Error', description: 'User registration failed', color: 'danger' })
+					return
+				}
+
+				await new Promise(resolve => setTimeout(resolve, 300))
+			}
+
 			const callback = await signIn('credentials', {
 				email: state.values?.email,
 				password: state.values?.password,
