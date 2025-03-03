@@ -1,4 +1,4 @@
-import { Users } from '@prisma/client'
+import { Addresses, Users } from '@prisma/client'
 import { get, post, upload } from './http'
 
 export const registerUser = async (body: any) => post<Users>({ url: '/api/users', data: body })
@@ -14,4 +14,4 @@ export const updateProfile = async (body: Users) => post<Users>({ url: `/api/use
 
 export const createNewAddress = async (body: any) => post<any>({ url: '/api/address', data: body })
 
-export const getAddress = async (id: string) => get<any>({ url: `/api/address/${id}` })
+export const getAddress = async (accessToken?: string) => get<Addresses>({ url: `/api/address`, accessToken })

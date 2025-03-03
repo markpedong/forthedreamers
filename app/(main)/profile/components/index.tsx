@@ -28,6 +28,8 @@ const Profile: FC = () => {
 	const { data: session } = useSession()
 	const userData = useAppSelector(state => state.app.userData)
 
+	console.log("session from client", session?.accessToken)
+
 	const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0]
 		if (!file) return
