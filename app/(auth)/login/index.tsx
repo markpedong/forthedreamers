@@ -49,7 +49,7 @@ const Login = () => {
 				return
 			}
 
-			const token = (await getSession())?.accessToken?.replaceAll('"', '')
+			const token = (await getSession())?.accessToken
 
 			addToast({ title: 'Success', description: 'Login successful', color: 'success' })
 			setLocalStorage('accessToken', token)
