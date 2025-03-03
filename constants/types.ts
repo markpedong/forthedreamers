@@ -3,7 +3,7 @@ import { GetProp, UploadProps } from 'antd'
 
 export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' | 'firstName' | 'lastName'>
 
-export type TCustomToken = TSessionUser & { accessToken: string };
+export type TCustomToken = TSessionUser & { accessToken: string }
 
 export type TDecodedToken = Pick<Users, 'id' | 'email' | 'firstName' | 'lastName'>
 
@@ -71,4 +71,9 @@ export type RequestParams = {
   accessToken?: string
 }
 
-export type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+export type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
+
+export type TAddTailwindUtility = {
+  addUtilities: (utilities: any) => void
+  addComponents: (components: any) => void
+}

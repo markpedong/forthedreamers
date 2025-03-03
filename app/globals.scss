@@ -10,3 +10,7 @@
   height: 65px !important;
   width: 75px !important;
 }
+
+.customBtn1 {
+  @apply bg-white text-black dark:bg-black dark:text-white;
+}

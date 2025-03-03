@@ -23,7 +23,7 @@ const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 
 const Profile: FC = () => {
 	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
-	const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
+	const [activeMenu, setActiveMenu] = useState<string>('Addresses')
 	const dispatch = useAppDispatch()
 	const { data: session } = useSession()
 	const userData = useAppSelector(state => state.app.userData)

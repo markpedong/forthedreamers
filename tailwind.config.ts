@@ -1,7 +1,8 @@
 import type { Config } from 'tailwindcss'
+import { TAddTailwindUtility } from './constants/types'
 
 const { heroui } = require('@heroui/react')
-const plugin = require("tailwindcss/plugin");
+const plugin = require('tailwindcss/plugin')
 
 export default {
   content: [
@@ -14,21 +15,28 @@ export default {
     extend: {
       colors: {
         background: 'var(--background)',
-        foreground: 'var(--foreground)',
+        foreground: 'var(--foreground)'
       }
     }
   },
   darkMode: 'class',
   plugins: [
-    plugin(({ addComponents }: any) => {
+    plugin(({ addComponents, addUtilities }: TAddTailwindUtility) => {
       addComponents({
-        ".customButton1": {
-          "@apply bg-black text-white": {},
-          ".dark &": {
-            "@apply bg-white text-black": {},
-          },
-        },
-      });
+        '.customButton1': {
+          '@apply !bg-black !text-white': {},
+          '.dark &': {
+            '@apply !bg-white !text-black': {}
+          }
+        }
+      })
+      // addUtilities({
+      //   '.flex-all-center': {
+      //     display: 'flex',
+      //     'align-items': 'center',
+      //     'justify-content': 'center'
+      //   }
+      // })
     }),
     heroui({
       themes: {
@@ -39,7 +47,7 @@ export default {
         },
         dark: {
           colors: {
-            'typography-1': '#F4F4F5',
+            'typography-1': '#F4F4F5'
           }
         }
       }
