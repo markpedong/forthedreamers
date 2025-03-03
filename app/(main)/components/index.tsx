@@ -15,8 +15,8 @@ const Home: FC = () => {
 
 	return (
 		<>
-			<div className="max-w-7xl mx-auto p-12 py-16 relative">
-				<div className="flex justify-center items-center flex-col text-center gap-8 z-10 relative my-24">
+			<div className="max-w-7xl mx-auto p-12 py-16 relative h-[90vh]">
+				<div className="flex justify-center items-center flex-col text-center gap-8 z-10 relative my-24 h-[70%]">
 					<h1 className="text-6xl font-bold backdrop-blur-lg rounded-md">
 						Cultivate Joy <br /> with Every Shirt
 					</h1>
