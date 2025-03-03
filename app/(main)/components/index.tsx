@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { FC } from 'react'
 import { FaArrowRight } from 'react-icons/fa'
 import { motion } from 'framer-motion'
+import TrendingNow from './trending-now'
 
 const Home: FC = () => {
 	const imageVariants = {
@@ -12,8 +13,8 @@ const Home: FC = () => {
 	}
 
 	return (
-		<div className="max-w-7xl mx-auto h-screen px-12 py-6 relative">
-			<div className="flex justify-center items-center flex-col h-[75%] text-center gap-8 z-10 relative">
+		<div className="max-w-7xl mx-auto px-12 py-6 relative">
+			<div className="flex justify-center items-center flex-col text-center gap-8 z-10 relative my-24">
 				<h1 className="text-6xl font-bold backdrop-blur-lg rounded-md">
 					Cultivate Joy <br /> with Every Shirt
 				</h1>
@@ -30,7 +31,7 @@ const Home: FC = () => {
 				animate="visible"
 				variants={imageVariants}
 				transition={{ duration: 1, delay: 0.2, ease: 'easeOut' }}
-				className="absolute right-0 top-1/2 rounded-sm"
+				className="absolute right-0 top-[10%] rounded-sm"
 			>
 				<Image
 					src="/images/shirt1.png"
@@ -60,7 +61,7 @@ const Home: FC = () => {
 				animate="visible"
 				variants={imageVariants}
 				transition={{ duration: 1, delay: 0.6, ease: 'easeOut' }}
-				className="md:absolute left-0 top-3/4 rounded-sm md:block hidden"
+				className="md:absolute left-0 top-[40%] rounded-sm md:block hidden"
 			>
 				<Image
 					src="/images/shirt3.png"
@@ -75,7 +76,7 @@ const Home: FC = () => {
 				animate="visible"
 				variants={imageVariants}
 				transition={{ duration: 1, delay: 0.8, ease: 'easeOut' }}
-				className="md:absolute right-[35%] top-[-10%] rounded-sm md:block hidden"
+				className="md:absolute right-[35%] top-[-5%] rounded-sm md:block hidden"
 			>
 				<Image
 					src="/images/shirt4.png"
@@ -85,6 +86,8 @@ const Home: FC = () => {
 					sizes="(max-width: 600px) 5vw, (max-width: 1024px) 33vw, 240px"
 				/>
 			</motion.div>
+			<div className='h-[8rem]'/>
+			<TrendingNow />
 		</div>
 	)
 }
