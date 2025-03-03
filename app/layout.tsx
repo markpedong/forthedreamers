@@ -1,5 +1,6 @@
 import { SF_PRO_DISPLAY } from '@/public/fonts'
 import './globals.scss'
+import 'keen-slider/keen-slider.min.css'
 import Provider from '@/components/provider'
 
 export default function RootLayout({

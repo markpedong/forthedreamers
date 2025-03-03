@@ -25,6 +25,7 @@
 		"classnames": "^2.5.1",
 		"framer-motion": "^12.4.7",
 		"jsonwebtoken": "^9.0.2",
+		"keen-slider": "^6.8.6",
 		"motion": "^12.4.7",
 		"next": "15.2.0",
 		"next-auth": "^4.24.11",
