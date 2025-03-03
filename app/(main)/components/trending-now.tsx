@@ -32,7 +32,7 @@ const TrendingNow = (props: Props) => {
 	})
 
 	return (
-		<div className="max-w-7xl mx-auto">
+		<div className="max-w-7xl mx-auto px-2">
 			<Typography.Title level={1}>TRENDING NOW</Typography.Title>
 			<div ref={ref} className="keen-slider">
 				<Product />
