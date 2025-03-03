@@ -2,7 +2,7 @@
 
 import { FormState } from '@/constants/types'
 import { addressSchema, infoSchema, loginSchema } from '@/lib/rules'
-import { registerUser } from '@/utils/request'
+import { createNewAddress, registerUser } from '@/utils/request'
 
 export const login = async (_: any, formData: FormData): Promise<FormState<any>> => {
   const object = {
@@ -51,15 +51,15 @@ export const personalInformation = async (_: any, formData: FormData): Promise<F
 
 export const addressInformation = async (_: any, formData: FormData): Promise<FormState<any>> => {
   const object = {
-    firstName: formData.get('firstName') as string,
-    lastName: formData.get('lastName') as string,
-    number: formData.get('number') as string,
-    landmark: formData.get('landmark') as string,
-    street: formData.get('street') as string,
-    state: formData.get('state') as string,
-    city: formData.get('city') as string,
-    zipCode: formData.get('zipCode') as string,
-    country: formData.get('country') as string
+    firstName: formData.get('firstName'),
+    lastName: formData.get('lastName'),
+    number: formData.get('number'),
+    landmark: formData.get('landmark'),
+    street: formData.get('street'),
+    state: formData.get('state'),
+    city: formData.get('city'),
+    zipCode: formData.get('zipCode'),
+    country: formData.get('country'),
   }
 
   const result = addressSchema.safeParse(object)

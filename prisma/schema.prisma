@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,40 +8,37 @@ datasource db {
 }
 
 model Users {
-  id           String    @id @default(uuid()) @db.Uuid
-  email        String?   @unique
-  username     String    @unique
+  id           String      @id @default(uuid()) @db.Uuid
+  email        String?     @unique
+  username     String      @unique
+  password     String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  deletedAt    DateTime?
   firstName    String?
   lastName     String?
-  birthday     String?
   image        String?
-  password     String
   refreshToken String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  deletedAt    DateTime?
-
-  addresses Addresses[]
+  birthday     String?
+  addresses    Addresses[]
 }
 
 model Addresses {
-  id     String  @id @default(uuid()) @db.Uuid
-  userId String? @db.Uuid
-  user   Users?  @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  firstName String
-  lastName  String
-  number    String
-  landmark  String?
-  street    String
-  city      String
-  state     String?
-  zipCode   String?
-  country   String
-
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String?   @db.Uuid
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+  city      String
+  country   String
+  state     String?
+  street    String
+  zipCode   String?
+  firstName String
+  landmark  String?
+  lastName  String
+  number    String
+  user      Users?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
