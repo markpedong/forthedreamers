@@ -1,21 +1,38 @@
 'use client'
+
 import Product from '@/components/product'
 import { Typography } from 'antd'
 import { useKeenSlider } from 'keen-slider/react'
-import 'keen-slider/keen-slider.min.css'
 
 type Props = {}
 
 const TrendingNow = (props: Props) => {
 	const [ref] = useKeenSlider<HTMLDivElement>({
 		slides: {
-			perView: 2,
+			perView: 5,
 			spacing: 15
+		},
+		breakpoints: {
+			'(max-width: 992px)': {
+				slides: {
+					perView: 3
+				}
+			},
+			'(max-width: 768px)': {
+				slides: {
+					perView: 2
+				}
+			},
+			'(max-width: 576px)': {
+				slides: {
+					perView: 1
+				}
+			}
 		}
 	})
 
 	return (
-		<div>
+		<div className="max-w-7xl mx-auto">
 			<Typography.Title level={1}>TRENDING NOW</Typography.Title>
 			<div ref={ref} className="keen-slider">
 				<Product />

@@ -5,7 +5,7 @@ type Props = {}
 
 const Product: FC<Props> = () => {
 	return (
-		<div className="flex flex-col gap-1 items-center text-neutral-400">
+		<div className="flex flex-col gap-1 items-center text-neutral-400 keen-slider__slide">
 			<Image src="/images/shirt1.png" alt="" width={200} height={200} className="h-auto w-[14rem]" />
 			<div className="grid grid-cols-6 grid-rows-2 justify-items-start items-center gap-x-2 gap-y-0">
 				<div className="text-lg text-white truncate w-[10rem]" style={{ gridArea: '1/1/2/5' }}>
@@ -20,8 +20,10 @@ const Product: FC<Props> = () => {
 				<div className="text-sm justify-self-end" style={{ gridArea: '2/5/3/7' }}>
 					$100.00
 				</div>
+				<span className="self-start text-xs" style={{ gridArea: '3/1/4/7' }}>
+					2 Styles Available
+				</span>
 			</div>
-			<span className="self-start text-xs">2 Styles Available</span>
 		</div>
 	)
 }
