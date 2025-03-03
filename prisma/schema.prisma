@@ -27,3 +27,11 @@ model Users {
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
 }
+
+model NewsLetter {
+  id        String    @unique @default(uuid()) @db.Uuid
+  email     String?   @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
