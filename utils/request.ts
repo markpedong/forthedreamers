@@ -13,3 +13,5 @@ export const uploadProfile = async (file: File) => upload<{ secure_url: string }
 export const updateProfile = async (body: Users) => post<Users>({ url: `/api/users/${body.id}`, data: body })
 
 export const createNewAddress = async (body: any) => post<any>({ url: '/api/address', data: body })
+
+export const getAddress = async (id: string) => get<any>({ url: `/api/address/${id}` })
