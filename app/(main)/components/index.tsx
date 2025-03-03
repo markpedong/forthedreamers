@@ -5,6 +5,7 @@ import { FC } from 'react'
 import { FaArrowRight } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 import TrendingNow from './trending-now'
+import NewsLetter from '@/components/newsletter'
 
 const Home: FC = () => {
 	const imageVariants = {
@@ -89,6 +90,7 @@ const Home: FC = () => {
 				</motion.div>
 			</div>
 			<TrendingNow />
+			<NewsLetter />
 		</>
 	)
 }
