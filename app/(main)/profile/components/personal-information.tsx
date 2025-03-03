@@ -2,8 +2,6 @@ import { personalInformation } from '@/actions/auth'
 import { Button, DatePicker, Form, Input } from '@heroui/react'
 import { Users } from '@prisma/client'
 import { Typography } from 'antd'
-import classNames from 'classnames'
-import { useTheme } from 'next-themes'
 import { FC, useActionState, useEffect, useTransition } from 'react'
 import { getLocalTimeZone, parseDate, today } from '@internationalized/date'
 import { updateProfile } from '@/utils/request'
@@ -18,7 +16,6 @@ const PersonalInformation: FC<{ user: Users | undefined }> = ({ user }) => {
     values: {}
   })
   const [_, startTransition] = useTransition()
-  const { theme } = useTheme()
   const container = 'grid grid-cols-2 gap-3 w-full'
   const { data: session } = useSession()
 

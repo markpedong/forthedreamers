@@ -1,14 +1,6 @@
-import { useAppSelector } from '@/redux/store'
 import { Button, Input } from '@heroui/react'
-import classNames from 'classnames'
-import { useTheme } from 'next-themes'
-import React from 'react'
 
-type Props = {}
-
-const NewsLetter = (props: Props) => {
-  const { theme } = useTheme()
-
+const NewsLetter = () => {
   return (
     <div className="my-40 max-w-5xl mx-auto font-[Sora]">
       <div className="flex justify-center flex-col items-center max-w-xl mx-auto gap-3">

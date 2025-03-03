@@ -28,6 +28,15 @@ export default {
           '.dark &': {
             '@apply !bg-white !text-black': {}
           }
+        },
+        '.customButton1Reverse': {
+          '@apply !bg-white !text-black': {},
+          '.dark &': {
+            '@apply !bg-black !text-white': {}
+          }
+        },
+        '.flexAllCenter': {
+          '@apply flex items-center justify-center': {}
         }
       })
       // addUtilities({

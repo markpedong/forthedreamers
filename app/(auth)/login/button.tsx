@@ -1,9 +1,7 @@
 import { LOGINFORM_STATE } from '@/constants/types'
 import { useAppSelector } from '@/redux/store'
 import { Button } from '@heroui/react'
-import classNames from 'classnames'
 import { signIn } from 'next-auth/react'
-import { useTheme } from 'next-themes'
 import { FC } from 'react'
 import { FcGoogle } from 'react-icons/fc'
 
@@ -13,13 +11,6 @@ interface AuthButtonsProps {
 
 const AuthButtons: FC<AuthButtonsProps> = ({ isPending }) => {
   const loginFormState = useAppSelector(state => state.app.loginFormState)
-  const { theme } = useTheme()
-
-  // const handleSuccess = async () => {
-  // 	addToast({ title: 'Success', description: 'Login successful', color: 'success' })
-  // 	setLocalStorage('accessToken', session?.accessToken)
-  // 	push('/profile')
-  // }
 
   return (
     <>

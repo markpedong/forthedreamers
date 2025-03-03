@@ -21,15 +21,6 @@ export type ApiResponse<T> = {
   }
 }
 
-export type LoginFormState = {
-  email: string
-  username?: string
-  firstName?: string
-  lastName?: string
-  password: string
-  confirmPassword: string
-}
-
 export type FormState<T> = {
   errors?: Record<string, string[]>
   values?: T

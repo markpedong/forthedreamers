@@ -33,8 +33,27 @@ export const infoSchema = z.object({
     .min(1, "Last name can't be empty")
     .max(20, "Last name can't be longer than 20 characters")
     .regex(/^[a-zA-Z]+$/, 'Last name can only contain letters'),
-  birthday: z
+  birthday: z.string().trim().min(1, "Birthday can't be empty")
+})
+
+export const addressSchema = z.object({
+  firstName: z
     .string()
     .trim()
-    .min(1, "Birthday can't be empty")
+    .min(1, "First name can't be empty")
+    .max(20, "First name can't be longer than 20 characters")
+    .regex(/^[a-zA-Z]+$/, 'First name can only contain letters'),
+  lastName: z
+    .string()
+    .trim()
+    .min(1, "Last name can't be empty")
+    .max(20, "Last name can't be longer than 20 characters")
+    .regex(/^[a-zA-Z]+$/, 'Last name can only contain letters'),
+  number: z.string().trim().min(1, "Number can't be empty").max(13, "Number can't be longer than 13 characters"),
+  landmark: z.string().trim().max(20, "Landmark can't be longer than 20 characters"),
+  street: z.string().trim().min(1, "Street can't be empty").max(20, "Street can't be longer than 20 characters"),
+  city: z.string().trim().min(1, "City can't be empty").max(20, "City can't be longer than 20 characters"),
+  state: z.string().trim().min(1, "State can't be empty").max(20, "State can't be longer than 20 characters"),
+  zipCode: z.string().trim().min(1, "Zip code can't be empty").max(20, "Zip code can't be longer than 20 characters"),
+  country: z.string().trim().min(1, "Country can't be empty").max(20, "Country can't be longer than 20 characters")
 })
