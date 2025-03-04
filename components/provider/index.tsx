@@ -20,7 +20,7 @@ const Provider: FC<Props> = ({ children }) => {
         <AuthProvider>
           <PersistGate loading={null} persistor={persistor}>
             <HeroUIProvider>
-              <ToastProvider />
+              <ToastProvider maxVisibleToasts={3} toastProps={{ timeout: 1500 }} />
               <ThemesProvider>{children}</ThemesProvider>
             </HeroUIProvider>
           </PersistGate>

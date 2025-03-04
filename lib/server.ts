@@ -1,8 +1,8 @@
 'use server'
 
-import prisma from "@/db"
-import { revalidateTag } from "next/cache"
-import { cookies } from "next/headers"
+import prisma from '@/db'
+import { revalidateTag } from 'next/cache'
+import { cookies } from 'next/headers'
 
 export const revalidate = async (tag?: string) => revalidateTag(tag || '')
 
@@ -18,7 +18,7 @@ export const setCookie = async (name: string, value: string) => {
     sameSite: 'lax',
     secure: false,
     httpOnly: false,
-    maxAge: hours * 60 * 60,
+    maxAge: hours * 60 * 60
   })
 }
 
@@ -30,12 +30,13 @@ export const getCookie = async (name: string) => {
 
 export const getProfileServer = async (id?: string) => {
   return prisma.users.findUnique({
-    where: { id },
+    where: { id }
   })
 }
 
 export const getAddressesServer = async (id?: string) => {
   return prisma.addresses.findMany({
-    where: { userId: id },
+    where: { userId: id, deletedAt: null },
+    orderBy: { createdAt: 'desc' }
   })
 }

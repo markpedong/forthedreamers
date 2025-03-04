@@ -9,7 +9,6 @@ export async function POST(req: NextRequest) {
   if (!authRes.ok) return authRes
 
   const body = await req.json()
-  console.log("body", body)
   const { firstName, lastName, number, landmark, street, city, state, zipCode, country, userId } = body
   const address = await prisma.addresses.create({
     data: {
@@ -30,6 +29,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const authRes = await isAuthenticated(req)
+  if (!authRes.ok) return authRes
+
   const session = await getServerSession(authOptions)
   if (!session) {
     return generateResponse({ error: 'Unauthorized', status: 401 })

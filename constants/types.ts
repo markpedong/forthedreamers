@@ -59,7 +59,6 @@ export type RequestParams = {
   url: string
   data?: any
   tags?: string
-  accessToken?: string
 }
 
 export type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
