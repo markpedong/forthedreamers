@@ -50,7 +50,7 @@ export const addressSchema = z.object({
     .max(20, "Last name can't be longer than 20 characters")
     .regex(/^[a-zA-Z]+$/, 'Last name can only contain letters'),
   number: z.string().trim().min(1, "Number can't be empty").max(13, "Number can't be longer than 13 characters"),
-  landmark: z.string().trim().max(20, "Landmark can't be longer than 20 characters"),
+  landmark: z.string().trim().max(100, "Landmark can't be longer than 100 characters"),
   street: z.string().trim().min(1, "Street can't be empty").max(50, "Street can't be longer than 50 characters"),
   city: z.string().trim().min(1, "City can't be empty").max(20, "City can't be longer than 20 characters"),
   state: z.string().trim().min(1, "State can't be empty").max(20, "State can't be longer than 20 characters"),

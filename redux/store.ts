@@ -1,9 +1,10 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { persistStore, persistReducer } from 'redux-persist';
-import { combineReducers } from 'redux';
-import appReducer from './slices/appSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
+import { configureStore } from '@reduxjs/toolkit'
+import { persistStore, persistReducer } from 'redux-persist'
+import { combineReducers } from 'redux'
+import appReducer from './slices/appSlice'
+import userReducer from './slices/userSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import createWebStorage from 'redux-persist/lib/storage/createWebStorage'
 
 const createNoopStorage = () => {
   return {
@@ -22,26 +23,27 @@ const createNoopStorage = () => {
 const storage = typeof window !== 'undefined' ? createWebStorage('local') : createNoopStorage()
 const persistConfig = {
   key: 'root',
-  storage,
-};
+  storage
+}
 
 const rootReducer = combineReducers({
   app: appReducer,
-});
+  user: userReducer
+})
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
-      serializableCheck: false,
-    }),
-});
+      serializableCheck: false
+    })
+})
 
-export const persistor = persistStore(store);
+export const persistor = persistStore(store)
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>()
 export const useAppSelector = useSelector.withTypes<RootState>()

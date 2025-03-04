@@ -6,7 +6,7 @@ import { FC, useActionState, useEffect, useTransition } from 'react'
 import { getLocalTimeZone, parseDate, today } from '@internationalized/date'
 import { updateProfile } from '@/utils/request'
 import { useAppDispatch } from '@/redux/store'
-import { setUserData } from '@/redux/slices/appSlice'
+import { setUserData } from '@/redux/slices/userSlice'
 import { useSession } from 'next-auth/react'
 
 const PersonalInformation: FC<{ user: Users | undefined }> = ({ user }) => {
