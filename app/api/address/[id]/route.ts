@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   if (!authRes.ok) return authRes
 
   const body = await req.json()
-  const { firstName, lastName, number, landmark, street, city, state, zipCode, country, userId, addressType, id } = body
+  const { firstName, lastName, number, landmark, street, city, state, zipCode, country, userId, type, id } = body
 
   await prisma.addresses.update({
     where: { id },
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       zipCode,
       country,
       userId,
-      type: ADDRESS_TYPE[addressType as keyof typeof ADDRESS_TYPE]
+      type: ADDRESS_TYPE[type as keyof typeof ADDRESS_TYPE]
     }
   })
 

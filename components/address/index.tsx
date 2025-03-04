@@ -83,8 +83,8 @@ const Address: FC<Props> = ({ openEditModal, address }) => {
               <span className="font-semibold text-medium">
                 {address?.firstName} {address?.lastName} / {address?.number}
               </span>
-              {address?.type === ADDRESS_TYPE.DEFAULT && (
-                <span className="px-2 py-1 text-tiny bg-primary-50 text-primary rounded-full">Default</span>
+              {address?.type !== ADDRESS_TYPE.NONE && (
+                <span className="px-2 py-1 text-tiny bg-primary-50 text-primary rounded-full">{address?.type}</span>
               )}
             </div>
             <div className="text-default-500 text-xs">
@@ -108,7 +108,7 @@ const Address: FC<Props> = ({ openEditModal, address }) => {
             {renderDelete()}
           </div>
         </div>
-        {address?.type === ADDRESS_TYPE.NONE && (
+        {address?.type !== ADDRESS_TYPE.DEFAULT && (
           <div className="mt-2 pt-2 border-t">
             <Button variant="flat" size="sm" onPress={handleSetDefaultAddress} isLoading={isPending}>
               {isPending ? 'Setting...' : 'Set as default'}
