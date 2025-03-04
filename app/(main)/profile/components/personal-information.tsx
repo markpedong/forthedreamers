@@ -1,5 +1,5 @@
 import { personalInformation } from '@/actions/auth'
-import { Button, DatePicker, Form, Input } from '@heroui/react'
+import { addToast, Button, DatePicker, Form, Input } from '@heroui/react'
 import { Users } from '@prisma/client'
 import { Typography } from 'antd'
 import { FC, useActionState, useEffect, useTransition } from 'react'
@@ -11,11 +11,11 @@ import { useSession } from 'next-auth/react'
 
 const PersonalInformation: FC<{ user: Users | undefined }> = ({ user }) => {
   const dispatch = useAppDispatch()
-  const [state, action, isPending] = useActionState(personalInformation, {
+  const [state, action] = useActionState(personalInformation, {
     errors: {},
     values: {}
   })
-  const [_, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition()
   const container = 'grid grid-cols-2 gap-3 w-full'
   const { data: session } = useSession()
 
@@ -33,6 +33,7 @@ const PersonalInformation: FC<{ user: Users | undefined }> = ({ user }) => {
 
     if (res.success) {
       dispatch(setUserData(res.data))
+      addToast({ title: 'Success', description: 'Personal information updated successfully', color: 'success' })
     }
   }
 
