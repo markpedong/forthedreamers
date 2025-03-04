@@ -60,9 +60,21 @@ const Profile: FC<Props> = ({ addresses, userInfo }) => {
       <div className={styles.profileContainer}>
         <div className="border-r-1 h-full border-[rgba(0, 0, 0, 0.1)]">
           <div className="p-5 mb-10">
-            <div className="flex gap-2 items-center justify-start mb-16 text-sm text-neutral-400 hover:text-black cursor-pointer transition">
-              <IoArrowBack />
-              <span>Back</span>
+            <div className="flex justify-between items-center mb-16 mt-4">
+              <div className="flex gap-2 items-center justify-start text-sm text-neutral-400 hover:text-black cursor-pointer transition">
+                <IoArrowBack />
+                <span>Back</span>
+              </div>
+              <Button
+                size="sm"
+                color="default"
+                onPress={() => {
+                  clearUserData()
+                  signOut()
+                }}
+              >
+                Signout
+              </Button>
             </div>
             <div className="flex flex-col gap-1 text-sm pl-3">
               {userData?.image ? (
@@ -94,18 +106,6 @@ const Profile: FC<Props> = ({ addresses, userInfo }) => {
               ))}
             </div>
           </div>
-          <Divider />
-          <Button
-            size="sm"
-            className="m-5"
-            color="default"
-            onPress={() => {
-              clearUserData()
-              signOut()
-            }}
-          >
-            Signout
-          </Button>
         </div>
         <div className="p-5 h-full">
           {activeMenu === 'Personal Information' && <>{userData && <PersonalInformation user={userData} />}</>}
