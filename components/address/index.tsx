@@ -17,6 +17,7 @@ type Props = {
 const Address: FC<Props> = ({ openEditModal, address }) => {
   const darkMode = useAppSelector(s => s.app.darkMode)
   const [isPending, startTransition] = useTransition()
+  const [delP, delT] = useTransition()
   const { refresh } = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const dispatch = useAppDispatch()
@@ -32,17 +33,19 @@ const Address: FC<Props> = ({ openEditModal, address }) => {
     })
   }
 
-  const handleDelete = async () => {
-    const res = await deleteAddress(`${address?.id}`)
+  const handleDelete = () => {
+    delT(async () => {
+      const res = await deleteAddress(`${address?.id}`)
 
-    if (address.type === ADDRESS_TYPE.DEFAULT) {
-      dispatch(setHasDefaultAddress(false))
-    }
-    if (res.success) {
-      addToast({ title: 'Success', description: 'Address deleted successfully', color: 'success' })
-      refresh()
-      setIsOpen(false)
-    }
+      if (address.type === ADDRESS_TYPE.DEFAULT) {
+        dispatch(setHasDefaultAddress(false))
+      }
+      if (res.success) {
+        addToast({ title: 'Success', description: 'Address deleted successfully', color: 'success' })
+        refresh()
+        setIsOpen(false)
+      }
+    })
   }
 
   const renderDelete = () => {
@@ -62,7 +65,7 @@ const Address: FC<Props> = ({ openEditModal, address }) => {
                 Cancel
               </Button>
               <Button size="sm" color="danger" onPress={handleDelete} className="text-xs h-7">
-                Delete
+                {delP ? 'Deleting...' : 'Delete'}
               </Button>
             </div>
           </div>
