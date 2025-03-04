@@ -1,6 +1,6 @@
 import Address from '@/components/address'
 import AddressAddEdit from '@/components/addressAddEdit'
-import { setAddress, setIsNewAddress } from '@/redux/slices/userSlice'
+import { setAddress } from '@/redux/slices/userSlice'
 import { useAppDispatch } from '@/redux/store'
 import { Button, useDisclosure } from '@heroui/react'
 import { Addresses as TAddresses } from '@prisma/client'
@@ -23,7 +23,6 @@ const Addresses: FC<Props> = ({ data }) => {
         <Button
           onPress={() => {
             dispatch(setAddress(null))
-            dispatch(setIsNewAddress(true))
             onOpen()
           }}
           className="customButton1"

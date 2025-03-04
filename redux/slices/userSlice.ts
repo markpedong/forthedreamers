@@ -5,13 +5,11 @@ import { createSlice } from '@reduxjs/toolkit'
 interface UserState {
   userData: Users | null
   address: Addresses | null
-  isNewAddress: boolean
 }
 
 const initialState: UserState = {
   userData: null,
-  address: null,
-  isNewAddress: false
+  address: null
 }
 
 export const appSlice = createSlice({
@@ -23,12 +21,9 @@ export const appSlice = createSlice({
     },
     setAddress: (state, action) => {
       state.address = action.payload
-    },
-    setIsNewAddress: (state, action) => {
-      state.isNewAddress = action.payload
     }
   }
 })
 
-export const { setUserData, setAddress, setIsNewAddress } = appSlice.actions
+export const { setUserData, setAddress } = appSlice.actions
 export default appSlice.reducer

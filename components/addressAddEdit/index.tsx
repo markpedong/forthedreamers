@@ -37,7 +37,6 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
   const formRef = useRef(null)
   const { refresh } = useRouter()
   const address = useAppSelector(s => s.user.address)
-  const isNewAddress = useAppSelector(s => s.user.isNewAddress)
   const [addressValues, setNewAddressValues] = useState<Addresses | null>(null)
   const dispatch = useAppDispatch()
 
@@ -46,7 +45,7 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
   }, [state])
 
   useEffect(() => {
-    if (isNewAddress) {
+    if (!address?.id) {
       setNewAddressValues(null)
     } else {
       setNewAddressValues(address)
@@ -73,7 +72,7 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
   const handleSuccess = async () => {
     let res
 
-    if (isNewAddress) {
+    if (!!address?.id) {
       res = await createNewAddress({ ...addressValues, userId: session?.user.id })
     } else {
     }
@@ -102,7 +101,7 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
       <ModalContent>
         {onClose => (
           <>
-            <ModalHeader className="flex flex-col gap-1">{isNewAddress ? 'New' : 'Edit'} Address</ModalHeader>
+            <ModalHeader className="flex flex-col gap-1">{!!address?.id ? 'New' : 'Edit'} Address</ModalHeader>
             <ModalBody>
               <Form action={action} validationErrors={state?.errors} onSubmit={handleSubmit} ref={formRef}>
                 <div className="flexAllCenter w-full gap-3">

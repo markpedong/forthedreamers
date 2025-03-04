@@ -6,7 +6,7 @@ import { FaTrash } from 'react-icons/fa'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { deleteAddress, setDefaultAddress } from '@/utils/request'
 import { useRouter } from 'next/navigation'
-import { setAddress, setIsNewAddress } from '@/redux/slices/userSlice'
+import { setAddress } from '@/redux/slices/userSlice'
 
 type Props = {
   address: Addresses
@@ -93,7 +93,6 @@ const Address: FC<Props> = ({ openEditModal, address }) => {
               aria-label="Edit address"
               onPress={() => {
                 dispatch(setAddress(address))
-                dispatch(setIsNewAddress(false))
                 openEditModal()
               }}
             >
