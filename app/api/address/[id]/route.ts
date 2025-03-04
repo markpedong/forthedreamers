@@ -1,5 +1,6 @@
 import prisma from '@/db'
 import { generateResponse, isAuthenticated, validateUUID } from '@/utils/helpers'
+import { ADDRESS_TYPE } from '@prisma/client'
 import { NextRequest } from 'next/server'
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -16,4 +17,30 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   })
 
   return generateResponse({ data: address, message: 'Address deleted successfully' })
+}
+
+export async function POST(req: NextRequest) {
+  const authRes = await isAuthenticated(req)
+  if (!authRes.ok) return authRes
+
+  const body = await req.json()
+  const { firstName, lastName, number, landmark, street, city, state, zipCode, country, userId, addressType, id } = body
+  const address = await prisma.addresses.update({
+    where: { id },
+    data: {
+      firstName,
+      lastName,
+      number,
+      landmark,
+      street,
+      city,
+      state,
+      zipCode,
+      country,
+      userId,
+      type: ADDRESS_TYPE[addressType as keyof typeof ADDRESS_TYPE]
+    }
+  })
+
+  return generateResponse({ data: address, message: 'Address updated successfully' })
 }

@@ -18,3 +18,5 @@ export const getAddress = async () => get<Addresses>({ url: `/api/address` })
 export const setDefaultAddress = async (body: any) => post<any>({ url: '/api/address/set-default', data: body })
 
 export const deleteAddress = async (id: string) => deleteF({ url: `/api/address/${id}` })
+
+export const updateAddress = async (body: any) => post<any>({ url: `/api/address/${body.id}`, data: body })

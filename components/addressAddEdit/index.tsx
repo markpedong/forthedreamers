@@ -2,7 +2,7 @@ import { addressInformation } from '@/actions/auth'
 import { OPTIONS_ADDRESS } from '@/constants'
 import { setAddress } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
-import { createNewAddress } from '@/utils/request'
+import { createNewAddress, updateAddress } from '@/utils/request'
 import {
   addToast,
   Button,
@@ -50,6 +50,8 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
     } else {
       setNewAddressValues(address)
     }
+
+    console.log('address', address)
   }, [address])
 
   const handleChange = (key: keyof Addresses) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -72,9 +74,10 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
   const handleSuccess = async () => {
     let res
 
-    if (!!address?.id) {
+    if (!address?.id) {
       res = await createNewAddress({ ...addressValues, userId: session?.user.id })
     } else {
+      res = await updateAddress({ ...addressValues, id: address?.id })
     }
 
     if (res?.success) {
@@ -82,6 +85,7 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
       onOpenChange()
       refresh()
       setNewAddressValues(null)
+      dispatch(setAddress(null))
     }
   }
 
@@ -101,7 +105,7 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
       <ModalContent>
         {onClose => (
           <>
-            <ModalHeader className="flex flex-col gap-1">{!!address?.id ? 'New' : 'Edit'} Address</ModalHeader>
+            <ModalHeader className="flex flex-col gap-1">{!address?.id ? 'New' : 'Edit'} Address</ModalHeader>
             <ModalBody>
               <Form action={action} validationErrors={state?.errors} onSubmit={handleSubmit} ref={formRef}>
                 <div className="flexAllCenter w-full gap-3">
@@ -180,6 +184,7 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
                     label="Address Type:"
                     placeholder="Select an address type:"
                     name="addressType"
+                    defaultSelectedKeys={addressValues?.type}
                     onChange={e => {
                       //@ts-expect-error type error
                       setNewAddressValues(prev => ({
@@ -217,7 +222,7 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
                   }
                 }}
               >
-                {isPending ? 'Adding...' : 'Add'}
+                {address?.id ? (isPending ? 'Updating...' : 'Update') : isPending ? 'Adding...' : 'Add'}
               </Button>
             </ModalFooter>
           </>
