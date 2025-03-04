@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json()
   const { firstName, lastName, number, landmark, street, city, state, zipCode, country, userId, addressType, id } = body
-  const address = await prisma.addresses.update({
+
+  await prisma.addresses.update({
     where: { id },
     data: {
       firstName,
@@ -42,5 +43,5 @@ export async function POST(req: NextRequest) {
     }
   })
 
-  return generateResponse({ data: address, message: 'Address updated successfully' })
+  return generateResponse({ message: 'Address updated successfully' })
 }
