@@ -15,18 +15,31 @@ import {
 	SelectItem,
 	Textarea
 } from '@heroui/react'
+import { Addresses } from '@prisma/client'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import React, { Dispatch, FC, useActionState, useEffect, useRef, useTransition } from 'react'
+import React, {
+	Dispatch,
+	FC,
+	memo,
+	SetStateAction,
+	useActionState,
+	useEffect,
+	useRef,
+	useState,
+	useTransition
+} from 'react'
 
 type Props = {
 	isNew?: boolean
 	setIsNew: Dispatch<React.SetStateAction<boolean>>
 	isOpen?: boolean
 	onOpenChange: () => void
+	record: Addresses | null
+	setRecord: Dispatch<SetStateAction<Addresses | null>>
 }
 
-const AddressAddEdit: FC<Props> = ({ isNew, setIsNew, isOpen, onOpenChange }) => {
+const AddressAddEdit: FC<Props> = ({ isNew, setIsNew, isOpen, onOpenChange, record, setRecord }) => {
 	const [_, startTransition] = useTransition()
 	const [state, action, isPending] = useActionState(addressInformation, {
 		errors: {},
@@ -35,6 +48,15 @@ const AddressAddEdit: FC<Props> = ({ isNew, setIsNew, isOpen, onOpenChange }) =>
 	const { data: session } = useSession()
 	const formRef = useRef(null)
 	const { refresh } = useRouter()
+	const [defaultValue, setDefaultValue] = useState<Addresses | null>(null)
+
+	useEffect(() => {
+		state.success && handleSuccess()
+	}, [state])
+
+	useEffect(() => {
+		record && setDefaultValue(record)
+	}, [record])
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
@@ -44,10 +66,6 @@ const AddressAddEdit: FC<Props> = ({ isNew, setIsNew, isOpen, onOpenChange }) =>
 			action(formData)
 		})
 	}
-
-	useEffect(() => {
-		state.success && handleSuccess()
-	}, [state])
 
 	const handleSuccess = async () => {
 		let res
@@ -72,33 +90,98 @@ const AddressAddEdit: FC<Props> = ({ isNew, setIsNew, isOpen, onOpenChange }) =>
 			isOpen={isOpen}
 			onOpenChange={onOpenChange}
 			size="2xl"
+			onClose={() => {
+				setRecord(null)
+				onOpenChange()
+				state.values = {}
+			}}
 		>
 			<ModalContent>
 				{onClose => (
 					<>
-						<ModalHeader className="flex flex-col gap-1">Add New Address</ModalHeader>
+						<ModalHeader className="flex flex-col gap-1">{isNew ? 'New' : 'Edit'} Address</ModalHeader>
 						<ModalBody>
 							<Form action={action} validationErrors={state?.errors} onSubmit={handleSubmit} ref={formRef}>
 								<div className="flexAllCenter w-full gap-3">
-									<Input label="First Name" name="firstName" isRequired errorMessage={state?.errors?.firstName?.[0]} />
-									<Input label="Last Name" name="lastName" isRequired errorMessage={state?.errors?.lastName?.[0]} />
-									<Input label="Number" name="number" isRequired errorMessage={state?.errors?.number?.[0]} />
+									<Input
+										label="First Name"
+										name="firstName"
+										isRequired
+										errorMessage={state?.errors?.firstName?.[0]}
+										value={defaultValue?.firstName || ''}
+										onChange={e => setDefaultValue(prev => ({ ...prev, firstName: e?.target?.value }))}
+									/>
+									<Input
+										label="Last Name"
+										name="lastName"
+										isRequired
+										errorMessage={state?.errors?.lastName?.[0]}
+										value={defaultValue?.lastName}
+									/>
+									<Input
+										label="Number"
+										name="number"
+										isRequired
+										errorMessage={state?.errors?.number?.[0]}
+										value={defaultValue?.number}
+									/>
 								</div>
 								<div className="flexAllCenter w-full gap-3">
-									<Input label="Street" name="street" isRequired errorMessage={state?.errors?.street?.[0]} />
-									<Input label="City" name="city" isRequired errorMessage={state?.errors?.city?.[0]} />
+									<Input
+										label="Street"
+										name="street"
+										isRequired
+										errorMessage={state?.errors?.street?.[0]}
+										value={defaultValue?.street}
+									/>
+									<Input
+										label="City"
+										name="city"
+										isRequired
+										errorMessage={state?.errors?.city?.[0]}
+										value={defaultValue?.city}
+									/>
 								</div>
 								<div className="flexAllCenter w-full gap-3">
-									<Input label="State" name="state" isRequired errorMessage={state?.errors?.state?.[0]} />
-									<Input label="Zip Code" name="zipCode" isRequired errorMessage={state?.errors?.zipCode?.[0]} />
+									<Input
+										label="State"
+										name="state"
+										isRequired
+										errorMessage={state?.errors?.state?.[0]}
+										value={defaultValue?.state!}
+									/>
+									<Input
+										label="Zip Code"
+										name="zipCode"
+										isRequired
+										errorMessage={state?.errors?.zipCode?.[0]}
+										value={defaultValue?.zipCode!}
+									/>
 								</div>
 								<div className="flexAllCenter w-full gap-3">
-									<Input label="Country" name="country" isRequired errorMessage={state?.errors?.country?.[0]} />
-									<Select items={OPTIONS_ADDRESS} label="Address Type:" placeholder="Select an address type:" name='addressType'>
+									<Input
+										label="Country"
+										name="country"
+										isRequired
+										errorMessage={state?.errors?.country?.[0]}
+										value={defaultValue?.country}
+									/>
+									<Select
+										items={OPTIONS_ADDRESS}
+										label="Address Type:"
+										placeholder="Select an address type:"
+										name="addressType"
+										defaultSelectedKeys={defaultValue?.type}
+									>
 										{animal => <SelectItem>{animal.label}</SelectItem>}
 									</Select>
 								</div>
-								<Textarea label="Landmark" name="landmark" errorMessage={state?.errors?.landmark?.[0]} />
+								<Textarea
+									label="Landmark"
+									name="landmark"
+									errorMessage={state?.errors?.landmark?.[0]}
+									value={defaultValue?.landmark!}
+								/>
 							</Form>
 						</ModalBody>
 						<ModalFooter>
@@ -128,4 +211,4 @@ const AddressAddEdit: FC<Props> = ({ isNew, setIsNew, isOpen, onOpenChange }) =>
 	)
 }
 
-export default AddressAddEdit
+export default memo(AddressAddEdit)

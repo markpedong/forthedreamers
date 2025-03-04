@@ -12,14 +12,23 @@ type Props = {
 const Addresses: FC<Props> = ({ data }) => {
 	const [isNew, setIsNew] = useState(false)
 	const { isOpen, onOpen, onOpenChange } = useDisclosure()
+	const [record, setRecord] = useState<TAddresses | null>(null)
 
 	return (
 		<div>
-			<AddressAddEdit isNew={isNew} setIsNew={setIsNew} isOpen={isOpen} onOpenChange={onOpenChange} />
+			<AddressAddEdit
+				isNew={isNew}
+				setIsNew={setIsNew}
+				isOpen={isOpen}
+				onOpenChange={onOpenChange}
+				record={record}
+				setRecord={setRecord}
+			/>
 			<div className="flex justify-between">
 				<Typography.Title level={4}>Addresses</Typography.Title>
 				<Button
 					onPress={() => {
+						setRecord(null)
 						setIsNew(true)
 						onOpen()
 					}}
@@ -31,7 +40,15 @@ const Addresses: FC<Props> = ({ data }) => {
 			</div>
 			<div className="mt-7 flex flex-col gap-2">
 				{data?.map(address => (
-					<Address address={address} key={address.id} />
+					<Address
+						address={address}
+						key={address.id}
+						openEditModal={() => {
+							setRecord(address)
+							setIsNew(false)
+							onOpen()
+						}}
+					/>
 				))}
 			</div>
 		</div>
