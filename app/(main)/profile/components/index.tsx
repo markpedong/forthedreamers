@@ -88,7 +88,7 @@ const Profile: FC<Props> = ({ addresses, userInfo }) => {
 								<NextImage alt="sample" src={userData?.image} width="50" height="50" className="rounded-full" />
 							) : isPending ? (
 								<div className="flex justify-start items-center p-3">
-									<Spinner size='md'/>
+									<Spinner size="md" />
 								</div>
 							) : (
 								<label className="w-12 h-12 flex flex-col items-center justify-center bg-gray-400 text-white rounded-full cursor-pointer relative">
