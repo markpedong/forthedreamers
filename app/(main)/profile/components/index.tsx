@@ -14,7 +14,9 @@ import { FC, useEffect, useState } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { IoArrowBack } from 'react-icons/io5'
 import styles from '../styles.module.scss'
-import { Addresses as TAddresses, Users } from '@prisma/client'
+import { ADDRESS_TYPE, Addresses as TAddresses, Users } from '@prisma/client'
+import address from '@/components/address'
+import { setHasDefaultAddress } from '@/redux/slices/appSlice'
 
 type Props = {
   userInfo: Users
@@ -51,6 +53,9 @@ const Profile: FC<Props> = ({ addresses, userInfo }) => {
   const fetchUserData = async () => {
     if (!session?.user?.id || !session?.accessToken) return
     if (!getLocalStorage('accessToken')) setLocalStorage('accessToken', session.accessToken)
+    if (addresses?.findIndex(address => address.type === ADDRESS_TYPE.DEFAULT) !== -1) {
+      dispatch(setHasDefaultAddress(true))
+    }
 
     dispatch(setUserData(userInfo))
   }

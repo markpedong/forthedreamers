@@ -5,11 +5,13 @@ import { createSlice } from '@reduxjs/toolkit'
 interface AppState {
   loginFormState: LOGINFORM_STATE
   darkMode: boolean
+  hasDefaultAddress: boolean
 }
 
 const initialState: AppState = {
   loginFormState: LOGINFORM_STATE.LOGIN,
-  darkMode: false
+  darkMode: false,
+  hasDefaultAddress: false
 }
 
 export const appSlice = createSlice({
@@ -21,9 +23,12 @@ export const appSlice = createSlice({
     },
     toggleDarkMode: state => {
       state.darkMode = !state.darkMode
+    },
+    setHasDefaultAddress: (state, action) => {
+      state.hasDefaultAddress = action.payload
     }
   }
 })
 
-export const { setLoginFormState, toggleDarkMode } = appSlice.actions
+export const { setLoginFormState, toggleDarkMode, setHasDefaultAddress } = appSlice.actions
 export default appSlice.reducer

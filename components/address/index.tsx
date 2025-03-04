@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { deleteAddress, setDefaultAddress } from '@/utils/request'
 import { useRouter } from 'next/navigation'
 import { setAddress } from '@/redux/slices/userSlice'
+import { setHasDefaultAddress } from '@/redux/slices/appSlice'
 
 type Props = {
   address: Addresses
@@ -34,6 +35,9 @@ const Address: FC<Props> = ({ openEditModal, address }) => {
   const handleDelete = async () => {
     const res = await deleteAddress(`${address?.id}`)
 
+    if (address.type === ADDRESS_TYPE.DEFAULT) {
+      dispatch(setHasDefaultAddress(false))
+    }
     if (res.success) {
       addToast({ title: 'Success', description: 'Address deleted successfully', color: 'success' })
       refresh()
@@ -43,7 +47,7 @@ const Address: FC<Props> = ({ openEditModal, address }) => {
 
   const renderDelete = () => {
     return (
-      <Popover isOpen={isOpen} onOpenChange={setIsOpen} backdrop="blur" shouldCloseOnInteractOutside={() => false}>
+      <Popover isOpen={isOpen} onOpenChange={setIsOpen} backdrop="opaque" isDismissable={false}>
         <PopoverTrigger>
           <Button isIconOnly size="sm" variant="light" aria-label="Delete address" onPress={() => setIsOpen(true)}>
             <FaTrash className="text-danger" size={12} />

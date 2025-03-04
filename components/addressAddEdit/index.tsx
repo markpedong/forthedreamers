@@ -17,7 +17,7 @@ import {
   SelectItem,
   Textarea
 } from '@heroui/react'
-import { Addresses } from '@prisma/client'
+import { ADDRESS_TYPE, Addresses } from '@prisma/client'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import React, { FC, memo, useActionState, useEffect, useRef, useState, useTransition } from 'react'
@@ -37,6 +37,7 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
   const formRef = useRef(null)
   const { refresh } = useRouter()
   const address = useAppSelector(s => s.user.address)
+  const hasDefaultAddress = useAppSelector(s => s.app.hasDefaultAddress)
   const [addressValues, setNewAddressValues] = useState<Addresses | null>(null)
   const dispatch = useAppDispatch()
 
@@ -186,15 +187,11 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
                     label="Address Type:"
                     placeholder="Select an address type:"
                     name="addressType"
-                    disabledKeys={['DEFAULT']}
-                    defaultSelectedKeys={[ADDRESS_OBJ[addressValues?.type as keyof typeof ADDRESS_OBJ]]}
-                    onChange={e => {
-                      //@ts-expect-error type error
-                      setNewAddressValues(prev => ({
-                        ...(prev ?? {}),
-                        addressType: e.target.value
-                      }))
-                    }}
+                    disabledKeys={hasDefaultAddress ? ['DEFAULT'] : []}
+                    selectedKeys={[ADDRESS_OBJ[addressValues?.type as keyof typeof ADDRESS_OBJ]]}
+                    isDisabled={addressValues?.type === ADDRESS_TYPE.DEFAULT}
+                    //@ts-expect-error type error
+                    onChange={handleChange('type')}
                   >
                     {addr => <SelectItem>{addr.label}</SelectItem>}
                   </Select>

@@ -10,8 +10,8 @@ export async function POST(req: NextRequest) {
   if (!authRes.ok) return authRes
 
   const body = await req.json()
-  const { firstName, lastName, number, landmark, street, city, state, zipCode, country, userId, addressType } = body
-  const address = await prisma.addresses.create({
+  const { firstName, lastName, number, landmark, street, city, state, zipCode, country, userId, type } = body
+  await prisma.addresses.create({
     data: {
       firstName,
       lastName,
@@ -23,12 +23,11 @@ export async function POST(req: NextRequest) {
       zipCode,
       country,
       userId,
-      type: ADDRESS_TYPE[addressType as keyof typeof ADDRESS_TYPE]
-
+      type: ADDRESS_TYPE[type as keyof typeof ADDRESS_TYPE]
     }
   })
 
-  return generateResponse({ data: address, message: 'Address created successfully' })
+  return generateResponse({ message: 'Address created successfully' })
 }
 
 export async function GET(req: NextRequest) {
@@ -45,7 +44,7 @@ export async function GET(req: NextRequest) {
   }
 
   const address = await prisma.addresses.findMany({
-    where: { userId: session.user.id },
+    where: { userId: session.user.id }
   })
 
   return generateResponse({ data: address, message: 'Address fetched successfully' })
