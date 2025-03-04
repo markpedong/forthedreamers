@@ -1,5 +1,6 @@
 'use server'
 
+import prisma from "@/db"
 import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 
@@ -25,4 +26,16 @@ export const getCookie = async (name: string) => {
   const cookieStore = await cookies()
 
   cookieStore.get(name)?.value || ''
+}
+
+export const getProfileServer = async (id?: string) => {
+  return prisma.users.findUnique({
+    where: { id },
+  })
+}
+
+export const getAddressesServer = async (id?: string) => {
+  return prisma.addresses.findMany({
+    where: { userId: id },
+  })
 }

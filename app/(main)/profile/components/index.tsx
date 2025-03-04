@@ -14,6 +14,12 @@ import { FC, useEffect, useState } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { IoArrowBack } from 'react-icons/io5'
 import styles from '../styles.module.scss'
+import { Addresses as TAddresses, Users } from '@prisma/client'
+
+type Props = {
+	userInfo: Users
+	addresses: TAddresses[]
+}
 
 const PersonalInformation = dynamic(() => import('./personal-information'), { ssr: false })
 const Addresses = dynamic(() => import('./addresses'), { ssr: false })
@@ -21,14 +27,16 @@ const PaymentMethods = dynamic(() => import('./payment-methods'), { ssr: false }
 const Orders = dynamic(() => import('./orders'), { ssr: false })
 const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 
-const Profile: FC = () => {
+const Profile: FC<Props> = ({ addresses, userInfo }) => {
 	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
 	const [activeMenu, setActiveMenu] = useState<string>('Addresses')
 	const dispatch = useAppDispatch()
 	const { data: session } = useSession()
 	const userData = useAppSelector(state => state.app.userData)
 
-	console.log("session from client", session?.accessToken)
+	useEffect(() => {
+		fetchUserData()
+	}, [session, userInfo])
 
 	const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0]
@@ -44,13 +52,8 @@ const Profile: FC = () => {
 		if (!session?.user?.id || !session?.accessToken) return
 		if (!getLocalStorage('accessToken')) setLocalStorage('accessToken', session.accessToken)
 
-		const res = await getUserData(`${session.user.id}`)
-		dispatch(setUserData(res?.data))
+		dispatch(setUserData(userInfo))
 	}
-
-	useEffect(() => {
-		fetchUserData()
-	}, [session])
 
 	return (
 		<div className={styles.profileWrapper}>

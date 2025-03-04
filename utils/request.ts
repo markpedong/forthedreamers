@@ -13,4 +13,4 @@ export const updateProfile = async (body: Users) => post<Users>({ url: `/api/use
 
 export const createNewAddress = async (body: any) => post<any>({ url: '/api/address', data: body })
 
-export const getAddress = async (accessToken?: string) => get<Addresses>({ url: `/api/address`, accessToken })
+export const getAddress = async () => get<Addresses>({ url: `/api/address`, })
