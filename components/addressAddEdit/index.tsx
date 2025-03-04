@@ -13,6 +13,7 @@ import {
 	Textarea
 } from '@heroui/react'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import React, { Dispatch, FC, useActionState, useEffect, useRef, useTransition } from 'react'
 
 type Props = {
@@ -30,6 +31,7 @@ const AddressAddEdit: FC<Props> = ({ isNew, setIsNew, isOpen, onOpenChange }) =>
 	})
 	const { data: session } = useSession()
 	const formRef = useRef(null)
+	const { refresh } = useRouter()
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
@@ -56,6 +58,7 @@ const AddressAddEdit: FC<Props> = ({ isNew, setIsNew, isOpen, onOpenChange }) =>
 		if (res?.success) {
 			addToast({ title: 'Success', description: 'Address saved successfully', color: 'success' })
 			onOpenChange()
+			refresh()
 		}
 	}
 

@@ -23,11 +23,18 @@ model Users {
   addresses    Addresses[]
 }
 
+enum ADDRESS_TYPE {
+  DEFAULT
+  HOME
+  WORK
+  NONE
+}
+
 model Addresses {
-  id        String    @id @default(uuid()) @db.Uuid
-  userId    String?   @db.Uuid
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id        String       @id @default(uuid()) @db.Uuid
+  userId    String?      @db.Uuid
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
   deletedAt DateTime?
   city      String
   country   String
@@ -38,7 +45,9 @@ model Addresses {
   landmark  String?
   lastName  String
   number    String
-  user      Users?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      ADDRESS_TYPE @default(NONE)
+
+  user Users? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }

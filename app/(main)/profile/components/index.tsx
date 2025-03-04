@@ -109,7 +109,7 @@ const Profile: FC<Props> = ({ addresses, userInfo }) => {
 				</div>
 				<div className="p-5 h-full">
 					{activeMenu === 'Personal Information' && <>{userData && <PersonalInformation user={userData} />}</>}
-					{activeMenu === 'Addresses' && <Addresses />}
+					{activeMenu === 'Addresses' && <Addresses data={addresses} />}
 					{activeMenu === 'Payment Methods' && <PaymentMethods />}
 					{activeMenu === 'Orders' && <Orders />}
 					{activeMenu === 'Reviews' && <Reviews />}

@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "ADDRESS_TYPE" AS ENUM ('DEFAULT', 'HOME', 'WORK', 'NONE');
+
+-- AlterTable
+ALTER TABLE "Addresses" ADD COLUMN     "type" "ADDRESS_TYPE" NOT NULL DEFAULT 'NONE';
