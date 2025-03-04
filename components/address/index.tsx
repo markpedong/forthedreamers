@@ -40,7 +40,7 @@ const Address: FC<Props> = ({ address }) => {
 
   const renderDelete = () => {
     return (
-      <Popover isOpen={isOpen} onOpenChange={setIsOpen} backdrop="blur" isKeyboardDismissDisabled={true}>
+      <Popover isOpen={isOpen} onOpenChange={setIsOpen} backdrop="blur" shouldCloseOnInteractOutside={() => false}>
         <PopoverTrigger>
           <Button isIconOnly size="sm" variant="light" aria-label="Delete address" onPress={() => setIsOpen(true)}>
             <FaTrash className="text-danger" size={12} />
