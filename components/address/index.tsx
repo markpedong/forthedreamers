@@ -1,5 +1,5 @@
 import { ADDRESS_TYPE, Addresses } from '@prisma/client'
-import React, { FC, useState, useTransition } from 'react'
+import React, { FC, useRef, useState, useTransition } from 'react'
 import { Card, CardBody, Button, addToast, Popover, PopoverTrigger, PopoverContent } from '@heroui/react'
 import { AiFillEdit } from 'react-icons/ai'
 import { FaTrash } from 'react-icons/fa'
@@ -41,7 +41,6 @@ const Address: FC<Props> = ({ address }) => {
   const renderDelete = () => {
     return (
       <Popover
-        backdrop="blur"
         isOpen={isOpen}
         onOpenChange={setIsOpen}
         shouldCloseOnInteractOutside={() => false}
