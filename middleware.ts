@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import { AUTH_SECRET } from './constants'
 
 export const middleware = async (request: NextRequest) => {
-  const token = await getToken({ req: request, secret: process.env.AUTH_SECRET })
+  const token = await getToken({ req: request, secret: AUTH_SECRET })
   const path = request.nextUrl.pathname
   const protectedRoutes = ['/profile', '/checkout', '/cart']
 

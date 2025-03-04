@@ -16,7 +16,8 @@ const nextConfig: NextConfig = {
   reactStrictMode: false,
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    JWT_SECRET: process.env.JWT_SECRET
+    JWT_SECRET: process.env.JWT_SECRET,
+    AUTH_SECRET: process.env.AUTH_SECRET
   },
   webpack(config, { isServer }) {
     if (!isServer) {

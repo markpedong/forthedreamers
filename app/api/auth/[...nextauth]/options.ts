@@ -5,6 +5,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import bcrypt from 'bcrypt';
 import { TCustomToken } from '@/constants/types';
 import { generateRefreshToken, generateAccessToken } from '@/utils/tokens';
+import { AUTH_SECRET } from '@/constants';
 
 const authOptions: AuthOptions = {
   providers: [
@@ -46,7 +47,7 @@ const authOptions: AuthOptions = {
       clientSecret: `${process.env.GOOGLE_CLIENT_SECRET}`
     })
   ],
-  secret: `${process.env.AUTH_SECRET}`,
+  secret: AUTH_SECRET,
   session: { strategy: 'jwt' },
   callbacks: {
     async signIn({ user, account }) {
