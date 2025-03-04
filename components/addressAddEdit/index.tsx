@@ -183,11 +183,14 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
                     onChange={handleChange('country')}
                   />
                   <Select
-                    items={OPTIONS_ADDRESS}
+                    items={[
+                      ...OPTIONS_ADDRESS,
+                      ...(hasDefaultAddress ? [{ label: ADDRESS_TYPE.DEFAULT, key: ADDRESS_TYPE.DEFAULT }] : [])
+                    ]}
                     label="Address Type:"
                     placeholder="Select an address type:"
                     name="addressType"
-                    disabledKeys={hasDefaultAddress ? ['DEFAULT'] : []}
+                    disabledKeys={['DEFAULT']}
                     selectedKeys={[ADDRESS_OBJ[addressValues?.type as keyof typeof ADDRESS_OBJ]]}
                     isDisabled={addressValues?.type === ADDRESS_TYPE.DEFAULT}
                     //@ts-expect-error type error

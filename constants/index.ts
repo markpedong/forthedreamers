@@ -22,10 +22,6 @@ export const OPTIONS_ADDRESS = [
   {
     label: ADDRESS_TYPE.NONE,
     key: ADDRESS_TYPE.NONE
-  },
-  {
-    label: ADDRESS_TYPE.DEFAULT,
-    key: ADDRESS_TYPE.DEFAULT
   }
 ]
 
