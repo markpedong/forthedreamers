@@ -1,4 +1,5 @@
 import { addressInformation } from '@/actions/auth'
+import { OPTIONS_ADDRESS } from '@/constants'
 import { createNewAddress } from '@/utils/request'
 import {
 	addToast,
@@ -10,6 +11,8 @@ import {
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
+	Select,
+	SelectItem,
 	Textarea
 } from '@heroui/react'
 import { useSession } from 'next-auth/react'
@@ -89,7 +92,12 @@ const AddressAddEdit: FC<Props> = ({ isNew, setIsNew, isOpen, onOpenChange }) =>
 									<Input label="State" name="state" isRequired errorMessage={state?.errors?.state?.[0]} />
 									<Input label="Zip Code" name="zipCode" isRequired errorMessage={state?.errors?.zipCode?.[0]} />
 								</div>
-								<Input label="Country" name="country" isRequired errorMessage={state?.errors?.country?.[0]} />
+								<div className="flexAllCenter w-full gap-3">
+									<Input label="Country" name="country" isRequired errorMessage={state?.errors?.country?.[0]} />
+									<Select items={OPTIONS_ADDRESS} label="Address Type:" placeholder="Select an address type:" name='addressType'>
+										{animal => <SelectItem>{animal.label}</SelectItem>}
+									</Select>
+								</div>
 								<Textarea label="Landmark" name="landmark" errorMessage={state?.errors?.landmark?.[0]} />
 							</Form>
 						</ModalBody>

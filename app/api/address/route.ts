@@ -3,13 +3,14 @@ import { generateResponse, isAuthenticated, validateUUID } from '@/utils/helpers
 import { getServerSession } from 'next-auth'
 import { NextRequest } from 'next/server'
 import authOptions from '../auth/[...nextauth]/options'
+import { ADDRESS_TYPE } from '@prisma/client'
 
 export async function POST(req: NextRequest) {
   const authRes = await isAuthenticated(req)
   if (!authRes.ok) return authRes
 
   const body = await req.json()
-  const { firstName, lastName, number, landmark, street, city, state, zipCode, country, userId } = body
+  const { firstName, lastName, number, landmark, street, city, state, zipCode, country, userId, addressType } = body
   const address = await prisma.addresses.create({
     data: {
       firstName,
@@ -21,7 +22,9 @@ export async function POST(req: NextRequest) {
       state,
       zipCode,
       country,
-      userId
+      userId,
+      type: ADDRESS_TYPE[addressType as keyof typeof ADDRESS_TYPE]
+
     }
   })
 

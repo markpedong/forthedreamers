@@ -47,6 +47,7 @@ export const addressInformation = async (_: any, formData: FormData): Promise<Fo
     city: formData.get('city'),
     zipCode: formData.get('zipCode'),
     country: formData.get('country'),
+    addressType: formData.get('addressType')
   }
 
   const result = addressSchema.safeParse(object)
