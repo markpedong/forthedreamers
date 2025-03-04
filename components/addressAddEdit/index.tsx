@@ -1,5 +1,5 @@
 import { addressInformation } from '@/actions/auth'
-import { OPTIONS_ADDRESS } from '@/constants'
+import { ADDRESS_OBJ, OPTIONS_ADDRESS } from '@/constants'
 import { setAddress } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { createNewAddress, updateAddress } from '@/utils/request'
@@ -49,9 +49,9 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
       setNewAddressValues(null)
     } else {
       setNewAddressValues(address)
-    }
 
-    console.log('address', address)
+      console.log('addressValues', addressValues)
+    }
   }, [address])
 
   const handleChange = (key: keyof Addresses) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -100,6 +100,8 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
         dispatch(setAddress(null))
         setNewAddressValues(null)
         onOpenChange()
+        state.errors = {}
+        state.values = {}
       }}
     >
       <ModalContent>
@@ -184,7 +186,8 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
                     label="Address Type:"
                     placeholder="Select an address type:"
                     name="addressType"
-                    defaultSelectedKeys={addressValues?.type}
+                    disabledKeys={['DEFAULT']}
+                    defaultSelectedKeys={[ADDRESS_OBJ[addressValues?.type as keyof typeof ADDRESS_OBJ]]}
                     onChange={e => {
                       //@ts-expect-error type error
                       setNewAddressValues(prev => ({
@@ -193,7 +196,7 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
                       }))
                     }}
                   >
-                    {animal => <SelectItem>{animal.label}</SelectItem>}
+                    {addr => <SelectItem>{addr.label}</SelectItem>}
                   </Select>
                 </div>
                 <Textarea

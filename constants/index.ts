@@ -11,16 +11,27 @@ export const FOOTER_TITLE = ['Exclusive', 'Support', 'Account', 'Quick Link', 'D
 export const STALE_TIME = 1000 * 60 * 10
 
 export const OPTIONS_ADDRESS = [
-	{
-		label: ADDRESS_TYPE.HOME,
-		key: ADDRESS_TYPE.HOME
-	},
-	{
-		label: ADDRESS_TYPE.WORK,
-		key: ADDRESS_TYPE.WORK
-	},
-	{
-		label: ADDRESS_TYPE.NONE,
-		key: ADDRESS_TYPE.NONE
-	}
+  {
+    label: ADDRESS_TYPE.HOME,
+    key: ADDRESS_TYPE.HOME
+  },
+  {
+    label: ADDRESS_TYPE.WORK,
+    key: ADDRESS_TYPE.WORK
+  },
+  {
+    label: ADDRESS_TYPE.NONE,
+    key: ADDRESS_TYPE.NONE
+  },
+  {
+    label: ADDRESS_TYPE.DEFAULT,
+    key: ADDRESS_TYPE.DEFAULT
+  }
 ]
+
+export const ADDRESS_OBJ = {
+  [ADDRESS_TYPE.HOME]: 'HOME',
+  [ADDRESS_TYPE.WORK]: 'WORK',
+  [ADDRESS_TYPE.NONE]: 'NONE',
+  [ADDRESS_TYPE.DEFAULT]: 'DEFAULT'
+}
