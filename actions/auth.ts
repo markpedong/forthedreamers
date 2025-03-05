@@ -1,7 +1,7 @@
 'use server'
 
 import { FormState } from '@/constants/types'
-import { addressSchema, infoSchema, loginSchema } from '@/lib/rules'
+import { addressSchema, infoSchema, loginSchema, paymentMethodSchema } from '@/lib/rules'
 
 export const login = async (_: any, formData: FormData): Promise<FormState<any>> => {
   const object = {
@@ -51,6 +51,23 @@ export const addressInformation = async (_: any, formData: FormData): Promise<Fo
   }
 
   const result = addressSchema.safeParse(object)
+  if (!result.success) {
+    return { errors: result.error.flatten().fieldErrors, values: object }
+  }
+
+  return { success: true, errors: {}, values: object }
+}
+
+export const submitPM = async (_: any, formData: FormData): Promise<FormState<any>> => {
+  const object = {
+    type: formData.get('type'),
+    name: formData.get('name'),
+    lastFourDigits: formData.get('lastFourDigits'),
+    expiryDate: formData.get('expiryDate'),
+    isDefault: formData.get('isDefault')
+  }
+
+  const result = paymentMethodSchema.safeParse(object)
   if (!result.success) {
     return { errors: result.error.flatten().fieldErrors, values: object }
   }

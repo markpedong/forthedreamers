@@ -20,3 +20,7 @@ export const setDefaultAddress = async (body: any) => post<any>({ url: '/api/add
 export const deleteAddress = async (id: string) => deleteF({ url: `/api/address/${id}` })
 
 export const updateAddress = async (body: any) => post<any>({ url: `/api/address/${body.id}`, data: body })
+
+export const createPaymentMethod = async (body: any) => post<any>({ url: '/api/payment-methods', data: body })
+
+export const updatePaymentMethod = async (body: any) => post<any>({ url: `/api/payment-methods/${body.id}`, data: body })

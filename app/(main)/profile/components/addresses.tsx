@@ -1,5 +1,5 @@
-import Address from '@/components/address'
-import AddressAddEdit from '@/components/addressAddEdit'
+import Address from '@/components/profile/address'
+import AddressAddEdit from '@/components/profile/addressAddEdit'
 import { setAddress } from '@/redux/slices/userSlice'
 import { useAppDispatch } from '@/redux/store'
 import { Button, useDisclosure } from '@heroui/react'

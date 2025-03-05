@@ -57,3 +57,11 @@ export const addressSchema = z.object({
   zipCode: z.string().trim().min(1, "Zip code can't be empty").max(20, "Zip code can't be longer than 20 characters"),
   country: z.string().trim().min(1, "Country can't be empty").max(20, "Country can't be longer than 20 characters")
 })
+
+export const paymentMethodSchema = z.object({
+  type: z.string(),
+  name: z.string(),
+  lastFourDigits: z.string(),
+  expiryDate: z.string(),
+  isDefault: z.boolean()
+})
