@@ -83,7 +83,7 @@ const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
 			<ModalContent>
 				{onClose => (
 					<>
-						<ModalHeader>{!paymentMethod?.id ? 'Edit Payment Method' : 'Add Payment Method'}</ModalHeader>
+						<ModalHeader>{paymentMethod?.id ? 'Edit Payment Method' : 'Add Payment Method'}</ModalHeader>
 						<ModalBody>
 							<div className="space-y-4">
 								<Select
