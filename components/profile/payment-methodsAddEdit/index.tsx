@@ -55,21 +55,22 @@ const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
 	const handleSuccess = () => {
 		let res
 
-		submit(async () => {
-			if (!paymentMethod?.id) {
-				res = await createPaymentMethod({ ...pmValues, userId: session?.user.id })
-			} else {
-				res = await updatePaymentMethod({ ...pmValues, id: paymentMethod?.id })
-			}
+		console.log('pmValues', pmValues)
+		// submit(async () => {
+		// 	if (!paymentMethod?.id) {
+		// 		res = await createPaymentMethod({ ...pmValues, userId: session?.user.id })
+		// 	} else {
+		// 		res = await updatePaymentMethod({ ...pmValues, id: paymentMethod?.id })
+		// 	}
 
-			if (res?.success) {
-				addToast({ title: 'Success', description: 'Address saved successfully', color: 'success' })
-				onOpenChange()
-				refresh()
-				setPmValues(null)
-				dispatch(setPaymentMethod(null))
-			}
-		})
+		// 	if (res?.success) {
+		// 		addToast({ title: 'Success', description: 'Address saved successfully', color: 'success' })
+		// 		onOpenChange()
+		// 		refresh()
+		// 		setPmValues(null)
+		// 		dispatch(setPaymentMethod(null))
+		// 	}
+		// })
 	}
 
 	const handleChange =
@@ -81,6 +82,15 @@ const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
 			}))
 		}
 
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
+		const formData = new FormData(e.currentTarget)
+
+		startTransition(() => {
+			action(formData)
+		})
+	}
+
 	return (
 		<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
 			<ModalContent>
@@ -88,7 +98,7 @@ const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
 					<>
 						<ModalHeader>{paymentMethod?.id ? 'Edit Payment Method' : 'Add Payment Method'}</ModalHeader>
 						<ModalBody>
-							<Form className="space-y-4" ref={formRef}>
+							<Form action={action} validationErrors={state?.errors} onSubmit={handleSubmit} ref={formRef}>
 								<Select
 									label="Payment Type"
 									selectedKeys={[pmValues?.type || PAYMENT_TYPE.VISA]}
@@ -112,8 +122,10 @@ const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
 								<Input
 									label="Name on Card"
 									placeholder="John Doe"
-									value={pmValues?.name || ''}
+									value={pmValues?.name}
+									errorMessage={state?.errors?.name?.[0]}
 									onChange={handleChange('name')}
+									name="name"
 								/>
 
 								{['VISA', 'MASTERCARD'].includes(`${pmValues?.type}`) && (
@@ -121,14 +133,17 @@ const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
 										<Input
 											label="Card Number"
 											placeholder="•••• •••• •••• ••••"
-											// value={pmValues?.number || ''}
-											// onChange={handleChange('')}
+											name="cardNumber"
+											value={pmValues?.cardNumber}
+											errorMessage={state?.errors?.cardNumber?.[0]}
+											onChange={handleChange('cardNumber')}
 										/>
 
 										<Input
 											label="Expiry Date"
 											placeholder="MM/YY"
-											value={pmValues?.expiryDate || ''}
+											value={pmValues?.expiryDate}
+											errorMessage={state?.errors?.expiryDate?.[0]}
 											onChange={handleChange('expiryDate')}
 										/>
 									</>
@@ -138,8 +153,10 @@ const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
 									<Input
 										label="PayPal Email"
 										placeholder="email@example.com"
-										value={pmValues?.name || ''}
+										value={pmValues?.name}
+										name="name"
 										onChange={handleChange('name')}
+										errorMessage={state?.errors?.name?.[0]}
 									/>
 								)}
 

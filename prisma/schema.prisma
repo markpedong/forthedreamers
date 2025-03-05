@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Users {
@@ -189,6 +190,7 @@ enum PAYMENT_TYPE {
   MASTERCARD
   PAYPAL
   APPLEPAY
+  CASH_ON_DELIVERY
 }
 
 enum USER_ROLE {
