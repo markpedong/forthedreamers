@@ -58,13 +58,17 @@ const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
 
     submit(async () => {
       if (!paymentMethod?.id) {
-        res = await createPaymentMethod({ ...pmValues, userId: session?.user.id })
+        res = await createPaymentMethod({
+          ...pmValues,
+          type: pmValues?.type || PAYMENT_TYPE.CASH_ON_DELIVERY,
+          userId: session?.user.id
+        })
       } else {
         res = await updatePaymentMethod({ ...pmValues, id: paymentMethod?.id })
       }
 
       if (res?.success) {
-        addToast({ title: 'Success', description: 'Address saved successfully', color: 'success' })
+        addToast({ title: 'Success', description: 'Payment method saved successfully', color: 'success' })
         onOpenChange()
         refresh()
         setPmValues(null)
@@ -149,6 +153,7 @@ const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
                       value={pmValues?.expiryDate || ''}
                       errorMessage={state?.errors?.expiryDate?.[0]}
                       onChange={handleChange('expiryDate')}
+											name="expiryDate"
                     />
                   </>
                 )}

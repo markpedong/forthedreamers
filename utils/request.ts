@@ -23,4 +23,8 @@ export const updateAddress = async (body: any) => post<any>({ url: `/api/address
 
 export const createPaymentMethod = async (body: any) => post<any>({ url: '/api/payment-methods', data: body })
 
-export const updatePaymentMethod = async (body: any) => post<any>({ url: `/api/payment-methods/${body.id}`, data: body })
+export const updatePaymentMethod = async (body: any) =>
+  post<any>({ url: `/api/payment-methods/${body.id}`, data: body })
+
+export const setDefaultPaymentMethod = async (id: string) =>
+  post<any>({ url: `/api/payment-methods/set-default`, data: { id } })

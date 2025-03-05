@@ -58,11 +58,18 @@ export const addressSchema = z.object({
   country: z.string().trim().min(1, "Country can't be empty").max(20, "Country can't be longer than 20 characters")
 })
 
-export const paymentMethodSchema = z.object({
-  type: z.string(),
-  name: z.string().trim().min(1, "Name can't be empty").max(20, "Name can't be longer than 20 characters"),
-  email: z.string().trim().min(1, "Email can't be empty").email("Invalid email"),
-  cardNumber: z.string().trim().min(1, "Card number can't be empty"),
-  expiryDate: z.string().trim().min(1, "Expiry date can't be empty"),
-  isDefault: z.boolean()
-}).partial()
+export const paymentMethodSchema = z
+  .object({
+    type: z.string(),
+    name: z
+      .string()
+      .trim()
+      .min(1, "Name can't be empty")
+      .max(20, "Name can't be longer than 20 characters")
+      .regex(/^[a-zA-Z\s]+$/, 'Name can only contain letters'),
+    email: z.string().trim().min(1, "Email can't be empty").email('Invalid email'),
+    cardNumber: z.string().trim().min(16, "Card number must be 16 digits long"),
+    expiryDate: z.string().trim().max(4, "Expiry date must be 4 digits long"),
+    isDefault: z.boolean()
+  })
+  .partial()
