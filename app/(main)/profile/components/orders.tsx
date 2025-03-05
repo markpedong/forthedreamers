@@ -1,9 +1,19 @@
-import React from 'react'
+import Orders from '@/components/profile/order'
+import { Orders as TOrders } from '@prisma/client'
+import React, { FC } from 'react'
 
-type Props = {}
-
-const Orders = (props: Props) => {
-	return <div>Orders</div>
+type Props = {
+  data: TOrders[]
 }
 
-export default Orders
+const OrderList: FC<Props> = ({ data }) => {
+  return (
+    <div>
+      {data?.map(order => (
+        <Orders order={order} />
+      ))}
+    </div>
+  )
+}
+
+export default OrderList

@@ -80,14 +80,15 @@ model NewsLetter {
 }
 
 model Orders {
-  id        String    @id @default(uuid()) @db.Uuid
-  date      String
-  total     Float
-  status    STATUS
-  userId    String?   @db.Uuid
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  id         String    @id @default(uuid()) @db.Uuid
+  date       String
+  total      Float
+  totalItems Int       @default(0) 
+  status     STATUS
+  userId     String?   @db.Uuid
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
 
   user       Users?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   orderItems OrderItems[]
