@@ -10,6 +10,7 @@ import {
   getWishlistServer
 } from '@/lib/server'
 import { Users } from '@prisma/client'
+import { TWishListItem } from '@/constants/types'
 
 const Page = async () => {
   const session = await getServerSession(authOptions)
@@ -29,7 +30,7 @@ const Page = async () => {
       paymentMethods={paymentMethods}
       orders={orders}
       reviews={reviews}
-      wishlist={wishlist}
+      wishlist={wishlist as TWishListItem[]}
     />
   )
 }
