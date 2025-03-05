@@ -1,4 +1,4 @@
-import PaymentMethods from '@/components/payment-methods'
+import PaymentMethods from '@/components/profile/payment-methods'
 import React, { FC } from 'react'
 import { PaymentMethods as TPaymentMethod } from '@prisma/client'
 type Props = {

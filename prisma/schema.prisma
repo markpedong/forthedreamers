@@ -11,7 +11,9 @@ model Users {
   id             String           @id @default(uuid()) @db.Uuid
   email          String?          @unique
   username       String           @unique
+  phoneNumber    String?          @unique
   password       String
+  role           USER_ROLE        @default(USER)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   deletedAt      DateTime?
@@ -22,6 +24,12 @@ model Users {
   birthday       String?
   addresses      Addresses[]
   paymentMethods PaymentMethods[]
+  orders         Orders[]
+  wishlists      Wishlists[]
+  reviews        Reviews[]
+
+  @@index([email])
+  @@index([username])
 }
 
 model Addresses {
@@ -47,20 +55,20 @@ model Addresses {
 }
 
 model PaymentMethods {
-  id         String       @id @default(uuid()) @db.Uuid
-  type       PAYMENT_TYPE
-  name       String
-  number     String
-  expiryDate String
-  isDefault  Boolean      @default(false)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  deletedAt  DateTime?
-  userId     String?      @db.Uuid
+  id             String       @id @default(uuid()) @db.Uuid
+  type           PAYMENT_TYPE
+  name           String
+  lastFourDigits String
+  expiryDate     String
+  isDefault      Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+  userId         String?      @db.Uuid
 
   user Users? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
+  @@index([userId, isDefault])
 }
 
 model NewsLetter {
@@ -69,6 +77,101 @@ model NewsLetter {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+}
+
+model Orders {
+  id        String    @id @default(uuid()) @db.Uuid
+  date      String
+  total     Float
+  status    STATUS
+  userId    String?   @db.Uuid
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  user       Users?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderItems OrderItems[]
+  reviews    Reviews[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Products {
+  id            String         @id @default(uuid()) @db.Uuid
+  name          String
+  description   String?
+  price         Float
+  discountType  DISCOUNT_TYPE?
+  discountValue Float?
+  stock         Int
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+
+  orderItems OrderItems[]
+  wishlists  Wishlists[]
+  reviews    Reviews[]
+
+  @@index([name])
+  @@index([price])
+  @@index([discountType])
+}
+
+model OrderItems {
+  id        String @id @default(uuid()) @db.Uuid
+  orderId   String @db.Uuid
+  productId String @db.Uuid
+  quantity  Int
+  price     Float
+
+  order   Orders   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([orderId, productId])
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Wishlists {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  productId String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  user    Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+}
+
+model Reviews {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  productId String   @db.Uuid
+  orderId   String   @db.Uuid
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  user    Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order   Orders   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId, orderId])
+  @@index([userId])
+  @@index([productId])
+  @@index([rating])
+}
+
+enum STATUS {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELED
 }
 
 enum ADDRESS_TYPE {
@@ -83,4 +186,14 @@ enum PAYMENT_TYPE {
   MASTERCARD
   PAYPAL
   APPLEPAY
+}
+
+enum USER_ROLE {
+  USER
+  ADMIN
+}
+
+enum DISCOUNT_TYPE {
+  PERCENTAGE
+  FIXED
 }
