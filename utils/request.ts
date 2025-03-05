@@ -28,3 +28,5 @@ export const updatePaymentMethod = async (body: any) =>
 
 export const setDefaultPaymentMethod = async (id: string) =>
   post<any>({ url: `/api/payment-methods/set-default`, data: { id } })
+
+export const deletePaymentMethod = async (id: string) => deleteF({ url: `/api/payment-methods/${id}` })

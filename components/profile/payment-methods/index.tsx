@@ -1,8 +1,8 @@
 import React, { FC, useTransition } from 'react'
-import { Card, CardBody, Button, Divider } from '@heroui/react'
+import { Card, CardBody, Button, Divider, Spinner } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { PAYMENT_TYPE, PaymentMethods as TPaymentMethods } from '@prisma/client'
-import { setDefaultPaymentMethod } from '@/utils/request'
+import { deletePaymentMethod, setDefaultPaymentMethod } from '@/utils/request'
 import { useRouter } from 'next/navigation'
 
 type Props = {
@@ -12,6 +12,7 @@ type Props = {
 
 const PaymentMethods: FC<Props> = ({ method }) => {
   const [isPending, startTransition] = useTransition()
+  const [isDeleting, startDeleting] = useTransition()
   const { refresh } = useRouter()
   const getCardIcon = (type: TPaymentMethods['type']) => {
     switch (type) {
@@ -31,6 +32,16 @@ const PaymentMethods: FC<Props> = ({ method }) => {
   const handleSetDefault = () => {
     startTransition(async () => {
       const res = await setDefaultPaymentMethod(method.id)
+
+      if (res.success) {
+        refresh()
+      }
+    })
+  }
+
+  const handleDelete = () => {
+    startDeleting(async () => {
+      const res = await deletePaymentMethod(method.id)
 
       if (res.success) {
         refresh()
@@ -61,11 +72,15 @@ const PaymentMethods: FC<Props> = ({ method }) => {
           <div className="flex items-center gap-2">
             {!method.isDefault && (
               <Button variant="light" size="sm" onPress={handleSetDefault} isLoading={isPending}>
-                Set as default
+                {isPending ? 'Setting...' : 'Set as default'}
               </Button>
             )}
-            <Button variant="light" size="sm" color="danger" isIconOnly>
-              <Icon icon="lucide:trash-2" />
+            <Button variant="light" size="sm" color="danger" isIconOnly disabled={isDeleting} onPress={handleDelete}>
+              {isDeleting ? (
+                <Spinner size="sm" color="danger" className="size-6" />
+              ) : (
+                <Icon icon="lucide:trash-2" width={16} height={16} />
+              )}
             </Button>
           </div>
         </div>

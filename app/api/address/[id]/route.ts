@@ -16,7 +16,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     data: { deletedAt: new Date() }
   })
 
-  return generateResponse({ data: address, message: 'Address deleted successfully' })
+  return generateResponse({ message: 'Address deleted successfully' })
 }
 
 export async function POST(req: NextRequest) {
