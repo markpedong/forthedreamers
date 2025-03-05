@@ -11,11 +11,10 @@ import { signOut, useSession } from 'next-auth/react'
 import dynamic from 'next/dynamic'
 import NextImage from 'next/image'
 import { FC, useEffect, useState, useTransition } from 'react'
-import { FaPlus } from 'react-icons/fa'
-import { IoArrowBack } from 'react-icons/io5'
 import styles from '../styles.module.scss'
 import { ADDRESS_TYPE, PaymentMethods as TPaymentMethods, Addresses as TAddresses, Users } from '@prisma/client'
 import { setHasDefaultAddress } from '@/redux/slices/appSlice'
+import { Icon } from '@iconify/react'
 
 type Props = {
 	userInfo: Users
@@ -70,7 +69,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods }) => {
 					<div className="p-5 mb-10">
 						<div className="flex justify-between items-center mb-16 mt-4">
 							<div className="flex gap-2 items-center justify-start text-sm text-neutral-400 hover:text-black cursor-pointer transition">
-								<IoArrowBack />
+								<Icon icon="pajamas:go-back" />
 								<span>Back</span>
 							</div>
 							<Button
@@ -93,7 +92,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods }) => {
 								</div>
 							) : (
 								<label className="w-12 h-12 flex flex-col items-center justify-center bg-gray-400 text-white rounded-full cursor-pointer relative">
-									<FaPlus className="text-lg absolute top-2" size={10} />
+									<Icon icon="ic:outline-plus" className="text-lg absolute top-2" />
 									<span className="text-xs mt-4">Upload</span>
 									<input type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
 								</label>

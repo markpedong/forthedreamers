@@ -1,13 +1,12 @@
 import { ADDRESS_TYPE, Addresses } from '@prisma/client'
 import React, { FC, memo, useState, useTransition } from 'react'
 import { Card, CardBody, Button, addToast, Popover, PopoverTrigger, PopoverContent } from '@heroui/react'
-import { AiFillEdit } from 'react-icons/ai'
-import { FaTrash } from 'react-icons/fa'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { deleteAddress, setDefaultAddress } from '@/utils/request'
 import { useRouter } from 'next/navigation'
 import { setAddress } from '@/redux/slices/userSlice'
 import { setHasDefaultAddress } from '@/redux/slices/appSlice'
+import { Icon } from '@iconify/react'
 
 type Props = {
   address: Addresses
@@ -53,7 +52,7 @@ const Address: FC<Props> = ({ openEditModal, address }) => {
       <Popover isOpen={isOpen} onOpenChange={setIsOpen} backdrop="opaque" isDismissable={false}>
         <PopoverTrigger>
           <Button isIconOnly size="sm" variant="light" aria-label="Delete address" onPress={() => setIsOpen(true)}>
-            <FaTrash className="text-danger" size={12} />
+            <Icon icon="mdi:trash" className="text-danger" />
           </Button>
         </PopoverTrigger>
         <PopoverContent>
@@ -103,7 +102,7 @@ const Address: FC<Props> = ({ openEditModal, address }) => {
                 openEditModal()
               }}
             >
-              <AiFillEdit className="text-default-500" size={12} color={darkMode ? 'white' : 'black'} />
+              <Icon className="text-default-500" icon="akar-icons:edit" color={darkMode ? 'white' : 'black'} />
             </Button>
             {renderDelete()}
           </div>
