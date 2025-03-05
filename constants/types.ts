@@ -1,4 +1,4 @@
-import { Users } from '@prisma/client'
+import { Users, Wishlists } from '@prisma/client'
 import { GetProp, UploadProps } from 'antd'
 
 export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' | 'firstName' | 'lastName'>
@@ -66,4 +66,13 @@ export type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
 export type TAddTailwindUtility = {
   addUtilities: (utilities: any) => void
   addComponents: (components: any) => void
+}
+
+export type TWishListItem = Wishlists & {
+  product: {
+    price: number;
+    stock: number;
+    images: string[];
+    name: string
+  };
 }

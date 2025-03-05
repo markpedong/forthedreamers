@@ -18,10 +18,13 @@ import {
   Addresses as TAddresses,
   Users,
   Orders as TOrders,
-  Reviews as TReviews
+  Reviews as TReviews,
+  Wishlists as TWishlists
 } from '@prisma/client'
 import { setHasDefaultAddress } from '@/redux/slices/appSlice'
 import { Icon } from '@iconify/react'
+import WishList from './wishlist'
+import { TWishListItem } from '@/constants/types'
 
 type Props = {
   userInfo: Users
@@ -29,6 +32,7 @@ type Props = {
   paymentMethods: TPaymentMethods[]
   orders: TOrders[]
   reviews: TReviews[]
+  wishlist: TWishListItem[]
 }
 
 const PersonalInformation = dynamic(() => import('./personal-information'), { ssr: false })
@@ -37,7 +41,7 @@ const PaymentMethods = dynamic(() => import('./payment-methods'), { ssr: false }
 const Orders = dynamic(() => import('./orders'), { ssr: false })
 const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 
-const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, reviews }) => {
+const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, reviews, wishlist }) => {
   const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
   const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
   const dispatch = useAppDispatch()
@@ -132,6 +136,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
           {activeMenu === 'Addresses' && <Addresses data={addresses} />}
           {activeMenu === 'Payment Methods' && <PaymentMethods data={paymentMethods} />}
           {activeMenu === 'Orders' && <Orders data={orders} />}
+          {activeMenu === 'Wishlist' && <WishList data={wishlist} />}
           {activeMenu === 'Reviews' && <Reviews data={reviews} />}
         </div>
       </div>

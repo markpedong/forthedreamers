@@ -111,6 +111,7 @@ model Products {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   deletedAt     DateTime?
+  images        String[]
 
   orderItems OrderItems[]
   wishlists  Wishlists[]

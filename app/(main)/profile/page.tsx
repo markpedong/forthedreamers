@@ -6,18 +6,20 @@ import {
   getOrderServer,
   getPaymentMethodServer,
   getProfileServer,
-  getReviewServer
+  getReviewServer,
+  getWishlistServer
 } from '@/lib/server'
 import { Users } from '@prisma/client'
 
 const Page = async () => {
   const session = await getServerSession(authOptions)
-  const [userInfo, addresses, paymentMethods, orders, reviews] = await Promise.all([
+  const [userInfo, addresses, paymentMethods, orders, reviews, wishlist] = await Promise.all([
     getProfileServer(session?.user?.id),
     getAddressesServer(session?.user?.id),
     getPaymentMethodServer(session?.user?.id),
     getOrderServer(session?.user?.id),
-    getReviewServer(session?.user?.id)
+    getReviewServer(session?.user?.id),
+    getWishlistServer(session?.user?.id)
   ])
 
   return (
@@ -27,6 +29,7 @@ const Page = async () => {
       paymentMethods={paymentMethods}
       orders={orders}
       reviews={reviews}
+      wishlist={wishlist}
     />
   )
 }
