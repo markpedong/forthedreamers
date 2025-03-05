@@ -61,7 +61,8 @@ export const addressSchema = z.object({
 export const paymentMethodSchema = z.object({
   type: z.string(),
   name: z.string().trim().min(1, "Name can't be empty").max(20, "Name can't be longer than 20 characters"),
+  email: z.string().trim().min(1, "Email can't be empty").email("Invalid email"),
   cardNumber: z.string().trim().min(1, "Card number can't be empty"),
   expiryDate: z.string().trim().min(1, "Expiry date can't be empty"),
   isDefault: z.boolean()
-})
+}).partial()

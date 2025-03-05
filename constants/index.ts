@@ -1,4 +1,4 @@
-import { ADDRESS_TYPE } from '@prisma/client'
+import { ADDRESS_TYPE, PAYMENT_TYPE } from '@prisma/client'
 
 export const NO_NAVBAR_FOOTER_PAGES = ['/login', '/checkout', '/forgot-password', '/signup']
 
@@ -31,3 +31,31 @@ export const ADDRESS_OBJ = {
   [ADDRESS_TYPE.NONE]: 'NONE',
   [ADDRESS_TYPE.DEFAULT]: 'DEFAULT'
 }
+
+export const PAYMENT_METHODS = [
+  {
+    label: 'Cash on Delivery',
+    key: PAYMENT_TYPE.CASH_ON_DELIVERY,
+    icon: 'famicons:cash-outline'
+  },
+  {
+    label: 'PayPal',
+    key: PAYMENT_TYPE.PAYPAL,
+    icon: 'logos:paypal'
+  },
+  {
+    label: 'Apple Pay',
+    key: PAYMENT_TYPE.APPLEPAY,
+    icon: 'logos:apple-pay'
+  },
+  {
+    label: 'Visa',
+    key: PAYMENT_TYPE.VISA,
+    icon: 'logos:visa'
+  },
+  {
+    label: 'Mastercard',
+    key: PAYMENT_TYPE.MASTERCARD,
+    icon: 'logos:mastercard'
+  }
+]

@@ -59,13 +59,14 @@ model PaymentMethods {
   id         String       @id @default(uuid()) @db.Uuid
   type       PAYMENT_TYPE
   name       String
-  cardNumber String
-  expiryDate String
+  cardNumber String?
+  expiryDate String?
   isDefault  Boolean      @default(false)
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   deletedAt  DateTime?
   userId     String?      @db.Uuid
+  email      String?
 
   user Users? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
