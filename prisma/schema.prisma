@@ -83,7 +83,7 @@ model Orders {
   id         String    @id @default(uuid()) @db.Uuid
   date       String
   total      Float
-  totalItems Int       @default(0) 
+  totalItems Int       @default(0)
   status     STATUS
   userId     String?   @db.Uuid
   createdAt  DateTime  @default(now())
@@ -149,13 +149,15 @@ model Wishlists {
 }
 
 model Reviews {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @db.Uuid
-  productId String   @db.Uuid
-  orderId   String   @db.Uuid
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  productId String    @db.Uuid
+  orderId   String    @db.Uuid
   rating    Int
   comment   String?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   user    Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
   product Products @relation(fields: [productId], references: [id], onDelete: Cascade)

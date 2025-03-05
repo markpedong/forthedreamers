@@ -54,3 +54,11 @@ export const getOrderServer = async (id?: string) => {
     orderBy: { createdAt: 'desc' }
   })
 }
+
+export const getReviewServer = async (id?: string) => {
+  return prisma.reviews.findMany({
+    where: { userId: id, deletedAt: null },
+    include: { product: { select: { name: true } } },
+    orderBy: { createdAt: 'desc' }
+  })
+}
