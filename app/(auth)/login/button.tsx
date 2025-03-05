@@ -3,7 +3,7 @@ import { useAppSelector } from '@/redux/store'
 import { Button } from '@heroui/react'
 import { signIn } from 'next-auth/react'
 import { FC } from 'react'
-import { FcGoogle } from 'react-icons/fc'
+import { Icon } from '@iconify/react'
 
 interface AuthButtonsProps {
   isPending: boolean
@@ -30,7 +30,7 @@ const AuthButtons: FC<AuthButtonsProps> = ({ isPending }) => {
       {loginFormState !== LOGINFORM_STATE.FORGOT_PASSWORD && (
         <Button
           color="default"
-          startContent={<FcGoogle />}
+          startContent={<Icon icon="flat-color-icons:google" />}
           variant="bordered"
           fullWidth
           className="mt-2"

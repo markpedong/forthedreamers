@@ -1,14 +1,13 @@
 import { Drawer, DrawerContent, DrawerHeader, Input, useDisclosure } from '@heroui/react'
 import { FC } from 'react'
-import { FaSearch } from 'react-icons/fa'
-import { IoClose } from 'react-icons/io5'
+import { Icon } from '@iconify/react'
 
 const SearchDrawer: FC = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
 	return (
 		<>
-			<FaSearch onClick={onOpen} className="cursor-pointer" />
+			<Icon icon="ri:search-2-fill" onClick={onOpen} className="cursor-pointer" />
 			<Drawer
 				isOpen={isOpen}
 				className="rounded-none"
@@ -38,7 +37,7 @@ const SearchDrawer: FC = () => {
 						<>
 							<DrawerHeader className="flex justify-between items-center gap-5">
 								<Input label="Search for a product" />
-								<IoClose onClick={onClose} className='cursor-pointer'/>
+								<Icon icon="mingcute:close-line" onClick={onClose} className='cursor-pointer'/>
 							</DrawerHeader>
 							{/* <DrawerBody>
 								<p>This drawer has custom enter/exit animations.</p>

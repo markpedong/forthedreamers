@@ -7,12 +7,11 @@ import { usePathname, useRouter } from 'next/navigation'
 import { FC, useState } from 'react'
 import SearchDrawer from '../search-drawer'
 import { NO_NAVBAR_FOOTER_PAGES } from '@/constants'
-import { IoMoon } from 'react-icons/io5'
-import { FaSun } from 'react-icons/fa'
 import { useTheme } from 'next-themes'
 import { useSession } from 'next-auth/react'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { toggleDarkMode } from '@/redux/slices/appSlice'
+import { Icon } from '@iconify/react'
 
 const NavBar: FC = () => {
   const pathname = usePathname()
@@ -48,9 +47,9 @@ const NavBar: FC = () => {
         <NavbarContent justify="end">
           <SearchDrawer />
           {darkMode ? (
-            <IoMoon className="cursor-pointer" onClick={toggle} />
+            <Icon icon="solar:sun-bold" className="cursor-pointer" onClick={toggle} />
           ) : (
-            <FaSun className="cursor-pointer" onClick={toggle} />
+            <Icon icon="solar:moon-bold" className="cursor-pointer" onClick={toggle} />
           )}
           {session?.user?.id && pathname !== '/profile' && (
             <Link color="foreground" href="/profile">
@@ -58,7 +57,7 @@ const NavBar: FC = () => {
             </Link>
           )}
           {!session?.user?.id && (
-            <Link color="foreground" href="/login" className='hidden md:block'>
+            <Link color="foreground" href="/login" className="hidden md:block">
               Login
             </Link>
           )}

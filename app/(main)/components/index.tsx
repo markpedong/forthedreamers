@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { FC } from 'react'
-import { FaArrowRight } from 'react-icons/fa'
+import { Icon } from '@iconify/react'
 import { motion } from 'framer-motion'
 import TrendingNow from './trending-now'
 import NewsLetter from '@/components/newsletter'
@@ -25,7 +25,7 @@ const Home: FC = () => {
 					</span>
 					<div className="flex items-center justify-center gap-2 border border-black py-2 px-4 cursor-pointer bg-white text-black hover:bg-black hover:text-white transition-all">
 						<span className="text-sm">Explore our Products</span>
-						<FaArrowRight size={12} />
+						<Icon icon="icon-park-outline:right" />
 					</div>
 				</div>
 				<motion.div
