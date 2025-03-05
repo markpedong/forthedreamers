@@ -120,7 +120,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods }) => {
 					</div>
 				</div>
 				<div className="p-5 h-full">
-					{activeMenu === 'Personal Information' && <>{userData && <PersonalInformation user={userData} />}</>}
+					{activeMenu === 'Personal Information' && <>{userData && <PersonalInformation />}</>}
 					{activeMenu === 'Addresses' && <Addresses data={addresses} />}
 					{activeMenu === 'Payment Methods' && <PaymentMethods data={paymentMethods}/>}
 					{activeMenu === 'Orders' && <Orders />}

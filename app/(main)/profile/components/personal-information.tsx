@@ -5,11 +5,11 @@ import { Typography } from 'antd'
 import { FC, useActionState, useEffect, useTransition } from 'react'
 import { getLocalTimeZone, parseDate, today } from '@internationalized/date'
 import { updateProfile } from '@/utils/request'
-import { useAppDispatch } from '@/redux/store'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { setUserData } from '@/redux/slices/userSlice'
 import { useSession } from 'next-auth/react'
 
-const PersonalInformation: FC<{ user: Users | undefined }> = ({ user }) => {
+const PersonalInformation: FC = () => {
   const dispatch = useAppDispatch()
   const [state, action] = useActionState(personalInformation, {
     errors: {},
@@ -18,6 +18,7 @@ const PersonalInformation: FC<{ user: Users | undefined }> = ({ user }) => {
   const [isPending, startTransition] = useTransition()
   const container = 'grid grid-cols-2 gap-3 w-full'
   const { data: session } = useSession()
+  const user = useAppSelector(s => s.user.userData)
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
