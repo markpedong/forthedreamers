@@ -1,36 +1,28 @@
 import React, { FC } from 'react'
 import { Card, CardBody, Button, Chip } from '@heroui/react'
+import { Orders as TOrders, STATUS } from '@prisma/client'
 
 type Props = {
-  order: Order
-}
-
-interface Order {
-  id: string
-  orderNumber: string
-  date: string
-  total: number
-  status: 'delivered' | 'processing' | 'shipped' | 'cancelled'
-  items: number
+  order: TOrders
 }
 
 const Orders: FC<Props> = ({ order }) => {
-  const getStatusColor = (status: Order['status']) => {
+  const getStatusColor = (status: TOrders['status']) => {
     switch (status) {
-      case 'delivered':
+      case STATUS.DELIVERED:
         return 'success'
-      case 'processing':
+      case STATUS.PROCESSING:
         return 'primary'
-      case 'shipped':
+      case STATUS.SHIPPED:
         return 'warning'
-      case 'cancelled':
+      case STATUS.CANCELED:
         return 'danger'
       default:
         return 'default'
     }
   }
 
-  const getStatusText = (status: Order['status']) => {
+  const getStatusText = (status: TOrders['status']) => {
     return status.charAt(0).toUpperCase() + status.slice(1)
   }
 
@@ -40,7 +32,7 @@ const Orders: FC<Props> = ({ order }) => {
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">{order.orderNumber}</p>
+              <p className="font-medium">{order.id}</p>
               <p className="text-small text-default-500">{order.date}</p>
             </div>
             <Chip color={getStatusColor(order.status) as any} variant="flat" size="sm">
@@ -49,7 +41,7 @@ const Orders: FC<Props> = ({ order }) => {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <p className="text-small">{order.items} items</p>
+              <p className="text-small">{order.totalItems} items</p>
               <span className="text-small text-default-500">•</span>
               <p className="font-medium">${order.total.toFixed(2)}</p>
             </div>
