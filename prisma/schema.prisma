@@ -8,26 +8,20 @@ datasource db {
 }
 
 model Users {
-  id           String      @id @default(uuid()) @db.Uuid
-  email        String?     @unique
-  username     String      @unique
-  password     String
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  deletedAt    DateTime?
-  firstName    String?
-  lastName     String?
-  image        String?
-  refreshToken String?
-  birthday     String?
-  addresses    Addresses[]
-}
-
-enum ADDRESS_TYPE {
-  DEFAULT
-  HOME
-  WORK
-  NONE
+  id             String           @id @default(uuid()) @db.Uuid
+  email          String?          @unique
+  username       String           @unique
+  password       String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  deletedAt      DateTime?
+  firstName      String?
+  lastName       String?
+  image          String?
+  refreshToken   String?
+  birthday       String?
+  addresses      Addresses[]
+  paymentMethods PaymentMethods[]
 }
 
 model Addresses {
@@ -52,10 +46,41 @@ model Addresses {
   @@index([userId])
 }
 
+model PaymentMethods {
+  id         String       @id @default(uuid()) @db.Uuid
+  type       PAYMENT_TYPE
+  name       String
+  number     String
+  expiryDate String
+  isDefault  Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  deletedAt  DateTime?
+  userId     String?      @db.Uuid
+
+  user Users? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
 model NewsLetter {
   id        String    @id @default(uuid()) @db.Uuid
   email     String?   @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+}
+
+enum ADDRESS_TYPE {
+  DEFAULT
+  HOME
+  WORK
+  NONE
+}
+
+enum PAYMENT_TYPE {
+  VISA
+  MASTERCARD
+  PAYPAL
+  APPLEPAY
 }

@@ -14,12 +14,13 @@ import { FC, useEffect, useState, useTransition } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { IoArrowBack } from 'react-icons/io5'
 import styles from '../styles.module.scss'
-import { ADDRESS_TYPE, Addresses as TAddresses, Users } from '@prisma/client'
+import { ADDRESS_TYPE, PaymentMethods as TPaymentMethods, Addresses as TAddresses, Users } from '@prisma/client'
 import { setHasDefaultAddress } from '@/redux/slices/appSlice'
 
 type Props = {
 	userInfo: Users
 	addresses: TAddresses[]
+	paymentMethods: TPaymentMethods[]
 }
 
 const PersonalInformation = dynamic(() => import('./personal-information'), { ssr: false })
@@ -28,7 +29,7 @@ const PaymentMethods = dynamic(() => import('./payment-methods'), { ssr: false }
 const Orders = dynamic(() => import('./orders'), { ssr: false })
 const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 
-const Profile: FC<Props> = ({ addresses, userInfo }) => {
+const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods }) => {
 	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
 	const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
 	const dispatch = useAppDispatch()
@@ -121,7 +122,7 @@ const Profile: FC<Props> = ({ addresses, userInfo }) => {
 				<div className="p-5 h-full">
 					{activeMenu === 'Personal Information' && <>{userData && <PersonalInformation user={userData} />}</>}
 					{activeMenu === 'Addresses' && <Addresses data={addresses} />}
-					{activeMenu === 'Payment Methods' && <PaymentMethods />}
+					{activeMenu === 'Payment Methods' && <PaymentMethods data={paymentMethods}/>}
 					{activeMenu === 'Orders' && <Orders />}
 					{activeMenu === 'Reviews' && <Reviews />}
 				</div>

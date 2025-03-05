@@ -40,3 +40,10 @@ export const getAddressesServer = async (id?: string) => {
     orderBy: { createdAt: 'desc' }
   })
 }
+
+export const getPaymentMethodServer = async (id?: string) => {
+  return prisma.paymentMethods.findMany({
+    where: { userId: id, deletedAt: null },
+    orderBy: { createdAt: 'desc' }
+  })
+}
