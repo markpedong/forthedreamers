@@ -1,6 +1,7 @@
 import {
 	addToast,
 	Button,
+	Form,
 	Input,
 	Modal,
 	ModalBody,
@@ -10,7 +11,7 @@ import {
 	Select,
 	SelectItem
 } from '@heroui/react'
-import React, { FC, useActionState, useEffect, useState, useTransition } from 'react'
+import React, { FC, useActionState, useEffect, useRef, useState, useTransition } from 'react'
 import { Icon } from '@iconify/react'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { PAYMENT_TYPE, PaymentMethods } from '@prisma/client'
@@ -28,7 +29,8 @@ type Props = {
 const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
 	const paymentMethod = useAppSelector(s => s.user.paymentMethod)
 	const [pmValues, setPmValues] = useState<PaymentMethods | null>(null)
-	const [_, submit] = useTransition()
+	const [isPending, submit] = useTransition()
+	const [_, startTransition] = useTransition()
 	const [state, action] = useActionState(submitPM, {
 		errors: {},
 		values: {}
@@ -36,6 +38,7 @@ const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
 	const { refresh } = useRouter()
 	const dispatch = useAppDispatch()
 	const { data: session } = useSession()
+	const formRef = useRef(null)
 
 	useEffect(() => {
 		state.success && handleSuccess()
@@ -85,7 +88,7 @@ const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
 					<>
 						<ModalHeader>{paymentMethod?.id ? 'Edit Payment Method' : 'Add Payment Method'}</ModalHeader>
 						<ModalBody>
-							<div className="space-y-4">
+							<Form className="space-y-4" ref={formRef}>
 								<Select
 									label="Payment Type"
 									selectedKeys={[pmValues?.type || PAYMENT_TYPE.VISA]}
@@ -152,19 +155,26 @@ const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
 										Set as default payment method
 									</label>
 								</div>
-							</div>
+							</Form>
 						</ModalBody>
 						<ModalFooter>
 							<Button variant="light" onPress={onClose}>
 								Cancel
 							</Button>
 							<Button
-								color="primary"
+								className="customButton1"
+								isLoading={isPending}
 								onPress={() => {
-									onClose()
+									if (formRef.current) {
+										const formData = new FormData(formRef.current)
+
+										startTransition(() => {
+											action(formData)
+										})
+									}
 								}}
 							>
-								{paymentMethod?.id ? 'Save Changes' : 'Add Method'}
+								{paymentMethod?.id ? (isPending ? 'Updating...' : 'Update') : isPending ? 'Adding...' : 'Add'}
 							</Button>
 						</ModalFooter>
 					</>
