@@ -33,9 +33,9 @@ const PaymentMethods: FC<Props> = ({ method }) => {
             </div>
             <div>
               <p className="font-medium">{method.name}</p>
-              {method.number && (
+              {method.lastFourDigits && (
                 <div className="flex items-center gap-2">
-                  <p className="text-small text-default-500">{method.number}</p>
+                  <p className="text-small text-default-500">{method.lastFourDigits}</p>
                   {method.expiryDate && (
                     <>
                       <Divider orientation="vertical" className="h-4" />
