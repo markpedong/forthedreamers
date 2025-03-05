@@ -66,7 +66,14 @@ export const getReviewServer = async (id?: string) => {
 export const getWishlistServer = async (id?: string) => {
   return prisma.wishlists.findMany({
     where: { userId: id, },
-    include: { product: { select: { images: true, stock: true, price: true, name: true } } },
+    include: { product: { select: { images: true, name: true } } },
     orderBy: { createdAt: 'desc' }
+  })
+}
+
+export const getProductDetails = async (id?: string) => {
+  return prisma.products.findUnique({
+    where: { id },
+    include: { variations: true, }
   })
 }

@@ -1,4 +1,4 @@
-import { Users, Wishlists } from '@prisma/client'
+import { Products, Users, Variations, Wishlists } from '@prisma/client'
 import { GetProp, UploadProps } from 'antd'
 
 export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' | 'firstName' | 'lastName'>
@@ -75,4 +75,7 @@ export type TWishListItem = Wishlists & {
     images: string[];
     name: string
   };
+}
+export type TProdutItem = Products & {
+  variations: Variations[]
 }

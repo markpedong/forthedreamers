@@ -1,6 +1,6 @@
 'use client'
 
-import Product from '@/components/product'
+import Product from '@/components/product-home'
 import { useKeenSlider } from 'keen-slider/react'
 
 type Props = {}
@@ -32,9 +32,9 @@ const TrendingNow = (props: Props) => {
 
 	return (
 		<div className="max-w-5xl mx-auto">
-			<div className='text-3xl font-bold'>FOR THE DREAMERS CITY</div>
-			<div className='text-sm'>Inspired by the vibrant aesthetics of the urban and the cozy spirit of a hometown.</div>
-			<div className='my-10'/>
+			<div className="text-3xl font-bold">FOR THE DREAMERS CITY</div>
+			<div className="text-sm">Inspired by the vibrant aesthetics of the urban and the cozy spirit of a hometown.</div>
+			<div className="my-10" />
 			<div ref={ref} className="keen-slider">
 				<Product />
 				<Product />
