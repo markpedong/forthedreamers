@@ -45,7 +45,7 @@ const PersonalInformation: FC = () => {
   }, [state])
 
   return (
-    <div>
+    <div className='select-none'>
       <Typography.Title level={4}>Personal Information</Typography.Title>
       <Form action={action} validationErrors={state?.errors} onSubmit={handleSubmit}>
         <div className={container}>
