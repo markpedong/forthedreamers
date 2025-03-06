@@ -79,6 +79,7 @@ const ProductPage: FC<Props> = ({ product }) => {
                 />
               </div>
               <Button
+                className="customButton1"
                 color="primary"
                 size="lg"
                 startContent={<Icon icon="lucide:shopping-cart" />}

@@ -1,5 +1,5 @@
 import React, { Dispatch, FC, SetStateAction } from 'react'
-import { Button, Chip } from '@heroui/react'
+import { Chip } from '@heroui/react'
 import { Variations } from '@prisma/client'
 
 interface Props {
@@ -31,7 +31,7 @@ const VariationSelector: FC<Props> = ({ variations, selectedVariation, onVariati
           <Chip
             key={variation.id}
             variant={selectedVariation?.id === variation.id ? 'solid' : 'bordered'}
-            color={selectedVariation?.id === variation.id ? 'primary' : 'default'}
+            color={selectedVariation?.id === variation.id ? 'default' : 'default'}
             onClick={() => onVariationChange(variation)}
             isDisabled={variation.stock <= 0}
             className="cursor-pointer"
