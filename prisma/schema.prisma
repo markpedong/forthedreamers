@@ -120,7 +120,7 @@ model Products {
 model Variations {
   id              String    @id @default(uuid()) @db.Uuid
   label           String
-  stock           String
+  stock           Int
   price           Float
   discountedPrice Float?
   createdAt       DateTime  @default(now())

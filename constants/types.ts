@@ -76,6 +76,6 @@ export type TWishListItem = Wishlists & {
     name: string
   };
 }
-export type TProdutItem = Products & {
+export type TProductItem = Products & {
   variations: Variations[]
 }

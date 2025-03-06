@@ -65,7 +65,7 @@ export const getReviewServer = async (id?: string) => {
 
 export const getWishlistServer = async (id?: string) => {
   return prisma.wishlists.findMany({
-    where: { userId: id, },
+    where: { userId: id },
     include: { product: { select: { images: true, name: true } } },
     orderBy: { createdAt: 'desc' }
   })
@@ -73,7 +73,15 @@ export const getWishlistServer = async (id?: string) => {
 
 export const getProductDetails = async (id?: string) => {
   return prisma.products.findUnique({
-    where: { id },
-    include: { variations: true, }
+    where: { id, deletedAt: null },
+    include: { variations: true }
+  })
+}
+
+export const getProducts = async () => {
+  return prisma.products.findMany({
+    where: { deletedAt: null },
+    select: { id: true, name: true, images: true, variations: { select: { price: true, discountedPrice: true } } },
+    orderBy: { createdAt: 'desc' }
   })
 }

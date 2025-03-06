@@ -1,5 +1,4 @@
 import { ApiResponse, TDecodedToken } from '@/constants/types'
-import { getServerSession } from 'next-auth'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import { uuidSchema } from '@/lib/rules'
@@ -44,4 +43,11 @@ export const isAuthenticated = async (request: NextRequest) => {
 export const validateUUID = (id: string) => {
   const result = uuidSchema.safeParse(id)
   return result.success
+}
+
+export const calculateDiscountPercentage = (price: number, discountedPrice?: number): number | null => {
+  if (!discountedPrice || discountedPrice >= price) return null
+
+  const discount = ((price - discountedPrice) / price) * 100
+  return Math.round(discount)
 }
