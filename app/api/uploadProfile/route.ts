@@ -3,7 +3,7 @@ import { generateResponse } from '@/utils/helpers'
 import { getServerSession } from 'next-auth'
 import { getSession } from 'next-auth/react'
 import authOptions from '../auth/[...nextauth]/options'
-import { uploadImageToCloudinary } from '@/lib/server'
+import { uploadImageToCloudinary } from '@/utils/cloudinary'
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
