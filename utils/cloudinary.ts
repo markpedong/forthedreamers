@@ -17,7 +17,8 @@ export const uploadImageToCloudinary = async (file: File, folder?: string): Prom
       {
         folder: folder ? `forthedreamers/${folder}` : 'forthedreamers',
         resource_type: 'image',
-        
+        format: 'webp',
+        quality: 'auto:good'
       },
       (error, result: UploadApiResponse | undefined) => {
         if (error || !result) {
