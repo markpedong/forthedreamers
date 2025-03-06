@@ -17,11 +17,12 @@ import { registerUser } from '@/utils/request'
 
 const Login = () => {
 	const loginFormState = useAppSelector(state => state.app.loginFormState)
-	const [state, action, isPending] = useActionState(login, {
+	const [state, action] = useActionState(login, {
 		errors: {},
 		values: { confirmPassword: '', email: '', password: '' }
 	})
 	const [_, startTransition] = useTransition()
+	const [isPending, loginUser] = useTransition()
 	const { push } = useRouter()
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -37,8 +38,8 @@ const Login = () => {
 		})
 	}
 
-	const handleSuccess = async () => {
-		try {
+	const handleSuccess = () => {
+		loginUser(async () => {
 			if (loginFormState === LOGINFORM_STATE.REGISTER) {
 				const res = await registerUser(state.values)
 
@@ -66,9 +67,7 @@ const Login = () => {
 			addToast({ title: 'Success', description: 'Login successful', color: 'success' })
 			setLocalStorage('accessToken', token)
 			push('/profile')
-		} catch (error) {
-			addToast({ title: 'Error', description: `${error}`, color: 'danger' })
-		}
+		})
 	}
 
 	useEffect(() => {
