@@ -27,7 +27,7 @@ const AuthToggle: FC = () => {
   }
 
   return (
-    <div className="flex justify-between w-full text-sm">
+    <div className="flex justify-between w-full text-sm select-none">
       <span
         className="cursor-pointer"
         onClick={() => {

@@ -21,8 +21,7 @@ const Login = () => {
 		errors: {},
 		values: { confirmPassword: '', email: '', password: '' }
 	})
-	const [_, startTransition] = useTransition()
-	const [isPending, loginUser] = useTransition()
+	const [isPending, startTransition] = useTransition()
 	const { push } = useRouter()
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -39,15 +38,13 @@ const Login = () => {
 	}
 
 	const handleSuccess = () => {
-		loginUser(async () => {
+		startTransition(async () => {
 			if (loginFormState === LOGINFORM_STATE.REGISTER) {
 				const res = await registerUser(state.values)
-
 				if (!res.success) {
 					addToast({ title: 'Error', description: 'User registration failed', color: 'danger' })
 					return
 				}
-
 				await new Promise(resolve => setTimeout(resolve, 300))
 			}
 
@@ -63,7 +60,6 @@ const Login = () => {
 			}
 
 			const token = (await getSession())?.accessToken
-
 			addToast({ title: 'Success', description: 'Login successful', color: 'success' })
 			setLocalStorage('accessToken', token)
 			push('/profile')
@@ -72,7 +68,7 @@ const Login = () => {
 
 	useEffect(() => {
 		state.success && handleSuccess()
-	}, [state.success, push])
+	}, [state])
 
 	return (
 		<div className={styles.loginWrapper}>
