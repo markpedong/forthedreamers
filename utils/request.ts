@@ -1,4 +1,4 @@
-import { Addresses, Users } from '@prisma/client'
+import { Addresses, Sellers, Users } from '@prisma/client'
 import { deleteF, get, post, upload } from './http'
 
 export const registerUser = async (body: any) => post<Users>({ url: '/api/users', data: body })
@@ -32,3 +32,5 @@ export const setDefaultPaymentMethod = async (id: string) =>
 export const deletePaymentMethod = async (id: string) => deleteF({ url: `/api/payment-methods/${id}` })
 
 export const getProducts = async () => get<any>({ url: `/api/products` })
+
+export const registerSeller = async (body: any) => post<Sellers>({ url: '/api/sellers', data: body })

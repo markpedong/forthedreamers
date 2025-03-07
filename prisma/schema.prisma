@@ -110,6 +110,7 @@ model Sellers {
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
   image       String?
+  refreshToken   String?
 
   products Products[]
 }

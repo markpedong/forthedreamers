@@ -19,7 +19,7 @@ const Login = () => {
 	const loginFormState = useAppSelector(state => state.app.loginFormState)
 	const [state, action] = useActionState(login, {
 		errors: {},
-		values: { confirmPassword: '', email: '', password: '' }
+		values: {}
 	})
 	const [isPending, startTransition] = useTransition()
 	const { push } = useRouter()
@@ -28,9 +28,9 @@ const Login = () => {
 		e.preventDefault()
 		const formData = new FormData(e.currentTarget)
 
-		if (loginFormState === LOGINFORM_STATE.REGISTER) {
-			formData.append('register', 'true')
-		}
+		// if (loginFormState === LOGINFORM_STATE.REGISTER) {
+		// 	formData.append('register', 'true')
+		// }
 
 		startTransition(() => {
 			action(formData)
@@ -51,6 +51,7 @@ const Login = () => {
 			const callback = await signIn('credentials', {
 				email: state.values?.email,
 				password: state.values?.password,
+				type: "user",
 				redirect: false
 			})
 

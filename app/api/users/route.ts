@@ -7,32 +7,24 @@ export async function POST(request: Request) {
   const { firstName, lastName, email, password, username } = body
   const hashedPassword = await bcrypt.hash(password, 12)
 
-  try {
-    const isExist = await prisma?.users.findFirst({
-      where: { OR: [{ email }, { username }] }
-    })
+  const isExist = await prisma?.users.findFirst({
+    where: { OR: [{ email }, { username }] }
+  })
 
-    if (isExist) throw generateResponse({ error: 'User already exists' })
+  if (isExist) throw generateResponse({ error: 'User already exists' })
 
-    const user = await prisma?.users.create({
-      data: {
-        firstName,
-        lastName,
-        username,
-        email,
-        password: hashedPassword
-      }
-    })
+  const user = await prisma?.users.create({
+    data: {
+      firstName,
+      lastName,
+      username,
+      email,
+      password: hashedPassword
+    }
+  })
 
-    return generateResponse({
-      data: { ...user },
-      message: 'User created successfully'
-    })
-  } catch (error) {
-    return generateResponse({
-      error,
-      status: 500,
-      message: error instanceof Error ? error.message : 'Error creating user'
-    })
-  }
+  return generateResponse({
+    data: { ...user },
+    message: 'User created successfully'
+  })
 }

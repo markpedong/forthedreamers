@@ -13,19 +13,31 @@ const authOptions: AuthOptions = {
       name: 'credentials',
       credentials: {
         email: { label: 'email', type: 'text' },
-        password: { label: 'password', type: 'password' }
+        password: { label: 'password', type: 'password' },
+        type: { label: 'type', type: 'text' }
       },
       authorize: async credentials => {
         if (!credentials?.email || !credentials?.password) throw new Error('Email and password are required')
 
-        const user = await prisma.users.findFirst({
-          where: {
-            OR: [
-              { email: credentials.email },
-              { username: credentials.email }
-            ]
-          }
-        })
+        let user
+        if (credentials.type === 'user') {
+          user = await prisma.users.findFirst({
+            where: {
+              OR: [
+                { email: credentials.email },
+                { username: credentials.email }
+              ]
+            }
+          })
+        } else {
+          user = await prisma.sellers.findFirst({
+            where: {
+              OR: [
+                { email: credentials.email }
+              ]
+            }
+          })
+        }
 
         if (!user || !user.password) throw new Error('Invalid credentials')
 
@@ -35,10 +47,18 @@ const authOptions: AuthOptions = {
         const refreshToken = generateRefreshToken(user)
         const accessToken = generateAccessToken(user)
 
-        await prisma.users.update({
-          where: { id: user.id },
-          data: { refreshToken }
-        })
+        if (credentials.type === "user") {
+          await prisma.users.update({
+            where: { id: user.id },
+            data: { refreshToken }
+          })
+
+        } else {
+          await prisma.sellers.update({
+            where: { id: user.id },
+            data: { refreshToken }
+          })
+        }
 
         return {
           ...user,

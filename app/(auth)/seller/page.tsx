@@ -1,9 +1,7 @@
 import React from 'react'
 import Seller from '.'
 
-type Props = {}
-
-const Page = (props: Props) => {
+const Page = () => {
   return <Seller />
 }
 
