@@ -91,7 +91,7 @@ const Home: FC<{ products: TProductItem[] }> = ({ products }) => {
           />
         </motion.div>
       </div>
-      <TrendingNow products={products} />
+      {products.length > 0 && <TrendingNow products={products} />}
       <NewsLetter />
     </>
   )

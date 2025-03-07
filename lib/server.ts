@@ -1,6 +1,7 @@
 'use server'
 
 import prisma from '@/db'
+import { validateUUID } from '@/utils/helpers'
 import { revalidateTag } from 'next/cache'
 import { cookies } from 'next/headers'
 
@@ -72,6 +73,8 @@ export const getWishlistServer = async (id?: string) => {
 }
 
 export const getProductDetails = async (id?: string) => {
+  if (!validateUUID(`${id}`)) return null
+  
   return prisma.products.findUnique({
     where: { id, deletedAt: null },
     include: { variations: true }

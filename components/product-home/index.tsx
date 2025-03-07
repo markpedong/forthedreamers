@@ -23,12 +23,12 @@ const Product: FC<Props> = ({ product }) => {
         alt=""
         width={200}
         height={200}
-        className="h-auto w-[14rem]"
+        className="h-auto w-[14rem] cursor-pointer"
         onClick={() => push(`/products/${product?.id}`)}
       />
       <div className="grid grid-cols-6 grid-rows-2 justify-items-start items-center gap-x-2 gap-y-0">
         <div
-          className="text-md truncate w-[10rem]"
+          className="text-md truncate w-[10rem] cursor-pointer"
           style={{ gridArea: '1/1/2/5' }}
           onClick={() => push(`/products/${product?.id}`)}
         >
