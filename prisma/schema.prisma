@@ -100,14 +100,31 @@ model Orders {
   @@index([status])
 }
 
+model Sellers {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  email       String?   @unique
+  phoneNumber String?   @unique
+  password    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  image       String?
+
+  products Products[]
+}
+
 model Products {
-  id            String         @id @default(uuid()) @db.Uuid
-  name          String
-  description   String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  deletedAt     DateTime?
-  images        String[]
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  images      String[]
+
+  sellerID String  @db.Uuid
+  seller   Sellers @relation(fields: [sellerID], references: [id])
 
   variations Variations[]
   orderItems OrderItems[]
