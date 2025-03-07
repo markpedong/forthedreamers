@@ -1,11 +1,10 @@
 import React from 'react'
+import Seller from '.'
 
 type Props = {}
 
 const Page = (props: Props) => {
-  return (
-    <div>Page</div>
-  )
+  return <Seller />
 }
 
 export default Page

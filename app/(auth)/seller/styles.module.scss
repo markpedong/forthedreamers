@@ -1,0 +1,7 @@
+.sellerWrapper {
+  @apply max-w-2xl mx-auto h-screen;
+}
+
+.sellerContainer {
+  @apply flex flex-col justify-center items-center gap-8 h-full p-6;
+}
