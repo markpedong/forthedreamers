@@ -17,6 +17,11 @@ const ProductImages: FC<{ images: string[] }> = ({ images }) => {
               activeImage === image ? 'border-primary' : 'border-transparent'
             }`}
             onClick={() => setActiveImage(image)}
+            onMouseEnter={() =>
+              setTimeout(() => {
+                setActiveImage(image)
+              }, 150)
+            }
           >
             <Image
               src={image}
