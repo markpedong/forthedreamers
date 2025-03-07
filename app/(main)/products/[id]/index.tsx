@@ -7,6 +7,8 @@ import { TProductItem } from '@/constants/types'
 import { Button, Divider, Spinner } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { Variations } from '@prisma/client'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { FC, Suspense, useEffect, useState } from 'react'
 
 type Props = {
@@ -19,6 +21,8 @@ const ProductPage: FC<Props> = ({ product }) => {
   const currentPrice = selectedVariation?.discountedPrice || selectedVariation?.price || 0
   const hasDiscount = selectedVariation?.discountedPrice && selectedVariation.discountedPrice < selectedVariation.price
   const isOutOfStock = selectedVariation ? selectedVariation.stock <= 0 : true
+  const { data: session } = useSession()
+  const { push } = useRouter()
 
   useEffect(() => {
     if (product && product.variations.length > 0 && !selectedVariation) {
@@ -28,6 +32,7 @@ const ProductPage: FC<Props> = ({ product }) => {
   }, [product, selectedVariation])
 
   const handleAddToCart = () => {
+    if (!session) return push('/login')
     if (!selectedVariation) return
 
     const cartItem = {
