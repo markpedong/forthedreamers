@@ -4,12 +4,14 @@ import { createSlice } from '@reduxjs/toolkit'
 
 interface AppState {
   loginFormState: LOGINFORM_STATE
+  sellerFormState: LOGINFORM_STATE
   darkMode: boolean
   hasDefaultAddress: boolean
 }
 
 const initialState: AppState = {
   loginFormState: LOGINFORM_STATE.LOGIN,
+  sellerFormState: LOGINFORM_STATE.LOGIN,
   darkMode: false,
   hasDefaultAddress: false
 }
@@ -26,9 +28,12 @@ export const appSlice = createSlice({
     },
     setHasDefaultAddress: (state, action) => {
       state.hasDefaultAddress = action.payload
+    },
+    setSellerFormState: (state, action) => {
+      state.sellerFormState = action.payload
     }
   }
 })
 
-export const { setLoginFormState, toggleDarkMode, setHasDefaultAddress } = appSlice.actions
+export const { setLoginFormState, toggleDarkMode, setHasDefaultAddress, setSellerFormState } = appSlice.actions
 export default appSlice.reducer
