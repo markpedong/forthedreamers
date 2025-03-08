@@ -14,9 +14,12 @@ import AuthForm from './form'
 import styles from './styles.module.scss'
 import Title from './title'
 import { registerUser } from '@/utils/request'
+import classNames from 'classnames'
+import { USER_ROLE } from '@prisma/client'
 
 const Login = () => {
 	const loginFormState = useAppSelector(state => state.app.loginFormState)
+	const isSellerLogin = [LOGINFORM_STATE.SELLER_REGISTER, LOGINFORM_STATE.SELLER_LOGIN].includes(loginFormState)
 	const [state, action] = useActionState(login, {
 		errors: {},
 		values: {}
@@ -35,10 +38,13 @@ const Login = () => {
 
 	const handleSuccess = () => {
 		startTransition(async () => {
-			if (loginFormState === LOGINFORM_STATE.USER_REGISTER) {
-				const res = await registerUser(state.values)
+			if ([LOGINFORM_STATE.SELLER_REGISTER, LOGINFORM_STATE.USER_REGISTER].includes(loginFormState)) {
+				const res = await registerUser({
+					...state.values,
+					role: loginFormState === LOGINFORM_STATE.SELLER_REGISTER ? USER_ROLE.SELLER : USER_ROLE.USER
+				})
 				if (!res.success) {
-					addToast({ title: 'Error', description: 'User registration failed', color: 'danger' })
+					addToast({ title: 'Error', description: 'Registration failed', color: 'danger' })
 					return
 				}
 				await new Promise(resolve => setTimeout(resolve, 300))
@@ -47,7 +53,7 @@ const Login = () => {
 			const callback = await signIn('credentials', {
 				email: state.values?.email,
 				password: state.values?.password,
-				type: "user",
+				type: isSellerLogin ? 'seller' : 'user',
 				redirect: false
 			})
 
@@ -59,7 +65,7 @@ const Login = () => {
 			const token = (await getSession())?.accessToken
 			addToast({ title: 'Success', description: 'Login successful', color: 'success' })
 			setLocalStorage('accessToken', token)
-			push('/profile')
+			push(isSellerLogin ? '/seller/dashboard' : '/profile')
 		})
 	}
 
@@ -70,7 +76,11 @@ const Login = () => {
 	return (
 		<div className={styles.loginWrapper}>
 			<div className={styles.loginContainer}>
-				<div className={styles.formWrapper}>
+				<div
+					className={classNames(styles.formWrapper, {
+						'order-2': [LOGINFORM_STATE.SELLER_LOGIN, LOGINFORM_STATE.SELLER_REGISTER].includes(loginFormState)
+					})}
+				>
 					<Title />
 					<Form action={action} validationErrors={state?.errors} onSubmit={handleSubmit}>
 						<AuthForm state={state} />
@@ -80,7 +90,13 @@ const Login = () => {
 				</div>
 				<div className={styles.imgWrapper}>
 					<Image
-						src={`/images/${loginFormState === LOGINFORM_STATE.FORGOT_PASSWORD ? 'login_cover-2' : 'login_cover'}.webp`}
+						src={`/images/${
+							loginFormState === LOGINFORM_STATE.FORGOT_PASSWORD
+								? 'login_cover-2'
+								: isSellerLogin
+								? 'login_cover-2'
+								: 'login_cover'
+						}.webp`}
 						alt=""
 						fill
 						sizes="60vw"

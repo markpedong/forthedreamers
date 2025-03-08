@@ -13,7 +13,8 @@ const authOptions: AuthOptions = {
       name: 'credentials',
       credentials: {
         email: { label: 'email', type: 'text' },
-        password: { label: 'password', type: 'password' }
+        password: { label: 'password', type: 'password' },
+        role: { label: 'role', type: 'text' }
       },
       authorize: async credentials => {
         if (!credentials?.email || !credentials?.password) throw new Error('Email and password are required')

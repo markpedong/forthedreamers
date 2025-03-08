@@ -14,6 +14,7 @@ interface AuthButtonsProps {
 
 const AuthButtons: FC<AuthButtonsProps> = ({ isPending }) => {
 	const loginFormState = useAppSelector(state => state.app.loginFormState)
+	const isSellerLogin = [LOGINFORM_STATE.SELLER_REGISTER, LOGINFORM_STATE.SELLER_LOGIN].includes(loginFormState)
 	const dispatch = useAppDispatch()
 
 	return (
@@ -31,27 +32,33 @@ const AuthButtons: FC<AuthButtonsProps> = ({ isPending }) => {
 					? 'Signing in...'
 					: 'Sign in'}
 			</Button>
-			<Divider>OR</Divider>
 			{loginFormState !== LOGINFORM_STATE.FORGOT_PASSWORD && (
-				<div className="grid grid-cols-2 gap-3  items-center w-full">
-					<Button
-						color="default"
-						startContent={<Icon icon="flat-color-icons:google" />}
-						variant="bordered"
-						fullWidth
-						onPress={async () => await signIn('google', { callbackUrl: '/profile', redirect: true })}
-					>
-						{loginFormState === LOGINFORM_STATE.USER_REGISTER ? 'Sign up with Google' : 'Sign in with Google'}
-					</Button>
-					<Button
-						className="customButton1"
-						fullWidth
-						startContent={<Icon icon="cryptocurrency-color:ncash" />}
-						onPress={() => dispatch(setLoginFormState(LOGINFORM_STATE.SELLER_LOGIN))}
-					>
-						Sign in as Seller
-					</Button>
-				</div>
+				<>
+					<Divider>OR</Divider>
+					<div className="flex justify-between gap-3  items-center w-full">
+						{!isSellerLogin && (
+							<Button
+								color="default"
+								startContent={<Icon icon="flat-color-icons:google" />}
+								variant="bordered"
+								fullWidth
+								onPress={async () => await signIn('google', { callbackUrl: '/profile', redirect: true })}
+							>
+								{loginFormState === LOGINFORM_STATE.USER_REGISTER ? 'Sign up with Google' : 'Sign in with Google'}
+							</Button>
+						)}
+						<Button
+							className="customButton1"
+							fullWidth
+							startContent={<Icon icon="cryptocurrency-color:ncash" />}
+							onPress={() =>
+								dispatch(setLoginFormState(isSellerLogin ? LOGINFORM_STATE.USER_LOGIN : LOGINFORM_STATE.SELLER_LOGIN))
+							}
+						>
+							{isSellerLogin ? 'Sign up as User' : 'Sign in as Seller'}
+						</Button>
+					</div>
+				</>
 			)}
 		</>
 	)
