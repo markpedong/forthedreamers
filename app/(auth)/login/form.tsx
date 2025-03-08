@@ -8,7 +8,7 @@ interface AuthFormProps {
 
 const AuthForm: React.FC<AuthFormProps> = ({ state }) => {
 	const loginFormState = useAppSelector(state => state.app.loginFormState)
-
+	const isRegister = [LOGINFORM_STATE.USER_REGISTER, LOGINFORM_STATE.SELLER_REGISTER].includes(loginFormState)
 	return (
 		<>
 			{loginFormState === LOGINFORM_STATE.FORGOT_PASSWORD ? (
@@ -23,7 +23,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ state }) => {
 				/>
 			) : (
 				<>
-					{loginFormState === LOGINFORM_STATE.USER_REGISTER && (
+					{loginFormState && (
 						<div className="flex gap-4 w-full">
 							<Input defaultValue={state?.values?.firstName || ''} label="First Name" name="firstName" isRequired />
 							<Input defaultValue={state?.values?.lastName || ''} label="Last Name" name="lastName" isRequired />
@@ -32,12 +32,12 @@ const AuthForm: React.FC<AuthFormProps> = ({ state }) => {
 					<div className="flex gap-4 w-full">
 						<Input
 							defaultValue={state?.values?.email || ''}
-							label={loginFormState === LOGINFORM_STATE.USER_REGISTER ? 'Email' : 'Email/Username'}
+							label={loginFormState ? 'Email' : 'Email/Username'}
 							name="email"
-							type={loginFormState === LOGINFORM_STATE.USER_REGISTER ? 'email' : 'text'}
+							type={loginFormState ? 'email' : 'text'}
 							isRequired
 						/>
-						{loginFormState === LOGINFORM_STATE.USER_REGISTER && (
+						{loginFormState && (
 							<Input defaultValue={state?.values?.username || ''} label="User Name" name="username" isRequired />
 						)}
 					</div>

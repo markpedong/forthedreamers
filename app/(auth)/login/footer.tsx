@@ -20,7 +20,6 @@ const AuthToggle: FC = () => {
 		}
 	}
 
-	console.log('loginFormState', loginFormState)
 	const handleToggle = () => {
 		dispatch(
 			setLoginFormState(

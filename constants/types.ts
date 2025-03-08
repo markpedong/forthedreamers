@@ -1,7 +1,7 @@
 import { Products, Users, Variations, Wishlists } from '@prisma/client'
 import { GetProp, UploadProps } from 'antd'
 
-export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' | 'firstName' | 'lastName'>
+export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' | 'firstName' | 'lastName' | 'role'>
 
 export type TCustomToken = TSessionUser & { accessToken: string }
 

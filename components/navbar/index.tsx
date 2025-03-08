@@ -12,77 +12,79 @@ import { useSession } from 'next-auth/react'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { toggleDarkMode } from '@/redux/slices/appSlice'
 import { Icon } from '@iconify/react'
+import { USER_ROLE } from '@prisma/client'
 
 const NavBar: FC = () => {
-  const pathname = usePathname()
-  const darkMode = useAppSelector(state => state.app.darkMode)
-  const { push } = useRouter()
-  const { data: session } = useSession()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const menuItems = ['Home', 'Shop', 'Collection', 'Support']
-  const { setTheme } = useTheme()
-  const dispatch = useAppDispatch()
-  const toggle = () => {
-    dispatch(toggleDarkMode())
-    setTheme(darkMode ? 'light' : 'dark')
-  }
-  const p = (name: string) => push(`/${name === 'home' ? '' : name}`)
+	const pathname = usePathname()
+	const darkMode = useAppSelector(state => state.app.darkMode)
+	const { push } = useRouter()
+	const { data: session } = useSession()
+	const [isMenuOpen, setIsMenuOpen] = useState(false)
+	const menuItems = ['Home', 'Shop', 'Collection', 'Support']
+	const { setTheme } = useTheme()
+	const dispatch = useAppDispatch()
+	const toggle = () => {
+		dispatch(toggleDarkMode())
+		setTheme(darkMode ? 'light' : 'dark')
+	}
+	const p = (name: string) => push(`/${name === 'home' ? '' : name}`)
+	const isUser = session?.user.role === USER_ROLE.USER
 
-  return (
-    !NO_NAVBAR_FOOTER_PAGES.includes(pathname) && (
-      <Navbar onMenuOpenChange={setIsMenuOpen} isBordered>
-        <NavbarContent>
-          <NavbarMenuToggle aria-label={isMenuOpen ? 'Close menu' : 'Open menu'} className="md:hidden" />
-          <NavbarContent className="hidden md:flex gap-4" justify="center">
-            {menuItems?.map(w => (
-              <NavbarItem key={w} className="cursor-pointer" onClick={() => p(w?.toLowerCase())}>
-                {w}
-              </NavbarItem>
-            ))}
-          </NavbarContent>
-        </NavbarContent>
-        <NavbarContent justify="center">
-          <p className={classNames('font-bold text-inherit tracking-wider', poppins.className)}>For the Dreamers</p>
-        </NavbarContent>
-        <NavbarContent justify="end">
-          <SearchDrawer />
-          {darkMode ? (
-            <Icon icon="solar:sun-bold" className="cursor-pointer" onClick={toggle} />
-          ) : (
-            <Icon icon="solar:moon-bold" className="cursor-pointer" onClick={toggle} />
-          )}
-          {session?.user?.id && pathname !== '/profile' && (
-            <Link color="foreground" href="/profile">
-              Profile
-            </Link>
-          )}
-          {!session?.user?.id && (
-            <Link color="foreground" href="/login" className="hidden md:block">
-              Login
-            </Link>
-          )}
-        </NavbarContent>
-        <NavbarMenu className="flex flex-col justify-between p-6">
-          <div>
-            {menuItems.map((item, index) => (
-              <NavbarMenuItem
-                key={`${item}-${index}`}
-                className="py-5 uppercase border-[rgba(0,0,0,0.75)] border-b-1 px-3"
-                onClick={() => p(item?.toLowerCase())}
-              >
-                <Link className="w-full tracking-wide" color="foreground" href="#" size="lg">
-                  {item}
-                </Link>
-              </NavbarMenuItem>
-            ))}
-          </div>
-          <Link color="foreground" className="ml-2 mb-2 uppercase tracking-wide" href="/login">
-            Login
-          </Link>
-        </NavbarMenu>
-      </Navbar>
-    )
-  )
+	return (
+		!NO_NAVBAR_FOOTER_PAGES.includes(pathname) && (
+			<Navbar onMenuOpenChange={setIsMenuOpen} isBordered>
+				<NavbarContent>
+					<NavbarMenuToggle aria-label={isMenuOpen ? 'Close menu' : 'Open menu'} className="md:hidden" />
+					<NavbarContent className="hidden md:flex gap-4" justify="center">
+						{menuItems?.map(w => (
+							<NavbarItem key={w} className="cursor-pointer" onClick={() => p(w?.toLowerCase())}>
+								{w}
+							</NavbarItem>
+						))}
+					</NavbarContent>
+				</NavbarContent>
+				<NavbarContent justify="center">
+					<p className={classNames('font-bold text-inherit tracking-wider', poppins.className)}>For the Dreamers</p>
+				</NavbarContent>
+				<NavbarContent justify="end">
+					<SearchDrawer />
+					{darkMode ? (
+						<Icon icon="solar:sun-bold" className="cursor-pointer" onClick={toggle} />
+					) : (
+						<Icon icon="solar:moon-bold" className="cursor-pointer" onClick={toggle} />
+					)}
+					{session?.user?.id && !['/profile', '/seller/dashboard'].includes(pathname) && (
+						<Link color="foreground" href={isUser ? '/profile' : '/seller/dashboard'}>
+							{isUser ? 'Profile' : 'Dashboard'}
+						</Link>
+					)}
+					{!session?.user?.id && (
+						<Link color="foreground" href={isUser ? '/login' : '/seller/login'} className="hidden md:block">
+							Login
+						</Link>
+					)}
+				</NavbarContent>
+				<NavbarMenu className="flex flex-col justify-between p-6">
+					<div>
+						{menuItems.map((item, index) => (
+							<NavbarMenuItem
+								key={`${item}-${index}`}
+								className="py-5 uppercase border-[rgba(0,0,0,0.75)] border-b-1 px-3"
+								onClick={() => p(item?.toLowerCase())}
+							>
+								<Link className="w-full tracking-wide" color="foreground" href="#" size="lg">
+									{item}
+								</Link>
+							</NavbarMenuItem>
+						))}
+					</div>
+					<Link color="foreground" className="ml-2 mb-2 uppercase tracking-wide" href="/login">
+						Login
+					</Link>
+				</NavbarMenu>
+			</Navbar>
+		)
+	)
 }
 
 export default NavBar

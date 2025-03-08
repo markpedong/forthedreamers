@@ -116,6 +116,7 @@ const authOptions: AuthOptions = {
           id: existingUser.id,
           accessToken,
           refreshToken,
+          role: existingUser.role,
           provider: "google",
         };
       }
@@ -124,6 +125,7 @@ const authOptions: AuthOptions = {
         return {
           ...token,
           id: user.id,
+          role: user.role,
         };
       }
 
@@ -140,6 +142,7 @@ const authOptions: AuthOptions = {
       return {
         ...token,
         accessToken: newAccessToken,
+        role: existingUser.role,
       };
     },
     async session({ session, token }) {
