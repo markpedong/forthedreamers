@@ -31,7 +31,9 @@ export type FormState<T> = {
 export enum LOGINFORM_STATE {
   USER_REGISTER = 'register',
   USER_LOGIN = 'login',
-  FORGOT_PASSWORD = 'forgot-password'
+  FORGOT_PASSWORD = 'forgot-password',
+  SELLER_REGISTER = 'seller-register',
+  SELLER_LOGIN = 'seller-login'
 }
 
 export type UserItem = {
