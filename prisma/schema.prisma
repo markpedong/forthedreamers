@@ -23,11 +23,13 @@ model Users {
   image          String?
   refreshToken   String?
   birthday       String?
+  storeName      String?
   addresses      Addresses[]
   paymentMethods PaymentMethods[]
   orders         Orders[]
   wishlists      Wishlists[]
   reviews        Reviews[]
+  products       Products[]
 
   @@index([email])
   @@index([username])
@@ -100,21 +102,6 @@ model Orders {
   @@index([status])
 }
 
-model Sellers {
-  id          String    @id @default(uuid()) @db.Uuid
-  name        String
-  email       String?   @unique
-  phoneNumber String?   @unique
-  password    String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
-  image       String?
-  refreshToken   String?
-
-  products Products[]
-}
-
 model Products {
   id          String    @id @default(uuid()) @db.Uuid
   name        String
@@ -124,8 +111,8 @@ model Products {
   deletedAt   DateTime?
   images      String[]
 
-  sellerID String  @db.Uuid
-  seller   Sellers @relation(fields: [sellerID], references: [id])
+  sellerID String @db.Uuid
+  seller   Users  @relation(fields: [sellerID], references: [id])
 
   variations Variations[]
   orderItems OrderItems[]
@@ -225,6 +212,7 @@ enum PAYMENT_TYPE {
 enum USER_ROLE {
   USER
   ADMIN
+  SELLER
 }
 
 enum DISCOUNT_TYPE {

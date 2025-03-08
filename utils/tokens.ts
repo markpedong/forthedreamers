@@ -1,8 +1,8 @@
 import { JWT_SECRET } from '@/constants';
-import { Sellers, Users } from '@prisma/client';
+import { Users } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 
-export const generateRefreshToken = (user: Users | Sellers) => {
+export const generateRefreshToken = (user: Users) => {
   return jwt.sign(
     { id: user.id },
     JWT_SECRET,
@@ -10,7 +10,7 @@ export const generateRefreshToken = (user: Users | Sellers) => {
   );
 };
 
-export const generateAccessToken = (user: Users | Sellers) => {
+export const generateAccessToken = (user: Users) => {
   if ("role" in user) {
     const { id, username, firstName, lastName, email, role } = user;
     return jwt.sign({ id, username, firstName, lastName, email, role, type: "user" }, JWT_SECRET, {
