@@ -22,7 +22,7 @@ const AuthButtons: FC<AuthButtonsProps> = ({ isPending }) => {
           ? isPending
             ? 'Submitting...'
             : 'Submit'
-          : loginFormState === LOGINFORM_STATE.REGISTER
+          : loginFormState === LOGINFORM_STATE.USER_REGISTER
           ? isPending
             ? 'Registering...'
             : 'Sign up'
@@ -40,7 +40,7 @@ const AuthButtons: FC<AuthButtonsProps> = ({ isPending }) => {
             fullWidth
             onPress={async () => await signIn('google', { callbackUrl: '/profile', redirect: true })}
           >
-            {loginFormState === LOGINFORM_STATE.REGISTER ? 'Sign up with Google' : 'Sign in with Google'}
+            {loginFormState === LOGINFORM_STATE.USER_REGISTER ? 'Sign up with Google' : 'Sign in with Google'}
           </Button>
           <Button
             className="customButton1"

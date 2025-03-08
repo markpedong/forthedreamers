@@ -85,20 +85,3 @@ export const submitPM = async (_: any, formData: FormData, type: string): Promis
 
   return { success: true, errors: {}, values: object }
 }
-
-export const sellerLogin = async (_: any, formData: FormData): Promise<FormState<any>> => {
-  const object = {
-    email: formData.get('email') as string,
-    name: formData.get('name') as string | undefined,
-    phoneNumber: formData.get('phoneNumber') as string | undefined,
-    password: formData.get('password') as string,
-    confirmPassword: formData.get('confirmPassword') as string
-  }
-
-  const result = sellerSchema.safeParse(object)
-  if (!result.success) {
-    return { errors: result.error.flatten().fieldErrors, values: object }
-  }
-
-  return { success: true, errors: {}, values: object }
-}

@@ -28,10 +28,6 @@ const Login = () => {
 		e.preventDefault()
 		const formData = new FormData(e.currentTarget)
 
-		// if (loginFormState === LOGINFORM_STATE.REGISTER) {
-		// 	formData.append('register', 'true')
-		// }
-
 		startTransition(() => {
 			action(formData)
 		})
@@ -39,7 +35,7 @@ const Login = () => {
 
 	const handleSuccess = () => {
 		startTransition(async () => {
-			if (loginFormState === LOGINFORM_STATE.REGISTER) {
+			if (loginFormState === LOGINFORM_STATE.USER_REGISTER) {
 				const res = await registerUser(state.values)
 				if (!res.success) {
 					addToast({ title: 'Error', description: 'User registration failed', color: 'danger' })

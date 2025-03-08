@@ -9,7 +9,7 @@ const AuthToggle: FC = () => {
 
   const getFormToggleText = () => {
     switch (loginFormState) {
-      case LOGINFORM_STATE.LOGIN:
+      case LOGINFORM_STATE.USER_LOGIN:
         return 'Forgot password'
       case LOGINFORM_STATE.FORGOT_PASSWORD:
         return 'Back to login'
@@ -21,7 +21,7 @@ const AuthToggle: FC = () => {
   const handleToggle = () => {
     dispatch(
       setLoginFormState(
-        loginFormState === LOGINFORM_STATE.LOGIN ? LOGINFORM_STATE.FORGOT_PASSWORD : LOGINFORM_STATE.LOGIN
+        loginFormState === LOGINFORM_STATE.USER_LOGIN ? LOGINFORM_STATE.FORGOT_PASSWORD : LOGINFORM_STATE.USER_LOGIN
       )
     )
   }
@@ -31,12 +31,12 @@ const AuthToggle: FC = () => {
       <span
         className="cursor-pointer"
         onClick={() => {
-          if (loginFormState === LOGINFORM_STATE.LOGIN) {
-            dispatch(setLoginFormState(LOGINFORM_STATE.REGISTER))
+          if (loginFormState === LOGINFORM_STATE.USER_LOGIN) {
+            dispatch(setLoginFormState(LOGINFORM_STATE.USER_REGISTER))
           }
         }}
       >
-        {loginFormState === LOGINFORM_STATE.LOGIN ? "Don't have an account?" : ''}
+        {loginFormState === LOGINFORM_STATE.USER_LOGIN ? "Don't have an account?" : ''}
       </span>
       <span className="cursor-pointer " onClick={handleToggle}>
         {getFormToggleText()}

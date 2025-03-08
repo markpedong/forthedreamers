@@ -10,8 +10,8 @@ interface AppState {
 }
 
 const initialState: AppState = {
-  loginFormState: LOGINFORM_STATE.LOGIN,
-  sellerFormState: LOGINFORM_STATE.LOGIN,
+  loginFormState: LOGINFORM_STATE.USER_LOGIN,
+  sellerFormState: LOGINFORM_STATE.USER_LOGIN,
   darkMode: false,
   hasDefaultAddress: false
 }
