@@ -6,11 +6,10 @@ import { Users } from '@prisma/client'
 interface EditProfileModalProps {
 	isOpen: boolean
 	onClose: () => void
-	onSubmit: (profileData: any) => void
 	userInfo: Users
 }
 
-const EditProfileModal = ({ isOpen, onClose, onSubmit, userInfo }: EditProfileModalProps) => {
+const EditProfileModal = ({ isOpen, onClose, userInfo }: EditProfileModalProps) => {
 	const [formData, setFormData] = React.useState(userInfo)
 	const [newImage, setNewImage] = React.useState<File>()
 	const [imagePreview, setImagePreview] = React.useState(userInfo.image)
@@ -26,10 +25,10 @@ const EditProfileModal = ({ isOpen, onClose, onSubmit, userInfo }: EditProfileMo
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
-		onSubmit({
-			...formData,
-			image: newImage
-		})
+		// onSubmit({
+		// 	...formData,
+		// 	image: newImage
+		// })
 	}
 
 	return (

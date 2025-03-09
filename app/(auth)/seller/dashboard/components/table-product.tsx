@@ -13,10 +13,13 @@ const statusColorMap = {
 interface ProductTableProps {
 	products: TProductItem[]
 	onEdit: (product: TProductItem) => void
-	onDelete: (productId: string) => void
 }
 
-const ProductTable: FC<ProductTableProps> = ({ products, onEdit, onDelete }) => {
+const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
+	const onDelete = (productId: string) => {
+		console.log('Delete product:', productId)
+	}
+
 	return (
 		<Table aria-label="Products table">
 			<TableHeader>

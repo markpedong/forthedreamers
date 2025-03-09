@@ -23,12 +23,6 @@ interface ProductVariation {
 interface EditProductModalProps {
 	isOpen: boolean
 	onClose: () => void
-	onSubmit: (data: {
-		name: string
-		description: string
-		variations: ProductVariation[]
-		images: (File | string)[]
-	}) => void
 	initialData: {
 		name: string
 		description: string
@@ -37,22 +31,22 @@ interface EditProductModalProps {
 	}
 }
 
-const EditProductModal = ({ isOpen, onClose, onSubmit, initialData }: EditProductModalProps) => {
+const EditProductModal = ({ isOpen, onClose, initialData }: EditProductModalProps) => {
 	const [name, setName] = React.useState(initialData.name)
 	const [description, setDescription] = React.useState(initialData.description)
-	const [variations, setVariations] = React.useState<ProductVariation[]>(initialData.variations)
+	// const [variations, setVariations] = React.useState<ProductVariation[]>(initialData.variations)
 	const [images, setImages] = React.useState<(File | string)[]>(initialData.images)
 	const [imagePreviewUrls, setImagePreviewUrls] = React.useState<string[]>(initialData.images)
 	const fileInputRef = React.useRef<HTMLInputElement>(null)
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
-		onSubmit({
-			name,
-			description,
-			variations: variations.filter(v => v.label && v.price > 0),
-			images
-		})
+		// onSubmit({
+		// 	name,
+		// 	description,
+		// 	variations: variations.filter(v => v.label && v.price > 0),
+		// 	images
+		// })
 	}
 
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,11 +79,8 @@ const EditProductModal = ({ isOpen, onClose, onSubmit, initialData }: EditProduc
 		setImagePreviewUrls(newPreviewUrls)
 	}
 
-	// Rest of the component remains similar to AddProductModal
-	// but with pre-filled data
-
 	return (
-		<Modal isOpen={isOpen} onOpenChange={onClose} size="3xl" scrollBehavior="inside">
+		<Modal isOpen={isOpen} onOpenChange={onClose} scrollBehavior="inside">
 			<ModalContent>
 				{onClose => (
 					<form onSubmit={handleSubmit}>
@@ -112,8 +103,6 @@ const EditProductModal = ({ isOpen, onClose, onSubmit, initialData }: EditProduc
 										isRequired
 									/>
 								</div>
-
-								{/* Image Upload Section */}
 								<div>
 									<p className="text-small font-medium mb-2">Product Images (Max 10)</p>
 									<div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
@@ -156,9 +145,6 @@ const EditProductModal = ({ isOpen, onClose, onSubmit, initialData }: EditProduc
 										onChange={handleImageChange}
 									/>
 								</div>
-
-								{/* Variations Section - Similar to AddProductModal */}
-								{/* ... Variations section code ... */}
 							</div>
 						</ModalBody>
 						<ModalFooter>

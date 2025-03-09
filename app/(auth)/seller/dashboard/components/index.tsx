@@ -28,27 +28,14 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 	const [selectedProduct, setSelectedProduct] = useState<any>(null)
 	const [selectedTab, setSelectedTab] = useState('products')
 
-	const handleAddProduct = (productData: any) => {
-		console.log('New product data:', productData)
-		addProductModal.onClose()
-	}
-
-	const handleUpdateProfile = (profileData: any) => {
-		editProfileModal.onClose()
-	}
-
-	const handleUpdateProduct = (productData: any) => {
-		console.log('Updated product data:', productData)
-		editProductModal.onClose()
-	}
+	// const handleUpdateProduct = (productData: any) => {
+	// 	console.log('Updated product data:', productData)
+	// 	editProductModal.onClose()
+	// }
 
 	const handleEditProduct = (product: any) => {
 		setSelectedProduct(product)
 		editProductModal.onOpen()
-	}
-
-	const handleDeleteProduct = (productId: string) => {
-		console.log('Delete product:', productId)
 	}
 
 	return (
@@ -94,30 +81,22 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 					)}
 				</CardHeader>
 				<CardBody>
-					{selectedTab === 'products' && (
-						<ProductTable products={products} onEdit={handleEditProduct} onDelete={handleDeleteProduct} />
-					)}
+					{selectedTab === 'products' && <ProductTable products={products} onEdit={handleEditProduct} />}
 					{selectedTab === 'orders' && <OrdersTable orders={orders} />}
 					{selectedTab === 'reviews' && <ReviewsSection reviews={reviews} />}
 				</CardBody>
 			</Card>
 
 			{/* MODALS */}
-			<AddProductModal isOpen={addProductModal.isOpen} onClose={addProductModal.onClose} onSubmit={handleAddProduct} />
+			<AddProductModal isOpen={addProductModal.isOpen} onClose={addProductModal.onClose} />
 			{selectedProduct && (
 				<EditProductModal
 					isOpen={editProductModal.isOpen}
 					onClose={editProductModal.onClose}
-					onSubmit={handleUpdateProduct}
 					initialData={selectedProduct}
 				/>
 			)}
-			<EditProfileModal
-				isOpen={editProfileModal.isOpen}
-				onClose={editProfileModal.onClose}
-				onSubmit={handleUpdateProfile}
-				userInfo={userInfo}
-			/>
+			<EditProfileModal isOpen={editProfileModal.isOpen} onClose={editProfileModal.onClose} userInfo={userInfo} />
 		</div>
 	)
 }
