@@ -29,6 +29,7 @@ const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps)
 	const [images, setImages] = useState<File[]>([])
 	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>(initialData?.images || [])
 	const fileInputRef = useRef<HTMLInputElement>(null)
+	const isEdit = !!initialData
 
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault()
@@ -93,7 +94,7 @@ const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps)
 			<ModalContent>
 				{onClose => (
 					<>
-						<ModalHeader className="flex flex-col gap-1">Add New Product</ModalHeader>
+						<ModalHeader className="flex flex-col gap-1">{isEdit ? 'Edit' : 'Add'} New Product</ModalHeader>
 						<ModalBody>
 							<form onSubmit={handleSubmit}>
 								<div className="flex flex-col gap-4">
@@ -241,7 +242,7 @@ const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps)
 								Cancel
 							</Button>
 							<Button color="primary" type="submit">
-								Add Product
+								{isEdit ? 'Update' : 'Add'} Product
 							</Button>
 						</ModalFooter>
 					</>

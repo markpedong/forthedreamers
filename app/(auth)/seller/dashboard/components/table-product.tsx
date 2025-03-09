@@ -29,7 +29,7 @@ const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
 				<TableColumn>STATUS</TableColumn>
 				<TableColumn>ACTIONS</TableColumn>
 			</TableHeader>
-			<TableBody>
+			<TableBody emptyContent={'No rows to display.'}>
 				{products.map(product => {
 					const firstVariation = product?.variations?.find(v => !!v.discountedPrice)
 

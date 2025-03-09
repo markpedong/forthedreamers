@@ -12,7 +12,7 @@ const statusColorMap = {
 
 const TableOrders: FC<{ orders: Orders[] }> = ({ orders }) => {
 	return (
-		<Table aria-label="Orders table">
+		<Table aria-label="Orders table"> 
 			<TableHeader>
 				<TableColumn>ORDER ID</TableColumn>
 				<TableColumn>CUSTOMER</TableColumn>
@@ -22,7 +22,7 @@ const TableOrders: FC<{ orders: Orders[] }> = ({ orders }) => {
 				<TableColumn>DATE</TableColumn>
 				<TableColumn>ACTIONS</TableColumn>
 			</TableHeader>
-			<TableBody>
+			<TableBody emptyContent={"No rows to display."}>
 				{orders.map(order => (
 					<TableRow key={order.id}>
 						<TableCell>#{order.id}</TableCell>
