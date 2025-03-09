@@ -6,8 +6,7 @@ import { Orders, Reviews, Users } from '@prisma/client'
 import EditProfileModal from './edit-profile'
 import StatsCard from './stats-card'
 import styles from '../styles.module.scss'
-import AddProductModal from './add-product'
-import EditProductModal from './edit-product'
+import AddEditProduct from './addedit-product'
 import { Icon } from '@iconify/react'
 import { TProductItem } from '@/constants/types'
 import ProductTable from './table-product'
@@ -88,9 +87,9 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 			</Card>
 
 			{/* MODALS */}
-			<AddProductModal isOpen={addProductModal.isOpen} onClose={addProductModal.onClose} />
+			<AddEditProduct isOpen={addProductModal.isOpen} onClose={addProductModal.onClose} />
 			{selectedProduct && (
-				<EditProductModal
+				<AddEditProduct
 					isOpen={editProductModal.isOpen}
 					onClose={editProductModal.onClose}
 					initialData={selectedProduct}

@@ -1,4 +1,4 @@
-import { TVariationItem } from '@/constants/types'
+import { TProductItem, TVariationItem } from '@/constants/types'
 import {
 	Button,
 	Card,
@@ -12,24 +12,25 @@ import {
 	Textarea
 } from '@heroui/react'
 import { Icon } from '@iconify/react'
-import React from 'react'
+import React, { FormEvent, useRef, useState } from 'react'
 
 interface AddProductModalProps {
 	isOpen: boolean
 	onClose: () => void
+	initialData?: TProductItem
 }
 
 const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
-	const [name, setName] = React.useState('')
-	const [description, setDescription] = React.useState('')
-	const [variations, setVariations] = React.useState<TVariationItem[]>([
+	const [name, setName] = useState('')
+	const [description, setDescription] = useState('')
+	const [variations, setVariations] = useState<TVariationItem[]>([
 		{ label: '', stock: 0, price: 0, discountedPrice: 0, productId: '' }
 	])
-	const [images, setImages] = React.useState<File[]>([])
-	const [imagePreviewUrls, setImagePreviewUrls] = React.useState<string[]>([])
-	const fileInputRef = React.useRef<HTMLInputElement>(null)
+	const [images, setImages] = useState<File[]>([])
+	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([])
+	const fileInputRef = useRef<HTMLInputElement>(null)
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault()
 
 		// onSubmit({
