@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Popover, PopoverTrigger, PopoverContent, Button } from '@heroui/react'
 import { Icon } from '@iconify/react'
 
@@ -7,8 +7,10 @@ interface DeleteProductPopoverProps {
 }
 
 const DeleteProductPopover = ({ onDelete }: DeleteProductPopoverProps) => {
+	const [isOpen, setIsOpen] = useState(false);
+
 	return (
-		<Popover placement="left">
+		<Popover placement="left" isOpen={isOpen} onOpenChange={setIsOpen}>
 			<PopoverTrigger>
 				<Button isIconOnly size="sm" variant="light" color="danger">
 					<Icon icon="lucide:trash" className="w-4 h-4" />
@@ -21,7 +23,7 @@ const DeleteProductPopover = ({ onDelete }: DeleteProductPopoverProps) => {
 						This action cannot be undone. Are you sure you want to delete this product?
 					</div>
 					<div className="flex justify-end gap-2 mt-4">
-						<Button size="sm" variant="flat" color="default">
+						<Button size="sm" variant="flat" color="default" onPress={() => setIsOpen(false)}>
 							Cancel
 						</Button>
 						<Button size="sm" color="danger" onPress={onDelete}>
