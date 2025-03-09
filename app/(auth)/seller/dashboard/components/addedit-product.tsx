@@ -16,7 +16,7 @@ import {
 import { Icon } from '@iconify/react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import React, { FormEvent, useRef, useState, useTransition } from 'react'
+import React, { FC, FormEvent, useRef, useState, useTransition } from 'react'
 
 interface AddProductModalProps {
 	isOpen: boolean
@@ -24,7 +24,7 @@ interface AddProductModalProps {
 	initialData?: TProductItem
 }
 
-const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps) => {
+const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, initialData }) => {
 	const [name, setName] = useState(initialData?.name || '')
 	const [description, setDescription] = useState(initialData?.description || '')
 	const [variations, setVariations] = useState<TVariationItem[]>(
@@ -120,17 +120,15 @@ const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps)
 	return (
 		<Modal
 			isOpen={isOpen}
-			onOpenChange={() => {
-				onClose()
-				setName('')
-				setDescription('')
-				setVariations([{ label: '', stock: 0, price: 0, discountedPrice: 0, productId: '', id: '' }])
-				setImages([])
-				setImagePreviewUrls([])
-				formRef.current?.reset()
-			}}
 			size="3xl"
 			scrollBehavior="outside"
+			onClose={onClose}
+			// formRef.current?.reset()
+			// setName('')
+			// setDescription('')
+			// setVariations([{ label: '', stock: 0, price: 0, discountedPrice: 0, productId: '', id: '' }])
+			// setImages([])
+			// setImagePreviewUrls([])
 		>
 			<ModalContent>
 				{onClose => (
@@ -296,4 +294,4 @@ const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps)
 	)
 }
 
-export default AddProductModal
+export default AddEditProduct

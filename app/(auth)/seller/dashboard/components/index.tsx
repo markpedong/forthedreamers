@@ -28,8 +28,7 @@ type Props = {
 
 const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => {
 	const editProfileModal = useDisclosure()
-	const addProductModal = useDisclosure()
-	const editProductModal = useDisclosure()
+	const addEditProductModal = useDisclosure()
 	const [selectedProduct, setSelectedProduct] = useState<any>(null)
 	const [selectedTab, setSelectedTab] = useState('products')
 	const darkMode = useAppSelector(state => state.app.darkMode)
@@ -37,14 +36,12 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 	const { setTheme } = useTheme()
 	const router = useRouter()
 
-	// const handleUpdateProduct = (productData: any) => {
-	// 	console.log('Updated product data:', productData)
-	// 	editProductModal.onClose()
-	// }
-
 	const handleEditProduct = (product: any) => {
 		setSelectedProduct(product)
-		editProductModal.onOpen()
+
+		setTimeout(() => {
+			addEditProductModal.onOpen()
+		}, 150)
 	}
 
 	const toggle = () => {
@@ -129,7 +126,7 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 							color="primary"
 							className="customButton1"
 							startContent={<Icon icon="lucide:plus" />}
-							onPress={addProductModal.onOpen}
+							onPress={addEditProductModal.onOpen}
 						>
 							Add New Product
 						</Button>
@@ -142,15 +139,11 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 				</CardBody>
 			</Card>
 
-			{/* MODALS */}
-			<AddEditProduct isOpen={addProductModal.isOpen} onClose={addProductModal.onClose} />
-			{selectedProduct && (
-				<AddEditProduct
-					isOpen={editProductModal.isOpen}
-					onClose={editProductModal.onClose}
-					initialData={selectedProduct}
-				/>
-			)}
+			<AddEditProduct
+				isOpen={addEditProductModal.isOpen}
+				onClose={addEditProductModal.onClose}
+				initialData={selectedProduct}
+			/>
 			<EditProfileModal isOpen={editProfileModal.isOpen} onClose={editProfileModal.onClose} userInfo={userInfo} />
 		</div>
 	)

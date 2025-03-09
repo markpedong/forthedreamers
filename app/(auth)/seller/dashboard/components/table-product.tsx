@@ -2,7 +2,7 @@ import { TProductItem } from '@/constants/types'
 import { Avatar, Button, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { DateFormatter } from '@internationalized/date'
-import React, { FC } from 'react'
+import React, { FC, memo } from 'react'
 import DeleteProductPopover from './popover-delete'
 import VariationsTable from './variations-table'
 
@@ -86,4 +86,4 @@ const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
   )
 }
 
-export default ProductTable
+export default memo(ProductTable)
