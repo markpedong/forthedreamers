@@ -55,11 +55,6 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 					<Icon icon="bx:arrow-back" height={20} />
 					<div className="font-bold">Go back to home</div>
 				</div>
-				{/* {darkMode ? (
-					<Icon icon="solar:sun-bold" className="cursor-pointer" onClick={toggle} />
-				) : (
-					<Icon icon="solar:moon-bold" className="cursor-pointer" onClick={toggle} />
-				)} */}
 				<Switch
 					defaultSelected={darkMode}
 					color="default"
@@ -69,7 +64,7 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 						!isSelected ? (
 							<Icon icon="solar:sun-bold" className="cursor-pointer" color="black" />
 						) : (
-							<Icon icon="solar:moon-bold" className="cursor-pointer" color='black' />
+							<Icon icon="solar:moon-bold" className="cursor-pointer" color="black" />
 						)
 					}
 				/>
@@ -84,25 +79,25 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				<StatsCard
 					title="Total Products"
-					value="24"
+					value={products?.length}
 					icon="lucide:package"
 					// trend={{ value: 12, isPositive: true }}
 				/>
 				<StatsCard
 					title="Total Orders"
-					value="156"
+					value={orders?.length}
 					icon="lucide:shopping-cart"
 					// trend={{ value: 8, isPositive: true }}
 				/>
 				<StatsCard
 					title="Total Revenue"
-					value="$12,426"
+					value={`${orders?.reduce((total, order) => total + order.total, 0)}`}
 					icon="lucide:dollar-sign"
 					// trend={{ value: 15, isPositive: true }}
 				/>
 				<StatsCard
 					title="Average Rating"
-					value="4.8"
+					value={reviews?.reduce((total, review) => total + review.rating, 0) / reviews?.length || 0}
 					icon="lucide:star"
 					//  trend={{ value: 2, isPositive: true }}
 				/>
