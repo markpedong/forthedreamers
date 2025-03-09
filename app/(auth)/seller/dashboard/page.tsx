@@ -12,9 +12,7 @@ const Page = async () => {
 
 	return (
 		<div className={styles.sellerWrapper}>
-			<div className={styles.sellerContainer}>
-				<SellerDashboard userInfo={userInfo as Users} />
-			</div>
+			<SellerDashboard userInfo={userInfo as Users} />
 		</div>
 	)
 }
