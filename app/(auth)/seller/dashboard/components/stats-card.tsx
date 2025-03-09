@@ -16,8 +16,8 @@ const StatsCard: FC<StatsCardProps> = ({ title, value, icon, trend }) => {
 	return (
 		<Card>
 			<CardBody className="flex gap-4">
-				<div className="p-2 rounded-lg bg-primary/10">
-					<Icon icon={icon} className="w-6 h-6 text-primary" />
+				<div className="p-2 rounded-lg bg-default/45">
+					<Icon icon={icon} className="w-6 h-6 text-default-800" />
 				</div>
 				<div className="flex flex-col gap-1">
 					<p className="text-small text-default-500">{title}</p>

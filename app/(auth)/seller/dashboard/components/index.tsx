@@ -1,5 +1,5 @@
 'use client'
-import { Button, Card, CardBody, CardHeader, Tab, Tabs, useDisclosure } from '@heroui/react'
+import { Alert, Button, Card, CardBody, CardHeader, Tab, Tabs, useDisclosure } from '@heroui/react'
 import React, { FC, useState } from 'react'
 import Header from './header'
 import { Orders, Reviews, Users } from '@prisma/client'
@@ -39,6 +39,16 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 
 	return (
 		<div className={styles.sellerContainer}>
+			<div className="flex gap-2 items-center ">
+				<Icon icon="bx:arrow-back" height={20} />
+				<div className="font-bold">Go back to home</div>
+			</div>
+			{!userInfo?.storeName && (
+				<Alert
+					color="warning"
+					title="Please note that your products will only appear on the website if you added a store name"
+				/>
+			)}
 			<Header userInfo={userInfo} onEditProfile={editProfileModal.onOpen} />
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				<StatsCard
@@ -74,7 +84,12 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 						<Tab key="reviews" title="Reviews" />
 					</Tabs>
 					{selectedTab === 'products' && (
-						<Button color="primary" startContent={<Icon icon="lucide:plus" />} onPress={addProductModal.onOpen}>
+						<Button
+							color="primary"
+							className="customButton1"
+							startContent={<Icon icon="lucide:plus" />}
+							onPress={addProductModal.onOpen}
+						>
 							Add New Product
 						</Button>
 					)}

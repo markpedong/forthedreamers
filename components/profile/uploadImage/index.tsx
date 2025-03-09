@@ -10,7 +10,7 @@ type Props = {
 }
 
 const UploadImage: FC<Props> = ({ handleFileChange, image, isPending }) => {
-	return image !== "undefined" ? (
+	return !['undefined', 'null', ''].includes(image) ? (
 		<Image alt="profile-image" src={image} width="50" height="50" className="rounded-full" />
 	) : isPending ? (
 		<div className="flex justify-start items-center p-3">
