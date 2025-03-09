@@ -34,3 +34,5 @@ export const deletePaymentMethod = async (id: string) => deleteF({ url: `/api/pa
 export const getProducts = async () => get<any>({ url: `/api/products` })
 
 export const registerSeller = async (body: any) => post<Users>({ url: '/api/sellers', data: body })
+
+export const updateProduct = async (body: any, id: string) => post({ url: `/api/products/${id}`, data: body })

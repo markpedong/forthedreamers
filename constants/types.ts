@@ -61,6 +61,7 @@ export type RequestParams = {
   url: string
   data?: any
   tags?: string
+  isJSON?: boolean
 }
 
 export type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
