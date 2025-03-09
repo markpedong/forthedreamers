@@ -83,6 +83,7 @@ export type TProductItem = Products & {
 }
 
 export type TVariationItem = {
+  id: string
   label: string
   stock: number
   price: number

@@ -24,7 +24,7 @@ const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps)
 	const [name, setName] = useState(initialData?.name || '')
 	const [description, setDescription] = useState(initialData?.description || '')
 	const [variations, setVariations] = useState<TVariationItem[]>(
-		initialData?.variations || [{ label: '', stock: 0, price: 0, discountedPrice: 0, productId: '' }]
+		initialData?.variations || [{ label: '', stock: 0, price: 0, discountedPrice: 0, productId: '', id: '' }]
 	)
 	const [images, setImages] = useState<File[]>([])
 	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>(initialData?.images || [])
@@ -70,7 +70,7 @@ const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps)
 	}
 
 	const addVariation = () => {
-		setVariations([...variations, { label: '', stock: 0, price: 0, discountedPrice: 0, productId: '' }])
+		setVariations([...variations, { label: '', stock: 0, price: 0, discountedPrice: 0, productId: '', id: '' }])
 	}
 
 	const removeVariation = (index: number) => {

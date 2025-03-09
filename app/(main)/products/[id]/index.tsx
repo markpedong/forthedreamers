@@ -3,10 +3,9 @@
 import ProductImages from '@/components/product-details/product-images'
 import QuantitySelector from '@/components/product-details/quantity-selector'
 import VariationSelector from '@/components/product-details/variantion-selector'
-import { TProductItem } from '@/constants/types'
+import { TProductItem, TVariationItem } from '@/constants/types'
 import { Button, Divider, Spinner } from '@heroui/react'
 import { Icon } from '@iconify/react'
-import { Variations } from '@prisma/client'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { FC, Suspense, useEffect, useState } from 'react'
@@ -16,7 +15,7 @@ type Props = {
 }
 
 const ProductPage: FC<Props> = ({ product }) => {
-  const [selectedVariation, setSelectedVariation] = useState<Variations | null>(null)
+  const [selectedVariation, setSelectedVariation] = useState<TVariationItem | null>(null)
   const [quantity, setQuantity] = useState(1)
   const currentPrice = selectedVariation?.discountedPrice || selectedVariation?.price || 0
   const hasDiscount = selectedVariation?.discountedPrice && selectedVariation.discountedPrice < selectedVariation.price

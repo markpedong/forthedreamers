@@ -1,10 +1,11 @@
 import React, { Dispatch, FC, SetStateAction } from 'react'
 import { Chip } from '@heroui/react'
 import { Variations } from '@prisma/client'
+import { TVariationItem } from '@/constants/types'
 
 interface Props {
-  variations: Variations[]
-  selectedVariation: Variations | null
+  variations: TVariationItem[]
+  selectedVariation: TVariationItem | null
   onVariationChange: Dispatch<SetStateAction<any>>
 }
 
