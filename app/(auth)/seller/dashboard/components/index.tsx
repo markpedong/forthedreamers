@@ -1,5 +1,5 @@
 'use client'
-import { Alert, Button, Card, CardBody, CardHeader, Switch, Tab, Tabs, useDisclosure } from '@heroui/react'
+import { Alert, Button, Card, CardBody, CardHeader, Switch, Tab, Tabs, useDisclosure, user } from '@heroui/react'
 import React, { FC, useState } from 'react'
 import Header from './header'
 import { Orders, Reviews, Users } from '@prisma/client'
@@ -15,6 +15,7 @@ import ReviewsSection from './table-review'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { toggleDarkMode } from '@/redux/slices/appSlice'
 import { useTheme } from 'next-themes'
+import { useRouter } from 'next/navigation'
 
 type Props = {
 	userInfo: Users
@@ -32,6 +33,7 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 	const darkMode = useAppSelector(state => state.app.darkMode)
 	const dispatch = useAppDispatch()
 	const { setTheme } = useTheme()
+	const router = useRouter()
 
 	// const handleUpdateProduct = (productData: any) => {
 	// 	console.log('Updated product data:', productData)
@@ -51,9 +53,9 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 	return (
 		<div className={styles.sellerContainer}>
 			<div className="flex justify-between">
-				<div className="flex gap-2 items-center">
-					<Icon icon="bx:arrow-back" height={20} />
-					<div className="font-bold">Go back to home</div>
+				<div className="flex gap-2 items-center cursor-pointer" onClick={() => router.push('/')}>
+					<Icon icon="bx:arrow-back" height={15} />
+					<div className="font-bold text-sm">Go back to home</div>
 				</div>
 				<Switch
 					defaultSelected={darkMode}
