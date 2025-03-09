@@ -10,8 +10,8 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData()
   const name = formData.get('name') as string
   const description = formData.get('description') as string | null
-  const variations = JSON.parse((formData.get('variations') as string) || '[]')
   const sellerID = formData.get('sellerID') as string
+  const variations = JSON.parse((formData.get('variations') as string) || '[]')
 
   const imageFiles = formData.getAll('images') as File[]
   const uploadedImages = await Promise.all(imageFiles.map(file => uploadImageToCloudinary(file, 'products')))

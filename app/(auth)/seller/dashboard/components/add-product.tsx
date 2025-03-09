@@ -22,7 +22,9 @@ interface AddProductModalProps {
 const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
 	const [name, setName] = React.useState('')
 	const [description, setDescription] = React.useState('')
-	const [variations, setVariations] = React.useState<TVariationItem[]>([])
+	const [variations, setVariations] = React.useState<TVariationItem[]>([
+		{ label: '', stock: 0, price: 0, discountedPrice: 0, productId: '' }
+	])
 	const [images, setImages] = React.useState<File[]>([])
 	const [imagePreviewUrls, setImagePreviewUrls] = React.useState<string[]>([])
 	const fileInputRef = React.useRef<HTMLInputElement>(null)

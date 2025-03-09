@@ -17,7 +17,7 @@ import { registerUser } from '@/utils/request'
 import classNames from 'classnames'
 import { USER_ROLE } from '@prisma/client'
 
-const Login = () => {
+const 	Login = () => {
 	const loginFormState = useAppSelector(state => state.app.loginFormState)
 	const isSellerLogin = [LOGINFORM_STATE.SELLER_REGISTER, LOGINFORM_STATE.SELLER_LOGIN].includes(loginFormState)
 	const [state, action] = useActionState(login, {
