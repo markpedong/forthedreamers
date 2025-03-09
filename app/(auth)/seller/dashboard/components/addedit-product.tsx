@@ -1,5 +1,5 @@
 import { DEFAULT_VARIATION } from '@/constants'
-import { AddProductModalProps, TVariationItem } from '@/constants/types'
+import { AddProductModalProps, TProductItem, TVariationItem } from '@/constants/types'
 import { createProduct, updateProduct } from '@/utils/request'
 import {
 	addToast,
@@ -19,9 +19,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import React, { FC, FormEvent, useEffect, useRef, useState, useTransition } from 'react'
 
-const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, initialData }) => {
-	const [name, setName] = useState('')
-	const [description, setDescription] = useState('')
+const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) => {
 	const [variations, setVariations] = useState<TVariationItem[]>([DEFAULT_VARIATION])
 	const [images, setImages] = useState<File[]>([])
 	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([])
@@ -30,39 +28,27 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, initialData
 	const [isPending, startTransition] = useTransition()
 	const router = useRouter()
 	const { data: session } = useSession()
-	const isEdit = !!initialData
+	const [initialData, setInitialData] = useState<TProductItem>()
 
 	useEffect(() => {
-		if (isOpen) {
-			if (initialData) {
-				// Editing product
-				setName(initialData.name)
-				setDescription(initialData.description || '')
-				setVariations(initialData.variations)
-				setImagePreviewUrls(initialData.images)
-			}
-		} else {
-			// Adding new product
-			setName('')
-			setDescription('')
-			setVariations([DEFAULT_VARIATION])
-			setImages([])
-			setImagePreviewUrls([])
+		if (product) {
+			setVariations(product.variations)
+			setInitialData(product)
 		}
-	}, [isOpen, initialData])
+	}, [product])
 
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault()
 		startTransition(async () => {
 			const formData = new FormData()
-			formData.append('name', name)
-			formData.append('description', description)
+			formData.append('name', `${initialData?.name || ''}`)
+			formData.append('description', `${initialData?.description || ''}`)
 			formData.append('variations', JSON.stringify(variations.filter(v => v.label && v.price > 0)))
 			images.forEach(file => formData.append('newImages', file))
 
 			let res
-			if (isEdit) {
-				formData.append('images', JSON.stringify(imagePreviewUrls))
+			if (initialData?.id) {
+				formData.append('images', JSON.stringify(initialData.images))
 				res = await updateProduct(formData, initialData?.id || '')
 			} else {
 				formData.append('sellerID', session?.user?.id || '')
@@ -97,6 +83,14 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, initialData
 		setVariations(updatedVariations)
 	}
 
+	const handleChange = (key: keyof TProductItem) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		//@ts-expect-error type error
+		setInitialData(prev => ({
+			...(prev ?? {}),
+			[key]: e.target.value
+		}))
+	}
+
 	return (
 		<Modal
 			isOpen={isOpen}
@@ -105,31 +99,30 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, initialData
 			onClose={() => onClose()}
 			onOpenChange={isOpen => {
 				if (!isOpen) {
-					setName('')
-					setDescription('')
 					setVariations([DEFAULT_VARIATION])
 					setImages([])
 					setImagePreviewUrls([])
+					setInitialData(undefined)
 				}
 			}}
 		>
 			<ModalContent>
 				<form onSubmit={handleSubmit} ref={formRef}>
-					<ModalHeader>{isEdit ? 'Edit' : 'Add'} Product</ModalHeader>
+					<ModalHeader>{initialData?.id ? 'Edit' : 'Add'} Product</ModalHeader>
 					<ModalBody>
 						<div className="flex flex-col gap-4">
 							<Input
 								label="Product Name"
 								placeholder="Enter product name"
-								value={name}
-								onValueChange={setName}
+								value={initialData?.name}
+								onChange={handleChange('name')}
 								isRequired
 							/>
 							<Textarea
 								label="Description"
 								placeholder="Enter product description"
-								value={description}
-								onValueChange={setDescription}
+								value={initialData?.description || ''}
+								onChange={handleChange('description')}
 								isRequired
 							/>
 
@@ -231,7 +224,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, initialData
 							Cancel
 						</Button>
 						<Button color="primary" type="submit" isLoading={isPending}>
-							{isEdit ? 'Update' : 'Add'} Product
+							{initialData?.id ? 'Update' : 'Add'} Product
 						</Button>
 					</ModalFooter>
 				</form>

@@ -141,8 +141,11 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 
 			<AddEditProduct
 				isOpen={addEditProductModal.isOpen}
-				onClose={addEditProductModal.onClose}
-				initialData={selectedProduct}
+				onClose={() => {
+					addEditProductModal.onClose()
+					setSelectedProduct(null)
+				}}
+				product={selectedProduct}
 			/>
 			<EditProfileModal isOpen={editProfileModal.isOpen} onClose={editProfileModal.onClose} userInfo={userInfo} />
 		</div>

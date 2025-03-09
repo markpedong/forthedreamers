@@ -100,5 +100,5 @@ export type TSellerItem = Users & {
 export type AddProductModalProps = {
   isOpen: boolean
   onClose: () => void
-  initialData?: TProductItem
+  product?: TProductItem
 }
