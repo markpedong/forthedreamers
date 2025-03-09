@@ -28,11 +28,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 
   const body = await req.json()
-  const { firstName, lastName, birthday } = body
+  const { firstName, lastName, birthday, phoneNumber, storeName, image } = body
 
   const user = await prisma.users.update({
     where: { id },
-    data: { firstName, lastName, birthday }
+    data: { firstName, lastName, birthday, phoneNumber, storeName, image }
   })
 
   return generateResponse({ data: user, message: 'User updated successfully' })

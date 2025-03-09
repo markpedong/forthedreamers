@@ -13,9 +13,10 @@ import {
 import { Icon } from '@iconify/react'
 import { Users } from '@prisma/client'
 import UploadImage from '@/components/profile/uploadImage'
-import { uploadProfile } from '@/utils/request'
+import { updateProfile, uploadProfile } from '@/utils/request'
 import { setUserData } from '@/redux/slices/userSlice'
 import { useAppDispatch } from '@/redux/store'
+import { useRouter } from 'next/navigation'
 
 type Props = {
 	userInfo: Users
@@ -26,6 +27,7 @@ const Header: FC<Props> = ({ userInfo, onEditProfile }) => {
 	const { storeName, firstName, lastName, email, phoneNumber } = userInfo
 	const [isPending, startTransition] = useTransition()
 	const dispatch = useAppDispatch()
+	const router = useRouter()
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0]
@@ -33,8 +35,17 @@ const Header: FC<Props> = ({ userInfo, onEditProfile }) => {
 
 		startTransition(async () => {
 			const response = await uploadProfile(file)
+
 			if (response?.success) {
-				dispatch(setUserData({ ...userInfo, image: response.data.secure_url }))
+				const profile = await updateProfile({
+					...userInfo,
+					image: response.data.secure_url
+				})
+
+				if (profile.success) {
+					router.refresh()
+					dispatch(setUserData({ ...userInfo, image: response.data.secure_url }))
+				}
 			}
 		})
 	}

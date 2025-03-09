@@ -106,7 +106,7 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 			</div>
 			<Card>
 				<CardHeader className="flex justify-between items-center">
-					<Tabs selectedKey={selectedTab} onSelectionChange={setSelectedTab as any}>
+					<Tabs selectedKey={selectedTab} onSelectionChange={tab => setSelectedTab(tab.toString())}>
 						<Tab key="products" title="Products" />
 						<Tab key="orders" title="Orders" />
 						<Tab key="reviews" title="Reviews" />

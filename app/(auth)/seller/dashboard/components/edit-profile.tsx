@@ -1,7 +1,22 @@
-import React from 'react'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Avatar } from '@heroui/react'
+import React, { ChangeEvent, useRef, useState, useTransition } from 'react'
+import {
+	Modal,
+	ModalContent,
+	ModalHeader,
+	ModalBody,
+	ModalFooter,
+	Button,
+	Input,
+	Avatar,
+	addToast
+} from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { Users } from '@prisma/client'
+import { updateProfile, uploadProfile } from '@/utils/request'
+import { uploadImageToCloudinary } from '@/utils/cloudinary'
+import { useAppDispatch } from '@/redux/store'
+import { setUserData } from '@/redux/slices/userSlice'
+import { useRouter } from 'next/navigation'
 
 interface EditProfileModalProps {
 	isOpen: boolean
@@ -10,12 +25,15 @@ interface EditProfileModalProps {
 }
 
 const EditProfileModal = ({ isOpen, onClose, userInfo }: EditProfileModalProps) => {
-	const [formData, setFormData] = React.useState(userInfo)
-	const [newImage, setNewImage] = React.useState<File>()
-	const [imagePreview, setImagePreview] = React.useState(userInfo.image)
-	const fileInputRef = React.useRef<HTMLInputElement>(null)
+	const [formData, setFormData] = useState(userInfo)
+	const [newImage, setNewImage] = useState<File>()
+	const [imagePreview, setImagePreview] = useState(userInfo.image)
+	const fileInputRef = useRef<HTMLInputElement>(null)
+	const dispatch = useAppDispatch()
+	const [isPending, startTransition] = useTransition()
+	const router = useRouter()
 
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0]
 		if (file) {
 			setNewImage(file)
@@ -23,12 +41,23 @@ const EditProfileModal = ({ isOpen, onClose, userInfo }: EditProfileModalProps) 
 		}
 	}
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
-		// onSubmit({
-		// 	...formData,
-		// 	image: newImage
-		// })
+
+		startTransition(async () => {
+			const uploadedImage = await uploadProfile(newImage!)
+			const res = await updateProfile({
+				...formData,
+				image: uploadedImage?.data.secure_url
+			})
+
+			if (res.success) {
+				addToast({ title: 'Success', description: 'Profile updated successfully', color: 'success' })
+				dispatch(setUserData(res.data))
+				onClose()
+				router.refresh()
+			}
+		})
 	}
 
 	return (
@@ -40,10 +69,12 @@ const EditProfileModal = ({ isOpen, onClose, userInfo }: EditProfileModalProps) 
 						<ModalBody>
 							<div className="flex flex-col gap-4">
 								<div className="flex flex-col items-center gap-2">
-									<Avatar src={imagePreview || `https://i.pravatar.cc/150?u=${formData.email}`} className="w-24 h-24" />
-									<Button variant="flat" size="sm" onPress={() => fileInputRef.current?.click()}>
-										Change Photo
-									</Button>
+									<Avatar src={`${imagePreview}`} className="w-24 h-24" />
+									{!userInfo?.image && (
+										<Button variant="flat" size="sm" onPress={() => fileInputRef.current?.click()}>
+											Change Photo
+										</Button>
+									)}
 									<input
 										ref={fileInputRef}
 										type="file"
@@ -58,6 +89,7 @@ const EditProfileModal = ({ isOpen, onClose, userInfo }: EditProfileModalProps) 
 									value={formData.storeName || ''}
 									onValueChange={value => setFormData({ ...formData, storeName: value })}
 									isRequired
+									disabled={userInfo?.storeName ? true : false}
 								/>
 								<div className="flex gap-2">
 									<Input
@@ -89,6 +121,8 @@ const EditProfileModal = ({ isOpen, onClose, userInfo }: EditProfileModalProps) 
 									placeholder="Enter phone number"
 									value={formData.phoneNumber || ''}
 									onValueChange={value => setFormData({ ...formData, phoneNumber: value })}
+									isRequired
+									disabled={userInfo?.phoneNumber ? true : false}
 								/>
 							</div>
 						</ModalBody>
@@ -96,7 +130,7 @@ const EditProfileModal = ({ isOpen, onClose, userInfo }: EditProfileModalProps) 
 							<Button variant="flat" onPress={onClose}>
 								Cancel
 							</Button>
-							<Button color="primary" type="submit">
+							<Button color="primary" type="submit" className="customButton1" isLoading={isPending}>
 								Save Changes
 							</Button>
 						</ModalFooter>
