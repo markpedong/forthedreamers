@@ -64,7 +64,7 @@ const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
 							<TableRow>
 								<TableCell>{null}</TableCell>
 								<TableCell className="p-0" colSpan={5}>
-									<div className="mt-5 mb-2 font-bold text-neutral-500 text-small">
+									<div className="mt-5 mb-2 font-bold text-neutral-500 text-xs tracking-wide uppercase">
 										{product.name}'s Variations
 									</div>
 									<VariationsTable variations={product.variations} />
