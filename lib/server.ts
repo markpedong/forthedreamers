@@ -132,7 +132,11 @@ export const getProductDetails = async (id?: string) => {
 
 export const getProducts = async () => {
   return prisma.products.findMany({
-    where: { deletedAt: null },
+    where: {
+      deletedAt: null, AND: {
+        seller: { storeName: { not: null } }
+      }
+    },
     select: { id: true, name: true, images: true, variations: { select: { price: true, discountedPrice: true } } },
     orderBy: { createdAt: 'desc' }
   })
