@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react'
 import React, { FC } from 'react'
 import DeleteProductPopover from './popover-delete'
 import VariationsTable from './variations-table'
+import { Typography } from 'antd'
 
 // const statusColorMap = {
 // 	active: 'success',
@@ -24,7 +25,7 @@ const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
 
 	console.log('openedKeys', openedKeys)
 	return (
-		<Table aria-label="Products table">
+		<Table aria-label="Products table" fullWidth>
 			<TableHeader>
 				<TableColumn>{null}</TableColumn>
 				<TableColumn>PRODUCT</TableColumn>
@@ -59,14 +60,18 @@ const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
 								</div>
 							</TableCell>
 						</TableRow>
-						{/* {openedKeys[product.id] && <div>{product.id}</div>} */}
 						{openedKeys[product.id] && (
 							<TableRow>
 								<TableCell>{null}</TableCell>
-								<TableCell>Lorem ipsum dolor</TableCell>
-								<TableCell>Lorem ipsum dolor</TableCell>
-								<TableCell>Lorem ipsum dolor</TableCell>
-								<TableCell>Lorem ipsum dolor</TableCell>
+								<TableCell className="p-0" colSpan={5}>
+									<div className="mt-5 mb-2 font-bold text-neutral-500 text-small">
+										{product.name}'s Variations
+									</div>
+									<VariationsTable variations={product.variations} />
+								</TableCell>
+								<TableCell className="hidden">{null}</TableCell>
+								<TableCell className="hidden">{null}</TableCell>
+								<TableCell className="hidden">{null}</TableCell>
 							</TableRow>
 						)}
 					</React.Fragment>
