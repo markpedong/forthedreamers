@@ -36,3 +36,5 @@ export const getProducts = async () => get<any>({ url: `/api/products` })
 export const registerSeller = async (body: any) => post<Users>({ url: '/api/sellers', data: body })
 
 export const updateProduct = async (body: any, id: string) => post({ url: `/api/products/${id}`, data: body })
+
+export const createProduct = async (body: any) => post<any>({ url: '/api/products', data: body })

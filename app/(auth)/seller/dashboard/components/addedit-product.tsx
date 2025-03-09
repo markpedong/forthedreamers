@@ -1,5 +1,5 @@
 import { ApiResponse, TProductItem, TVariationItem } from '@/constants/types'
-import { updateProduct } from '@/utils/request'
+import { createProduct, updateProduct } from '@/utils/request'
 import {
 	addToast,
 	Button,
@@ -14,6 +14,7 @@ import {
 	Textarea
 } from '@heroui/react'
 import { Icon } from '@iconify/react'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import React, { FormEvent, useRef, useState, useTransition } from 'react'
 
@@ -36,25 +37,29 @@ const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps)
 	const formRef = useRef<HTMLFormElement>(null)
 	const [isPending, startTransition] = useTransition()
 	const router = useRouter()
+	const { data: session } = useSession()
 
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault()
 
 		startTransition(async () => {
 			let res
+			const formData = new FormData()
 
+			formData.append('name', name)
+			formData.append('description', description)
+			formData.append('variations', JSON.stringify(variations.filter(v => v.label && v.price > 0)))
+			images.forEach(file => {
+				formData.append(`newImages`, file)
+			})
 			if (isEdit) {
-				const formData = new FormData()
-				formData.append('name', name)
-				formData.append('description', description)
-				formData.append('variations', JSON.stringify(variations.filter(v => v.label && v.price > 0)))
 				formData.append('images', JSON.stringify(imagePreviewUrls))
-				images.forEach(file => {
-					formData.append(`newImages`, file)
-				})
 
 				res = await updateProduct(formData, initialData?.id || '')
 			} else {
+				formData.append('sellerID', session?.user?.id || '')
+
+				res = await createProduct(formData)
 			}
 
 			if (res?.success) {
@@ -113,7 +118,20 @@ const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps)
 	}
 
 	return (
-		<Modal isOpen={isOpen} onOpenChange={onClose} size="3xl" scrollBehavior="outside">
+		<Modal
+			isOpen={isOpen}
+			onOpenChange={() => {
+				onClose()
+				setName('')
+				setDescription('')
+				setVariations([{ label: '', stock: 0, price: 0, discountedPrice: 0, productId: '', id: '' }])
+				setImages([])
+				setImagePreviewUrls([])
+				formRef.current?.reset()
+			}}
+			size="3xl"
+			scrollBehavior="outside"
+		>
 			<ModalContent>
 				{onClose => (
 					<>

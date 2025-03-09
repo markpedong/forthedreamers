@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const sellerID = formData.get('sellerID') as string
     const variations = JSON.parse((formData.get('variations') as string) || '[]')
 
-    const imageFiles = formData.getAll('images') as File[]
+    const imageFiles = formData.getAll('newImages') as File[]
     const uploadedImages = await Promise.all(imageFiles.map(file => uploadImageToCloudinary(file, 'products')))
 
     const product = await prisma.products.create({
