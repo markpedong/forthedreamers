@@ -29,9 +29,14 @@ export const getCookie = async (name: string) => {
   cookieStore.get(name)?.value || ''
 }
 
-export const getProfileServer = async (id?: string) => {
+export const getProfileServer = async (id?: string, isSeller?: boolean) => {
   return prisma.users.findUnique({
-    where: { id }
+    where: { id },
+    ...(isSeller && {
+      include: {
+        products: true,
+      }
+    })
   })
 }
 
@@ -74,7 +79,7 @@ export const getWishlistServer = async (id?: string) => {
 
 export const getProductDetails = async (id?: string) => {
   if (!validateUUID(`${id}`)) return null
-  
+
   return prisma.products.findUnique({
     where: { id, deletedAt: null },
     include: { variations: true }
