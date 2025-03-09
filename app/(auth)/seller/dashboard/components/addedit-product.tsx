@@ -30,16 +30,17 @@ const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps)
 	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>(initialData?.images || [])
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const isEdit = !!initialData
+	const formRef = useRef<HTMLFormElement>(null)
 
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault()
 
-		// onSubmit({
-		// 	name,
-		// 	description,
-		// 	variations: variations.filter(v => v.label && v.price > 0),
-		// 	images
-		// })
+		console.log({
+			name,
+			description,
+			variations: variations.filter(v => v.label && v.price > 0),
+			images
+		})
 	}
 
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,7 +61,6 @@ const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps)
 		const newImages = [...images]
 		const newPreviewUrls = [...imagePreviewUrls]
 
-		// Revoke the URL to prevent memory leaks
 		URL.revokeObjectURL(newPreviewUrls[index])
 
 		newImages.splice(index, 1)
@@ -90,13 +90,13 @@ const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps)
 	}
 
 	return (
-		<Modal isOpen={isOpen} onOpenChange={onClose} size="3xl" scrollBehavior="inside">
+		<Modal isOpen={isOpen} onOpenChange={onClose} size="3xl" scrollBehavior="outside">
 			<ModalContent>
 				{onClose => (
 					<>
-						<ModalHeader className="flex flex-col gap-1">{isEdit ? 'Edit' : 'Add'} New Product</ModalHeader>
-						<ModalBody>
-							<form onSubmit={handleSubmit}>
+						<form onSubmit={handleSubmit} ref={formRef}>
+							<ModalHeader className="flex flex-col gap-1">{isEdit ? 'Edit' : 'Add'} New Product</ModalHeader>
+							<ModalBody>
 								<div className="flex flex-col gap-4">
 									<div className="space-y-4">
 										<Input
@@ -235,16 +235,16 @@ const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps)
 										</div>
 									</div>
 								</div>
-							</form>
-						</ModalBody>
-						<ModalFooter>
-							<Button variant="flat" onPress={onClose}>
-								Cancel
-							</Button>
-							<Button color="primary" type="submit">
-								{isEdit ? 'Update' : 'Add'} Product
-							</Button>
-						</ModalFooter>
+							</ModalBody>
+							<ModalFooter>
+								<Button variant="flat" onPress={onClose}>
+									Cancel
+								</Button>
+								<Button color="primary" className="customButton1" type="submit">
+									{isEdit ? 'Update' : 'Add'} Product
+								</Button>
+							</ModalFooter>
+						</form>
 					</>
 				)}
 			</ModalContent>
