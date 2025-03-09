@@ -40,6 +40,49 @@ export const getProfileServer = async (id?: string, isSeller?: boolean) => {
   })
 }
 
+export const getProductserver = async (id?: string) => {
+  return prisma.products.findMany({
+    where: { sellerID: id, deletedAt: null },
+    orderBy: { createdAt: 'desc' }
+  })
+}
+
+export const getSoldProducts = async (id?: string) => {
+  return await prisma.orders.findMany({
+    where: {
+      orderItems: {
+        some: {
+          product: {
+            sellerID: id,
+          },
+        },
+      },
+    },
+    include: {
+      orderItems: {
+        include: { product: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export const getProductReviews = async (id?: string) => {
+  return await prisma.reviews.findMany({
+    where: {
+      product: {
+        sellerID: id,
+      },
+    },
+    include: {
+      product: true,
+      user: true,
+      order: true,
+    },
+  });
+
+}
+
 export const getAddressesServer = async (id?: string) => {
   return prisma.addresses.findMany({
     where: { userId: id, deletedAt: null },

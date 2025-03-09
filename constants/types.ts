@@ -81,3 +81,11 @@ export type TWishListItem = Wishlists & {
 export type TProductItem = Products & {
   variations: Variations[]
 }
+
+export type TVariationItem = {
+  label: string
+  stock: number
+  price: number
+  discountedPrice: number
+  productId: String
+}

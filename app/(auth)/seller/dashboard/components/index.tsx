@@ -1,22 +1,54 @@
 'use client'
-
-import { useDisclosure } from '@heroui/react'
-import React, { FC } from 'react'
+import { Button, Card, CardBody, CardHeader, Tab, Tabs, useDisclosure } from '@heroui/react'
+import React, { FC, useState } from 'react'
 import Header from './header'
-import { Users } from '@prisma/client'
+import { Orders, Reviews, Users } from '@prisma/client'
 import EditProfileModal from './edit-profile'
 import StatsCard from './stats-card'
 import styles from '../styles.module.scss'
+import AddProductModal from './add-product'
+import EditProductModal from './edit-product'
+import { Icon } from '@iconify/react'
+import { TProductItem } from '@/constants/types'
+import ProductTable from './table-product'
+import OrdersTable from './table-orders'
+import ReviewsSection from './table-review'
 
 type Props = {
 	userInfo: Users
+	products: TProductItem[]
+	orders: Orders[]
+	reviews: Reviews[]
 }
 
-const SellerDashboard: FC<Props> = ({ userInfo }) => {
+const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => {
 	const editProfileModal = useDisclosure()
+	const addProductModal = useDisclosure()
+	const editProductModal = useDisclosure()
+	const [selectedProduct, setSelectedProduct] = useState<any>(null)
+	const [selectedTab, setSelectedTab] = useState('products')
+
+	const handleAddProduct = (productData: any) => {
+		console.log('New product data:', productData)
+		addProductModal.onClose()
+	}
 
 	const handleUpdateProfile = (profileData: any) => {
 		editProfileModal.onClose()
+	}
+
+	const handleUpdateProduct = (productData: any) => {
+		console.log('Updated product data:', productData)
+		editProductModal.onClose()
+	}
+
+	const handleEditProduct = (product: any) => {
+		setSelectedProduct(product)
+		editProductModal.onOpen()
+	}
+
+	const handleDeleteProduct = (productId: string) => {
+		console.log('Delete product:', productId)
 	}
 
 	return (
@@ -48,6 +80,38 @@ const SellerDashboard: FC<Props> = ({ userInfo }) => {
 					//  trend={{ value: 2, isPositive: true }}
 				/>
 			</div>
+			<Card>
+				<CardHeader className="flex justify-between items-center">
+					<Tabs selectedKey={selectedTab} onSelectionChange={setSelectedTab as any}>
+						<Tab key="products" title="Products" />
+						<Tab key="orders" title="Orders" />
+						<Tab key="reviews" title="Reviews" />
+					</Tabs>
+					{selectedTab === 'products' && (
+						<Button color="primary" startContent={<Icon icon="lucide:plus" />} onPress={addProductModal.onOpen}>
+							Add New Product
+						</Button>
+					)}
+				</CardHeader>
+				<CardBody>
+					{selectedTab === 'products' && (
+						<ProductTable products={products} onEdit={handleEditProduct} onDelete={handleDeleteProduct} />
+					)}
+					{selectedTab === 'orders' && <OrdersTable orders={orders} />}
+					{selectedTab === 'reviews' && <ReviewsSection reviews={reviews} />}
+				</CardBody>
+			</Card>
+
+			{/* MODALS */}
+			<AddProductModal isOpen={addProductModal.isOpen} onClose={addProductModal.onClose} onSubmit={handleAddProduct} />
+			{selectedProduct && (
+				<EditProductModal
+					isOpen={editProductModal.isOpen}
+					onClose={editProductModal.onClose}
+					onSubmit={handleUpdateProduct}
+					initialData={selectedProduct}
+				/>
+			)}
 			<EditProfileModal
 				isOpen={editProfileModal.isOpen}
 				onClose={editProfileModal.onClose}
