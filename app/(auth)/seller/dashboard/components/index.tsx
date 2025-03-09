@@ -16,6 +16,8 @@ import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { toggleDarkMode } from '@/redux/slices/appSlice'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/navigation'
+import { clearUserData } from '@/lib'
+import { signOut } from 'next-auth/react'
 
 type Props = {
 	userInfo: Users
@@ -57,19 +59,29 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 					<Icon icon="bx:arrow-back" height={15} />
 					<div className="font-bold text-sm">Go back to home</div>
 				</div>
-				<Switch
-					defaultSelected={darkMode}
-					color="default"
-					size="sm"
-					onChange={toggle}
-					thumbIcon={({ isSelected }) =>
-						!isSelected ? (
-							<Icon icon="solar:sun-bold" className="cursor-pointer" color="black" />
-						) : (
-							<Icon icon="solar:moon-bold" className="cursor-pointer" color="black" />
-						)
-					}
-				/>
+				<div className="flex gap-3">
+					<Switch
+						defaultSelected={darkMode}
+						color="default"
+						size="sm"
+						onChange={toggle}
+						thumbIcon={({ isSelected }) =>
+							!isSelected ? (
+								<Icon icon="solar:sun-bold" className="cursor-pointer" color="black" />
+							) : (
+								<Icon icon="solar:moon-bold" className="cursor-pointer" color="black" />
+							)
+						}
+					/>
+					<div
+						onClick={() => {
+							clearUserData()
+							signOut()
+						}}
+					>
+						Sign out
+					</div>
+				</div>
 			</div>
 			{!userInfo?.storeName && (
 				<Alert
