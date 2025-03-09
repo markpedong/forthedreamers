@@ -95,3 +95,10 @@ export type TVariationItem = {
 export type TSellerItem = Users & {
   _count: { products: number }
 }
+
+
+export type AddProductModalProps = {
+  isOpen: boolean
+  onClose: () => void
+  initialData?: TProductItem
+}

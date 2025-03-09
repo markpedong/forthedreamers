@@ -59,3 +59,5 @@ export const PAYMENT_METHODS = [
     icon: 'logos:mastercard'
   }
 ]
+
+export const DEFAULT_VARIATION = { label: '', stock: 0, price: 0, discountedPrice: 0, productId: '', id: '' }

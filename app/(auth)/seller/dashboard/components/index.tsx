@@ -41,7 +41,7 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 
 		setTimeout(() => {
 			addEditProductModal.onOpen()
-		}, 150)
+		}, 0)
 	}
 
 	const toggle = () => {
