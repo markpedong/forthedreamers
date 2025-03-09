@@ -57,7 +57,7 @@ const AuthButtons: FC<AuthButtonsProps> = ({ isPending }) => {
 								dispatch(setLoginFormState(isSellerLogin ? LOGINFORM_STATE.USER_LOGIN : LOGINFORM_STATE.SELLER_LOGIN))
 							}
 						>
-							{isSellerLogin ? 'Sign up as User' : 'Sign in as Seller'}
+							{isSellerLogin ? 'Sign in as User' : 'Sign in as Seller'}
 						</Button>
 					</div>
 				</>

@@ -10,9 +10,10 @@ import { NO_NAVBAR_FOOTER_PAGES } from '@/constants'
 import { useTheme } from 'next-themes'
 import { useSession } from 'next-auth/react'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
-import { toggleDarkMode } from '@/redux/slices/appSlice'
+import { setLoginFormState, toggleDarkMode } from '@/redux/slices/appSlice'
 import { Icon } from '@iconify/react'
 import { USER_ROLE } from '@prisma/client'
+import { LOGINFORM_STATE } from '@/constants/types'
 
 const NavBar: FC = () => {
 	const pathname = usePathname()
@@ -59,7 +60,12 @@ const NavBar: FC = () => {
 						</Link>
 					)}
 					{!session?.user?.id && (
-						<Link color="foreground" href={isUser ? '/login' : '/seller/login'} className="hidden md:block">
+						<Link
+							color="foreground"
+							href="/login"
+							className="hidden md:block"
+							onPress={() => dispatch(setLoginFormState(LOGINFORM_STATE.USER_LOGIN))}
+						>
 							Login
 						</Link>
 					)}

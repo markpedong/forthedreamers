@@ -23,7 +23,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ state }) => {
 				/>
 			) : (
 				<>
-					{loginFormState && (
+					{isRegister && (
 						<div className="flex gap-4 w-full">
 							<Input defaultValue={state?.values?.firstName || ''} label="First Name" name="firstName" isRequired />
 							<Input defaultValue={state?.values?.lastName || ''} label="Last Name" name="lastName" isRequired />
@@ -37,7 +37,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ state }) => {
 							type={loginFormState ? 'email' : 'text'}
 							isRequired
 						/>
-						{loginFormState && (
+						{isRegister && (
 							<Input defaultValue={state?.values?.username || ''} label="User Name" name="username" isRequired />
 						)}
 					</div>
