@@ -1,5 +1,5 @@
 'use client'
-import { Alert, Button, Card, CardBody, CardHeader, Tab, Tabs, useDisclosure } from '@heroui/react'
+import { Alert, Button, Card, CardBody, CardHeader, Switch, Tab, Tabs, useDisclosure } from '@heroui/react'
 import React, { FC, useState } from 'react'
 import Header from './header'
 import { Orders, Reviews, Users } from '@prisma/client'
@@ -12,6 +12,9 @@ import { TProductItem } from '@/constants/types'
 import ProductTable from './table-product'
 import OrdersTable from './table-orders'
 import ReviewsSection from './table-review'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { toggleDarkMode } from '@/redux/slices/appSlice'
+import { useTheme } from 'next-themes'
 
 type Props = {
 	userInfo: Users
@@ -26,6 +29,9 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 	const editProductModal = useDisclosure()
 	const [selectedProduct, setSelectedProduct] = useState<any>(null)
 	const [selectedTab, setSelectedTab] = useState('products')
+	const darkMode = useAppSelector(state => state.app.darkMode)
+	const dispatch = useAppDispatch()
+	const { setTheme } = useTheme()
 
 	// const handleUpdateProduct = (productData: any) => {
 	// 	console.log('Updated product data:', productData)
@@ -37,11 +43,36 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 		editProductModal.onOpen()
 	}
 
+	const toggle = () => {
+		dispatch(toggleDarkMode())
+		setTheme(darkMode ? 'light' : 'dark')
+	}
+
 	return (
 		<div className={styles.sellerContainer}>
-			<div className="flex gap-2 items-center ">
-				<Icon icon="bx:arrow-back" height={20} />
-				<div className="font-bold">Go back to home</div>
+			<div className="flex justify-between">
+				<div className="flex gap-2 items-center">
+					<Icon icon="bx:arrow-back" height={20} />
+					<div className="font-bold">Go back to home</div>
+				</div>
+				{/* {darkMode ? (
+					<Icon icon="solar:sun-bold" className="cursor-pointer" onClick={toggle} />
+				) : (
+					<Icon icon="solar:moon-bold" className="cursor-pointer" onClick={toggle} />
+				)} */}
+				<Switch
+					defaultSelected={darkMode}
+					color="default"
+					size="sm"
+					onChange={toggle}
+					thumbIcon={({ isSelected }) =>
+						!isSelected ? (
+							<Icon icon="solar:sun-bold" className="cursor-pointer" color="black" />
+						) : (
+							<Icon icon="solar:moon-bold" className="cursor-pointer" color='black' />
+						)
+					}
+				/>
 			</div>
 			{!userInfo?.storeName && (
 				<Alert
