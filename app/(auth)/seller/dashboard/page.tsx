@@ -21,7 +21,7 @@ const Page = async () => {
 			<SellerDashboard
 				userInfo={userInfo as Users}
 				orders={orders}
-				products={products as TProductItem[]}
+				products={products as unknown as TProductItem[]}
 				reviews={reviews}
 			/>
 		</div>

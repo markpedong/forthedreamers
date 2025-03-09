@@ -20,14 +20,14 @@ interface AddProductModalProps {
 	initialData?: TProductItem
 }
 
-const AddProductModal = ({ isOpen, onClose }: AddProductModalProps) => {
-	const [name, setName] = useState('')
-	const [description, setDescription] = useState('')
-	const [variations, setVariations] = useState<TVariationItem[]>([
-		{ label: '', stock: 0, price: 0, discountedPrice: 0, productId: '' }
-	])
+const AddProductModal = ({ isOpen, onClose, initialData }: AddProductModalProps) => {
+	const [name, setName] = useState(initialData?.name || '')
+	const [description, setDescription] = useState(initialData?.description || '')
+	const [variations, setVariations] = useState<TVariationItem[]>(
+		initialData?.variations || [{ label: '', stock: 0, price: 0, discountedPrice: 0, productId: '' }]
+	)
 	const [images, setImages] = useState<File[]>([])
-	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([])
+	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>(initialData?.images || [])
 	const fileInputRef = useRef<HTMLInputElement>(null)
 
 	const handleSubmit = (e: FormEvent) => {

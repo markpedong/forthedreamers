@@ -79,7 +79,7 @@ export type TWishListItem = Wishlists & {
   };
 }
 export type TProductItem = Products & {
-  variations: Variations[]
+  variations: TVariationItem[]
 }
 
 export type TVariationItem = {
