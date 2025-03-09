@@ -43,6 +43,7 @@ export const getProfileServer = async (id?: string, isSeller?: boolean) => {
 export const getProductserver = async (id?: string) => {
   return prisma.products.findMany({
     where: { sellerID: id, deletedAt: null },
+    include: { variations: true },
     orderBy: { createdAt: 'desc' }
   })
 }
