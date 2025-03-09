@@ -74,6 +74,7 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 						}
 					/>
 					<div
+						className="cursor-pointer"
 						onClick={() => {
 							clearUserData()
 							signOut()
