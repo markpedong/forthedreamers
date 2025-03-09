@@ -90,3 +90,7 @@ export type TVariationItem = {
   discountedPrice: number
   productId: String
 }
+
+export type TSellerItem = Users & {
+  _count: { products: number }
+}

@@ -21,7 +21,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 		notFound()
 	}
 
-	return <ProductPage product={product as unknown as TProductItem} />
+	return <ProductPage product={product as any} />
 }
 
 export default Page

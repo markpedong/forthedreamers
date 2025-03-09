@@ -126,7 +126,32 @@ export const getProductDetails = async (id?: string) => {
 
   return prisma.products.findUnique({
     where: { id, deletedAt: null },
-    include: { variations: true }
+    include: {
+      variations: true,
+      reviews: true,
+      seller: {
+        omit: {
+          email: true,
+          username: true,
+          phoneNumber: true,
+          password: true,
+          role: true,
+          updatedAt: true,
+          deletedAt: true,
+          firstName: true,
+          lastName: true,
+          refreshToken: true,
+          birthday: true
+        },
+        include: {
+          _count: {
+            select: {
+              products: true,
+            },
+          },
+        },
+      },
+    },
   })
 }
 
