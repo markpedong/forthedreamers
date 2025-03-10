@@ -38,3 +38,7 @@ export const registerSeller = async (body: any) => post<Users>({ url: '/api/sell
 export const updateProduct = async (body: any, id: string) => post({ url: `/api/products/${id}`, data: body })
 
 export const createProduct = async (body: any) => post<any>({ url: '/api/products', data: body })
+
+export const addToCart = async (id?: string) => post<any>({ url: '/api/cart/add', data: { id } })
+
+export const removeFromCart = async (id?: string) => post<any>({ url: '/api/cart/remove', data: { id } })

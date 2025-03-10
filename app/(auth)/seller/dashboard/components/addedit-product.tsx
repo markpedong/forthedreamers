@@ -58,6 +58,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 			if (res?.success) {
 				addToast({ title: 'Success', description: 'Product saved successfully', color: 'success' })
 				onClose()
+				setInitialData(undefined)
 				router.refresh()
 			}
 		})
@@ -176,6 +177,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 										size="sm"
 										variant="flat"
 										color="primary"
+										className="customButton1"
 										onPress={() => setVariations([...variations, DEFAULT_VARIATION])}
 									>
 										<Icon icon="lucide:plus" className="w-4 h-4" /> Add Variation
@@ -223,7 +225,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 						<Button variant="flat" onPress={onClose}>
 							Cancel
 						</Button>
-						<Button color="primary" type="submit" isLoading={isPending}>
+						<Button className="customButton1" color="primary" type="submit" isLoading={isPending}>
 							{initialData?.id ? 'Update' : 'Add'} Product
 						</Button>
 					</ModalFooter>

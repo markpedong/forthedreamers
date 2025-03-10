@@ -76,7 +76,7 @@ const upload = async <T>(url: string, file: File): Promise<ApiResponse<T>> => {
   return handleResponse<T>(response)
 }
 
-const post = async <T>({ url, data = {}, isJSON }: RequestParams): Promise<ApiResponse<T>> => {
+const post = async <T>({ url, data = {}, isJSON = true }: RequestParams): Promise<ApiResponse<T>> => {
   const response = await fetchWithToken({
     url,
     options: {
