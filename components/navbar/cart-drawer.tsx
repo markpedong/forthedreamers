@@ -1,20 +1,41 @@
 import { useWithDispatch } from '@/hooks/useWithDispatch'
-import { setCartOpen } from '@/redux/slices/appSlice'
+import { setCartOpen, setHasChangesInCart } from '@/redux/slices/appSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { Button, Divider, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader } from '@heroui/react'
 import { FC, useEffect } from 'react'
 import { Icon } from '@iconify/react'
 import Image from 'next/image'
+import { updateCartInDatabase } from '@/lib/server'
+import { useRouter } from 'next/navigation'
+import { increaseCartItem, reduceCartItem } from '@/redux/slices/userSlice'
 
 type Props = {}
 
 const CartDrawer: FC<Props> = () => {
-  const isCartOpen = useAppSelector(state => state.app.isCartOpen)
+  const { isCartOpen, hasChangesInCart } = useAppSelector(state => state.app)
   const cartItems = useAppSelector(state => state.user.cartItems)
   const dispatch = useAppDispatch()
-  const onOpenChange = () => {}
   const { fetchCartItem } = useWithDispatch()
   const subtotal = cartItems.reduce((sum, item) => sum + item.variation.price * item.quantity, 0)
+  const router = useRouter()
+
+  const onOpenChange = async (isOpen: boolean) => {
+    if (!isOpen) {
+      try {
+        dispatch(setHasChangesInCart(false))
+
+        if (hasChangesInCart) {
+          await updateCartInDatabase(cartItems)
+          fetchCartItem()
+          router.refresh()
+        }
+      } catch (error) {
+        console.error('Failed to sync cart:', error)
+      }
+    }
+
+    dispatch(setCartOpen(isOpen))
+  }
 
   useEffect(() => {
     isCartOpen && fetchCartItem()
@@ -55,8 +76,8 @@ const CartDrawer: FC<Props> = () => {
                           src={item.product.images?.[0]}
                           alt={item.product.name}
                           className="h-full w-full object-cover"
-													width={100}
-													height={100}
+                          width={100}
+                          height={100}
                         />
                       </div>
                       <div className="flex flex-1 flex-col">
@@ -79,9 +100,12 @@ const CartDrawer: FC<Props> = () => {
                               isIconOnly
                               size="sm"
                               variant="flat"
-                              // onPress={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                              isDisabled={item.quantity <= 1}
-                              className="h-6 w-6 min-w-0"
+                              onPress={() => {
+                                dispatch(setHasChangesInCart(true))
+                                dispatch(reduceCartItem(item.id))
+                              }}
+                              isDisabled={item.quantity < 2}
+                              className="h-6 w-6 min-w-0 cursor-pointer"
                             >
                               <Icon icon="lucide:minus" width={14} />
                             </Button>
@@ -90,8 +114,12 @@ const CartDrawer: FC<Props> = () => {
                               isIconOnly
                               size="sm"
                               variant="flat"
-                              // onPress={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                              className="h-6 w-6 min-w-0"
+                              onPress={() => {
+                                dispatch(setHasChangesInCart(true))
+                                dispatch(increaseCartItem(item.id))
+                              }}
+                              className="h-6 w-6 min-w-0 cursor-pointer"
+                              isDisabled={item.quantity > 10}
                             >
                               <Icon icon="lucide:plus" width={14} />
                             </Button>

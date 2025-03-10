@@ -171,6 +171,7 @@ export const getProducts = async () => {
 export const getCartItems = async (id?: string) => {
   return prisma.carts.findMany({
     where: { userId: id, deletedAt: null },
+    orderBy: { createdAt: 'desc' },
     include: {
       product: {
         select: {
@@ -197,4 +198,15 @@ export const getCartItems = async (id?: string) => {
       userId: true
     }
   })
+}
+
+export const updateCartInDatabase = async (cartItems: { id: string; quantity: number }[]) => {
+  const updateOperations = cartItems.map(item =>
+    prisma.carts.update({
+      where: { id: item.id },
+      data: { quantity: item.quantity }
+    })
+  )
+
+  return prisma.$transaction(updateOperations)
 }

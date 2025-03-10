@@ -31,9 +31,22 @@ export const appSlice = createSlice({
     },
     setCartItems: (state, action) => {
       state.cartItems = action.payload
+    },
+    reduceCartItem: (state, action) => {
+      const item = state.cartItems.find(i => i.id === action.payload)
+      if (item && item.quantity > 1) {
+        item.quantity -= 1
+      }
+    },
+    increaseCartItem: (state, action) => {
+      const item = state.cartItems.find(i => i.id === action.payload)
+      if (item) {
+        item.quantity += 1
+      }
     }
   }
 })
 
-export const { setUserData, setAddress, setPaymentMethod, setCartItems } = appSlice.actions
+export const { setUserData, setAddress, setPaymentMethod, setCartItems, reduceCartItem, increaseCartItem } =
+  appSlice.actions
 export default appSlice.reducer

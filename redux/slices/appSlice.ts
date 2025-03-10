@@ -8,6 +8,7 @@ interface AppState {
   darkMode: boolean
   hasDefaultAddress: boolean
   isCartOpen: boolean
+  hasChangesInCart: boolean
 }
 
 const initialState: AppState = {
@@ -15,7 +16,8 @@ const initialState: AppState = {
   sellerFormState: LOGINFORM_STATE.USER_LOGIN,
   darkMode: false,
   hasDefaultAddress: false,
-  isCartOpen: false
+  isCartOpen: false,
+  hasChangesInCart: false
 }
 
 export const appSlice = createSlice({
@@ -36,9 +38,19 @@ export const appSlice = createSlice({
     },
     setCartOpen: (state, action) => {
       state.isCartOpen = action.payload
+    },
+    setHasChangesInCart: (state, action) => {
+      state.hasChangesInCart = action.payload
     }
   }
 })
 
-export const { setLoginFormState, toggleDarkMode, setHasDefaultAddress, setSellerFormState, setCartOpen } = appSlice.actions
+export const {
+  setLoginFormState,
+  toggleDarkMode,
+  setHasDefaultAddress,
+  setSellerFormState,
+  setCartOpen,
+  setHasChangesInCart
+} = appSlice.actions
 export default appSlice.reducer
