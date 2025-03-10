@@ -216,3 +216,31 @@ export const removeItemFromCart = async (id: string) => {
     where: { id }
   })
 }
+
+export const addItemToCart = async ({ productId, quantity, userId, variationId }: AddToCartHandler) => {
+  const existingCart = await prisma.carts.findFirst({
+    where: {
+      productId,
+      variationId,
+      userId: userId
+    }
+  })
+
+  if (existingCart) {
+    await prisma.carts.update({
+      where: { id: existingCart.id },
+      data: {
+        quantity: existingCart.quantity + 1
+      }
+    })
+  } else {
+    await prisma.carts.create({
+      data: {
+        productId,
+        quantity,
+        variationId,
+        userId: userId
+      }
+    })
+  }
+}

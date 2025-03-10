@@ -6,6 +6,7 @@ import SellerInformation from '@/components/product-details/seller-information'
 import VariationSelector from '@/components/product-details/variantion-selector'
 import { TProductItem, TSellerItem, TVariationItem } from '@/constants/types'
 import { useWithDispatch } from '@/hooks/useWithDispatch'
+import { addItemToCart } from '@/lib/server'
 import { addToCart } from '@/utils/request'
 import { addToast, Button, Divider, Spinner } from '@heroui/react'
 import { Icon } from '@iconify/react'
@@ -44,16 +45,15 @@ const ProductPage: FC<Props> = ({ product }) => {
 			if (!session) return push('/login')
 			if (!selectedVariation) return
 
-			const res = await addToCart({
+			await addItemToCart({
 				productId: product?.id,
 				variationId: selectedVariation.id,
-				quantity
+				quantity,
+				userId: session.user.id
 			})
 
-			if (res?.success) {
-				addToast({ title: 'Success', description: 'Product added to cart successfully', color: 'success' })
-				fetchCartItem()
-			}
+			addToast({ title: 'Success', description: 'Product added to cart successfully', color: 'success' })
+			fetchCartItem()
 		} finally {
 			setIsAdding(false)
 		}

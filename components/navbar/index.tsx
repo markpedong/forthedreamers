@@ -29,7 +29,7 @@ import CartDrawer from './cart-drawer'
 const NavBar: FC = () => {
 	const pathname = usePathname()
 	const darkMode = useAppSelector(state => state.app.darkMode)
-	const cartItems = useAppSelector(state => state.user.cartItems)
+	const cartItems = useAppSelector(state => state.user.cartItems).reduce((acc, item) => acc + item.quantity, 0)
 	const { push } = useRouter()
 	const { data: session } = useSession()
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -67,8 +67,22 @@ const NavBar: FC = () => {
 					) : (
 						<Icon icon="solar:moon-bold" className="cursor-pointer" onClick={toggle} />
 					)}
-					{session?.user.role === 'USER' && cartItems.length > 0 && (
-						<Icon icon="lucide:shopping-cart" className="cursor-pointer" onClick={() => dispatch(setCartOpen(true))} />
+					{session?.user.role === 'USER' && cartItems > 0 && (
+						<>
+							<Badge
+								content={cartItems}
+								isInvisible={cartItems === 0}
+								shape="circle"
+								color="danger"
+								size="sm"
+							>
+								<Icon
+									icon="lucide:shopping-cart"
+									className="cursor-pointer"
+									onClick={() => dispatch(setCartOpen(true))}
+								/>
+							</Badge>
+						</>
 					)}
 					{session?.user?.id && !['/profile', '/seller/dashboard'].includes(pathname) && (
 						<Link color="foreground" href={isUser ? '/profile' : '/seller/dashboard'}>
