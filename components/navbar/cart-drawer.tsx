@@ -7,17 +7,16 @@ import { Button, Divider, Drawer, DrawerBody, DrawerContent, DrawerFooter, Drawe
 import { Icon } from '@iconify/react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useTransition } from 'react'
 
-type Props = {}
-
-const CartDrawer: FC<Props> = () => {
+const CartDrawer: FC = () => {
 	const { isCartOpen, hasChangesInCart } = useAppSelector(state => state.app)
 	const cartItems = useAppSelector(state => state.user.cartItems)
 	const dispatch = useAppDispatch()
 	const { fetchCartItem, removeCartItem } = useWithDispatch()
 	const subtotal = cartItems.reduce((sum, item) => sum + item.variation.price * item.quantity, 0)
 	const router = useRouter()
+	const [isDeleting, startDeleting] = useTransition()
 
 	const onOpenChange = async (isOpen: boolean) => {
 		if (!isOpen) hasChanges()
@@ -54,6 +53,7 @@ const CartDrawer: FC<Props> = () => {
 			window.removeEventListener('beforeunload', handleBeforeUnload)
 		}
 	}, [hasChangesInCart, cartItems])
+
 	return (
 		<Drawer
 			isOpen={isCartOpen}
@@ -100,8 +100,15 @@ const CartDrawer: FC<Props> = () => {
 														isIconOnly
 														size="sm"
 														variant="light"
-														onPress={() => removeCartItem(item.id)}
+														onPress={() => {
+															startDeleting(async () => {
+																await removeCartItem(item.id)
+																if (cartItems.length === 0) onClose()
+															})
+														}}
 														aria-label="Remove item"
+														isLoading={isDeleting}
+														isDisabled={isDeleting}
 													>
 														<Icon icon="lucide:x" width={16} />
 													</Button>

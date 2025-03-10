@@ -13,14 +13,31 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { productId, quantity, variationId } = body
 
-    await prisma.carts.create({
-      data: {
+    const existingCart = await prisma.carts.findFirst({
+      where: {
         productId,
-        quantity,
         variationId,
         userId: `${session?.user.id}`
       }
     })
+
+    if (existingCart) {
+      await prisma.carts.update({
+        where: { id: existingCart.id },
+        data: {
+          quantity: existingCart.quantity + 1
+        }
+      })
+    } else {
+      await prisma.carts.create({
+        data: {
+          productId,
+          quantity,
+          variationId,
+          userId: `${session?.user.id}`
+        }
+      })
+    }
 
     return generateResponse({
       message: 'Product added to cart successfully'

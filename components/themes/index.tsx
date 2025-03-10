@@ -6,10 +6,9 @@ import { ConfigProvider, theme } from 'antd'
 
 const ThemesProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const darkMode = useAppSelector(state => state.app.darkMode)
-  const { theme: nextTheme } = useTheme()
-  const darkModeFromNext = nextTheme === 'dark'
+
   return (
-    <NextThemesProvider attribute="class" defaultTheme={darkModeFromNext ? 'dark' : 'light'}>
+    <NextThemesProvider attribute="class" defaultTheme={darkMode ? 'dark' : 'light'}>
       <AntdRegistry>
         <ConfigProvider
           theme={{
