@@ -73,11 +73,11 @@ export type TAddTailwindUtility = {
 
 export type TWishListItem = Wishlists & {
   product: {
-    price: number;
-    stock: number;
-    images: string[];
+    price: number
+    stock: number
+    images: string[]
     name: string
-  };
+  }
 }
 export type TProductItem = Products & {
   variations: TVariationItem[]
@@ -96,9 +96,31 @@ export type TSellerItem = Users & {
   _count: { products: number }
 }
 
-
 export type AddProductModalProps = {
   isOpen: boolean
   onClose: () => void
   product?: TProductItem
+}
+
+export type AddToCartHandler = {
+  productId: string
+  variationId: string
+  quantity: number
+  userId: string
+}
+
+export type CartResponse = {
+  id: string
+  quantity: number
+  product: {
+    id: string
+    name: string
+    images: string[]
+  }
+  variation: {
+    id: string
+    label: string
+    price: number
+    discountedPrice: number
+  }
 }

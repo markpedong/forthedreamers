@@ -1,5 +1,6 @@
 'use server'
 
+import { AddToCartHandler } from '@/constants/types'
 import prisma from '@/db'
 import { validateUUID } from '@/utils/helpers'
 import { revalidateTag } from 'next/cache'
@@ -169,6 +170,31 @@ export const getProducts = async () => {
 
 export const getCartItems = async (id?: string) => {
   return prisma.carts.findMany({
-    where: { userId: id, deletedAt: null }
+    where: { userId: id, deletedAt: null },
+    include: {
+      product: {
+        select: {
+          id: true,
+          name: true,
+          images: true
+        }
+      },
+      variation: {
+        select: {
+          id: true,
+          label: true,
+          price: true,
+          discountedPrice: true
+        }
+      }
+    },
+    omit: {
+      createdAt: true,
+      deletedAt: true,
+      updatedAt: true,
+      productId: true,
+      variationId: true,
+      userId: true
+    }
   })
 }

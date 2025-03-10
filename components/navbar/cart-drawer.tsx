@@ -1,28 +1,24 @@
-import { getCartItems } from '@/lib/server'
+import { useWithDispatch } from '@/hooks/useWithDispatch'
 import { setCartOpen } from '@/redux/slices/appSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
-import { Button, Divider, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Image } from '@heroui/react'
-import { Icon } from '@iconify/react'
-import { useSession } from 'next-auth/react'
+import { Button, Divider, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader } from '@heroui/react'
 import { FC, useEffect } from 'react'
+import { Icon } from '@iconify/react'
+import Image from 'next/image'
 
 type Props = {}
 
 const CartDrawer: FC<Props> = () => {
   const isCartOpen = useAppSelector(state => state.app.isCartOpen)
-  const { data: session } = useSession()
+  const cartItems = useAppSelector(state => state.user.cartItems)
   const dispatch = useAppDispatch()
   const onOpenChange = () => {}
-
-  const fetchCart = async () => {
-    const res = await getCartItems(session?.user.id)
-
-    console.log('res', res)
-  }
+  const { fetchCartItem } = useWithDispatch()
+  const subtotal = cartItems.reduce((sum, item) => sum + item.variation.price * item.quantity, 0)
 
   useEffect(() => {
-    fetchCart()
-  }, [])
+    isCartOpen && fetchCartItem()
+  }, [isCartOpen])
 
   return (
     <Drawer
@@ -40,11 +36,10 @@ const CartDrawer: FC<Props> = () => {
               <div className="flex items-center justify-between">
                 <h3>Your Cart</h3>
                 <span className="text-sm text-default-500">
-                  {/* {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} */}
+                  {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'}
                 </span>
               </div>
             </DrawerHeader>
-            {/*
             <DrawerBody>
               {cartItems.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full gap-2">
@@ -56,46 +51,52 @@ const CartDrawer: FC<Props> = () => {
                   {cartItems.map(item => (
                     <div key={item.id} className="flex gap-3">
                       <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md">
-                        <Image src={item.productImage} alt={item.productName} className="h-full w-full object-cover" />
+                        <Image
+                          src={item.product.images?.[0]}
+                          alt={item.product.name}
+                          className="h-full w-full object-cover"
+													width={100}
+													height={100}
+                        />
                       </div>
                       <div className="flex flex-1 flex-col">
                         <div className="flex justify-between">
-                          <h4 className="text-sm font-medium">{item.productName}</h4>
+                          <h4 className="text-sm font-medium">{item.product.name}</h4>
                           <Button
                             isIconOnly
                             size="sm"
                             variant="light"
-                            onPress={() => onRemoveItem(item.id)}
+                            // onPress={() => onRemoveItem(item.id)}
                             aria-label="Remove item"
                           >
-                            <Icon icon="lucide:x" size={16} />
+                            <Icon icon="lucide:x" width={16} />
                           </Button>
                         </div>
-                        <p className="text-xs text-default-500">{item.variationLabel}</p>
+                        <p className="text-xs text-default-500">{item.variation.label}</p>
                         <div className="flex items-center justify-between mt-auto">
                           <div className="flex items-center gap-1">
                             <Button
                               isIconOnly
                               size="sm"
                               variant="flat"
-                              onPress={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                              // onPress={() => onUpdateQuantity(item.id, item.quantity - 1)}
                               isDisabled={item.quantity <= 1}
                               className="h-6 w-6 min-w-0"
                             >
-                              <Icon icon="lucide:minus" size={14} />
+                              <Icon icon="lucide:minus" width={14} />
                             </Button>
                             <span className="text-xs w-6 text-center">{item.quantity}</span>
                             <Button
                               isIconOnly
                               size="sm"
                               variant="flat"
-                              onPress={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                              // onPress={() => onUpdateQuantity(item.id, item.quantity + 1)}
                               className="h-6 w-6 min-w-0"
                             >
-                              <Icon icon="lucide:plus" size={14} />
+                              <Icon icon="lucide:plus" width={14} />
                             </Button>
                           </div>
-                          <p className="text-sm font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                          <p className="text-sm font-medium">${(item.variation.price * item.quantity).toFixed(2)}</p>
                         </div>
                       </div>
                     </div>
@@ -118,7 +119,7 @@ const CartDrawer: FC<Props> = () => {
                   Continue Shopping
                 </Button>
               </div>
-            </DrawerFooter> */}
+            </DrawerFooter>
           </>
         )}
       </DrawerContent>

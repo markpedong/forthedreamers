@@ -1,3 +1,4 @@
+import { CartResponse } from '@/constants/types'
 import { Addresses, PaymentMethods, Users } from '@prisma/client'
 import { createSlice } from '@reduxjs/toolkit'
 
@@ -5,12 +6,14 @@ interface UserState {
   userData: Users | null
   address: Addresses | null
   paymentMethod: PaymentMethods | null
+  cartItems: CartResponse[]
 }
 
 const initialState: UserState = {
   userData: null,
   address: null,
-  paymentMethod: null
+  paymentMethod: null,
+  cartItems: []
 }
 
 export const appSlice = createSlice({
@@ -25,9 +28,12 @@ export const appSlice = createSlice({
     },
     setPaymentMethod: (state, action) => {
       state.paymentMethod = action.payload
+    },
+    setCartItems: (state, action) => {
+      state.cartItems = action.payload
     }
   }
 })
 
-export const { setUserData, setAddress, setPaymentMethod } = appSlice.actions
+export const { setUserData, setAddress, setPaymentMethod, setCartItems } = appSlice.actions
 export default appSlice.reducer
