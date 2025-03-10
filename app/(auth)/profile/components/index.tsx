@@ -26,6 +26,7 @@ import { Icon } from '@iconify/react'
 import WishList from './wishlist'
 import { TWishListItem } from '@/constants/types'
 import UploadImage from '@/components/profile/uploadImage'
+import { useRouter } from 'next/navigation'
 
 type Props = {
 	userInfo: Users
@@ -49,6 +50,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
 	const { data: session } = useSession()
 	const userData = useAppSelector(state => state.user.userData)
 	const [isPending, startTransition] = useTransition()
+	const router = useRouter()
 
 	useEffect(() => {
 		fetchUserData()
@@ -82,7 +84,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
 				<div className="border-r-1 h-full border-[rgba(0, 0, 0, 0.1)]">
 					<div className="p-5 mb-10">
 						<div className="flex justify-between items-center mb-16 mt-4">
-							<div className="flex gap-2 items-center justify-start text-sm text-neutral-400 hover:text-black cursor-pointer transition">
+							<div className="flex gap-2 items-center justify-start text-sm text-neutral-400 hover:text-black transition cursor-pointer" onClick={() => router.push("/")}>
 								<Icon icon="pajamas:go-back" />
 								<span>Back</span>
 							</div>
