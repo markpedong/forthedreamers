@@ -18,9 +18,10 @@ export const uploadImageToCloudinary = async (file: File, folder?: string): Prom
         folder: folder ? `forthedreamers/${folder}` : 'forthedreamers',
         resource_type: 'image',
         format: 'webp',
-        quality: 'auto:good',
+        quality: 'auto:best',
         transformation: [
-          { width: 500, height: 500, crop: 'fill', gravity: 'auto' } // Makes it a square
+          { width: 500, height: 500, crop: 'fill', gravity: 'auto' },
+          { fetch_format: 'webp' }
         ]
       },
       (error, result: UploadApiResponse | undefined) => {
@@ -36,5 +37,6 @@ export const uploadImageToCloudinary = async (file: File, folder?: string): Prom
     uploadStream.end(buffer)
   })
 }
+
 
 export default cloudinary

@@ -5,6 +5,8 @@ import { DateFormatter } from '@internationalized/date'
 import React, { FC, memo } from 'react'
 import DeleteProductPopover from './popover-delete'
 import VariationsTable from './variations-table'
+import { deleteProduct } from '@/utils/request'
+import { useRouter } from 'next/navigation'
 
 // const statusColorMap = {
 // 	active: 'success',
@@ -19,9 +21,6 @@ interface ProductTableProps {
 
 const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
 	const [openedKeys, setOpenedKeys] = React.useState<Record<string, boolean>>({})
-	const onDelete = (productId: string) => {
-		console.log('Delete product:', productId)
-	}
 
 	console.log('openedKeys', openedKeys)
 	return (
@@ -46,7 +45,7 @@ const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
 							<TableCell>
 								<div className="flex items-center gap-3">
 									<Avatar src={product.images?.[0] || 'https://i.pravatar.cc/150?u=' + product.id} size="sm" />
-									<Link className="cursor-pointer" href={`/products/${product.id}`} target="_blank" size='sm'>
+									<Link className="cursor-pointer" href={`/products/${product.id}`} target="_blank" size="sm">
 										{product.name}
 									</Link>
 								</div>
@@ -63,7 +62,7 @@ const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
 									<Button isIconOnly size="sm" variant="light" onPress={() => onEdit(product)}>
 										<Icon icon="lucide:edit" className="w-4 h-4" />
 									</Button>
-									<DeleteProductPopover onDelete={() => onDelete(product.id)} />
+									<DeleteProductPopover id={product.id} key={product.id} />
 								</div>
 							</TableCell>
 						</TableRow>

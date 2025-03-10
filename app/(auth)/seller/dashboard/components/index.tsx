@@ -124,7 +124,7 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 					{selectedTab === 'products' && (
 						<Button
 							color="primary"
-							className="customButton1"
+							className="customButton1 cursor-pointer"
 							startContent={<Icon icon="lucide:plus" />}
 							onPress={addEditProductModal.onOpen}
 						>

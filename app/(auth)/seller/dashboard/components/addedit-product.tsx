@@ -56,9 +56,9 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 			}
 
 			if (res?.success) {
+				setInitialData(undefined)
 				addToast({ title: 'Success', description: 'Product saved successfully', color: 'success' })
 				onClose()
-				setInitialData(undefined)
 				router.refresh()
 			}
 		})
@@ -180,7 +180,8 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 										className="customButton1"
 										onPress={() => setVariations([...variations, DEFAULT_VARIATION])}
 									>
-										<Icon icon="lucide:plus" className="w-4 h-4" /> Add Variation
+										<Icon icon="lucide:plus" className="w-4 h-4" />
+										Add Variation
 									</Button>
 								</div>
 								{variations.map((variation, index) => (

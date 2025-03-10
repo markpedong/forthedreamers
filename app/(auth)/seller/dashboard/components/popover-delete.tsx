@@ -1,13 +1,25 @@
-import React, { useState } from 'react'
-import { Popover, PopoverTrigger, PopoverContent, Button } from '@heroui/react'
+import React, { FC, useState, useTransition } from 'react'
+import { Popover, PopoverTrigger, PopoverContent, Button, addToast } from '@heroui/react'
 import { Icon } from '@iconify/react'
+import { useRouter } from 'next/navigation'
+import { deleteProduct } from '@/utils/request'
 
-interface DeleteProductPopoverProps {
-	onDelete: () => void
-}
+const DeleteProductPopover: FC<{ id: string }> = ({ id }) => {
+	const [isOpen, setIsOpen] = useState(false)
+	const [isDeleting, startDeleting] = useTransition()
+	const router = useRouter()
 
-const DeleteProductPopover = ({ onDelete }: DeleteProductPopoverProps) => {
-	const [isOpen, setIsOpen] = useState(false);
+	const onDelete = () => {
+		startDeleting(async () => {
+			const res = await deleteProduct(id)
+
+			if (res.success) {
+				addToast({ title: 'Success', description: 'Product deleted successfully', color: 'success' })
+				setIsOpen(false)
+				router.refresh()
+			}
+		})
+	}
 
 	return (
 		<Popover placement="left" isOpen={isOpen} onOpenChange={setIsOpen}>
@@ -26,8 +38,8 @@ const DeleteProductPopover = ({ onDelete }: DeleteProductPopoverProps) => {
 						<Button size="sm" variant="flat" color="default" onPress={() => setIsOpen(false)}>
 							Cancel
 						</Button>
-						<Button size="sm" color="danger" onPress={onDelete}>
-							Delete
+						<Button size="sm" color="danger" onPress={onDelete} disabled={isDeleting} isLoading={isDeleting}>
+							{isDeleting ? 'Deleting...' : 'Delete'}
 						</Button>
 					</div>
 				</div>

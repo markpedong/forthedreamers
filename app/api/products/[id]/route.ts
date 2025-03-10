@@ -28,7 +28,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     if (variations.length > 0) {
       await prisma.variations.deleteMany({
-        where: { productsId: id }
+        where: { productId: id }
       })
       await prisma.variations.createMany({
         data: variations.map((v: any) => ({
@@ -44,5 +44,40 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return generateResponse({ message: 'Product updated successfully' })
   } catch (error) {
     return generateResponse({ error, message: 'Server error', status: 500 })
+  }
+}
+
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const authRes = await isAuthenticated(req)
+    if (!authRes.ok) return authRes
+
+    const { id } = params
+    if (!validateUUID(id)) {
+      return generateResponse({ error: 'Invalid product id', status: 400 })
+    }
+
+    const deletedAt = new Date()
+
+    await prisma.$transaction([
+      prisma.products.update({
+        where: { id },
+        data: { deletedAt }
+      }),
+      prisma.variations.updateMany({
+        where: { productId: id },
+        data: { deletedAt }
+      }),
+      prisma.carts.deleteMany({
+        where: { productId: id }
+      }),
+      prisma.wishlists.deleteMany({
+        where: { productId: id }
+      })
+    ])
+
+    return generateResponse({ message: 'Product deleted successfully' })
+  } catch (error) {
+    return generateResponse({ error: 'Server error', status: 500 })
   }
 }
