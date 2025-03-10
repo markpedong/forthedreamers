@@ -103,7 +103,6 @@ const CartDrawer: FC = () => {
 														onPress={() => {
 															startDeleting(async () => {
 																await removeCartItem(item.id)
-																if (cartItems.length === 0) onClose()
 															})
 														}}
 														aria-label="Remove item"
