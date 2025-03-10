@@ -190,11 +190,14 @@ model Reviews {
 }
 
 model Carts {
-  id          String @id @default(uuid()) @db.Uuid
-  productId   String @db.Uuid
-  variationId String @db.Uuid
-  userId      String @db.Uuid
+  id          String    @id @default(uuid()) @db.Uuid
+  productId   String    @db.Uuid
+  variationId String    @db.Uuid
+  userId      String    @db.Uuid
   quantity    Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 
   product   Products   @relation(fields: [productId], references: [id], onDelete: Cascade)
   variation Variations @relation(fields: [variationId], references: [id], onDelete: Cascade)

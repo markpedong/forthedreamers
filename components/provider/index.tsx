@@ -8,6 +8,7 @@ import { Provider as ReduxProvider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import AuthProvider from '../auth'
 import ThemesProvider from '../themes'
+import { Toaster } from 'react-hot-toast';
 
 type Props = {
 	children: React.ReactNode
@@ -20,6 +21,7 @@ const Provider: FC<Props> = ({ children }) => {
 				<AuthProvider>
 					<PersistGate loading={null} persistor={persistor}>
 						<HeroUIProvider>
+							<Toaster />
 							<ToastProvider
 								maxVisibleToasts={3}
 								toastProps={{ timeout: 60000, classNames: { wrapper: 'toast-wrapper',  } }}

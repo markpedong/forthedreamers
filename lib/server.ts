@@ -34,7 +34,7 @@ export const getProfileServer = async (id?: string, isSeller?: boolean) => {
     where: { id },
     ...(isSeller && {
       include: {
-        products: true,
+        products: true
       }
     })
   })
@@ -54,34 +54,33 @@ export const getSoldProducts = async (id?: string) => {
       orderItems: {
         some: {
           product: {
-            sellerID: id,
-          },
-        },
-      },
+            sellerID: id
+          }
+        }
+      }
     },
     include: {
       orderItems: {
-        include: { product: true },
-      },
+        include: { product: true }
+      }
     },
-    orderBy: { createdAt: "desc" },
-  });
+    orderBy: { createdAt: 'desc' }
+  })
 }
 
 export const getProductReviews = async (id?: string) => {
   return await prisma.reviews.findMany({
     where: {
       product: {
-        sellerID: id,
-      },
+        sellerID: id
+      }
     },
     include: {
       product: true,
       user: true,
-      order: true,
-    },
-  });
-
+      order: true
+    }
+  })
 }
 
 export const getAddressesServer = async (id?: string) => {
@@ -146,23 +145,30 @@ export const getProductDetails = async (id?: string) => {
         include: {
           _count: {
             select: {
-              products: true,
-            },
-          },
-        },
-      },
-    },
+              products: true
+            }
+          }
+        }
+      }
+    }
   })
 }
 
 export const getProducts = async () => {
   return prisma.products.findMany({
     where: {
-      deletedAt: null, AND: {
+      deletedAt: null,
+      AND: {
         seller: { storeName: { not: null } }
       }
     },
     select: { id: true, name: true, images: true, variations: { select: { price: true, discountedPrice: true } } },
     orderBy: { createdAt: 'desc' }
+  })
+}
+
+export const getCartItems = async (id?: string) => {
+  return prisma.carts.findMany({
+    where: { userId: id, deletedAt: null }
   })
 }
