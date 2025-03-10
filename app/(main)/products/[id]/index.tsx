@@ -7,6 +7,7 @@ import VariationSelector from '@/components/product-details/variantion-selector'
 import { TProductItem, TSellerItem, TVariationItem } from '@/constants/types'
 import { Button, Divider, Spinner } from '@heroui/react'
 import { Icon } from '@iconify/react'
+import { USER_ROLE } from '@prisma/client'
 import { Typography } from 'antd'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -68,34 +69,38 @@ const ProductPage: FC<Props> = ({ product }) => {
 							</div>
 						)}
 						{product.description && <p className="text-default-700">{product.description}</p>}
-						<Divider />
-						<VariationSelector
-							variations={product.variations}
-							selectedVariation={selectedVariation}
-							onVariationChange={setSelectedVariation}
-						/>
-						<Divider />
-						<div className="flex flex-col gap-4">
-							<div className="flex items-center justify-between">
-								<span className="font-medium">Quantity</span>
-								<QuantitySelector
-									quantity={quantity}
-									onQuantityChange={setQuantity}
-									maxQuantity={selectedVariation ? selectedVariation.stock : 0}
+						{session?.user.role === USER_ROLE.USER && (
+							<>
+								<Divider />
+								<VariationSelector
+									variations={product.variations}
+									selectedVariation={selectedVariation}
+									onVariationChange={setSelectedVariation}
 								/>
-							</div>
-							<Button
-								className="customButton1"
-								color="primary"
-								size="lg"
-								startContent={<Icon icon="lucide:shopping-cart" />}
-								onPress={handleAddToCart}
-								isDisabled={isOutOfStock || !selectedVariation}
-								fullWidth
-							>
-								{isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
-							</Button>
-						</div>
+								<Divider />
+								<div className="flex flex-col gap-4">
+									<div className="flex items-center justify-between">
+										<span className="font-medium">Quantity</span>
+										<QuantitySelector
+											quantity={quantity}
+											onQuantityChange={setQuantity}
+											maxQuantity={selectedVariation ? selectedVariation.stock : 0}
+										/>
+									</div>
+									<Button
+										className="customButton1"
+										color="primary"
+										size="lg"
+										startContent={<Icon icon="lucide:shopping-cart" />}
+										onPress={handleAddToCart}
+										isDisabled={isOutOfStock || !selectedVariation}
+										fullWidth
+									>
+										{isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+									</Button>
+								</div>
+							</>
+						)}
 					</div>
 				</div>
 				<Divider className="my-10" />
