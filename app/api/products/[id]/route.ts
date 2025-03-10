@@ -47,12 +47,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const authRes = await isAuthenticated(req)
     if (!authRes.ok) return authRes
 
-    const { id } = params
+    const { id } = await params
     if (!validateUUID(id)) {
       return generateResponse({ error: 'Invalid product id', status: 400 })
     }
