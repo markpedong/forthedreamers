@@ -10,24 +10,27 @@ import AuthProvider from '../auth'
 import ThemesProvider from '../themes'
 
 type Props = {
-  children: React.ReactNode
+	children: React.ReactNode
 }
 
 const Provider: FC<Props> = ({ children }) => {
-  return (
-    <ReduxProvider store={store}>
-      <SessionProvider>
-        <AuthProvider>
-          <PersistGate loading={null} persistor={persistor}>
-            <HeroUIProvider>
-              <ToastProvider maxVisibleToasts={3} toastProps={{ timeout: 1500 }} />
-              <ThemesProvider>{children}</ThemesProvider>
-            </HeroUIProvider>
-          </PersistGate>
-        </AuthProvider>
-      </SessionProvider>
-    </ReduxProvider>
-  )
+	return (
+		<ReduxProvider store={store}>
+			<SessionProvider>
+				<AuthProvider>
+					<PersistGate loading={null} persistor={persistor}>
+						<HeroUIProvider>
+							<ToastProvider
+								maxVisibleToasts={3}
+								toastProps={{ timeout: 60000, classNames: { wrapper: 'toast-wrapper',  } }}
+							/>
+							<ThemesProvider>{children}</ThemesProvider>
+						</HeroUIProvider>
+					</PersistGate>
+				</AuthProvider>
+			</SessionProvider>
+		</ReduxProvider>
+	)
 }
 
 export default Provider

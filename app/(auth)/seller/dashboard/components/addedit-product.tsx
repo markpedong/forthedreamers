@@ -15,6 +15,7 @@ import {
 	Textarea
 } from '@heroui/react'
 import { Icon } from '@iconify/react'
+import { message } from 'antd'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import React, { FC, FormEvent, useEffect, useRef, useState, useTransition } from 'react'
@@ -39,6 +40,19 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault()
+
+		const invalidVariation = variations.some(
+			variation => variation.discountedPrice && variation.discountedPrice > variation.price
+		)
+		if (invalidVariation) {
+			addToast({
+				title: 'Error',
+				description: 'Discounted price must be less than or equal to the regular price',
+				color: 'error'
+			})
+			return
+		}
+
 		startTransition(async () => {
 			const formData = new FormData()
 			formData.append('name', `${initialData?.name || ''}`)

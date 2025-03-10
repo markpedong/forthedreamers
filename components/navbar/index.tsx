@@ -5,7 +5,7 @@ import { Link, Navbar, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, Na
 import classNames from 'classnames'
 import { usePathname, useRouter } from 'next/navigation'
 import { FC, useState } from 'react'
-import SearchDrawer from '../search-drawer'
+import SearchDrawer from './search-drawer'
 import { NO_NAVBAR_FOOTER_PAGES } from '@/constants'
 import { useTheme } from 'next-themes'
 import { useSession } from 'next-auth/react'
@@ -14,6 +14,7 @@ import { setLoginFormState, toggleDarkMode } from '@/redux/slices/appSlice'
 import { Icon } from '@iconify/react'
 import { USER_ROLE } from '@prisma/client'
 import { LOGINFORM_STATE } from '@/constants/types'
+import CartDrawer from './cart-drawer'
 
 const NavBar: FC = () => {
 	const pathname = usePathname()
@@ -48,6 +49,7 @@ const NavBar: FC = () => {
 					<p className={classNames('font-bold text-inherit tracking-wider', poppins.className)}>For the Dreamers</p>
 				</NavbarContent>
 				<NavbarContent justify="end">
+					<CartDrawer />
 					<SearchDrawer />
 					{darkMode ? (
 						<Icon icon="solar:sun-bold" className="cursor-pointer" onClick={toggle} />
