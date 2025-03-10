@@ -30,6 +30,7 @@ model Users {
   wishlists      Wishlists[]
   reviews        Reviews[]
   products       Products[]
+  carts          Carts[]
 
   @@index([email])
   @@index([username])
@@ -118,6 +119,7 @@ model Products {
   orderItems OrderItems[]
   wishlists  Wishlists[]
   reviews    Reviews[]
+  carts      Carts[]
 
   @@index([name])
 }
@@ -131,9 +133,10 @@ model Variations {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   deletedAt       DateTime?
-  productsId      String?   @db.Uuid
+  productId       String    @db.Uuid
 
-  product Products? @relation(fields: [productsId], references: [id])
+  product Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+  carts   Carts[]
 }
 
 model OrderItems {
@@ -184,6 +187,18 @@ model Reviews {
   @@index([userId])
   @@index([productId])
   @@index([rating])
+}
+
+model Carts {
+  id          String @id @default(uuid()) @db.Uuid
+  productId   String @db.Uuid
+  variationId String @db.Uuid
+  userId      String @db.Uuid
+  quantity    Int
+
+  product   Products   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variation Variations @relation(fields: [variationId], references: [id], onDelete: Cascade)
+  user      Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum STATUS {
