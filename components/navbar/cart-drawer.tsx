@@ -20,13 +20,7 @@ const CartDrawer: FC<Props> = () => {
 	const router = useRouter()
 
 	const onOpenChange = async (isOpen: boolean) => {
-		if (!isOpen) {
-			try {
-				hasChanges()
-			} catch (error) {
-				console.error('Failed to sync cart:', error)
-			}
-		}
+		if (!isOpen) hasChanges()
 
 		dispatch(setCartOpen(isOpen))
 	}
