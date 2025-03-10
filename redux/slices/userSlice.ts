@@ -43,10 +43,13 @@ export const appSlice = createSlice({
       if (item) {
         item.quantity += 1
       }
+    },
+    removeCartItem: (state, action) => {
+      state.cartItems = state.cartItems.filter(i => i.id !== action.payload)
     }
   }
 })
 
-export const { setUserData, setAddress, setPaymentMethod, setCartItems, reduceCartItem, increaseCartItem } =
+export const { setUserData, setAddress, setPaymentMethod, setCartItems, reduceCartItem, increaseCartItem, removeCartItem } =
   appSlice.actions
 export default appSlice.reducer

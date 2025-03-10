@@ -210,3 +210,9 @@ export const updateCartInDatabase = async (cartItems: { id: string; quantity: nu
 
   return prisma.$transaction(updateOperations)
 }
+
+export const removeItemFromCart = async (id: string) => {
+  return prisma.carts.delete({
+    where: { id }
+  })
+}

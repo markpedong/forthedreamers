@@ -1,13 +1,13 @@
 import { useWithDispatch } from '@/hooks/useWithDispatch'
+import { updateCartInDatabase } from '@/lib/server'
 import { setCartOpen, setHasChangesInCart } from '@/redux/slices/appSlice'
+import { increaseCartItem, reduceCartItem } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { Button, Divider, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader } from '@heroui/react'
-import { FC, useEffect } from 'react'
 import { Icon } from '@iconify/react'
 import Image from 'next/image'
-import { updateCartInDatabase } from '@/lib/server'
 import { useRouter } from 'next/navigation'
-import { increaseCartItem, reduceCartItem } from '@/redux/slices/userSlice'
+import { FC, useEffect } from 'react'
 
 type Props = {}
 
@@ -15,7 +15,7 @@ const CartDrawer: FC<Props> = () => {
 	const { isCartOpen, hasChangesInCart } = useAppSelector(state => state.app)
 	const cartItems = useAppSelector(state => state.user.cartItems)
 	const dispatch = useAppDispatch()
-	const { fetchCartItem } = useWithDispatch()
+	const { fetchCartItem, removeCartItem } = useWithDispatch()
 	const subtotal = cartItems.reduce((sum, item) => sum + item.variation.price * item.quantity, 0)
 	const router = useRouter()
 
@@ -100,7 +100,7 @@ const CartDrawer: FC<Props> = () => {
 														isIconOnly
 														size="sm"
 														variant="light"
-														// onPress={() => onRemoveItem(item.id)}
+														onPress={() => removeCartItem(item.id)}
 														aria-label="Remove item"
 													>
 														<Icon icon="lucide:x" width={16} />
@@ -132,7 +132,7 @@ const CartDrawer: FC<Props> = () => {
 																dispatch(increaseCartItem(item.id))
 															}}
 															className="h-6 w-6 min-w-0 cursor-pointer"
-															isDisabled={item.quantity > 10}
+															isDisabled={item.quantity > 9}
 														>
 															<Icon icon="lucide:plus" width={14} />
 														</Button>
