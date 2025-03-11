@@ -49,6 +49,16 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
       return
     }
 
+    if (initialData?.description?.length! < 20) {
+      toast.error('Description must be at least 20 characters', { id: 'description-error', duration: 3000 })
+      return
+    }
+
+    if (imagePreviewUrls.length === 0 && initialData?.images?.length === 0) {
+      toast.error('Please add at least one image', { id: 'image-error', duration: 3000 })
+      return
+    }
+
     startTransition(async () => {
       const formData = new FormData()
       formData.append('name', `${initialData?.name || ''}`)
@@ -76,7 +86,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
-    if (files.length + images.length > 10) return alert('Maximum 10 images allowed')
+    if (files.length + images.length > 10) return toast.error('Maximum 10 images allowed', { id: 'image-error' })
 
     setImages([...images, ...files])
     setImagePreviewUrls([...imagePreviewUrls, ...files.map(file => URL.createObjectURL(file))])
@@ -135,6 +145,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
                 value={initialData?.description || ''}
                 onChange={handleChange('description')}
                 isRequired
+                min={30}
               />
 
               {/* Images */}

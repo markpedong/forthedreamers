@@ -100,7 +100,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
 							</Button>
 						</div>
 						<div className="flex flex-col gap-1 text-sm pl-3">
-							<UploadImage image={`${userData?.image}`} isPending={isPending} handleFileChange={handleFileChange} />
+							<UploadImage isPending={isPending} handleFileChange={handleFileChange} />
 							<span className="capitalize pt-2">
 								{userData?.firstName} {userData?.lastName}
 							</span>

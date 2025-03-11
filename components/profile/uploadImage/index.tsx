@@ -2,16 +2,18 @@ import { Spinner } from '@heroui/react'
 import Image from 'next/image'
 import React, { FC } from 'react'
 import { Icon } from '@iconify/react'
+import { useAppSelector } from '@/redux/store'
 
 type Props = {
 	handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 	isPending: boolean
-	image: string
 }
 
-const UploadImage: FC<Props> = ({ handleFileChange, image, isPending }) => {
-	return !['undefined', 'null', ''].includes(image) ? (
-		<Image alt="profile-image" src={image} width="50" height="50" className="rounded-full" />
+const UploadImage: FC<Props> = ({ handleFileChange, isPending }) => {
+	const imageSrc = useAppSelector(state => state.user.userData?.image)
+
+	return !!imageSrc ? (
+		<Image alt="profile-image" src={imageSrc} width="50" height="50" className="rounded-full" />
 	) : isPending ? (
 		<div className="flex justify-start items-center p-3">
 			<Spinner size="md" />

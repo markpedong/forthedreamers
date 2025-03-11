@@ -1,5 +1,16 @@
 import { TProductItem } from '@/constants/types'
-import { Avatar, Button, Link, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/react'
+import {
+	Avatar,
+	Button,
+	Link,
+	Table,
+	TableBody,
+	TableCell,
+	TableColumn,
+	TableHeader,
+	TableRow,
+	Tooltip
+} from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { DateFormatter } from '@internationalized/date'
 import React, { FC, memo } from 'react'
@@ -50,7 +61,11 @@ const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
 									</Link>
 								</div>
 							</TableCell>
-							<TableCell>{product.description}</TableCell>
+							<TableCell>
+								<Tooltip content={product.description} showArrow className='w-[20rem]'>
+									<div className="text-md truncate w-[20rem]">{product.description}</div>
+								</Tooltip>
+							</TableCell>
 							<TableCell>
 								{new DateFormatter('en-US', {
 									dateStyle: 'long',
