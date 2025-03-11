@@ -64,6 +64,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
 			const response = await uploadProfile(file)
 			if (response?.success) {
 				dispatch(setUserData({ ...userData, image: response.data.secure_url }))
+				router.refresh()
 			}
 		})
 	}
