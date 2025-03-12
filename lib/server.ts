@@ -1,6 +1,6 @@
 'use server'
 
-import { AddToCartHandler } from '@/constants/types'
+import { AddToCartHandler, SearchProductItem } from '@/constants/types'
 import prisma from '@/db'
 import { validateUUID } from '@/utils/helpers'
 import { revalidateTag } from 'next/cache'
@@ -146,7 +146,7 @@ export const getProductDetails = async (id?: string) => {
         include: {
           _count: {
             select: {
-              products: true
+              products: { where: { deletedAt: null } }
             }
           }
         }

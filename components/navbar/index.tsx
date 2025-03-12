@@ -68,21 +68,11 @@ const NavBar: FC = () => {
 						<Icon icon="solar:moon-bold" className="cursor-pointer" onClick={toggle} />
 					)}
 					{session?.user.role === 'USER' && cartItems > 0 && (
-						<>
-							<Badge
-								content={cartItems}
-								isInvisible={cartItems === 0}
-								shape="circle"
-								color="danger"
-								size="sm"
-							>
-								<Icon
-									icon="lucide:shopping-cart"
-									className="cursor-pointer"
-									onClick={() => dispatch(setCartOpen(true))}
-								/>
+						<div onClick={() => dispatch(setCartOpen(true))} className="cursor-pointer">
+							<Badge content={cartItems} isInvisible={cartItems === 0} shape="circle" color="danger" size="sm">
+								<Icon icon="lucide:shopping-cart" />
 							</Badge>
-						</>
+						</div>
 					)}
 					{session?.user?.id && !['/profile', '/seller/dashboard'].includes(pathname) && (
 						<Link color="foreground" href={isUser ? '/profile' : '/seller/dashboard'}>

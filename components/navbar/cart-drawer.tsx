@@ -159,7 +159,7 @@ const CartDrawer: FC = () => {
 									<span className="font-medium">${subtotal.toFixed(2)}</span>
 								</div>
 								<p className="text-xs text-default-500">Shipping and taxes calculated at checkout</p>
-								<Button color="primary" isDisabled={cartItems.length === 0} fullWidth>
+								<Button color="primary" className="customButton1" isDisabled={cartItems.length === 0} fullWidth>
 									Checkout
 								</Button>
 								<Button variant="flat" onPress={onClose} fullWidth>

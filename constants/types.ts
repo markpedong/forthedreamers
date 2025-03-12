@@ -124,3 +124,13 @@ export type CartResponse = {
     discountedPrice: number
   }
 }
+
+export type SearchProductItem = {
+  name: string;
+  id: string;
+  images: string[];
+  variations: {
+    price: number;
+    discountedPrice: number | null;
+  }[];
+}[]
