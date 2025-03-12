@@ -81,38 +81,34 @@ const ProductPage: FC<Props> = ({ product }) => {
 							</div>
 						)}
 						{product.description && <p className="text-default-700">{product.description}</p>}
-						{session?.user.role === USER_ROLE.USER && (
-							<>
-								<Divider />
-								<VariationSelector
-									variations={product.variations}
-									selectedVariation={selectedVariation}
-									onVariationChange={setSelectedVariation}
+						<Divider />
+						<VariationSelector
+							variations={product.variations}
+							selectedVariation={selectedVariation}
+							onVariationChange={setSelectedVariation}
+						/>
+						<Divider />
+						<div className="flex flex-col gap-4">
+							<div className="flex items-center justify-between">
+								<span className="font-medium">Quantity</span>
+								<QuantitySelector
+									quantity={quantity}
+									onQuantityChange={setQuantity}
+									maxQuantity={selectedVariation ? selectedVariation.stock : 0}
 								/>
-								<Divider />
-								<div className="flex flex-col gap-4">
-									<div className="flex items-center justify-between">
-										<span className="font-medium">Quantity</span>
-										<QuantitySelector
-											quantity={quantity}
-											onQuantityChange={setQuantity}
-											maxQuantity={selectedVariation ? selectedVariation.stock : 0}
-										/>
-									</div>
-									<Button
-										className="customButton1"
-										color="primary"
-										size="lg"
-										startContent={<Icon icon="lucide:shopping-cart" />}
-										onPress={handleAddToCart}
-										isDisabled={isAdding || isOutOfStock || !selectedVariation}
-										fullWidth
-									>
-										{isOutOfStock ? 'Out of Stock' : isAdding ? 'Adding...' : 'Add to Cart'}
-									</Button>
-								</div>
-							</>
-						)}
+							</div>
+							<Button
+								className="customButton1"
+								color="primary"
+								size="lg"
+								startContent={<Icon icon="lucide:shopping-cart" />}
+								onPress={handleAddToCart}
+								isDisabled={session?.user.role === USER_ROLE.SELLER || isAdding || isOutOfStock || !selectedVariation}
+								fullWidth
+							>
+								{isOutOfStock ? 'Out of Stock' : isAdding ? 'Adding...' : 'Add to Cart'}
+							</Button>
+						</div>
 					</div>
 				</div>
 				<Divider className="my-10" />
