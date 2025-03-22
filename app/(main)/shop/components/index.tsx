@@ -70,7 +70,6 @@ const Shop: FC<Props> = ({ products }) => {
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<div className="flex justify-between items-center mb-8">
-				<h1 className="text-3xl font-bold">Shop</h1>
 				{activeFiltersCount > 0 && (
 					<Chip color="primary" variant="flat" endContent={<Icon icon="lucide:filter" />}>
 						{activeFiltersCount} {activeFiltersCount === 1 ? 'filter' : 'filters'} applied
