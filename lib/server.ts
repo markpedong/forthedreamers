@@ -163,7 +163,7 @@ export const getProducts = async () => {
         seller: { storeName: { not: null } }
       }
     },
-    select: { id: true, name: true, images: true, variations: { select: { price: true, discountedPrice: true } } },
+    select: { id: true, name: true, images: true, categories: true, variations: { select: { price: true, discountedPrice: true } } },
     orderBy: { createdAt: 'desc' }
   })
 }

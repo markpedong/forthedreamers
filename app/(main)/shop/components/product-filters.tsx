@@ -21,7 +21,7 @@ interface FilterProps {
 	onReset: () => void
 }
 
-const CATEGORIES = ['Clothing', 'Shoes', 'Accessories', 'Electronics', 'Home & Living', 'Sports']
+const CATEGORIES = ['clothing', 'gadget', 'accessories', 'electronics', 'home & living', 'sports']
 
 const SORT_OPTIONS = [
 	{ key: 'newest', label: 'Newest First', icon: 'lucide:clock' },
@@ -134,7 +134,7 @@ const ProductFilters: FC<FilterProps> = ({
 				<CheckboxGroup value={selectedCategories} onValueChange={handleCategoryChange} className="gap-2">
 					{CATEGORIES.map(category => (
 						<Checkbox key={category} value={category}>
-							{category}
+							<div className="capitalize">{category}</div>
 						</Checkbox>
 					))}
 				</CheckboxGroup>
