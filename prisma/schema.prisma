@@ -111,6 +111,7 @@ model Products {
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
   images      String[]
+  categories  String[]
 
   sellerID String @db.Uuid
   seller   Users  @relation(fields: [sellerID], references: [id])

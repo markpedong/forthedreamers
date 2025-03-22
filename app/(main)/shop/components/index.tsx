@@ -26,7 +26,8 @@ const Shop: FC<Props> = ({ products }) => {
 				const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
 				const lowestPrice = Math.min(...product.variations.map(v => v.price))
 				const matchesPrice = lowestPrice >= priceRange[0] && lowestPrice <= priceRange[1]
-				const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes('Clothing')
+				const matchesCategory =
+					selectedCategories.length === 0 || product.categories?.some(category => selectedCategories.includes(category))
 				const matchesRating = selectedRatings.length === 0 || selectedRatings.includes('4')
 
 				return matchesSearch && matchesPrice && matchesCategory && matchesRating
