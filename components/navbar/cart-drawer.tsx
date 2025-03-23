@@ -14,7 +14,7 @@ const CartDrawer: FC = () => {
 	const cartItems = useAppSelector(state => state.user.cartItems)
 	const dispatch = useAppDispatch()
 	const { fetchCartItem, removeCartItem } = useWithDispatch()
-	const subtotal = cartItems.reduce((sum, item) => sum + item.variation.price * item.quantity, 0)
+	const subtotal = cartItems?.reduce((sum, item) => sum + item.variation.price * item.quantity, 0)
 	const router = useRouter()
 	const [isDeleting, startDeleting] = useTransition()
 

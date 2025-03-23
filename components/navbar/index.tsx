@@ -29,7 +29,7 @@ import CartDrawer from './cart-drawer'
 const NavBar: FC = () => {
 	const pathname = usePathname()
 	const darkMode = useAppSelector(state => state.app.darkMode)
-	const cartItems = useAppSelector(state => state.user.cartItems).reduce((acc, item) => acc + item.quantity, 0)
+	const cartItems = useAppSelector(state => state.user.cartItems)?.reduce((acc, item) => acc + item.quantity, 0)
 	const { push } = useRouter()
 	const { data: session } = useSession()
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
