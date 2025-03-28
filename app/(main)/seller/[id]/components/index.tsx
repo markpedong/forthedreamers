@@ -95,19 +95,19 @@ const Seller: FC<Props> = ({ seller }) => {
 								onChange={e => setSortBy(e.target.value)}
 								className="sm:max-w-xs"
 							>
-								<SelectItem key="newest" textValue="newest">
+								<SelectItem key="newest" textValue="Newest">
 									Newest
 								</SelectItem>
-								<SelectItem key="price-asc" textValue="price-asc">
+								<SelectItem key="price-asc" textValue="Price: Low to High">
 									Price: Low to High
 								</SelectItem>
-								<SelectItem key="price-desc" textValue="price-desc">
+								<SelectItem key="price-desc" textValue="Price: High to Low">
 									Price: High to Low
 								</SelectItem>
-								<SelectItem key="name-asc" textValue="name-asc">
+								<SelectItem key="name-asc" textValue="Name: A to Z">
 									Name: A to Z
 								</SelectItem>
-								<SelectItem key="name-desc" textValue="name-desc">
+								<SelectItem key="name-desc" textValue="Name: Z to A">
 									Name: Z to A
 								</SelectItem>
 							</Select>
