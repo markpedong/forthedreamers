@@ -39,6 +39,8 @@ export const getProducts = async () => get<TProductItem[]>({ url: `/api/products
 
 export const registerSeller = async (body: any) => post<Users>({ url: '/api/sellers', data: body })
 
+export const getSellerProducts = async (id: string) => get<TProductItem[]>({ url: `/api/sellers/products/${id}` })
+
 export const updateProduct = async (body: any, id: string) =>
   post({ url: `/api/products/${id}`, data: body, isJSON: false })
 
