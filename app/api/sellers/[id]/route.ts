@@ -14,7 +14,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const seller = await prisma.users.findUnique({
     where: { id },
     include: {
-      products: true
+      products: {
+        include: {
+          variations: true
+        },
+        where: { deletedAt: null }
+      }
     }
   })
 

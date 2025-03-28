@@ -1,25 +1,15 @@
-import React, { FC, useTransition } from 'react'
-import {
-	Card,
-	CardBody,
-	Avatar,
-	Button,
-	Popover,
-	PopoverTrigger,
-	PopoverContent,
-	useDisclosure,
-	user
-} from '@heroui/react'
-import { Icon } from '@iconify/react'
-import { Users } from '@prisma/client'
 import UploadImage from '@/components/profile/uploadImage'
-import { updateProfile, uploadProfile } from '@/utils/request'
+import { SellerInfo } from '@/constants/types'
 import { setUserData } from '@/redux/slices/userSlice'
 import { useAppDispatch } from '@/redux/store'
+import { updateProfile, uploadProfile } from '@/utils/request'
+import { Button, Card, CardBody } from '@heroui/react'
+import { Icon } from '@iconify/react'
 import { useRouter } from 'next/navigation'
+import React, { FC, useTransition } from 'react'
 
 type Props = {
-	userInfo: Users
+	userInfo: SellerInfo
 	onEditProfile: () => void
 }
 

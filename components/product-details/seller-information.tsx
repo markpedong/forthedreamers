@@ -3,12 +3,15 @@ import { Card, CardBody, Avatar, Button } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { DateFormatter } from '@internationalized/date'
 import { TSellerItem } from '@/constants/types'
+import { useRouter } from 'next/navigation'
 
 type Props = {
 	seller: TSellerItem
 }
 
 const SellerInformation: FC<Props> = ({ seller }) => {
+	const router = useRouter()
+
 	return (
 		<Card className="font-[Sora]">
 			<CardBody>
@@ -35,7 +38,13 @@ const SellerInformation: FC<Props> = ({ seller }) => {
 						<div className="text-sm font-medium">
 							{seller._count.products} product{seller._count.products > 1 && 's'}
 						</div>
-						<Button size="sm" variant="flat" color="primary" className="customButton1" disabled>
+						<Button
+							size="sm"
+							variant="flat"
+							color="primary"
+							className="customButton1 cursor-pointer"
+							onPress={() => router.push(`/seller/${seller.id}`)}
+						>
 							View Store
 						</Button>
 					</div>

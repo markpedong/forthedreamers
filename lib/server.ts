@@ -44,14 +44,26 @@ export const getProfileServer = async (id?: string, isSeller?: boolean) => {
   })
 }
 
-export const getSellerProducts = async (id?: string) => {
+export const getAllProducts = async () => {
   return prisma.products.findMany({
-    where: { sellerID: id, deletedAt: null },
+    where: { deletedAt: null },
     include: { variations: true },
     orderBy: { createdAt: 'desc' }
   })
 }
 
+export const getAllSellers = async () => {
+  return prisma.users.findMany({
+    include: {
+      products: {
+        include: {
+          variations: true
+        },
+        where: { deletedAt: null }
+      }
+    }
+  })
+}
 export const getSoldProducts = async (id?: string) => {
   return await prisma.orders.findMany({
     where: {

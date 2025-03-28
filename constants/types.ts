@@ -96,6 +96,25 @@ export type TSellerItem = Users & {
   _count: { products: number }
 }
 
+export type SellerInfo = {
+  id: string
+  email: string
+  username: string
+  phoneNumber: string
+  password: string
+  role: string
+  createdAt: string
+  updatedAt: string
+  deletedAt: any
+  firstName: string
+  lastName: string
+  image: string
+  refreshToken: string
+  birthday: any
+  storeName: string
+  products: TProductItem[]
+}
+
 export type AddProductModalProps = {
   isOpen: boolean
   onClose: () => void

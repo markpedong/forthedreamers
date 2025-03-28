@@ -17,11 +17,12 @@ import { uploadImageToCloudinary } from '@/utils/cloudinary'
 import { useAppDispatch } from '@/redux/store'
 import { setUserData } from '@/redux/slices/userSlice'
 import { useRouter } from 'next/navigation'
+import { SellerInfo } from '@/constants/types'
 
 interface EditProfileModalProps {
 	isOpen: boolean
 	onClose: () => void
-	userInfo: Users
+	userInfo: SellerInfo
 }
 
 const EditProfileModal = ({ isOpen, onClose, userInfo }: EditProfileModalProps) => {

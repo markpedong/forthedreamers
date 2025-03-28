@@ -1,7 +1,7 @@
 import { Addresses, Orders, PaymentMethods, Reviews, Users, Wishlists } from '@prisma/client'
 import { deleteF, get, post, upload } from './http'
 import { TAGS } from '@/constants'
-import { AddToCartHandler, CartResponse, TProductItem, TSellerItem, TWishListItem } from '@/constants/types'
+import { AddToCartHandler, CartResponse, SellerInfo, TProductItem, TSellerItem, TWishListItem } from '@/constants/types'
 
 export const registerUser = async (body: any) => post<Users>({ url: '/api/users', data: body })
 
@@ -11,7 +11,7 @@ export const refreshToken = async () => post<{ accessToken: string }>({ url: '/a
 
 export const uploadProfile = async (file: File) => upload<{ secure_url: string }>('/api/uploadProfile', file)
 
-export const updateProfile = async (body?: Users) => post<Users>({ url: `/api/users/${body?.id}`, data: body })
+export const updateProfile = async (body?: Users | SellerInfo) => post<Users>({ url: `/api/users/${body?.id}`, data: body })
 
 export const createNewAddress = async (body: any) => post<any>({ url: '/api/address', data: body })
 
@@ -60,7 +60,7 @@ export const getReviews = async (id: string) => get<Reviews[]>({ url: `/api/revi
 
 export const getWishlist = async (id: string) => get<TWishListItem[]>({ url: `/api/wishlist/${id}`, tags: TAGS.WISHLIST })
 
-export const getSellerInfo = async (id: string) => get<Users>({ url: `/api/sellers/${id}` })
+export const getSellerInfo = async (id: string) => get<SellerInfo>({ url: `/api/sellers/${id}` })
 
 export const addItemToCart = async (body: AddToCartHandler) => post({ url: '/api/cart', data: body })
 

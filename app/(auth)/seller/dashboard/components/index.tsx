@@ -8,7 +8,7 @@ import StatsCard from './stats-card'
 import styles from '../styles.module.scss'
 import AddEditProduct from './addedit-product'
 import { Icon } from '@iconify/react'
-import { TProductItem } from '@/constants/types'
+import { SellerInfo, TProductItem } from '@/constants/types'
 import ProductTable from './table-product'
 import OrdersTable from './table-orders'
 import ReviewsSection from './table-review'
@@ -20,7 +20,7 @@ import { clearUserData } from '@/lib'
 import { signOut } from 'next-auth/react'
 
 type Props = {
-	userInfo: Users
+	userInfo: SellerInfo
 	products: TProductItem[]
 	orders: Orders[]
 	reviews: Reviews[]
