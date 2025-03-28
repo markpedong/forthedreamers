@@ -27,7 +27,7 @@ type Props = {
 	onOpenChange: () => void
 }
 
-const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
+const AddEditAddress: FC<Props> = ({ isOpen, onOpenChange }) => {
 	const [_, startTransition] = useTransition()
 	const [isPending, submit] = useTransition()
 	const [state, action] = useActionState(addressInformation, {
@@ -236,4 +236,4 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
 	)
 }
 
-export default memo(AddressAddEdit)
+export default memo(AddEditAddress)

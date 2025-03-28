@@ -1,5 +1,5 @@
 import Address from '@/components/profile/address'
-import AddressAddEdit from '@/components/profile/addressAddEdit'
+import AddEditAddress from '@/components/profile/addressAddEdit'
 import { setAddress } from '@/redux/slices/userSlice'
 import { useAppDispatch } from '@/redux/store'
 import { Button, useDisclosure } from '@heroui/react'
@@ -17,7 +17,7 @@ const Addresses: FC<Props> = ({ data }) => {
 
   return (
     <>
-      <AddressAddEdit isOpen={isOpen} onOpenChange={onOpenChange} />
+      <AddEditAddress isOpen={isOpen} onOpenChange={onOpenChange} />
       <div className="flex justify-between">
         <Typography.Title level={4}>Addresses</Typography.Title>
         <Button
