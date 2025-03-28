@@ -85,38 +85,6 @@ export const getProductReviews = async (id?: string) => {
   })
 }
 
-export const getCartItems = async (id?: string) => {
-  return prisma.carts.findMany({
-    where: { userId: id, deletedAt: null },
-    orderBy: { createdAt: 'desc' },
-    include: {
-      product: {
-        select: {
-          id: true,
-          name: true,
-          images: true
-        }
-      },
-      variation: {
-        select: {
-          id: true,
-          label: true,
-          price: true,
-          discountedPrice: true
-        }
-      }
-    },
-    omit: {
-      createdAt: true,
-      deletedAt: true,
-      updatedAt: true,
-      productId: true,
-      variationId: true,
-      userId: true
-    }
-  })
-}
-
 export const updateCartInDatabase = async (cartItems: { id: string; quantity: number }[]) => {
   const updateOperations = cartItems.map(item =>
     prisma.carts.update({
@@ -132,34 +100,6 @@ export const removeItemFromCart = async (id: string) => {
   return prisma.carts.delete({
     where: { id }
   })
-}
-
-export const addItemToCart = async ({ productId, quantity, userId, variationId }: AddToCartHandler) => {
-  const existingCart = await prisma.carts.findFirst({
-    where: {
-      productId,
-      variationId,
-      userId: userId
-    }
-  })
-
-  if (existingCart) {
-    await prisma.carts.update({
-      where: { id: existingCart.id },
-      data: {
-        quantity: existingCart.quantity + 1
-      }
-    })
-  } else {
-    await prisma.carts.create({
-      data: {
-        productId,
-        quantity,
-        variationId,
-        userId: userId
-      }
-    })
-  }
 }
 
 export const getServerToken = async () => {

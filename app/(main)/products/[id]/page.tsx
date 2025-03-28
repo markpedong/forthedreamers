@@ -20,8 +20,6 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 		notFound()
 	}
 
-	console.log("product", product.data)
-
 	return <ProductPage product={product.data} />
 }
 

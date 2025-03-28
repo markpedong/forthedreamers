@@ -1,7 +1,7 @@
 import { Addresses, Orders, PaymentMethods, Reviews, Users, Wishlists } from '@prisma/client'
 import { deleteF, get, post, upload } from './http'
 import { TAGS } from '@/constants'
-import { TProductItem, TSellerItem, TWishListItem } from '@/constants/types'
+import { AddToCartHandler, CartResponse, TProductItem, TSellerItem, TWishListItem } from '@/constants/types'
 
 export const registerUser = async (body: any) => post<Users>({ url: '/api/users', data: body })
 
@@ -61,3 +61,9 @@ export const getReviews = async (id: string) => get<Reviews[]>({ url: `/api/revi
 export const getWishlist = async (id: string) => get<TWishListItem[]>({ url: `/api/wishlist/${id}`, tags: TAGS.WISHLIST })
 
 export const getSellerInfo = async (id: string) => get<Users>({ url: `/api/sellers/${id}` })
+
+export const addItemToCart = async (body: AddToCartHandler) => post({ url: '/api/cart', data: body })
+
+export const deleteItemsFromCart = async (id: string) => deleteF({ url: '/api/cart', data: { id } })
+
+export const getCartItems = async (id?: string) => get<CartResponse[]>({ url: `/api/cart/${id}`, tags: TAGS.CART })

@@ -51,7 +51,6 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
 		} else {
 			setNewAddressValues(address)
 
-			console.log('addressValues', addressValues)
 		}
 	}, [address])
 

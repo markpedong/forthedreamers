@@ -9,7 +9,6 @@ type Props = {
 }
 
 const SellerInformation: FC<Props> = ({ seller }) => {
-	console.log('seller', seller)
 	return (
 		<Card className="font-[Sora]">
 			<CardBody>

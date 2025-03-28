@@ -68,5 +68,6 @@ export enum TAGS {
   REVIEWS = 'reviews',
   ORDERS = 'orders',
   PAYMENT_METHODS = 'payment-methods',
-  WISHLIST = 'wishlist'
+  WISHLIST = 'wishlist',
+  CART = 'cart'
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { clearUserData } from '@/lib'
-import { setUserData } from '@/redux/slices/userSlice'
+import { setCartItems, setUserData } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { uploadProfile } from '@/utils/request'
 import { getLocalStorage, setLocalStorage } from '@/utils/xLocalStorage'
@@ -24,7 +24,7 @@ import {
 import { setHasDefaultAddress, toggleDarkMode } from '@/redux/slices/appSlice'
 import { Icon } from '@iconify/react'
 import WishList from './wishlist'
-import { TWishListItem } from '@/constants/types'
+import { CartResponse, TWishListItem } from '@/constants/types'
 import UploadImage from '@/components/profile/uploadImage'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
@@ -36,6 +36,7 @@ type Props = {
 	orders: TOrders[]
 	reviews: TReviews[]
 	wishlist: TWishListItem[]
+	carts: CartResponse[]
 }
 
 const PersonalInformation = dynamic(() => import('./personal-information'), { ssr: false })
@@ -44,7 +45,7 @@ const PaymentMethods = dynamic(() => import('./payment-methods'), { ssr: false }
 const Orders = dynamic(() => import('./orders'), { ssr: false })
 const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 
-const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, reviews, wishlist }) => {
+const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, reviews, wishlist, carts }) => {
 	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
 	const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
 	const dispatch = useAppDispatch()
@@ -79,6 +80,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
 			dispatch(setHasDefaultAddress(true))
 		}
 
+		dispatch(setCartItems(carts))
 		dispatch(setUserData(userInfo))
 	}
 
@@ -133,7 +135,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
 							))}
 						</div>
 					</div>
-					<div className='px-5'>
+					<div className="px-5">
 						<Switch
 							defaultSelected={darkMode}
 							color="default"

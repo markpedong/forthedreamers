@@ -1,17 +1,18 @@
 import authOptions from '@/app/api/auth/[...nextauth]/options'
-import { getAddress, getOrders, getPaymentMethod, getReviews, getUserData, getWishlist } from '@/utils/request'
+import { getAddress, getCartItems, getOrders, getPaymentMethod, getReviews, getUserData, getWishlist } from '@/utils/request'
 import { getServerSession } from 'next-auth'
 import Profile from './components'
 
 const Page = async () => {
 	const session = await getServerSession(authOptions)
-	const [userInfo, addresses, paymentMethods, orders, reviews, wishlist] = await Promise.all([
+	const [userInfo, addresses, paymentMethods, orders, reviews, wishlist, carts] = await Promise.all([
 		getUserData(`${session?.user.id}`),
 		getAddress(`${session?.user?.id}`),
 		getPaymentMethod(`${session?.user?.id}`),
 		getOrders(`${session?.user?.id}`),
 		getReviews(`${session?.user?.id}`),
-		getWishlist(`${session?.user?.id}`)
+		getWishlist(`${session?.user?.id}`),
+		getCartItems(`${session?.user?.id}`)
 	])
 
 	return (
@@ -22,6 +23,7 @@ const Page = async () => {
 			orders={orders.data}
 			reviews={reviews.data}
 			wishlist={wishlist.data}
+			carts={carts.data}
 		/>
 	)
 }

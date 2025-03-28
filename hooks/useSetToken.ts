@@ -12,7 +12,6 @@ export const useSetToken = () => {
       const handleNoAccessToken = async () => {
         const session = await getSession()
         const newToken = session?.accessToken || ''
-        console.log("hello from useSetToken")
 
         localStorage.setItem('accessToken', newToken)
         setAccessToken(newToken) // Update state to reflect the new token
