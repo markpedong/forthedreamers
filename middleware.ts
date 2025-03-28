@@ -1,13 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getToken } from 'next-auth/jwt'
-import { AUTH_SECRET } from './constants'
 import { USER_ROLE } from '@prisma/client'
-import prisma from './db'
+import { getToken } from 'next-auth/jwt'
+import { NextFetchEvent, NextRequest, NextResponse } from 'next/server'
+import { AUTH_SECRET } from './constants'
 
-export const middleware = async (request: NextRequest) => {
+export const middleware = async (request: NextRequest, event: NextFetchEvent) => {
   const token = await getToken({ req: request, secret: AUTH_SECRET })
   const path = request.nextUrl.pathname
-  const referer = request.headers.get('referer') || '/'
 
   const protectedRoutes = ['/profile', '/checkout', '/cart']
   const sellerRestrictedRoutes = ['/profile'] // Sellers cannot access profile
@@ -24,9 +22,13 @@ export const middleware = async (request: NextRequest) => {
       return NextResponse.redirect(new URL('/unauthorized', request.url))
     }
 
-    // if (path === '/checkout' && (await prisma.carts.findMany({ where: { userId: token.sub, deletedAt: null } })).length === 0) {
-    //   return NextResponse.redirect(new URL(referer, request.url))
-    // }
+    if (path === '/checkout') {
+      const cartItems = await fetch(`${process.env.NEXTAUTH_URL}/api/cart/${token.id}`)
+
+      if ((await cartItems.json())?.data.length === 0) {
+        return NextResponse.redirect(new URL('/', request.url))
+      }
+    }
 
     if (path === '/login') {
       return NextResponse.redirect(new URL('/', request.url))

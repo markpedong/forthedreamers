@@ -38,19 +38,17 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
 					/>
 					<div className="absolute top-0 left-0 p-2 flex flex-col gap-2 z-10">
 						{discountPercentage > 0 && (
-							<div className="bg-danger-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
-								-{discountPercentage}% OFF
-							</div>
+							<div className="bg-danger-500 px-2 py-1 rounded-lg text-xs font-medium">-{discountPercentage}% OFF</div>
 						)}
 					</div>
 					<div className="absolute top-0 right-0 p-2">
 						{totalStock < 10 && totalStock > 0 && (
-							<div className="bg-warning-500 text-white px-2 py-1 rounded-lg text-xs font-medium">Low Stock</div>
+							<div className="bg-warning-500 px-2 py-1 rounded-lg text-xs font-medium">Low Stock</div>
 						)}
 					</div>
 					{totalStock === 0 && (
 						<div className="absolute inset-0 bg-default/60 flex items-center justify-center">
-							<div className="bg-danger-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium">Out of Stock</div>
+							<div className="bg-danger-500 px-3 py-1.5 rounded-lg text-sm font-medium">Out of Stock</div>
 						</div>
 					)}
 				</div>
@@ -61,7 +59,7 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
 				<p className="text-default-500 text-sm line-clamp-2">{product.description}</p>
 				<div className="flex justify-between items-center w-full">
 					<div className="flex flex-col">
-						<span className="text-primary font-bold">${lowestPrice.toFixed(2)}</span>
+						<span className="font-bold">${lowestPrice.toFixed(2)}</span>
 						{discountPercentage > 0 && (
 							<span className="text-default-500 text-sm line-through">
 								${(lowestPrice * (1 + discountPercentage / 100)).toFixed(2)}

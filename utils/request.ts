@@ -1,7 +1,7 @@
-import { Addresses, Orders, PaymentMethods, Reviews, Users, Wishlists } from '@prisma/client'
-import { deleteF, get, post, upload } from './http'
 import { TAGS } from '@/constants'
-import { AddToCartHandler, CartResponse, SellerInfo, TProductItem, TSellerItem, TWishListItem } from '@/constants/types'
+import { AddToCartHandler, SellerInfo, TProductItem, TSellerItem, TWishListItem } from '@/constants/types'
+import { Addresses, Orders, PaymentMethods, Reviews, Users } from '@prisma/client'
+import { deleteF, get, post, upload } from './http'
 
 export const registerUser = async (body: any) => post<Users>({ url: '/api/users', data: body })
 

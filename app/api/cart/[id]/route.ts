@@ -1,10 +1,11 @@
 import prisma from "@/db"
-import { generateResponse, isAuthenticated } from "@/utils/helpers"
+import { generateResponse } from "@/utils/helpers"
 import { NextRequest } from "next/server"
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authRes = await isAuthenticated(req)
-  if (!authRes.ok) return authRes
+  // Being called in middleware and can't check for auth
+  // const authRes = await isAuthenticated(req)
+  // if (!authRes.ok) return authRes
 
   const { id } = await params
   if (!id) {
