@@ -18,7 +18,6 @@ import { Icon } from '@iconify/react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import React, { FC, FormEvent, useEffect, useRef, useState, useTransition } from 'react'
-import toast from 'react-hot-toast'
 
 const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) => {
 	const [variations, setVariations] = useState<TVariationItem[]>([DEFAULT_VARIATION])
@@ -47,7 +46,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 		if (invalidVariation) {
 			addToast({
 				title: 'Discounted price cannot be greater than original price',
-				color: 'danger'
+				color: 'warning'
 			})
 			return
 		}
@@ -55,7 +54,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 		if (initialData?.description?.length! < 20) {
 			addToast({
 				title: 'Description must be at least 20 characters',
-				color: 'danger'
+				color: 'warning'
 			})
 			return
 		}
@@ -63,7 +62,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 		if (imagePreviewUrls.length === 0 && initialData?.images?.length === 0) {
 			addToast({
 				title: 'Please add at least one image',
-				color: 'danger'
+				color: 'warning'
 			})
 			return
 		}
@@ -95,7 +94,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const files = Array.from(e.target.files || [])
-		if (files.length + images.length > 10) return toast.error('Maximum 10 images allowed', { id: 'image-error' })
+		if (files.length + images.length > 10) return addToast({ title: 'Maximum 10 images allowed', color: 'warning' })
 
 		setImages([...images, ...files])
 		setImagePreviewUrls([...imagePreviewUrls, ...files.map(file => URL.createObjectURL(file))])
