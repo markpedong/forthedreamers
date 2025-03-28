@@ -12,7 +12,8 @@ export async function POST(req: NextRequest) {
   await prisma.paymentMethods.create({
     data: {
       ...body,
-      type: PAYMENT_TYPE[body.type as keyof typeof PAYMENT_TYPE], 
+      isDefault: body.isDefault === "on" ? true : false,
+      type: PAYMENT_TYPE[body.type as keyof typeof PAYMENT_TYPE],
     }
   })
 

@@ -3,27 +3,31 @@
 import AddEditAddress from '@/components/profile/addressAddEdit'
 import { setCartOpen } from '@/redux/slices/appSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { getCardIcon } from '@/utils/helpers'
 import { Button, Card, CardBody, Divider, Radio, RadioGroup, useDisclosure } from '@heroui/react'
 import { Icon } from '@iconify/react'
-import { Addresses } from '@prisma/client'
+import { Addresses, PAYMENT_TYPE, PaymentMethods } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import { FC, useState } from 'react'
 
 type Props = {
 	addresses: Addresses[]
+	paymentMethods: PaymentMethods[]
 }
 
-const Checkout: FC<Props> = ({ addresses }) => {
+const Checkout: FC<Props> = ({ addresses, paymentMethods }) => {
 	const cartItems = useAppSelector(state => state.user.cartItems)
 	const { isOpen, onOpen, onOpenChange } = useDisclosure()
 	const { back } = useRouter()
 	const dispatch = useAppDispatch()
 	const [selectedAddressId, setSelectedAddressId] = useState<string>('')
-	const [paymentMethod, setPaymentMethod] = useState<string>('card')
+	const [selectedPayment, setSelectedPayment] = useState<string>('')
 	const subtotal = cartItems.reduce((sum, item) => sum + item.variation.price * item.quantity, 0)
 	const shippingCost = 10
-	const tax = subtotal * 0.1 // 10% tax
+	const tax = subtotal * 0.1
 	const total = subtotal + shippingCost + tax
+	const visa = paymentMethods?.find(pm => pm.type === PAYMENT_TYPE.VISA)
+	const mc = paymentMethods?.find(pm => pm.type === PAYMENT_TYPE.MASTERCARD)
 
 	const onBackToCart = () => {
 		dispatch(setCartOpen(true))
@@ -85,13 +89,47 @@ const Checkout: FC<Props> = ({ addresses }) => {
 					<Card>
 						<CardBody>
 							<h2 className="text-lg font-semibold mb-4">Payment Method</h2>
-							<RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-								<Radio value="card" description="Pay securely with your credit/debit card">
-									Credit/Debit Card
-								</Radio>
-								<Radio value="paypal" description="Fast and secure payment with PayPal">
-									PayPal
-								</Radio>
+							<RadioGroup value={selectedPayment} onValueChange={setSelectedPayment}>
+								{paymentMethods?.find(pm => pm.type === PAYMENT_TYPE.CASH_ON_DELIVERY) && (
+									<Radio value="CASH_ON_DELIVERY" description="Pay cash on delivery">
+										<div className="flex items-center gap-2">
+											<Icon icon={getCardIcon('CASH_ON_DELIVERY')} width={20} height={20} />
+											Cash on Delivery
+										</div>
+									</Radio>
+								)}
+								{visa && (
+									<Radio value="VISA" description={`****${visa.cardNumber?.slice(-4)} / ${visa.expiryDate}`}>
+										<div className="flex items-center gap-2">
+											<Icon icon={getCardIcon('VISA')} width={20} height={20} />
+											Visa
+										</div>
+									</Radio>
+								)}
+								{mc && (
+									<Radio value="VISA" description={`****${mc.cardNumber?.slice(-4)} / ${mc.expiryDate}`}>
+										<div className="flex items-center gap-2">
+											<Icon icon={getCardIcon('MASTERCARD')} width={20} height={20} />
+											MasterCard
+										</div>
+									</Radio>
+								)}
+								{paymentMethods?.find(pm => pm.type === PAYMENT_TYPE.APPLEPAY) && (
+									<Radio value="APPLEPAY" description="Pay with Apple Pay">
+										<div className="flex items-center gap-2">
+											<Icon icon={getCardIcon('APPLEPAY')} width={20} height={20} />
+											Apple Pay
+										</div>
+									</Radio>
+								)}
+								{paymentMethods?.find(pm => pm.type === PAYMENT_TYPE.PAYPAL) && (
+									<Radio value="PAYPAL" description="Fast and secure payment with PayPal">
+										<div className="flex items-center gap-2">
+											<Icon icon={getCardIcon('PAYPAL')} width={20} height={20} />
+											Paypal
+										</div>
+									</Radio>
+								)}
 							</RadioGroup>
 						</CardBody>
 					</Card>

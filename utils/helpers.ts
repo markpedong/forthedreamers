@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import { uuidSchema } from '@/lib/rules'
 import { JWT_SECRET } from '@/constants'
+import { PAYMENT_TYPE, PaymentMethods } from '@prisma/client'
 
 export const generateResponse = <T>({
   data = null,
@@ -50,4 +51,19 @@ export const calculateDiscountPercentage = (price: number, discountedPrice?: num
 
   const discount = ((price - discountedPrice) / price) * 100
   return Math.round(discount)
+}
+
+export const getCardIcon = (type: PaymentMethods['type']) => {
+  switch (type) {
+    case PAYMENT_TYPE.VISA:
+      return 'logos:visa'
+    case PAYMENT_TYPE.MASTERCARD:
+      return 'logos:mastercard'
+    case PAYMENT_TYPE.PAYPAL:
+      return 'logos:paypal'
+    case PAYMENT_TYPE.APPLEPAY:
+      return 'logos:apple-pay'
+    default:
+      return 'lucide:credit-card'
+  }
 }

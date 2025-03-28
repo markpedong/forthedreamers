@@ -33,7 +33,7 @@ export const setDefaultPaymentMethod = async (id: string) =>
 
 export const deletePaymentMethod = async (id: string) => deleteF({ url: `/api/payment-methods/${id}` })
 
-export const getPaymentMethod = async (id: string) => get<PaymentMethods[]>({ url: `/api/payment-methods/${id}` })
+export const getPaymentMethod = async (id: string) => get<PaymentMethods[]>({ url: `/api/payment-methods/${id}`, tags: TAGS.PAYMENT_METHODS })
 
 export const getProducts = async () => get<TProductItem[]>({ url: `/api/products` })
 
