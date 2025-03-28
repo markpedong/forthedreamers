@@ -16,7 +16,7 @@ type Props = {
 const Checkout: FC<Props> = ({ addresses }) => {
 	const cartItems = useAppSelector(state => state.user.cartItems)
 	const { isOpen, onOpen, onOpenChange } = useDisclosure()
-	const { back, refresh } = useRouter()
+	const { back } = useRouter()
 	const dispatch = useAppDispatch()
 	const [selectedAddressId, setSelectedAddressId] = useState<string>('')
 	const [paymentMethod, setPaymentMethod] = useState<string>('card')
@@ -163,7 +163,7 @@ const Checkout: FC<Props> = ({ addresses }) => {
 				</div>
 			</div>
 
-			<AddEditAddress isOpen={isOpen} onOpenChange={onOpenChange} refresh={refresh} />
+			<AddEditAddress isOpen={isOpen} onOpenChange={onOpenChange} />
 		</div>
 	)
 }
