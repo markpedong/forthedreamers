@@ -1,5 +1,4 @@
 import prisma from '@/db'
-import { getProfileServer } from '@/lib/server'
 import { generateResponse, isAuthenticated, validateUUID } from '@/utils/helpers'
 import { NextRequest } from 'next/server'
 
@@ -12,7 +11,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     return generateResponse({ error: 'Invalid user id', status: 400 })
   }
 
-  const user = await getProfileServer(id)
+  const user = await prisma.users.findUnique({
+    where: { id },
+    include: {
+      products: true
+    }
+  })
 
   return generateResponse({ data: user, message: 'User fetched successfully' })
 }

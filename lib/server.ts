@@ -33,17 +33,6 @@ export const getCookie = async (name: string) => {
   cookieStore.get(name)?.value || ''
 }
 
-export const getProfileServer = async (id?: string, isSeller?: boolean) => {
-  return prisma.users.findUnique({
-    where: { id },
-    ...(isSeller && {
-      include: {
-        products: true
-      }
-    })
-  })
-}
-
 export const getAllProducts = async () => {
   return prisma.products.findMany({
     where: { deletedAt: null },
@@ -96,12 +85,6 @@ export const getProductReviews = async (id?: string) => {
       user: true,
       order: true
     }
-  })
-}
-
-export const removeItemFromCart = async (id: string) => {
-  return prisma.carts.delete({
-    where: { id }
   })
 }
 
