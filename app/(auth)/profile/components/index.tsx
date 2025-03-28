@@ -5,7 +5,7 @@ import { setUserData } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { uploadProfile } from '@/utils/request'
 import { getLocalStorage, setLocalStorage } from '@/utils/xLocalStorage'
-import { Button, Spinner } from '@heroui/react'
+import { Button, Spinner, Switch } from '@heroui/react'
 import classNames from 'classnames'
 import { signOut, useSession } from 'next-auth/react'
 import dynamic from 'next/dynamic'
@@ -21,12 +21,13 @@ import {
 	Reviews as TReviews,
 	Wishlists as TWishlists
 } from '@prisma/client'
-import { setHasDefaultAddress } from '@/redux/slices/appSlice'
+import { setHasDefaultAddress, toggleDarkMode } from '@/redux/slices/appSlice'
 import { Icon } from '@iconify/react'
 import WishList from './wishlist'
 import { TWishListItem } from '@/constants/types'
 import UploadImage from '@/components/profile/uploadImage'
 import { useRouter } from 'next/navigation'
+import { useTheme } from 'next-themes'
 
 type Props = {
 	userInfo: Users
@@ -51,6 +52,8 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
 	const userData = useAppSelector(state => state.user.userData)
 	const [isPending, startTransition] = useTransition()
 	const router = useRouter()
+	const darkMode = useAppSelector(state => state.app.darkMode)
+	const { setTheme } = useTheme()
 
 	useEffect(() => {
 		fetchUserData()
@@ -79,13 +82,21 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
 		dispatch(setUserData(userInfo))
 	}
 
+	const toggle = () => {
+		dispatch(toggleDarkMode())
+		setTheme(darkMode ? 'light' : 'dark')
+	}
+
 	return (
 		<div className={styles.profileWrapper}>
 			<div className={styles.profileContainer}>
-				<div className="border-r-1 h-full border-[rgba(0, 0, 0, 0.1)]">
+				<div className="border-r-1 h-full border-[rgba(0, 0, 0, 0.1)] flex flex-col justify-between">
 					<div className="p-5 mb-10">
 						<div className="flex justify-between items-center mb-16 mt-4">
-							<div className="flex gap-2 items-center justify-start text-sm text-neutral-400 hover:text-black transition cursor-pointer" onClick={() => router.push("/")}>
+							<div
+								className="flex gap-2 items-center justify-start text-sm text-neutral-400 hover:text-black transition cursor-pointer"
+								onClick={() => router.push('/')}
+							>
 								<Icon icon="pajamas:go-back" />
 								<span>Back</span>
 							</div>
@@ -121,6 +132,21 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
 								</span>
 							))}
 						</div>
+					</div>
+					<div className='px-5'>
+						<Switch
+							defaultSelected={darkMode}
+							color="default"
+							size="sm"
+							onChange={toggle}
+							thumbIcon={({ isSelected }) =>
+								!isSelected ? (
+									<Icon icon="solar:sun-bold" className="cursor-pointer" color="black" />
+								) : (
+									<Icon icon="solar:moon-bold" className="cursor-pointer" color="black" />
+								)
+							}
+						/>
 					</div>
 				</div>
 				<div className="p-5 h-full">

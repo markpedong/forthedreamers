@@ -13,7 +13,7 @@ const SearchDrawer: FC = () => {
 	const fetchData = async () => {
 		const products = await getProducts()
 
-		setProducts(products as unknown as SearchProductItem)
+		setProducts(products.data)
 	}
 	useEffect(() => {
 		fetchData()
