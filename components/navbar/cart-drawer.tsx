@@ -7,6 +7,7 @@ import { deleteItemsFromCart } from '@/utils/request'
 import { Button, Divider, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { FC, useEffect, useTransition } from 'react'
 
 const CartDrawer: FC = () => {
@@ -16,6 +17,7 @@ const CartDrawer: FC = () => {
 	const { fetchCartItem } = useWithDispatch()
 	const subtotal = cartItems?.reduce((sum, item) => sum + item.variation.price * item.quantity, 0)
 	const [isDeleting, startDeleting] = useTransition()
+	const { push } = useRouter()
 
 	const onOpenChange = async (isOpen: boolean) => {
 		if (!isOpen) hasChanges()
@@ -161,7 +163,13 @@ const CartDrawer: FC = () => {
 									<span className="font-medium">${subtotal.toFixed(2)}</span>
 								</div>
 								<p className="text-xs text-default-500">Shipping and taxes calculated at checkout</p>
-								<Button color="primary" className="customButton1" isDisabled={cartItems.length === 0} fullWidth>
+								<Button
+									color="primary"
+									className="customButton1"
+									isDisabled={cartItems.length === 0}
+									fullWidth
+									onPress={() => push('/checkout')}
+								>
 									Checkout
 								</Button>
 								<Button variant="flat" onPress={onClose} fullWidth>
