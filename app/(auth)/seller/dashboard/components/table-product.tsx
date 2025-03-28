@@ -16,14 +16,6 @@ import { DateFormatter } from '@internationalized/date'
 import React, { FC, memo } from 'react'
 import DeleteProductPopover from './popover-delete'
 import VariationsTable from './variations-table'
-import { deleteProduct } from '@/utils/request'
-import { useRouter } from 'next/navigation'
-
-// const statusColorMap = {
-// 	active: 'success',
-// 	draft: 'warning',
-// 	out_of_stock: 'danger'
-// } as const
 
 interface ProductTableProps {
 	products: TProductItem[]
@@ -33,7 +25,6 @@ interface ProductTableProps {
 const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
 	const [openedKeys, setOpenedKeys] = React.useState<Record<string, boolean>>({})
 
-	console.log('openedKeys', openedKeys)
 	return (
 		<Table aria-label="Products table" fullWidth>
 			<TableHeader>
