@@ -62,7 +62,7 @@ const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
 								</div>
 							</TableCell>
 							<TableCell>
-								<Tooltip content={product.description} showArrow className='w-[20rem]'>
+								<Tooltip content={product.description} showArrow className="w-[20rem]">
 									<div className="text-md truncate w-[20rem]">{product.description}</div>
 								</Tooltip>
 							</TableCell>
@@ -70,7 +70,7 @@ const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
 								{new DateFormatter('en-US', {
 									dateStyle: 'long',
 									timeStyle: 'short'
-								}).format(product.createdAt)}
+								}).format(new Date(product.createdAt))}
 							</TableCell>
 							<TableCell>
 								<div className="flex gap-2">
