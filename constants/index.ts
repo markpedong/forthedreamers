@@ -65,4 +65,8 @@ export const DEFAULT_VARIATION = { label: '', stock: 0, price: 0, discountedPric
 export enum TAGS {
   ADDRESS = 'address',
   USER = 'user',
+  REVIEWS = 'reviews',
+  ORDERS = 'orders',
+  PAYMENT_METHODS = 'payment-methods',
+  WISHLIST = 'wishlist'
 }

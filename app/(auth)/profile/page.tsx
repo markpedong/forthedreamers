@@ -1,8 +1,5 @@
 import authOptions from '@/app/api/auth/[...nextauth]/options'
-import { TWishListItem } from '@/constants/types'
-import { getOrderServer, getPaymentMethodServer, getReviewServer, getWishlistServer } from '@/lib/server'
-import { getAddress, getUserData } from '@/utils/request'
-import { Users } from '@prisma/client'
+import { getAddress, getOrders, getPaymentMethod, getReviews, getUserData, getWishlist } from '@/utils/request'
 import { getServerSession } from 'next-auth'
 import Profile from './components'
 
@@ -11,20 +8,20 @@ const Page = async () => {
 	const [userInfo, addresses, paymentMethods, orders, reviews, wishlist] = await Promise.all([
 		getUserData(`${session?.user.id}`),
 		getAddress(`${session?.user?.id}`),
-		getPaymentMethodServer(session?.user?.id),
-		getOrderServer(session?.user?.id),
-		getReviewServer(session?.user?.id),
-		getWishlistServer(session?.user?.id)
+		getPaymentMethod(`${session?.user?.id}`),
+		getOrders(`${session?.user?.id}`),
+		getReviews(`${session?.user?.id}`),
+		getWishlist(`${session?.user?.id}`)
 	])
 
 	return (
 		<Profile
 			userInfo={userInfo.data}
 			addresses={addresses.data}
-			paymentMethods={paymentMethods}
-			orders={orders}
-			reviews={reviews}
-			wishlist={wishlist as TWishListItem[]}
+			paymentMethods={paymentMethods.data}
+			orders={orders.data}
+			reviews={reviews.data}
+			wishlist={wishlist.data}
 		/>
 	)
 }

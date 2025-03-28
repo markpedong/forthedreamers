@@ -86,42 +86,7 @@ export const getProductReviews = async (id?: string) => {
   })
 }
 
-export const getAddressesServer = async (id?: string) => {
-  return prisma.addresses.findMany({
-    where: { userId: id, deletedAt: null },
-    orderBy: { createdAt: 'desc' }
-  })
-}
 
-export const getPaymentMethodServer = async (id?: string) => {
-  return prisma.paymentMethods.findMany({
-    where: { userId: id, deletedAt: null },
-    orderBy: { createdAt: 'desc' }
-  })
-}
-
-export const getOrderServer = async (id?: string) => {
-  return prisma.orders.findMany({
-    where: { userId: id, deletedAt: null },
-    orderBy: { createdAt: 'desc' }
-  })
-}
-
-export const getReviewServer = async (id?: string) => {
-  return prisma.reviews.findMany({
-    where: { userId: id, deletedAt: null },
-    include: { product: { select: { name: true } } },
-    orderBy: { createdAt: 'desc' }
-  })
-}
-
-export const getWishlistServer = async (id?: string) => {
-  return prisma.wishlists.findMany({
-    where: { userId: id },
-    include: { product: { select: { images: true, name: true } } },
-    orderBy: { createdAt: 'desc' }
-  })
-}
 
 export const getProductDetails = async (id?: string) => {
   if (!validateUUID(`${id}`)) return null
