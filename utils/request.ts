@@ -59,3 +59,5 @@ export const getOrders = async (id: string) => get<Orders[]>({ url: `/api/orders
 export const getReviews = async (id: string) => get<Reviews[]>({ url: `/api/reviews/${id}`, tags: TAGS.REVIEWS })
 
 export const getWishlist = async (id: string) => get<TWishListItem[]>({ url: `/api/wishlist/${id}`, tags: TAGS.WISHLIST })
+
+export const getSellerInfo = async (id: string) => get<Users>({ url: `/api/sellers/${id}` })

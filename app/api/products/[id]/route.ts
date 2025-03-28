@@ -83,8 +83,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authRes = await isAuthenticated(req)
-  if (!authRes.ok) return authRes
+  // const authRes = await isAuthenticated(req)
+  // if (!authRes.ok) return authRes
 
   const { id } = await params
   if (!validateUUID(id)) {

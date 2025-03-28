@@ -40,9 +40,9 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
-  const isAuthRes = await isAuthenticated(req)
-  if (!isAuthRes.ok) return isAuthRes
+export async function GET() {
+  // const isAuthRes = await isAuthenticated(req)
+  // if (!isAuthRes.ok) return isAuthRes
 
   const products = await prisma.products.findMany({
     where: {

@@ -39,9 +39,9 @@ const fetchWithToken = async ({
     token = await getServerToken()
   }
 
-  if (!token) {
-    throw new Error("Unauthorized: No access token found.");
-  }
+  // if (!token) {
+  //   throw new Error("Unauthorized: No access token found.");
+  // }
 
   const response = await fetch(`${process.env.NEXTAUTH_URL}${url}`, {
     ...options,
@@ -53,25 +53,28 @@ const fetchWithToken = async ({
 
   if (response.status !== 401) return response;
 
-  if (attempt >= 2) {
-    throw new Error("Unauthorized: Refresh token is invalid or missing.");
-  }
 
-  const tokenRes = await refreshToken();
-  if (!tokenRes?.data?.accessToken) {
-    throw new Error("Failed to refresh token. Stopping requests.");
-  }
+  if (!!token) {
+    if (attempt >= 2) {
+      throw new Error("Unauthorized: Refresh token is invalid or missing.");
+    }
 
-  if (typeof window !== "undefined") {
-    setLocalStorage("accessToken", tokenRes.data.accessToken);
-  }
+    const tokenRes = await refreshToken();
+    if (!tokenRes?.data?.accessToken) {
+      throw new Error("Failed to refresh token. Stopping requests.");
+    }
 
-  return fetchWithToken({
-    url,
-    options,
-    attempt: attempt + 1,
-    accessToken: tokenRes.data.accessToken
-  });
+    if (typeof window !== "undefined") {
+      setLocalStorage("accessToken", tokenRes.data.accessToken);
+    }
+
+    return fetchWithToken({
+      url,
+      options,
+      attempt: attempt + 1,
+      accessToken: tokenRes.data.accessToken
+    });
+  } else return response
 };
 
 
