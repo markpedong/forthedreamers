@@ -1,5 +1,6 @@
 import { addressInformation } from '@/actions/auth'
-import { ADDRESS_OBJ, OPTIONS_ADDRESS } from '@/constants'
+import { ADDRESS_OBJ, OPTIONS_ADDRESS, TAGS } from '@/constants'
+import { refetch } from '@/lib/server'
 import { setAddress } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { createNewAddress, updateAddress } from '@/utils/request'
@@ -19,7 +20,6 @@ import {
 } from '@heroui/react'
 import { ADDRESS_TYPE, Addresses } from '@prisma/client'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import React, { FC, memo, useActionState, useEffect, useRef, useState, useTransition } from 'react'
 
 type Props = {
@@ -36,7 +36,6 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
 	})
 	const { data: session } = useSession()
 	const formRef = useRef(null)
-	const { refresh } = useRouter()
 	const address = useAppSelector(s => s.user.address)
 	const hasDefaultAddress = useAppSelector(s => s.app.hasDefaultAddress)
 	const [addressValues, setNewAddressValues] = useState<Addresses | null>(null)
@@ -86,7 +85,7 @@ const AddressAddEdit: FC<Props> = ({ isOpen, onOpenChange }) => {
 			if (res?.success) {
 				addToast({ title: 'Success', description: 'Address saved successfully', color: 'success' })
 				onOpenChange()
-				refresh()
+				refetch(TAGS.ADDRESS)
 				setNewAddressValues(null)
 				dispatch(setAddress(null))
 			}

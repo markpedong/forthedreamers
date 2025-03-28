@@ -1,12 +1,14 @@
 'use server'
 
-import { AddToCartHandler, SearchProductItem } from '@/constants/types'
+import authOptions from '@/app/api/auth/[...nextauth]/options'
+import { AddToCartHandler } from '@/constants/types'
 import prisma from '@/db'
 import { validateUUID } from '@/utils/helpers'
+import { getServerSession } from 'next-auth'
 import { revalidateTag } from 'next/cache'
 import { cookies } from 'next/headers'
 
-export const revalidate = async (tag?: string) => revalidateTag(tag || '')
+export const refetch = async (tag?: string) => revalidateTag(`${tag}`);
 
 export const setCookie = async (name: string, value: string) => {
   const date = new Date()
@@ -243,4 +245,9 @@ export const addItemToCart = async ({ productId, quantity, userId, variationId }
       }
     })
   }
+}
+
+export const getServerToken = async () => {
+  const session = await getServerSession(authOptions);
+  return session?.accessToken
 }

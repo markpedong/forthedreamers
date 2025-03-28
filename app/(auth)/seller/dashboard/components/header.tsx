@@ -53,7 +53,7 @@ const Header: FC<Props> = ({ userInfo, onEditProfile }) => {
 	return (
 		<Card>
 			<CardBody className="flex flex-col md:flex-row gap-4 items-center md:items-start">
-				<UploadImage image={`${userInfo.image}`} isPending={isPending} handleFileChange={handleFileChange} />
+				<UploadImage isPending={isPending} handleFileChange={handleFileChange} />
 				<div className="flex-1 text-center md:text-left">
 					<h2 className="text-2xl font-bold">{storeName}</h2>
 					<p className="text-default-500">

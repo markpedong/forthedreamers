@@ -5,6 +5,9 @@ import { ApiResponse, RequestParams, serverErr } from '@/constants/types'
 import { getLocalStorage, setLocalStorage } from './xLocalStorage'
 import { getSession } from 'next-auth/react'
 import { refreshToken } from './request'
+import { getServerToken } from '@/lib/server'
+// import { getServerSession } from 'next-auth'
+// import authOptions from '@/app/api/auth/[...nextauth]/options'
 
 const handleResponse = async <T>(response: Response): Promise<ApiResponse<T>> => {
   if (!response.ok) return serverErr as ApiResponse<T>
@@ -29,37 +32,50 @@ const fetchWithToken = async ({
   options: RequestInit
   attempt?: number
   accessToken?: string
-}) => {
-  let token = accessToken
-  if (typeof window !== 'undefined') {
-    token = getLocalStorage('accessToken') || (await getSession())?.accessToken
+}): Promise<Response> => {
+  let token = accessToken;
+
+  if (typeof window !== "undefined") {
+    token = getLocalStorage("accessToken") || (await getSession())?.accessToken;
+  } else {
+    token = await getServerToken()
+  }
+
+  if (!token) {
+    throw new Error("Unauthorized: No access token found.");
   }
 
   const response = await fetch(`${process.env.NEXTAUTH_URL}${url}`, {
     ...options,
     headers: {
       ...options.headers,
-      Authorization: `Bearer ${token}`
-    }
-  })
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-  if (response.status !== 401) return response
-  if (attempt > 2) return response
+  if (response.status !== 401) return response;
 
-  const tokenRes = await refreshToken()
-  if (!tokenRes?.data?.accessToken) {
-    throw new Error('Failed to refresh token')
+  if (attempt >= 2) {
+    throw new Error("Unauthorized: Refresh token is invalid or missing.");
   }
 
-  setLocalStorage('accessToken', tokenRes.data.accessToken)
+  const tokenRes = await refreshToken();
+  if (!tokenRes?.data?.accessToken) {
+    throw new Error("Failed to refresh token. Stopping requests.");
+  }
+
+  if (typeof window !== "undefined") {
+    setLocalStorage("accessToken", tokenRes.data.accessToken);
+  }
 
   return fetchWithToken({
     url,
     options,
     attempt: attempt + 1,
     accessToken: tokenRes.data.accessToken
-  })
-}
+  });
+};
+
 
 const upload = async <T>(url: string, file: File): Promise<ApiResponse<T>> => {
   const form = new FormData()
@@ -94,7 +110,8 @@ const get = async <T>({ url, data, tags }: RequestParams): Promise<ApiResponse<T
     url: `${url}${!!stringify(data) ? '?' + stringify(data) : ''}`,
     options: {
       method: 'GET',
-      next: { tags: [tags || ''], revalidate: STALE_TIME * 6 }
+      next: { tags: tags ? [tags] : [], revalidate: STALE_TIME * 60 },
+      cache: 'force-cache'
     }
   })
 

@@ -5,10 +5,12 @@ import { JWT_SECRET } from '@/constants';
 import { generateAccessToken } from '@/utils/tokens';
 import { getServerSession } from 'next-auth';
 import authOptions from '../[...nextauth]/options';
+import { NextRequest } from 'next/server';
 
 export async function POST() {
   try {
     const id = (await getServerSession(authOptions))?.user.id
+
     if (!id) {
       return generateResponse({ error: 'Refresh token not found', status: 401 });
     }

@@ -45,3 +45,20 @@ export async function POST(req: NextRequest) {
 
   return generateResponse({ message: 'Address updated successfully' })
 }
+
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authRes = await isAuthenticated(req)
+  if (!authRes.ok) return authRes
+
+  const { id } = await params
+  if (!validateUUID(id)) {
+    return generateResponse({ error: 'Invalid address id', status: 400 })
+  }
+
+  const address = await prisma.addresses.findMany({
+    where: { userId: id, deletedAt: null },
+    orderBy: { createdAt: 'desc' }
+  })
+
+  return generateResponse({ data: address, message: 'Address fetched successfully' })
+}

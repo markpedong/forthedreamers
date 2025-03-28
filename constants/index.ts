@@ -61,3 +61,8 @@ export const PAYMENT_METHODS = [
 ]
 
 export const DEFAULT_VARIATION = { label: '', stock: 0, price: 0, discountedPrice: 0, productId: '', id: '' }
+
+export enum TAGS {
+  ADDRESS = 'address',
+  USER = 'user',
+}

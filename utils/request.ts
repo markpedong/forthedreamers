@@ -1,9 +1,10 @@
 import { Addresses, Users } from '@prisma/client'
 import { deleteF, get, post, upload } from './http'
+import { TAGS } from '@/constants'
 
 export const registerUser = async (body: any) => post<Users>({ url: '/api/users', data: body })
 
-export const getUserData = async (id: string) => get<Users>({ url: `/api/users/${id}` })
+export const getUserData = async (id: string) => get<Users>({ url: `/api/users/${id}`, tags: TAGS.USER })
 
 export const refreshToken = async () => post<{ accessToken: string }>({ url: '/api/auth/refresh' })
 
@@ -13,7 +14,7 @@ export const updateProfile = async (body?: Users) => post<Users>({ url: `/api/us
 
 export const createNewAddress = async (body: any) => post<any>({ url: '/api/address', data: body })
 
-export const getAddress = async () => get<Addresses>({ url: `/api/address` })
+export const getAddress = async (id: string) => get<Addresses[]>({ url: `/api/address/${id}`, tags: TAGS.ADDRESS })
 
 export const setDefaultAddress = async (body: any) => post<any>({ url: '/api/address/set-default', data: body })
 
