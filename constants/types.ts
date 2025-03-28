@@ -134,3 +134,5 @@ export type SearchProductItem = {
     discountedPrice: number | null;
   }[];
 }[]
+
+export type TCartItem = { id: string; quantity: number }

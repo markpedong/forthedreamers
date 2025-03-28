@@ -1,5 +1,5 @@
 import { useWithDispatch } from '@/hooks/useWithDispatch'
-import { updateCartInDatabase } from '@/lib/server'
+import { updateCartItems } from '@/lib/server'
 import { setCartOpen, setHasChangesInCart } from '@/redux/slices/appSlice'
 import { increaseCartItem, reduceCartItem } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
@@ -7,7 +7,6 @@ import { deleteItemsFromCart } from '@/utils/request'
 import { Button, Divider, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { FC, useEffect, useTransition } from 'react'
 
 const CartDrawer: FC = () => {
@@ -16,7 +15,6 @@ const CartDrawer: FC = () => {
 	const dispatch = useAppDispatch()
 	const { fetchCartItem } = useWithDispatch()
 	const subtotal = cartItems?.reduce((sum, item) => sum + item.variation.price * item.quantity, 0)
-	const router = useRouter()
 	const [isDeleting, startDeleting] = useTransition()
 
 	const onOpenChange = async (isOpen: boolean) => {
@@ -29,9 +27,8 @@ const CartDrawer: FC = () => {
 		dispatch(setHasChangesInCart(false))
 
 		if (hasChangesInCart) {
-			await updateCartInDatabase(cartItems)
+			await updateCartItems(cartItems)
 			fetchCartItem()
-			router.refresh()
 		}
 	}
 

@@ -2,9 +2,9 @@
 
 import authOptions from '@/app/api/auth/[...nextauth]/options'
 import { TAGS } from '@/constants'
-import { AddToCartHandler, CartResponse } from '@/constants/types'
+import { CartResponse, TCartItem } from '@/constants/types'
 import prisma from '@/db'
-import { get } from '@/utils/http'
+import { get, patch } from '@/utils/http'
 import { getServerSession } from 'next-auth'
 import { revalidateTag } from 'next/cache'
 import { cookies } from 'next/headers'
@@ -87,17 +87,6 @@ export const getProductReviews = async (id?: string) => {
   })
 }
 
-export const updateCartInDatabase = async (cartItems: { id: string; quantity: number }[]) => {
-  const updateOperations = cartItems.map(item =>
-    prisma.carts.update({
-      where: { id: item.id },
-      data: { quantity: item.quantity }
-    })
-  )
-
-  return prisma.$transaction(updateOperations)
-}
-
 export const removeItemFromCart = async (id: string) => {
   return prisma.carts.delete({
     where: { id }
@@ -111,3 +100,5 @@ export const getServerToken = async () => {
 }
 
 export const getCartItems = async (id?: string) => get<CartResponse[]>({ url: `/api/cart/${id}`, tags: TAGS.CART })
+
+export const updateCartItems = async (body: TCartItem[]) => patch<CartResponse[]>({ url: '/api/cart', data: body })

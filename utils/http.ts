@@ -132,4 +132,17 @@ const deleteF = async <T>({ url, data = {} }: RequestParams): Promise<ApiRespons
   return handleResponse<T>(response)
 }
 
-export { get, post, upload, deleteF }
+const patch = async <T>({ url, data = {}, isJSON = true }: RequestParams): Promise<ApiResponse<T>> => {
+  const response = await fetchWithToken({
+    url,
+    options: {
+      method: 'PATCH',
+      ...isJSON && { headers: { 'Content-Type': 'application/json' } },
+      body: isJSON ? JSON.stringify(data) : data
+    }
+  })
+
+  return handleResponse<T>(response)
+}
+
+export { get, post, upload, deleteF, patch }
