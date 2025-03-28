@@ -1,7 +1,8 @@
 import authOptions from '@/app/api/auth/[...nextauth]/options'
-import { getAddress, getCartItems, getOrders, getPaymentMethod, getReviews, getUserData, getWishlist } from '@/utils/request'
+import { getAddress, getOrders, getPaymentMethod, getReviews, getUserData, getWishlist } from '@/utils/request'
 import { getServerSession } from 'next-auth'
 import Profile from './components'
+import { getCartItems } from '@/lib/server'
 
 const Page = async () => {
 	const session = await getServerSession(authOptions)

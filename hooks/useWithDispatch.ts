@@ -1,7 +1,7 @@
+import { getCartItems } from '@/lib/server'
 import { setCartOpen } from '@/redux/slices/appSlice'
 import { setCartItems } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
-import { getCartItems } from '@/utils/request'
 import { useSession } from 'next-auth/react'
 
 export const useWithDispatch = () => {

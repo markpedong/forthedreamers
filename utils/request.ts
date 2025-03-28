@@ -65,5 +65,3 @@ export const getSellerInfo = async (id: string) => get<Users>({ url: `/api/selle
 export const addItemToCart = async (body: AddToCartHandler) => post({ url: '/api/cart', data: body })
 
 export const deleteItemsFromCart = async (id: string) => deleteF({ url: '/api/cart', data: { id } })
-
-export const getCartItems = async (id?: string) => get<CartResponse[]>({ url: `/api/cart/${id}`, tags: TAGS.CART })

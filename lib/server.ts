@@ -1,8 +1,10 @@
 'use server'
 
 import authOptions from '@/app/api/auth/[...nextauth]/options'
-import { AddToCartHandler } from '@/constants/types'
+import { TAGS } from '@/constants'
+import { AddToCartHandler, CartResponse } from '@/constants/types'
 import prisma from '@/db'
+import { get } from '@/utils/http'
 import { getServerSession } from 'next-auth'
 import { revalidateTag } from 'next/cache'
 import { cookies } from 'next/headers'
@@ -107,3 +109,5 @@ export const getServerToken = async () => {
 
   return session?.accessToken
 }
+
+export const getCartItems = async (id?: string) => get<CartResponse[]>({ url: `/api/cart/${id}`, tags: TAGS.CART })
