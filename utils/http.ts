@@ -6,8 +6,6 @@ import { getLocalStorage, setLocalStorage } from './xLocalStorage'
 import { getSession } from 'next-auth/react'
 import { refreshToken } from './request'
 import { getServerToken } from '@/lib/server'
-// import { getServerSession } from 'next-auth'
-// import authOptions from '@/app/api/auth/[...nextauth]/options'
 
 const handleResponse = async <T>(response: Response): Promise<ApiResponse<T>> => {
   if (!response.ok) return serverErr as ApiResponse<T>
@@ -49,7 +47,7 @@ const fetchWithToken = async ({
     ...options,
     headers: {
       ...options.headers,
-      Authorization: `Bearer ${token}`,
+      ...token && { Authorization: `Bearer ${token}` },
     },
   });
 

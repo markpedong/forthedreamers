@@ -1,7 +1,7 @@
 import { Addresses, Orders, PaymentMethods, Reviews, Users, Wishlists } from '@prisma/client'
 import { deleteF, get, post, upload } from './http'
 import { TAGS } from '@/constants'
-import { TProductItem, TWishListItem } from '@/constants/types'
+import { TProductItem, TSellerItem, TWishListItem } from '@/constants/types'
 
 export const registerUser = async (body: any) => post<Users>({ url: '/api/users', data: body })
 
@@ -52,7 +52,7 @@ export const removeFromCart = async (id?: string) => post<any>({ url: '/api/cart
 
 export const deleteProduct = async (id: string) => deleteF({ url: `/api/products/${id}` })
 
-export const getProduct = async (id: string) => get<any>({ url: `/api/products/${id}` })
+export const getProduct = async (id: string) => get<TProductItem & { seller: TSellerItem }>({ url: `/api/products/${id}` })
 
 export const getOrders = async (id: string) => get<Orders[]>({ url: `/api/orders/${id}`, tags: TAGS.ORDERS })
 

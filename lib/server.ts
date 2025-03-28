@@ -3,7 +3,6 @@
 import authOptions from '@/app/api/auth/[...nextauth]/options'
 import { AddToCartHandler } from '@/constants/types'
 import prisma from '@/db'
-import { validateUUID } from '@/utils/helpers'
 import { getServerSession } from 'next-auth'
 import { revalidateTag } from 'next/cache'
 import { cookies } from 'next/headers'
@@ -43,7 +42,7 @@ export const getProfileServer = async (id?: string, isSeller?: boolean) => {
   })
 }
 
-export const getProductserver = async (id?: string) => {
+export const getSellerProducts = async (id?: string) => {
   return prisma.products.findMany({
     where: { sellerID: id, deletedAt: null },
     include: { variations: true },
@@ -165,5 +164,6 @@ export const addItemToCart = async ({ productId, quantity, userId, variationId }
 
 export const getServerToken = async () => {
   const session = await getServerSession(authOptions);
+
   return session?.accessToken
 }

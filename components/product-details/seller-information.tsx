@@ -1,7 +1,6 @@
 import React, { FC } from 'react'
 import { Card, CardBody, Avatar, Button } from '@heroui/react'
 import { Icon } from '@iconify/react'
-import { Users } from '@prisma/client'
 import { DateFormatter } from '@internationalized/date'
 import { TSellerItem } from '@/constants/types'
 
@@ -10,6 +9,7 @@ type Props = {
 }
 
 const SellerInformation: FC<Props> = ({ seller }) => {
+	console.log('seller', seller)
 	return (
 		<Card className="font-[Sora]">
 			<CardBody>
@@ -27,7 +27,7 @@ const SellerInformation: FC<Props> = ({ seller }) => {
 								{new DateFormatter('en-US', {
 									month: 'long',
 									year: 'numeric'
-								}).format(seller.createdAt)}
+								}).format(new Date(seller.createdAt))}
 							</p>
 						</div>
 					</div>

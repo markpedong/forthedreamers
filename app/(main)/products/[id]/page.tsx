@@ -1,13 +1,13 @@
 import React from 'react'
 import ProductPage from '.'
-import { getProductserver } from '@/lib/server'
+import { getSellerProducts } from '@/lib/server'
 import { notFound } from 'next/navigation'
-import { getProduct, getProducts } from '@/utils/request'
+import { getProduct } from '@/utils/request'
 
 export async function generateStaticParams() {
-	const product = await getProducts()
+	const product = await getSellerProducts()
 
-	return product.data.map(post => ({
+	return product.map(post => ({
 		id: post.id
 	}))
 }
@@ -20,7 +20,9 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 		notFound()
 	}
 
-	return <ProductPage product={product as any} />
+	console.log("product", product.data)
+
+	return <ProductPage product={product.data} />
 }
 
 export default Page

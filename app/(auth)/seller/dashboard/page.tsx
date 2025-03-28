@@ -2,10 +2,9 @@ import React from 'react'
 import styles from './styles.module.scss'
 import { getServerSession } from 'next-auth'
 import authOptions from '@/app/api/auth/[...nextauth]/options'
-import { getProductReviews, getProductserver, getProfileServer, getSoldProducts } from '@/lib/server'
+import { getProductReviews, getProfileServer, getSoldProducts } from '@/lib/server'
 import SellerDashboard from './components'
 import { Users } from '@prisma/client'
-import { TProductItem } from '@/constants/types'
 import { getSellerProducts } from '@/utils/request'
 
 const Page = async () => {

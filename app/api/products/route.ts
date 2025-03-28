@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     return generateResponse({ message: 'Product added successfully' })
   } catch (error) {
-    return generateResponse({ error, message: 'Something went wrong' })
+
     return generateResponse({ status: 500, error, message: 'Something went wrong' })
   }
 }
