@@ -45,8 +45,13 @@ export async function GET(req: NextRequest) {
   if (!isAuthRes.ok) return isAuthRes
 
   const products = await prisma.products.findMany({
-    include: { variations: true },
-    where: { deletedAt: null },
+    where: {
+      deletedAt: null,
+      AND: {
+        seller: { storeName: { not: null } }
+      }
+    },
+    select: { id: true, name: true, images: true, categories: true, variations: { select: { price: true, discountedPrice: true } } },
     orderBy: { createdAt: 'desc' }
   })
 

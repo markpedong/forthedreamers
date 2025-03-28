@@ -1,9 +1,8 @@
-import { TProductItem } from '@/constants/types'
 import Home from './components'
-import { getProducts } from '@/lib/server'
+import { getProducts } from '@/utils/request'
 
 export default async function Page() {
-  const products = await getProducts()
+	const products = await getProducts()
 
-  return <Home products={products as TProductItem[]} />
+	return <Home products={products.data} />
 }

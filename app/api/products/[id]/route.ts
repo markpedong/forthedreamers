@@ -81,3 +81,45 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     return generateResponse({ error: 'Server error', status: 500 })
   }
 }
+
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authRes = await isAuthenticated(req)
+  if (!authRes.ok) return authRes
+
+  const { id } = await params
+  if (!validateUUID(id)) {
+    return generateResponse({ error: 'Invalid product id', status: 400 })
+  }
+
+  const product = await prisma.products.findUnique({
+    where: { id, deletedAt: null },
+    include: {
+      variations: true,
+      reviews: true,
+      seller: {
+        omit: {
+          email: true,
+          username: true,
+          phoneNumber: true,
+          password: true,
+          role: true,
+          updatedAt: true,
+          deletedAt: true,
+          firstName: true,
+          lastName: true,
+          refreshToken: true,
+          birthday: true
+        },
+        include: {
+          _count: {
+            select: {
+              products: { where: { deletedAt: null } }
+            }
+          }
+        }
+      }
+    }
+  })
+
+  return generateResponse({ data: product, message: 'Product fetched successfully' })
+}

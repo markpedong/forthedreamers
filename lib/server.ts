@@ -86,55 +86,6 @@ export const getProductReviews = async (id?: string) => {
   })
 }
 
-
-
-export const getProductDetails = async (id?: string) => {
-  if (!validateUUID(`${id}`)) return null
-
-  return prisma.products.findUnique({
-    where: { id, deletedAt: null },
-    include: {
-      variations: true,
-      reviews: true,
-      seller: {
-        omit: {
-          email: true,
-          username: true,
-          phoneNumber: true,
-          password: true,
-          role: true,
-          updatedAt: true,
-          deletedAt: true,
-          firstName: true,
-          lastName: true,
-          refreshToken: true,
-          birthday: true
-        },
-        include: {
-          _count: {
-            select: {
-              products: { where: { deletedAt: null } }
-            }
-          }
-        }
-      }
-    }
-  })
-}
-
-export const getProducts = async () => {
-  return prisma.products.findMany({
-    where: {
-      deletedAt: null,
-      AND: {
-        seller: { storeName: { not: null } }
-      }
-    },
-    select: { id: true, name: true, images: true, categories: true, variations: { select: { price: true, discountedPrice: true } } },
-    orderBy: { createdAt: 'desc' }
-  })
-}
-
 export const getCartItems = async (id?: string) => {
   return prisma.carts.findMany({
     where: { userId: id, deletedAt: null },

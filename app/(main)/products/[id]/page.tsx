@@ -1,9 +1,8 @@
 import React from 'react'
 import ProductPage from '.'
-import { getProductDetails, getProductserver } from '@/lib/server'
-import prisma from '@/db'
-import { TProductItem } from '@/constants/types'
+import { getProductserver } from '@/lib/server'
 import { notFound } from 'next/navigation'
+import { getProduct } from '@/utils/request'
 
 export async function generateStaticParams() {
 	const product = await getProductserver()
@@ -15,7 +14,7 @@ export async function generateStaticParams() {
 
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 	const { id } = await params
-	const product = await getProductDetails(id)
+	const product = await getProduct(id)
 
 	if (!product) {
 		notFound()

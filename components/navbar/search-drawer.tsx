@@ -1,8 +1,8 @@
 import { Drawer, DrawerContent, DrawerHeader, DrawerBody, Input, Link, Chip, useDisclosure } from '@heroui/react'
 import { FC, FormEvent, useEffect, useMemo, useState } from 'react'
 import { Icon } from '@iconify/react'
-import { getProducts } from '@/lib/server'
 import { SearchProductItem } from '@/constants/types'
+import { getProducts } from '@/utils/request'
 
 const SearchDrawer: FC = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure()
