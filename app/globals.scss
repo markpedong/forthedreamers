@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  // --background: #f0f0f0;  /* Set the background color you want */
+  // --foreground: #333;
+}
+
 .ant-qrcode.footer-qr {
   padding: 1px;
   border-radius: 0px;

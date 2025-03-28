@@ -1,27 +1,13 @@
 'use client'
 
-import { useAppDispatch, useAppSelector } from '@/redux/store'
-import React, { FC, useState } from 'react'
-import {
-	Card,
-	CardBody,
-	Button,
-	RadioGroup,
-	Radio,
-	Divider,
-	Modal,
-	ModalContent,
-	ModalHeader,
-	ModalBody,
-	ModalFooter,
-	Input,
-	Select,
-	SelectItem
-} from '@heroui/react'
+import AddEditAddress from '@/components/profile/addressAddEdit'
 import { setCartOpen } from '@/redux/slices/appSlice'
-import { useRouter } from 'next/navigation'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { Button, Card, CardBody, Divider, Radio, RadioGroup, useDisclosure } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { Addresses } from '@prisma/client'
+import { useRouter } from 'next/navigation'
+import { FC, useState } from 'react'
 
 type Props = {
 	addresses: Addresses[]
@@ -29,6 +15,7 @@ type Props = {
 
 const Checkout: FC<Props> = ({ addresses }) => {
 	const cartItems = useAppSelector(state => state.user.cartItems)
+	const { isOpen, onOpen, onOpenChange } = useDisclosure()
 	const router = useRouter()
 	const dispatch = useAppDispatch()
 	const [selectedAddressId, setSelectedAddressId] = useState<string>('')
@@ -89,19 +76,12 @@ const Checkout: FC<Props> = ({ addresses }) => {
 										</Radio>
 									))}
 								</RadioGroup>
-								{/* 
-								<Button
-									variant="flat"
-									startContent={<Icon icon="lucide:plus" />}
-									onPress={() => setIsNewAddressModalOpen(true)}
-								>
+								<Button variant="flat" startContent={<Icon icon="lucide:plus" />} onPress={() => onOpen()}>
 									Add New Address
-								</Button> */}
+								</Button>
 							</div>
 						</CardBody>
 					</Card>
-
-					{/* Payment Method */}
 					<Card>
 						<CardBody>
 							<h2 className="text-lg font-semibold mb-4">Payment Method</h2>
@@ -167,7 +147,14 @@ const Checkout: FC<Props> = ({ addresses }) => {
 									</div>
 								</div>
 
-								<Button color="primary" size="lg" onPress={handlePlaceOrder} isDisabled={!selectedAddressId} fullWidth>
+								<Button
+									color="primary"
+									className="customButton1"
+									size="lg"
+									onPress={handlePlaceOrder}
+									isDisabled={!selectedAddressId}
+									fullWidth
+								>
 									Place Order
 								</Button>
 							</div>
@@ -175,6 +162,8 @@ const Checkout: FC<Props> = ({ addresses }) => {
 					</Card>
 				</div>
 			</div>
+
+			<AddEditAddress isOpen={isOpen} onOpenChange={onOpenChange} />
 		</div>
 	)
 }
