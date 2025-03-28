@@ -25,9 +25,10 @@ import React, { FC, memo, useActionState, useEffect, useRef, useState, useTransi
 type Props = {
 	isOpen?: boolean
 	onOpenChange: () => void
+	refresh?: () => void
 }
 
-const AddEditAddress: FC<Props> = ({ isOpen, onOpenChange }) => {
+const AddEditAddress: FC<Props> = ({ isOpen, onOpenChange, refresh }) => {
 	const [_, startTransition] = useTransition()
 	const [isPending, submit] = useTransition()
 	const [state, action] = useActionState(addressInformation, {
@@ -50,7 +51,6 @@ const AddEditAddress: FC<Props> = ({ isOpen, onOpenChange }) => {
 			setNewAddressValues(null)
 		} else {
 			setNewAddressValues(address)
-
 		}
 	}, [address])
 
@@ -84,7 +84,7 @@ const AddEditAddress: FC<Props> = ({ isOpen, onOpenChange }) => {
 			if (res?.success) {
 				addToast({ title: 'Success', description: 'Address saved successfully', color: 'success' })
 				onOpenChange()
-				refetch(TAGS.ADDRESS)
+				refresh?.()
 				setNewAddressValues(null)
 				dispatch(setAddress(null))
 			}
