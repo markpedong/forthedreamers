@@ -46,21 +46,24 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 		)
 		if (invalidVariation) {
 			addToast({
-				title: 'Discounted price cannot be greater than original price'
+				title: 'Discounted price cannot be greater than original price',
+				color: 'danger'
 			})
 			return
 		}
 
 		if (initialData?.description?.length! < 20) {
 			addToast({
-				title: 'Description must be at least 20 characters'
+				title: 'Description must be at least 20 characters',
+				color: 'danger'
 			})
 			return
 		}
 
 		if (imagePreviewUrls.length === 0 && initialData?.images?.length === 0) {
 			addToast({
-				title: 'Please add at least one image'
+				title: 'Please add at least one image',
+				color: 'danger'
 			})
 			return
 		}

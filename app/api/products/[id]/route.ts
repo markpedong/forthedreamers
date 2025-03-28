@@ -36,7 +36,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           stock: parseInt(v.stock, 10),
           price: v.price,
           discountedPrice: v.discountedPrice || null,
-          productsId: id
+          productId: id
         }))
       })
     }
