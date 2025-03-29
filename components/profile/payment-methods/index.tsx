@@ -1,3 +1,5 @@
+import { TAGS } from '@/constants'
+import { refetch } from '@/lib/server'
 import { getCardIcon } from '@/utils/helpers'
 import { deletePaymentMethod, setDefaultPaymentMethod } from '@/utils/request'
 import { Button, Card, CardBody, Divider, Spinner } from '@heroui/react'
@@ -6,12 +8,7 @@ import { PaymentMethods as TPaymentMethods } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import { FC, useTransition } from 'react'
 
-type Props = {
-	method: TPaymentMethods
-	openPaymentMethod: () => void
-}
-
-const PaymentMethods: FC<Props> = ({ method }) => {
+const PaymentMethods: FC<{ method: TPaymentMethods }> = ({ method }) => {
 	const [isPending, startTransition] = useTransition()
 	const [isDeleting, startDeleting] = useTransition()
 	const { refresh } = useRouter()
@@ -30,9 +27,7 @@ const PaymentMethods: FC<Props> = ({ method }) => {
 		startDeleting(async () => {
 			const res = await deletePaymentMethod(method.id)
 
-			if (res.success) {
-				refresh()
-			}
+			if (res.success) refetch(TAGS.PAYMENT_METHODS)
 		})
 	}
 

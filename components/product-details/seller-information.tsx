@@ -40,7 +40,7 @@ const SellerInformation: FC<Props> = ({ seller }) => {
 						</div>
 						<Button
 							size="sm"
-							variant="flat"
+							variant="bordered"
 							color="primary"
 							className=" cursor-pointer"
 							onPress={() => router.push(`/seller/${seller.id}`)}

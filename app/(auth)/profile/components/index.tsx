@@ -96,7 +96,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
 					<div className="p-5 mb-10">
 						<div className="flex justify-between items-center mb-16 mt-4">
 							<div
-								className="flex gap-2 items-center justify-start text-sm text-neutral-400 hover:text-black transition cursor-pointer"
+								className="flex gap-2 items-center justify-start text-sm text-neutral-400 hover:text-black dark:hover:text-white transition cursor-pointer"
 								onClick={() => router.push('/')}
 							>
 								<Icon icon="pajamas:go-back" />
