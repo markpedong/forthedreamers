@@ -14,7 +14,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "black",
+        // primary: "var(--primary)",
         background: 'var(--background)',
         foreground: 'var(--foreground)'
       }
@@ -24,18 +24,18 @@ export default {
   plugins: [
     plugin(({ addComponents, addUtilities }: TAddTailwindUtility) => {
       addComponents({
-        '.customButton1': {
-          '@apply !bg-black !text-white': {},
-          '.dark &': {
-            '@apply !bg-white !text-black': {}
-          }
-        },
-        '.customButton1Reverse': {
-          '@apply !bg-white !text-black': {},
-          '.dark &': {
-            '@apply !bg-black !text-white': {}
-          }
-        },
+        // '.': {
+        //   '@apply !bg-black !text-white': {},
+        //   '.dark &': {
+        //     '@apply !bg-white !text-black': {}
+        //   }
+        // },
+        // '.Reverse': {
+        //   '@apply !bg-white !text-black': {},
+        //   '.dark &': {
+        //     '@apply !bg-black !text-white': {}
+        //   }
+        // },
         '.flexAllCenter': {
           '@apply flex items-center justify-center': {}
         }
@@ -52,12 +52,44 @@ export default {
       themes: {
         light: {
           colors: {
-            'typography-1': '#3F3F46'
+            'typography-1': '#3F3F46',
+            // background: "#FFFFFF",
+            // foreground: "#11181C",
+            primary: {
+              50: "#f6f6f6",
+              100: "#e7e7e7",
+              200: "#d1d1d1",
+              300: "#b0b0b0",
+              400: "#888888",
+              500: "#333333", // Primary black color
+              600: "#2d2d2d",
+              700: "#1f1f1f",
+              800: "#1a1a1a",
+              900: "#0f0f0f",
+              DEFAULT: "black",
+              foreground: "white"
+            }
           }
         },
         dark: {
           colors: {
-            'typography-1': '#F4F4F5'
+            'typography-1': '#F4F4F5',
+            // background: "#FFFFFF",
+            // foreground: "#11181C",
+            primary: {
+              50: "#f6f6f6",
+              100: "#e7e7e7",
+              200: "#d1d1d1",
+              300: "#b0b0b0",
+              400: "#888888",
+              500: "#333333", // Primary black color
+              600: "#2d2d2d",
+              700: "#1f1f1f",
+              800: "#1a1a1a",
+              900: "#0f0f0f",
+              DEFAULT: "white",
+              foreground: "black"
+            }
           }
         }
       }

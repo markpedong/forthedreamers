@@ -23,7 +23,7 @@ const Unauthorized = () => {
 					<Button
 						color="primary"
 						startContent={<Icon icon="lucide:log-in" />}
-						className="customButton1"
+						className=""
 						onPress={() => (window.location.href = isUser ? '/profile' : '/seller/dashboard')}
 					>
 						Back to {isUser ? 'Profile' : 'Dashboard'}

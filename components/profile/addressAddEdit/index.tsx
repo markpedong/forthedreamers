@@ -213,7 +213,7 @@ const AddEditAddress: FC<Props> = ({ isOpen, onOpenChange }) => {
 								Close
 							</Button>
 							<Button
-								className="customButton1"
+								className=""
 								isLoading={isPending}
 								onPress={() => {
 									if (formRef.current) {

@@ -25,7 +25,7 @@ const Addresses: FC<Props> = ({ data }) => {
             dispatch(setAddress(null))
             onOpen()
           }}
-          className="customButton1"
+          className=""
           size="sm"
         >
           New

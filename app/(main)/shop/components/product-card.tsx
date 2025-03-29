@@ -38,7 +38,7 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
 					/>
 					<div className="absolute top-0 left-0 p-2 flex flex-col gap-2 z-10">
 						{discountPercentage > 0 && (
-							<div className="bg-danger-500 px-2 py-1 rounded-lg text-xs font-medium">-{discountPercentage}% OFF</div>
+							<div className="bg-danger-500 px-2 py-1 rounded-lg text-xs font-medium text-white">-{discountPercentage}% OFF</div>
 						)}
 					</div>
 					<div className="absolute top-0 right-0 p-2">

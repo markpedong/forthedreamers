@@ -52,7 +52,7 @@ const Checkout: FC<Props> = ({ addresses, paymentMethods }) => {
 						<CardBody>
 							<h2 className="text-lg font-semibold mb-4">Delivery Address</h2>
 							<div className="flex flex-col gap-4">
-								<RadioGroup value={selectedAddressId} onValueChange={setSelectedAddressId}>
+								<RadioGroup value={selectedAddressId} onValueChange={setSelectedAddressId} color="primary">
 									{addresses.map(address => (
 										<Radio
 											key={address.id}
@@ -107,7 +107,7 @@ const Checkout: FC<Props> = ({ addresses, paymentMethods }) => {
 									</Radio>
 								)}
 								{mc && (
-									<Radio value="VISA" description={`****${mc.cardNumber?.slice(-4)} / ${mc.expiryDate}`}>
+									<Radio value="MASTERCARD" description={`****${mc.cardNumber?.slice(-4)} / ${mc.expiryDate}`}>
 										<div className="flex items-center gap-2">
 											<Icon icon={getCardIcon('MASTERCARD')} width={20} height={20} />
 											MasterCard
@@ -185,14 +185,7 @@ const Checkout: FC<Props> = ({ addresses, paymentMethods }) => {
 									</div>
 								</div>
 
-								<Button
-									color="primary"
-									className="customButton1"
-									size="lg"
-									onPress={handlePlaceOrder}
-									isDisabled={!selectedAddressId}
-									fullWidth
-								>
+								<Button color="primary" size="lg" onPress={handlePlaceOrder} isDisabled={!selectedAddressId} fullWidth>
 									Place Order
 								</Button>
 							</div>

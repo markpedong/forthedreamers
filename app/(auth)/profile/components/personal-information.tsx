@@ -84,7 +84,7 @@ const PersonalInformation: FC = () => {
           type="submit"
           isLoading={isPending}
           fullWidth
-          className="mt-7 customButton1"
+          className="mt-7 "
           variant="shadow"
           radius="sm"
         >

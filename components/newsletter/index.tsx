@@ -8,7 +8,7 @@ const NewsLetter = () => {
           discover style just <br /> a button press away!
         </div>
         <Input placeholder="Your email address" className="mt-6" />
-        <Button fullWidth radius="sm" className="customButton1">
+        <Button fullWidth radius="sm" className="">
           Subscribe
         </Button>
         <span className="uppercase w-full text-xs text-center">

@@ -131,7 +131,7 @@ const EditProfileModal = ({ isOpen, onClose, userInfo }: EditProfileModalProps) 
 							<Button variant="flat" onPress={onClose}>
 								Cancel
 							</Button>
-							<Button color="primary" type="submit" className="customButton1" isLoading={isPending}>
+							<Button color="primary" type="submit" className="" isLoading={isPending}>
 								Save Changes
 							</Button>
 						</ModalFooter>

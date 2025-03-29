@@ -23,7 +23,7 @@ const PaymentMethod: FC<Props> = ({ data }) => {
             dispatch(setPaymentMethod(null))
             onOpen()
           }}
-          className="customButton1"
+          className=""
           size="sm"
         >
           New

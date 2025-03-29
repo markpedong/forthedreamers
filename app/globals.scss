@@ -4,10 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  // --background: #f0f0f0;  /* Set the background color you want */
-  // --foreground: #333;
-}
+// :root {
+// --background: #f0f0f0;  /* Set the background color you want */
+// --foreground: #333;
+// --primary: 'black';
+// --heroui-primary: 'white';
+
+// &.dark {
+// --primary: 'white';
+// --heroui-primary: 'black';
+// }
+// }
 
 .ant-qrcode.footer-qr {
   padding: 1px;
@@ -16,6 +23,6 @@
   width: 75px !important;
 }
 
-.customBtn1 {
-  @apply bg-white text-black dark:bg-black dark:text-white;
-}
+// .customBtn1 {
+//   @apply bg-white text-black dark:bg-black dark:text-white;
+// }

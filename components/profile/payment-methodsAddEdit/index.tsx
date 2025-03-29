@@ -188,7 +188,7 @@ const AddEditPaymentMethods: FC<Props> = ({ isOpen, onOpenChange }) => {
                 Cancel
               </Button>
               <Button
-                className="customButton1"
+                className=""
                 isLoading={isPending}
                 onPress={() => {
                   if (formRef.current) {

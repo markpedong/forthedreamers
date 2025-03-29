@@ -165,7 +165,7 @@ const CartDrawer: FC = () => {
 								<p className="text-xs text-default-500">Shipping and taxes calculated at checkout</p>
 								<Button
 									color="primary"
-									className="customButton1"
+									className=""
 									isDisabled={cartItems.length === 0}
 									fullWidth
 									onPress={() => push('/checkout')}

@@ -42,7 +42,7 @@ const SellerInformation: FC<Props> = ({ seller }) => {
 							size="sm"
 							variant="flat"
 							color="primary"
-							className="customButton1 cursor-pointer"
+							className=" cursor-pointer"
 							onPress={() => router.push(`/seller/${seller.id}`)}
 						>
 							View Store

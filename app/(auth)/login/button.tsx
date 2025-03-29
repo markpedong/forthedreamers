@@ -19,7 +19,7 @@ const AuthButtons: FC<AuthButtonsProps> = ({ isPending }) => {
 
 	return (
 		<>
-			<Button type="submit" isLoading={isPending} fullWidth className="mt-5 customButton1" variant="shadow" radius="sm">
+			<Button type="submit" isLoading={isPending} fullWidth className="mt-5 " variant="shadow" radius="sm">
 				{loginFormState === LOGINFORM_STATE.FORGOT_PASSWORD
 					? isPending
 						? 'Submitting...'
@@ -50,7 +50,7 @@ const AuthButtons: FC<AuthButtonsProps> = ({ isPending }) => {
 							</Button>
 						)}
 						<Button
-							className="customButton1"
+							className=""
 							fullWidth
 							startContent={<Icon icon="cryptocurrency-color:ncash" />}
 							onPress={() =>
