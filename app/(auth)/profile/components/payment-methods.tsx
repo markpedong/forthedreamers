@@ -7,11 +7,11 @@ import { Button, useDisclosure } from '@heroui/react'
 import { useAppDispatch } from '@/redux/store'
 import { setPaymentMethod } from '@/redux/slices/userSlice'
 
-const PaymentMethod: FC<{
-	data: TPaymentMethod[]
-}> = ({ data }) => {
+const PaymentMethod: FC<{ data: TPaymentMethod[] }> = ({ data }) => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure()
 	const dispatch = useAppDispatch()
+
+	console.log(JSON.stringify(data))
 	return (
 		<div>
 			<AddEditPaymentMethods
@@ -22,7 +22,7 @@ const PaymentMethod: FC<{
 			/>
 			<div className="flex justify-between">
 				<Typography.Title level={4}>Payment Methods</Typography.Title>
-				{data?.every(method => Object.values(PAYMENT_TYPE).includes(method.type)) && (
+				{Array.isArray(data) && data.length < 5 && (
 					<Button
 						onPress={() => {
 							dispatch(setPaymentMethod(null))
