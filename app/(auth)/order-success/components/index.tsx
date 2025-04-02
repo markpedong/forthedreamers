@@ -2,10 +2,11 @@
 
 import { setProfileTab } from '@/redux/slices/appSlice'
 import { useAppDispatch } from '@/redux/store'
+import { deleteOrderID } from '@/utils/request'
 import { Button, Card, CardBody, Divider } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { useRouter } from 'next/navigation'
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 
 type Props = {
 	orderId: string
@@ -14,6 +15,30 @@ type Props = {
 const OrderSuccess: FC<Props> = ({ orderId }) => {
 	const { push } = useRouter()
 	const dispatch = useAppDispatch()
+
+	const handleUserLeave = async (path: string) => {
+		await deleteOrderID(orderId)
+		push(path)
+	}
+
+	useEffect(() => {
+		const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
+			console.log('User is leaving the page')
+			await deleteOrderID(orderId)
+
+			// You can optionally display a confirmation message
+			event.preventDefault()
+			event.returnValue = '' // Standard for most browsers
+		}
+
+		// Attach the event listener for beforeunload
+		window.addEventListener('beforeunload', handleBeforeUnload)
+
+		// Cleanup the event listener when the component is unmounted
+		return () => {
+			window.removeEventListener('beforeunload', handleBeforeUnload)
+		}
+	}, [])
 
 	return (
 		<div className="container mx-auto max-w-2xl px-4 py-8">
@@ -40,7 +65,7 @@ const OrderSuccess: FC<Props> = ({ orderId }) => {
 							variant="bordered"
 							color="primary"
 							onPress={() => {
-								push('/profile')
+								handleUserLeave('/profile')
 								dispatch(setProfileTab('Orders'))
 							}}
 							startContent={<Icon icon="lucide:package" />}
@@ -50,7 +75,7 @@ const OrderSuccess: FC<Props> = ({ orderId }) => {
 						</Button>
 						<Button
 							color="primary"
-							onPress={() => push('/shop')}
+							onPress={() => handleUserLeave('/shop')}
 							startContent={<Icon icon="lucide:shopping-bag" />}
 							fullWidth
 						>

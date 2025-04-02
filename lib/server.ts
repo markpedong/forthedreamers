@@ -17,7 +17,6 @@ export const setCookie = async (name: string, value: string, options?: CookieOpt
     path: "/",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
     ...options,
   });
 }
@@ -27,6 +26,12 @@ export const getCookie = async (name: string) => {
 
   return cookieStore.get(name)?.value || ''
 }
+
+export const removeServerCookie = async (name: string) => {
+  const cookieStore = await cookies();
+
+  cookieStore.delete(name);
+};
 
 export const getAllProducts = async () => {
   return prisma.products.findMany({

@@ -1,6 +1,7 @@
 import { getToken } from 'next-auth/jwt'
 import { NextFetchEvent, NextRequest, NextResponse } from 'next/server'
 import { AUTH_SECRET } from './constants'
+import { removeServerCookie } from './lib/server'
 
 export const middleware = async (request: NextRequest, event: NextFetchEvent) => {
   const token = await getToken({ req: request, secret: AUTH_SECRET })
@@ -11,6 +12,16 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
   const userRestrictedRoutes = ['/seller/dashboard'] // Users cannot access seller dashboard
 
   if (token) {
+    const orderID = request.cookies.get('orderID')?.value
+    const isLeavingOrderSuccessPage = request.nextUrl.pathname !== '/order-success'
+
+    if (orderID && isLeavingOrderSuccessPage) {
+      const res = await (await fetch(`${process.env.NEXTAUTH_URL}/api/cart/checkout/${orderID}`, { method: "DELETE", credentials: "include" })).json()
+
+      console.log("res", res)
+
+      return NextResponse.next()
+    }
     // const userRole = token.role
 
     // if (userRole === USER_ROLE.SELLER && sellerRestrictedRoutes.includes(path)) {

@@ -48,7 +48,7 @@ const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, reviews, wishlist, carts }) => {
 	const { darkMode, profileTab } = useAppSelector(state => state.app)
 	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
-	const [activeMenu, setActiveMenu] = useState<string>(profileTab === 'Orders' ? 'Orders' : 'Personal Information')
+	const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
 	const dispatch = useAppDispatch()
 	const { data: session } = useSession()
 	const userData = useAppSelector(state => state.user.userData)
@@ -59,6 +59,10 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
 	useEffect(() => {
 		fetchUserData()
 	}, [session, userInfo])
+
+	useEffect(() => {
+		if (profileTab === 'Orders') setActiveMenu('Orders')
+	}, [])
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0]
@@ -75,7 +79,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
 
 	const fetchUserData = async () => {
 		dispatch(setProfileTab(''))
-		
+
 		if (!session?.user?.id || !session?.accessToken) return
 		if (!getLocalStorage('accessToken')) setLocalStorage('accessToken', session.accessToken)
 		if (addresses?.findIndex(address => address.type === ADDRESS_TYPE.DEFAULT) !== -1) {

@@ -49,6 +49,7 @@ const fetchWithToken = async ({
       ...options.headers,
       ...token && { Authorization: `Bearer ${token}` },
     },
+    credentials: "include",
   });
 
   if (response.status !== 401) return response;

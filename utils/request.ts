@@ -67,3 +67,5 @@ export const addItemToCart = async (body: AddToCartHandler) => post({ url: '/api
 export const deleteItemsFromCart = async (id: string) => deleteF({ url: '/api/cart', data: { id } })
 
 export const checkoutCart = async (ids: string[]) => post({ url: '/api/cart/checkout', data: { ids } })
+
+export const deleteOrderID = async (id?: string) => deleteF({ url: `/api/cart/checkout/${id}` })
