@@ -37,7 +37,7 @@ const OrderSuccess: FC<Props> = ({ orderId }) => {
 
 					<div className="flex flex-col sm:flex-row gap-3 w-full">
 						<Button
-							variant="flat"
+							variant="bordered"
 							color="primary"
 							onPress={() => {
 								push('/profile')

@@ -155,3 +155,12 @@ export type SearchProductItem = {
 }[]
 
 export type TCartItem = { id: string; quantity: number }
+
+export type CookieOptions = {
+  path?: string;
+  httpOnly?: boolean;
+  secure?: boolean;
+  sameSite?: "strict" | "lax" | "none";
+  maxAge?: number;
+  expires?: Date;
+};
