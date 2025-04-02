@@ -17,6 +17,7 @@ export const setCookie = async (name: string, value: string, options?: CookieOpt
     path: "/",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Adjust SameSite as needed
     ...options,
   });
 }
