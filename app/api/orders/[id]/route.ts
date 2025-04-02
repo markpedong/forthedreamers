@@ -13,7 +13,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const orders = await prisma.orders.findMany({
     where: { userId: id, deletedAt: null },
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: 'desc' },
+    include: {
+      orderItems: true
+    }
   })
 
   return generateResponse({ data: orders, message: 'Orders fetched successfully' })

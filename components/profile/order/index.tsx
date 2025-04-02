@@ -1,58 +1,52 @@
-import React, { FC } from 'react'
-import { Card, CardBody, Button, Chip } from '@heroui/react'
-import { Orders as TOrders, STATUS } from '@prisma/client'
 import { dateFormatter } from '@/utils/helpers'
+import { Button, Card, Chip, Divider } from '@heroui/react'
+import { Icon } from '@iconify/react'
+import { STATUS, Orders as TOrders } from '@prisma/client'
+import { FC } from 'react'
 
 type Props = {
 	order: TOrders
 }
 
+const statusColorMap = {
+	[STATUS.PENDING]: 'warning',
+	[STATUS.PROCESSING]: 'primary',
+	[STATUS.SHIPPED]: 'secondary',
+	[STATUS.DELIVERED]: 'success',
+	[STATUS.CANCELED]: 'danger'
+} as const
+
 const Orders: FC<Props> = ({ order }) => {
-	const getStatusColor = (status: TOrders['status']) => {
-		switch (status) {
-			case STATUS.DELIVERED:
-				return 'success'
-			case STATUS.PROCESSING:
-				return 'primary'
-			case STATUS.SHIPPED:
-				return 'warning'
-			case STATUS.CANCELED:
-				return 'danger'
-			default:
-				return 'default'
-		}
-	}
-
-	const getStatusText = (status: TOrders['status']) => {
-		return status.charAt(0).toUpperCase() + status.slice(1)
-	}
-
 	return (
-		<Card key={order.id} className="w-full">
-			<CardBody>
-				<div className="flex flex-col gap-3">
-					<div className="flex items-center justify-between">
-						<div>
-							<p className="font-medium">{order.id}</p>
-							<p className="text-small text-default-500">{dateFormatter(order.createdAt)}</p>
-						</div>
-						<Chip color={getStatusColor(order.status) as any} variant="flat" size="sm">
-							{getStatusText(order.status)}
-						</Chip>
-					</div>
-					<div className="flex items-center justify-between">
-						<div className="flex items-center gap-2">
-							<p className="text-small">{order.totalItems} items</p>
-							<span className="text-small text-default-500">•</span>
-							<p className="font-medium">${order.total?.toFixed(2)}</p>
-						</div>
-						<Button size="sm" variant="flat">
-							View Details
-						</Button>
-					</div>
+		<div className="flex flex-col sm:flex-row gap-4 items-start p-4 bg-neutral-900  rounded-lg sm:items-center justify-between">
+			<div className="flex flex-col gap-1">
+				<span className="text-sm font-medium">Order #{order.id}</span>
+				<span className="text-xs text-default-500">{dateFormatter(order.createdAt)}</span>
+				<div className="flex items-center gap-2">
+					<Chip size="sm" color={statusColorMap[order.status]} variant="flat">
+						{order.status}
+					</Chip>
+					<span className="text-xs text-default-500">
+						{order.totalItems} {order.totalItems === 1 ? 'item' : 'items'}
+					</span>
 				</div>
-			</CardBody>
-		</Card>
+			</div>
+
+			<div className="flex flex-col sm:flex-row gap-2 sm:items-center w-full sm:w-auto">
+				<span className="font-medium">${order.total?.toFixed(2)}</span>
+				<Button
+					size="sm"
+					variant="faded"
+					color="primary"
+					onPress={() => console.log("View order", order)}
+					endContent={<Icon icon="lucide:arrow-right" />}
+				>
+					View Details
+				</Button>
+			</div>
+
+			<Divider className="sm:hidden" />
+		</div>
 	)
 }
 

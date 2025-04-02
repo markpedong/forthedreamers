@@ -103,7 +103,7 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 				/>
 				<StatsCard
 					title="Total Revenue"
-					value={`${orders?.reduce((total, order) => total + order.total, 0)}`}
+					value={`${orders?.reduce((total, order) => total + order.total!, 0)}`}
 					icon="lucide:dollar-sign"
 					// trend={{ value: 15, isPositive: true }}
 				/>
