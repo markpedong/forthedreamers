@@ -193,7 +193,7 @@ const Checkout: FC<Props> = ({ addresses, paymentMethods }) => {
 									</div>
 								</div>
 
-								<Button color="primary" size="lg" onPress={handlePlaceOrder} isDisabled={!selectedAddressId} fullWidth>
+								<Button color="primary" size="lg" onPress={handlePlaceOrder} isDisabled={!selectedAddressId || !selectedPayment}  fullWidth>
 									Place Order
 								</Button>
 							</div>

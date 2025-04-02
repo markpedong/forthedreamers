@@ -1,5 +1,6 @@
 'use client'
 
+import { removeServerCookie } from '@/lib/server'
 import { setProfileTab } from '@/redux/slices/appSlice'
 import { useAppDispatch } from '@/redux/store'
 import { deleteOrderID } from '@/utils/request'
@@ -17,24 +18,20 @@ const OrderSuccess: FC<Props> = ({ orderId }) => {
 	const dispatch = useAppDispatch()
 
 	const handleUserLeave = async (path: string) => {
-		await deleteOrderID(orderId)
+		await removeServerCookie('orderID')
 		push(path)
 	}
 
 	useEffect(() => {
 		const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
-			console.log('User is leaving the page')
-			await deleteOrderID(orderId)
-
-			// You can optionally display a confirmation message
 			event.preventDefault()
-			event.returnValue = '' // Standard for most browsers
+			event.returnValue = ''
+
+			handleUserLeave('/')
 		}
 
-		// Attach the event listener for beforeunload
 		window.addEventListener('beforeunload', handleBeforeUnload)
 
-		// Cleanup the event listener when the component is unmounted
 		return () => {
 			window.removeEventListener('beforeunload', handleBeforeUnload)
 		}
