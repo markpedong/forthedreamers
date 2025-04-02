@@ -33,6 +33,13 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
     if (path === '/login') {
       return NextResponse.redirect(new URL('/', request.url))
     }
+
+    // if (path === "/order-success") {
+    //   const hasOrder = request.cookies.get("orderID")?.value
+    //   if (!hasOrder) {
+    //     return NextResponse.redirect(new URL('/checkout', request.url))
+    //   }
+    // }
   } else {
     if (protectedRoutes.includes(path) || userRestrictedRoutes.includes(path)) {
       return NextResponse.redirect(new URL('/login', request.url))

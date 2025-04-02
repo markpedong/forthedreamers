@@ -25,7 +25,7 @@ export const setCookie = async (name: string, value: string, options?: CookieOpt
 export const getCookie = async (name: string) => {
   const cookieStore = await cookies()
 
-  cookieStore.get(name)?.value || ''
+  return cookieStore.get(name)?.value || ''
 }
 
 export const getAllProducts = async () => {
