@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import { uuidSchema } from '@/lib/rules'
 import { JWT_SECRET } from '@/constants'
 import { PAYMENT_TYPE, PaymentMethods } from '@prisma/client'
+import { DateFormatter } from '@internationalized/date'
 
 export const generateResponse = <T>({
   data = null,
@@ -66,4 +67,11 @@ export const getCardIcon = (type: PaymentMethods['type']) => {
     default:
       return 'lucide:credit-card'
   }
+}
+
+export const dateFormatter = (createdAt: string | Date) => {
+  return new DateFormatter('en-US', {
+    dateStyle: 'long',
+    timeStyle: 'short'
+  }).format(new Date(createdAt))
 }

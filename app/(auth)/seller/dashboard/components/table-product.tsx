@@ -1,4 +1,5 @@
 import { TProductItem } from '@/constants/types'
+import { dateFormatter } from '@/utils/helpers'
 import {
 	Avatar,
 	Button,
@@ -12,7 +13,6 @@ import {
 	Tooltip
 } from '@heroui/react'
 import { Icon } from '@iconify/react'
-import { DateFormatter } from '@internationalized/date'
 import React, { FC, memo } from 'react'
 import DeleteProductPopover from './popover-delete'
 import VariationsTable from './variations-table'
@@ -57,12 +57,7 @@ const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
 									<div className="text-md truncate w-[20rem]">{product.description}</div>
 								</Tooltip>
 							</TableCell>
-							<TableCell>
-								{new DateFormatter('en-US', {
-									dateStyle: 'long',
-									timeStyle: 'short'
-								}).format(new Date(product.createdAt))}
-							</TableCell>
+							<TableCell>{dateFormatter(product.createdAt)}</TableCell>
 							<TableCell>
 								<div className="flex gap-2">
 									<Button isIconOnly size="sm" variant="light" onPress={() => onEdit(product)}>

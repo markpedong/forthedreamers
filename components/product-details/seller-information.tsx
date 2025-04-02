@@ -1,9 +1,9 @@
-import React, { FC } from 'react'
-import { Card, CardBody, Avatar, Button } from '@heroui/react'
-import { Icon } from '@iconify/react'
-import { DateFormatter } from '@internationalized/date'
 import { TSellerItem } from '@/constants/types'
+import { dateFormatter } from '@/utils/helpers'
+import { Avatar, Button, Card, CardBody } from '@heroui/react'
+import { Icon } from '@iconify/react'
 import { useRouter } from 'next/navigation'
+import { FC } from 'react'
 
 type Props = {
 	seller: TSellerItem
@@ -24,13 +24,7 @@ const SellerInformation: FC<Props> = ({ seller }) => {
 								<Icon icon="lucide:star" className="text-warning" />
 								<span className="text-sm">{5}</span>
 							</div>
-							<p className="text-xs text-default-500">
-								Seller since{' '}
-								{new DateFormatter('en-US', {
-									month: 'long',
-									year: 'numeric'
-								}).format(new Date(seller.createdAt))}
-							</p>
+							<p className="text-xs text-default-500">Seller since {dateFormatter(seller.createdAt)}</p>
 						</div>
 					</div>
 

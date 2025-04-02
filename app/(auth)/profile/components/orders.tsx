@@ -3,17 +3,17 @@ import { Orders as TOrders } from '@prisma/client'
 import React, { FC } from 'react'
 
 type Props = {
-  data: TOrders[]
+	data: TOrders[]
 }
 
 const OrderList: FC<Props> = ({ data }) => {
-  return (
-    <div>
-      {data?.map(order => (
-        <Orders order={order} />
-      ))}
-    </div>
-  )
+	return (
+		<div>
+			{data?.map(order => (
+				<Orders order={order} key={order.id} />
+			))}
+		</div>
+	)
 }
 
 export default OrderList

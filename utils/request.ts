@@ -68,4 +68,4 @@ export const deleteItemsFromCart = async (id: string) => deleteF({ url: '/api/ca
 
 export const checkoutCart = async (data: TCheckoutPayload) => post({ url: '/api/cart/checkout', data })
 
-export const deleteOrderID = async (id?: string) => deleteF({ url: `/api/cart/checkout/${id}` })
+export const deleteOrderID = async (id?: string) => deleteF({ url: `/api/cart/checkout` })

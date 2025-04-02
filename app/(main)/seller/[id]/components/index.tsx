@@ -1,11 +1,11 @@
 'use client'
 
-import React, { FC, useMemo, useState } from 'react'
-import { Card, CardBody, Avatar, Tabs, Tab, Input, Select, SelectItem, Pagination } from '@heroui/react'
-import { Icon } from '@iconify/react'
-import { SellerInfo, TVariationItem } from '@/constants/types'
-import { DateFormatter } from '@internationalized/date'
 import ProductCard from '@/app/(main)/shop/components/product-card'
+import { SellerInfo, TVariationItem } from '@/constants/types'
+import { dateFormatter } from '@/utils/helpers'
+import { Avatar, Card, CardBody, Input, Pagination, Select, SelectItem, Tab, Tabs } from '@heroui/react'
+import { Icon } from '@iconify/react'
+import { FC, useMemo, useState } from 'react'
 
 type Props = {
 	seller: SellerInfo
@@ -42,14 +42,6 @@ const Seller: FC<Props> = ({ seller }) => {
 	const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct)
 	const totalPages = Math.ceil(filteredProducts.length / productsPerPage)
 
-	const sellerSince = () => (
-		<>
-			{new DateFormatter('en-US', {
-				month: 'long',
-				year: 'numeric'
-			}).format(new Date(seller.createdAt))}
-		</>
-	)
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<Card className="mb-8">
@@ -69,7 +61,7 @@ const Seller: FC<Props> = ({ seller }) => {
 								</div>
 								<div className="flex items-center gap-1">
 									<Icon icon="lucide:calendar" />
-									<span>Since {sellerSince()}</span>
+									<span>Since {dateFormatter(seller.createdAt)}</span>
 								</div>
 							</div>
 						</div>
@@ -134,8 +126,8 @@ const Seller: FC<Props> = ({ seller }) => {
 									<h3 className="text-lg font-semibold mb-2">About the Store</h3>
 									<p className="text-default-500">
 										Welcome to {seller.storeName}! We specialize in providing high-quality fashion items at competitive
-										prices. Our store has been serving customers since {sellerSince()}, maintaining a high standard of
-										customer service and product quality.
+										prices. Our store has been serving customers since {dateFormatter(seller.createdAt)}, maintaining a
+										high standard of customer service and product quality.
 									</p>
 								</div>
 
