@@ -164,3 +164,5 @@ export type CookieOptions = {
   maxAge?: number;
   expires?: Date;
 };
+
+export type TCheckoutPayload = { ids: string[], address?: string, payment?: string }

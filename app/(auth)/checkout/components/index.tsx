@@ -36,7 +36,11 @@ const Checkout: FC<Props> = ({ addresses, paymentMethods }) => {
 	}
 
 	const handlePlaceOrder = async () => {
-		const res = await checkoutCart(cartItems.map(item => item.id))
+		const res = await checkoutCart({
+			ids: cartItems.map(item => item.id),
+			address: selectedAddressId,
+			payment: selectedPayment
+		})
 
 		if (!res.success) return
 
@@ -193,7 +197,13 @@ const Checkout: FC<Props> = ({ addresses, paymentMethods }) => {
 									</div>
 								</div>
 
-								<Button color="primary" size="lg" onPress={handlePlaceOrder} isDisabled={!selectedAddressId || !selectedPayment}  fullWidth>
+								<Button
+									color="primary"
+									size="lg"
+									onPress={handlePlaceOrder}
+									isDisabled={!selectedAddressId || !selectedPayment}
+									fullWidth
+								>
 									Place Order
 								</Button>
 							</div>
