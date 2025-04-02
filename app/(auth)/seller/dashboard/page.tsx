@@ -4,6 +4,8 @@ import { getSellerInfo } from '@/utils/request'
 import { getServerSession } from 'next-auth'
 import SellerDashboard from './components'
 import styles from './styles.module.scss'
+import { USER_ROLE } from '@prisma/client'
+import { unauthorized } from 'next/navigation'
 
 const Page = async () => {
 	const session = await getServerSession(authOptions)
@@ -12,6 +14,10 @@ const Page = async () => {
 		getSoldProducts(session?.user?.id),
 		getProductReviews(session?.user?.id)
 	])
+
+	if (session?.user.role === USER_ROLE.USER) {
+		unauthorized()
+	}
 
 	return (
 		<div className={styles.sellerWrapper}>

@@ -3,9 +3,16 @@ import { getAddress, getOrders, getPaymentMethod, getReviews, getUserData, getWi
 import { getServerSession } from 'next-auth'
 import Profile from './components'
 import { getCartItems } from '@/lib/server'
+import { unauthorized } from 'next/navigation'
+import { USER_ROLE } from '@prisma/client'
 
 const Page = async () => {
 	const session = await getServerSession(authOptions)
+
+	if (session?.user.role === USER_ROLE.SELLER) {
+		unauthorized()
+	}
+
 	const [userInfo, addresses, paymentMethods, orders, reviews, wishlist, carts] = await Promise.all([
 		getUserData(`${session?.user.id}`),
 		getAddress(`${session?.user?.id}`),
