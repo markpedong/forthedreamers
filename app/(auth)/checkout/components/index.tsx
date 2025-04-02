@@ -18,7 +18,7 @@ type Props = {
 const Checkout: FC<Props> = ({ addresses, paymentMethods }) => {
 	const cartItems = useAppSelector(state => state.user.cartItems)
 	const { isOpen, onOpen, onOpenChange } = useDisclosure()
-	const { back } = useRouter()
+	const { back, push } = useRouter()
 	const dispatch = useAppDispatch()
 	const [selectedAddressId, setSelectedAddressId] = useState<string>('')
 	const [selectedPayment, setSelectedPayment] = useState<string>('')
@@ -34,7 +34,9 @@ const Checkout: FC<Props> = ({ addresses, paymentMethods }) => {
 		back()
 	}
 
-	const handlePlaceOrder = () => {}
+	const handlePlaceOrder = () => {
+		push('/order-success')
+	}
 
 	return (
 		<div className="container mx-auto max-w-6xl px-4 py-8">

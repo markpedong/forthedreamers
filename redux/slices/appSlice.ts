@@ -9,6 +9,7 @@ interface AppState {
   hasDefaultAddress: boolean
   isCartOpen: boolean
   hasChangesInCart: boolean
+  profileTab: string
 }
 
 const initialState: AppState = {
@@ -17,7 +18,8 @@ const initialState: AppState = {
   darkMode: false,
   hasDefaultAddress: false,
   isCartOpen: false,
-  hasChangesInCart: false
+  hasChangesInCart: false,
+  profileTab: ''
 }
 
 export const appSlice = createSlice({
@@ -41,6 +43,9 @@ export const appSlice = createSlice({
     },
     setHasChangesInCart: (state, action) => {
       state.hasChangesInCart = action.payload
+    },
+    setProfileTab: (state, action) => {
+      state.profileTab = action.payload
     }
   }
 })
@@ -51,6 +56,7 @@ export const {
   setHasDefaultAddress,
   setSellerFormState,
   setCartOpen,
-  setHasChangesInCart
+  setHasChangesInCart,
+  setProfileTab
 } = appSlice.actions
 export default appSlice.reducer

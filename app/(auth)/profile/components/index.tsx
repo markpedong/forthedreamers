@@ -21,7 +21,7 @@ import {
 	Reviews as TReviews,
 	Wishlists as TWishlists
 } from '@prisma/client'
-import { setHasDefaultAddress, toggleDarkMode } from '@/redux/slices/appSlice'
+import { setHasDefaultAddress, setProfileTab, toggleDarkMode } from '@/redux/slices/appSlice'
 import { Icon } from '@iconify/react'
 import WishList from './wishlist'
 import { CartResponse, TWishListItem } from '@/constants/types'
@@ -46,14 +46,14 @@ const Orders = dynamic(() => import('./orders'), { ssr: false })
 const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 
 const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, reviews, wishlist, carts }) => {
+	const { darkMode, profileTab } = useAppSelector(state => state.app)
 	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
-	const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
+	const [activeMenu, setActiveMenu] = useState<string>(profileTab === 'Orders' ? 'Orders' : 'Personal Information')
 	const dispatch = useAppDispatch()
 	const { data: session } = useSession()
 	const userData = useAppSelector(state => state.user.userData)
 	const [isPending, startTransition] = useTransition()
 	const router = useRouter()
-	const darkMode = useAppSelector(state => state.app.darkMode)
 	const { setTheme } = useTheme()
 
 	useEffect(() => {
@@ -74,6 +74,8 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
 	}
 
 	const fetchUserData = async () => {
+		dispatch(setProfileTab(''))
+		
 		if (!session?.user?.id || !session?.accessToken) return
 		if (!getLocalStorage('accessToken')) setLocalStorage('accessToken', session.accessToken)
 		if (addresses?.findIndex(address => address.type === ADDRESS_TYPE.DEFAULT) !== -1) {
