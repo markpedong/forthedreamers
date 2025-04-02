@@ -10,7 +10,7 @@ const Page = async () => {
 		unauthorized()
 	}
 
-	return <OrderSuccess orderId="adasdadasdas" />
+	return <OrderSuccess orderId={orderID} />
 }
 
 export default Page

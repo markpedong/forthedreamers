@@ -4,7 +4,8 @@ import AddEditAddress from '@/components/profile/addressAddEdit'
 import { setCartOpen } from '@/redux/slices/appSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { getCardIcon } from '@/utils/helpers'
-import { Button, Card, CardBody, Divider, Radio, RadioGroup, useDisclosure } from '@heroui/react'
+import { checkoutCart } from '@/utils/request'
+import { addToast, Button, Card, CardBody, Divider, Radio, RadioGroup, useDisclosure } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { Addresses, PAYMENT_TYPE, PaymentMethods } from '@prisma/client'
 import { useRouter } from 'next/navigation'
@@ -34,7 +35,12 @@ const Checkout: FC<Props> = ({ addresses, paymentMethods }) => {
 		back()
 	}
 
-	const handlePlaceOrder = () => {
+	const handlePlaceOrder = async () => {
+		const res = await checkoutCart(cartItems.map(item => item.id))
+
+		if (!res.success) return
+
+		addToast({ title: 'Success', description: 'Order placed successfully', color: 'success' })
 		push('/order-success')
 	}
 

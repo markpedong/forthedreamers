@@ -65,3 +65,5 @@ export const getSellerInfo = async (id: string) => get<SellerInfo>({ url: `/api/
 export const addItemToCart = async (body: AddToCartHandler) => post({ url: '/api/cart', data: body })
 
 export const deleteItemsFromCart = async (id: string) => deleteF({ url: '/api/cart', data: { id } })
+
+export const checkoutCart = async (ids: string[]) => post({ url: '/api/cart/checkout', data: { ids } })
