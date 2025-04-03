@@ -15,12 +15,14 @@ import {
   TableCell,
   TableColumn,
   TableHeader,
-  TableRow
+  TableRow,
+  Textarea
 } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { STATUS } from '@prisma/client'
 import React, { Dispatch, FC, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { Rate } from 'antd'
 
 type Props = {
   selectedOrder: TOrderItems | null
@@ -38,26 +40,36 @@ const variants = {
 }
 
 const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
-  const [currTab, setCurrTab] = useState('')
+  const [currTab, setCurrTab] = useState('review')
   const [hasOpened, setHasOpened] = useState(false)
 
   useEffect(() => {
     if (selectedOrder) {
-      setHasOpened(true) // Set flag after modal opens
+      setHasOpened(true)
     } else {
-      setHasOpened(false) // Reset when modal closes
+      setHasOpened(false)
     }
   }, [selectedOrder])
 
   return (
-    <Modal isOpen={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)} size="2xl">
+    <Modal
+      isOpen={!!selectedOrder}
+      onOpenChange={() => {
+        setSelectedOrder(null)
+        setCurrTab('')
+      }}
+      size="2xl"
+    >
       <ModalContent>
         {onClose =>
           selectedOrder && (
             <>
               <ModalHeader>
                 <div className="flex flex-col gap-1">
-                  <h3>Order Details</h3>
+                  <div className="flex gap-1 items-center" onClick={() => setCurrTab('')}>
+                    {currTab === 'review' && <Icon icon="lucide:arrow-left" />}
+                    <h3>{currTab === 'review' ? 'Back' : 'Order Details'}</h3>
+                  </div>
                   <span className="text-sm text-default-500">Order ID: {selectedOrder.id}</span>
                 </div>
               </ModalHeader>
@@ -137,34 +149,39 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
                       </div>
                     ) : (
                       <div className="flex flex-col gap-1">
-                        <div className="flex gap-1 items-center" onClick={() => setCurrTab('')}>
-                          <Icon icon="lucide:arrow-left" />
-                          <div>Back</div>
-                        </div>
-                        <div>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores voluptate excepturi,
-                          voluptatum quae dolore esse labore deleniti eos a nostrum exercitationem, sequi illum
-                          explicabo adipisci quos praesentium! Nobis iusto optio qui veritatis quod provident iste magni
-                          quaerat ipsum pariatur possimus dolorum itaque eius, neque amet, quibusdam nulla perspiciatis
-                          officiis necessitatibus!
-                        </div>
+                        {selectedOrder?.orderItems.map((item, idx) => (
+                          <div className="flex flex-col gap-1 mb-6">
+                            <div className="flex justify-between items-center">
+                              <div className="flex gap-1 font-bold">
+                                {idx + 1}. {item.product.name}
+                              </div>
+                              <div>
+                                <Rate defaultValue={5} />
+                              </div>
+                            </div>
+                            <div>
+                              <Textarea required placeholder="Write a review" />
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </motion.div>
                 </AnimatePresence>
               </ModalBody>
               <ModalFooter>
-                <Button color="primary" variant="solid" onPress={onClose}>
+                <Button color="primary" variant="faded" onPress={onClose}>
                   Close
                 </Button>
-                {selectedOrder.status === STATUS.DELIVERED && currTab !== 'review' && (
+                {selectedOrder.status === STATUS.DELIVERED && (
                   <Button
                     color="primary"
-                    variant="faded"
+                    variant="solid"
                     startContent={<Icon icon="lucide:star" />}
                     onPress={() => setCurrTab('review')}
+                    // isDisabled={}
                   >
-                    Write a Review
+                    {currTab === 'review' ? 'Submit Review' : 'Write a Review'}
                   </Button>
                 )}
               </ModalFooter>
