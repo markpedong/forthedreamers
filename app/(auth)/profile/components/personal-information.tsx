@@ -84,7 +84,8 @@ const PersonalInformation: FC = () => {
           type="submit"
           isLoading={isPending}
           fullWidth
-          className="mt-7 "
+          className="mt-7"
+          color='primary'
           variant="shadow"
           radius="sm"
         >
