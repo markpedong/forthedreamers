@@ -25,7 +25,7 @@ const Addresses: FC<Props> = ({ data }) => {
             dispatch(setAddress(null))
             onOpen()
           }}
-          className=""
+          color='primary'
           size="sm"
         >
           New
