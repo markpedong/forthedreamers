@@ -110,7 +110,8 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
               </div>
               <Button
                 size="sm"
-                color="default"
+                color="primary"
+								variant='solid'
                 onPress={() => {
                   clearUserData()
                   signOut()
