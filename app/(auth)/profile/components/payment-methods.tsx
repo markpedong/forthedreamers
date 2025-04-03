@@ -11,7 +11,6 @@ const PaymentMethod: FC<{ data: TPaymentMethod[] }> = ({ data }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const dispatch = useAppDispatch()
 
-  console.log(JSON.stringify(data))
   return (
     <div>
       <AddEditPaymentMethods
