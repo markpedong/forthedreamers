@@ -39,7 +39,7 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
               <ModalHeader>
                 <div className="flex flex-col gap-1">
                   <h3>Order Details</h3>
-                  <span className="text-sm text-default-500">Order #{selectedOrder.id}</span>
+                  <span className="text-sm text-default-500">Order ID: {selectedOrder.id}</span>
                 </div>
               </ModalHeader>
               <ModalBody>

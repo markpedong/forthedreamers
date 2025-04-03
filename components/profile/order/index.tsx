@@ -18,7 +18,7 @@ const Orders: FC<Props> = ({ order }) => {
     <>
       <div className="flex flex-col sm:flex-row gap-4 items-start p-4 bg-white dark:bg-neutral-800 shadow-medium rounded-lg sm:items-center justify-between">
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-medium">Order #{order.id}</span>
+          <span className="text-sm font-medium">Order ID: {order.id}</span>
           <span className="text-xs text-default-500">{dateFormatter(order.createdAt)}</span>
           <div className="flex items-center gap-2">
             <Chip size="sm" color={statusColorMap[order.status]} variant="flat">
