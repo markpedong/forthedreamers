@@ -110,7 +110,7 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button color="primary" variant="light" onPress={onClose}>
+                <Button color="primary" variant="solid" onPress={onClose}>
                   Close
                 </Button>
                 {selectedOrder.status === STATUS.DELIVERED && (
