@@ -3,8 +3,9 @@ import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, Chip, 
 import { Orders, STATUS } from '@prisma/client'
 import { dateFormatter } from '@/utils/helpers'
 import { statusColorMap } from '@/constants'
+import { TOrderItems } from '@/constants/types'
 
-const TableOrders: FC<{ orders: Orders[] }> = ({ orders }) => {
+const TableOrders: FC<{ orders: TOrderItems[] }> = ({ orders }) => {
   return (
     <Table aria-label="Orders table">
       <TableHeader>
@@ -22,7 +23,7 @@ const TableOrders: FC<{ orders: Orders[] }> = ({ orders }) => {
             <TableCell>#{order.id}</TableCell>
             <TableCell>{'order.customer'}</TableCell>
             <TableCell>{'order.product'}</TableCell>
-            <TableCell>${'order.amount.toFixed(2)'}</TableCell>
+            <TableCell>${order.total!.toFixed(2)}</TableCell>
             <TableCell>
               <Chip color={statusColorMap[order.status]} size="sm" variant="flat">
                 {order.status}
