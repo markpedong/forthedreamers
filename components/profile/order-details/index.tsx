@@ -62,9 +62,9 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
                     <Table removeWrapper aria-label="Order items">
                       <TableHeader>
                         <TableColumn>PRODUCT</TableColumn>
-                        <TableColumn>QUANTITY</TableColumn>
-                        <TableColumn>PRICE</TableColumn>
-                        <TableColumn>TOTAL</TableColumn>
+                        <TableColumn className="text-center">QUANTITY</TableColumn>
+                        <TableColumn className="text-center">PRICE</TableColumn>
+                        <TableColumn className="text-center">TOTAL</TableColumn>
                       </TableHeader>
                       <TableBody>
                         {selectedOrder.orderItems.map(item => (
@@ -79,9 +79,9 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
                                 <span className="text-sm">{item.product.name}</span>
                               </div>
                             </TableCell>
-                            <TableCell>{item.quantity}</TableCell>
-                            <TableCell>${item.price.toFixed(2)}</TableCell>
-                            <TableCell>${(item.price * item.quantity).toFixed(2)}</TableCell>
+                            <TableCell className="text-center">{item.quantity}</TableCell>
+                            <TableCell className="text-center">${item.price.toFixed(2)}</TableCell>
+                            <TableCell className="text-center">${(item.price * item.quantity).toFixed(2)}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
