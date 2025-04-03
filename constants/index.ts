@@ -1,4 +1,4 @@
-import { ADDRESS_TYPE, PAYMENT_TYPE } from '@prisma/client'
+import { ADDRESS_TYPE, PAYMENT_TYPE, STATUS } from '@prisma/client'
 
 export const NO_NAVBAR_FOOTER_PAGES = ['/login', '/checkout', '/forgot-password', '/signup']
 
@@ -71,3 +71,11 @@ export enum TAGS {
   WISHLIST = 'wishlist',
   CART = 'cart'
 }
+
+export const statusColorMap = {
+  [STATUS.PENDING]: 'warning',
+  [STATUS.PROCESSING]: 'primary',
+  [STATUS.SHIPPED]: 'secondary',
+  [STATUS.DELIVERED]: 'success',
+  [STATUS.CANCELED]: 'danger'
+} as const

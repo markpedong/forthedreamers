@@ -43,6 +43,8 @@ const fetchWithToken = async ({
   //   throw new Error("Unauthorized: No access token found.");
   // }
 
+  console.log("process.env.NEXTAUTH_URL", process.env.NEXTAUTH_URL)
+
   const response = await fetch(`${process.env.NEXTAUTH_URL}${url}`, {
     ...options,
     headers: {

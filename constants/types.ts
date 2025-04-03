@@ -1,4 +1,4 @@
-import { Products, Users, Variations, Wishlists } from '@prisma/client'
+import { OrderItems, Orders, Products, Users, Variations, Wishlists } from '@prisma/client'
 import { GetProp, UploadProps } from 'antd'
 
 export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' | 'firstName' | 'lastName' | 'role'>
@@ -145,24 +145,35 @@ export type CartResponse = {
 }
 
 export type SearchProductItem = {
-  name: string;
-  id: string;
-  images: string[];
+  name: string
+  id: string
+  images: string[]
   variations: {
-    price: number;
-    discountedPrice: number | null;
-  }[];
+    price: number
+    discountedPrice: number | null
+  }[]
 }[]
 
 export type TCartItem = { id: string; quantity: number }
 
 export type CookieOptions = {
-  path?: string;
-  httpOnly?: boolean;
-  secure?: boolean;
-  sameSite?: "strict" | "lax" | "none";
-  maxAge?: number;
-  expires?: Date;
-};
+  path?: string
+  httpOnly?: boolean
+  secure?: boolean
+  sameSite?: 'strict' | 'lax' | 'none'
+  maxAge?: number
+  expires?: Date
+}
 
-export type TCheckoutPayload = { ids: string[], address?: string, payment?: string }
+export type TCheckoutPayload = { ids: string[]; address?: string; payment?: string }
+
+export type TOrderItems = Orders & {
+  orderItems: Array<
+    OrderItems & {
+      product: {
+        images: string[]
+        name: string
+      }
+    }
+  >
+}

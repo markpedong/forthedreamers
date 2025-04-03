@@ -1,5 +1,13 @@
 import { TAGS } from '@/constants'
-import { AddToCartHandler, SellerInfo, TCheckoutPayload, TProductItem, TSellerItem, TWishListItem } from '@/constants/types'
+import {
+  AddToCartHandler,
+  SellerInfo,
+  TCheckoutPayload,
+  TOrderItems,
+  TProductItem,
+  TSellerItem,
+  TWishListItem
+} from '@/constants/types'
 import { Addresses, Orders, PaymentMethods, Reviews, Users } from '@prisma/client'
 import { deleteF, get, post, upload } from './http'
 
@@ -11,7 +19,8 @@ export const refreshToken = async () => post<{ accessToken: string }>({ url: '/a
 
 export const uploadProfile = async (file: File) => upload<{ secure_url: string }>('/api/uploadProfile', file)
 
-export const updateProfile = async (data?: Users | SellerInfo) => post<Users>({ url: `/api/users/${data?.id}`, data: data })
+export const updateProfile = async (data?: Users | SellerInfo) =>
+  post<Users>({ url: `/api/users/${data?.id}`, data: data })
 
 export const createNewAddress = async (data: any) => post<any>({ url: '/api/address', data })
 
@@ -25,15 +34,15 @@ export const updateAddress = async (data: any) => post<any>({ url: `/api/address
 
 export const createPaymentMethod = async (data: any) => post<any>({ url: '/api/payment-methods', data })
 
-export const updatePaymentMethod = async (data: any) =>
-  post<any>({ url: `/api/payment-methods/${data.id}`, data })
+export const updatePaymentMethod = async (data: any) => post<any>({ url: `/api/payment-methods/${data.id}`, data })
 
 export const setDefaultPaymentMethod = async (id: string) =>
   post<any>({ url: `/api/payment-methods/set-default`, data: { id } })
 
 export const deletePaymentMethod = async (id: string) => deleteF({ url: `/api/payment-methods/${id}` })
 
-export const getPaymentMethod = async (id: string) => get<PaymentMethods[]>({ url: `/api/payment-methods/${id}`, tags: TAGS.PAYMENT_METHODS })
+export const getPaymentMethod = async (id: string) =>
+  get<PaymentMethods[]>({ url: `/api/payment-methods/${id}`, tags: TAGS.PAYMENT_METHODS })
 
 export const getProducts = async () => get<TProductItem[]>({ url: `/api/products` })
 
@@ -41,8 +50,7 @@ export const registerSeller = async (data: any) => post<Users>({ url: '/api/sell
 
 export const getSellerProducts = async (id: string) => get<TProductItem[]>({ url: `/api/sellers/products/${id}` })
 
-export const updateProduct = async (data: any, id: string) =>
-  post({ url: `/api/products/${id}`, data, isJSON: false })
+export const updateProduct = async (data: any, id: string) => post({ url: `/api/products/${id}`, data, isJSON: false })
 
 export const createProduct = async (data: any) => post<any>({ url: '/api/products', data, isJSON: false })
 
@@ -52,13 +60,15 @@ export const removeFromCart = async (id?: string) => post<any>({ url: '/api/cart
 
 export const deleteProduct = async (id: string) => deleteF({ url: `/api/products/${id}` })
 
-export const getProduct = async (id: string) => get<TProductItem & { seller: TSellerItem }>({ url: `/api/products/${id}` })
+export const getProduct = async (id: string) =>
+  get<TProductItem & { seller: TSellerItem }>({ url: `/api/products/${id}` })
 
-export const getOrders = async (id: string) => get<Orders[]>({ url: `/api/orders/${id}`, tags: TAGS.ORDERS })
+export const getOrders = async (id: string) => get<TOrderItems[]>({ url: `/api/orders/${id}`, tags: TAGS.ORDERS })
 
 export const getReviews = async (id: string) => get<Reviews[]>({ url: `/api/reviews/${id}`, tags: TAGS.REVIEWS })
 
-export const getWishlist = async (id: string) => get<TWishListItem[]>({ url: `/api/wishlist/${id}`, tags: TAGS.WISHLIST })
+export const getWishlist = async (id: string) =>
+  get<TWishListItem[]>({ url: `/api/wishlist/${id}`, tags: TAGS.WISHLIST })
 
 export const getSellerInfo = async (id: string) => get<SellerInfo>({ url: `/api/sellers/${id}` })
 
