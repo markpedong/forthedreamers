@@ -13,7 +13,7 @@ type Props = {
 
 const Orders: FC<Props> = ({ order }) => {
   const [selectedOrder, setSelectedOrder] = useState<TOrderItems | null>(null)
-  
+
   return (
     <>
       <div className="flex flex-col sm:flex-row gap-4 items-start p-4 bg-white dark:bg-neutral-800 shadow-medium rounded-lg sm:items-center justify-between">
@@ -45,7 +45,7 @@ const Orders: FC<Props> = ({ order }) => {
 
         <Divider className="sm:hidden" />
       </div>
-      <OrderDetails selectedOrder={selectedOrder} setSelectedOrder={setSelectedOrder} />
+      <OrderDetails selectedOrder={selectedOrder} setSelectedOrder={setSelectedOrder} key={order.id} />
     </>
   )
 }

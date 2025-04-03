@@ -1,7 +1,8 @@
 import { statusColorMap } from '@/constants'
-import { TOrderItems } from '@/constants/types'
+import { TOrderItems, TReviewPayload } from '@/constants/types'
 import { dateFormatter } from '@/utils/helpers'
 import {
+  addToast,
   Button,
   Chip,
   Divider,
@@ -42,9 +43,21 @@ const variants = {
 const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
   const [currTab, setCurrTab] = useState('review')
   const [hasOpened, setHasOpened] = useState(false)
+  const [userReview, setUserReview] = useState<TReviewPayload[]>([])
 
   useEffect(() => {
     if (selectedOrder) {
+      setCurrTab('')
+      setUserReview(
+        selectedOrder?.orderItems?.map(item => ({
+          id: item.id,
+          productId: item.productId,
+          ordersId: item.ordersId,
+          rating: 0,
+          comment: ''
+        }))
+      )
+
       setHasOpened(true)
     } else {
       setHasOpened(false)
@@ -66,7 +79,13 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
             <>
               <ModalHeader>
                 <div className="flex flex-col gap-1">
-                  <div className="flex gap-1 items-center" onClick={() => setCurrTab('')}>
+                  <div
+                    className="flex gap-1 items-center cursor-pointer"
+                    onClick={() => {
+                      setCurrTab('')
+                      setUserReview([])
+                    }}
+                  >
                     {currTab === 'review' && <Icon icon="lucide:arrow-left" />}
                     <h3>{currTab === 'review' ? 'Back' : 'Order Details'}</h3>
                   </div>
@@ -150,18 +169,44 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
                     ) : (
                       <div className="flex flex-col gap-1">
                         {selectedOrder?.orderItems.map((item, idx) => (
-                          <div className="flex flex-col gap-1 mb-6">
+                          <div className="flex flex-col gap-1 mb-6" key={item.id}>
                             <div className="flex justify-between items-center">
                               <div className="flex gap-1 font-bold">
                                 {idx + 1}. {item.product.name}
                               </div>
-                              <div>
-                                <Rate defaultValue={5} />
-                              </div>
+                              <Rate
+                                onChange={val => {
+                                  setUserReview(prev => {
+                                    return prev.map(review => {
+                                      if (review.id === item.id) {
+                                        return {
+                                          ...review,
+                                          rating: val
+                                        }
+                                      }
+                                      return review
+                                    })
+                                  })
+                                }}
+                              />
                             </div>
-                            <div>
-                              <Textarea required placeholder="Write a review" />
-                            </div>
+                            <Textarea
+                              required
+                              placeholder="Write a review"
+                              onChange={e => {
+                                setUserReview(prev => {
+                                  return prev.map(review => {
+                                    if (review.id === item.id) {
+                                      return {
+                                        ...review,
+                                        comment: e.target.value
+                                      }
+                                    }
+                                    return review
+                                  })
+                                })
+                              }}
+                            />
                           </div>
                         ))}
                       </div>
@@ -178,8 +223,31 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
                     color="primary"
                     variant="solid"
                     startContent={<Icon icon="lucide:star" />}
-                    onPress={() => setCurrTab('review')}
-                    // isDisabled={}
+                    onPress={() => {
+                      if (currTab === 'review') {
+                        if (userReview.some(item => item.rating === 0)) {
+                          addToast({ title: 'Rating is required', color: 'warning' })
+                          return
+                        }
+
+                        if (userReview.some(item => item.comment?.length < 10)) {
+                          addToast({ title: 'Review must be at least 10 characters', color: 'warning' })
+                          return
+                        }
+
+                        
+                        // submit review before closing
+                        console.log('userReview', userReview)
+
+                        // after success then clear userReview
+                        // setUserReview([])
+                      } else {
+                        setCurrTab('review')
+                      }
+                    }}
+                    // isDisabled={
+                    //   currTab === 'review' && userReview?.some(review => review.comment === '' || review.rating === 0)
+                    // }
                   >
                     {currTab === 'review' ? 'Submit Review' : 'Write a Review'}
                   </Button>

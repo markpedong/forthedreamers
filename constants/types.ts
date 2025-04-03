@@ -177,3 +177,5 @@ export type TOrderItems = Orders & {
     }
   >
 }
+
+export type TReviewPayload = { id: string; productId: string; ordersId: string; rating: number; comment: string }
