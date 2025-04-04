@@ -105,15 +105,17 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         }
       },
       seller: {
+        // include: { products: true },
         select: {
           createdAt: true,
           image: true,
           storeName: true,
+          products: { where: { deletedAt: null }, select: { reviews: { select: { rating: true } } } },
           _count: {
             select: {
               products: { where: { deletedAt: null } }
             }
-          }
+          },
         },
       }
     }

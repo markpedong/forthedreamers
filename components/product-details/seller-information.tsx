@@ -1,5 +1,5 @@
 import { TSellerItem } from '@/constants/types'
-import { dateFormatter } from '@/utils/helpers'
+import { calculateSellerRating, dateFormatter } from '@/utils/helpers'
 import { Avatar, Button, Card, CardBody } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { useRouter } from 'next/navigation'
@@ -22,7 +22,7 @@ const SellerInformation: FC<Props> = ({ seller }) => {
 							<h3 className="text-lg font-semibold">{seller?.storeName}</h3>
 							<div className="flex items-center gap-1">
 								<Icon icon="lucide:star" className="text-warning" />
-								<span className="text-sm">{5}</span>
+								<span className="text-sm">{calculateSellerRating(seller.products)}</span>
 							</div>
 							<p className="text-xs text-default-500">Seller since {dateFormatter(seller.createdAt)}</p>
 						</div>

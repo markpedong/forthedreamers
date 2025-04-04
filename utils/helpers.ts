@@ -1,4 +1,4 @@
-import { ApiResponse, TDecodedToken, TReviewItem } from '@/constants/types'
+import { ApiResponse, TDecodedToken, TProductItem, TReviewItem } from '@/constants/types'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import { uuidSchema } from '@/lib/rules'
@@ -82,3 +82,11 @@ export const calculateAverageRating = (reviews: TReviewItem[]) =>
       (reviews.reduce((sum, { rating }) => sum + rating, 0) / reviews.length) * 10
     ) / 10
     : 0;
+
+export const calculateSellerRating = (data: TProductItem[]) => {
+  const allRatings = data.flatMap(products => products.reviews.map((r) => r.rating));
+
+  return allRatings.length
+    ? Math.round((allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length) * 10) / 10
+    : 0;
+};

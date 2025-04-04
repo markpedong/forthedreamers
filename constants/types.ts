@@ -95,6 +95,7 @@ export type TVariationItem = {
 
 export type TSellerItem = Users & {
   _count: { products: number }
+  products: TProductItem[]
 }
 
 export type SellerInfo = {
