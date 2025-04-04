@@ -244,6 +244,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 												placeholder="e.g., 16GB RAM, 512GB SSD"
 												value={variation.label}
 												onValueChange={value => updateVariation(index, 'label', value)}
+												maxLength={30}
 											/>
 											<div className="grid grid-cols-3 gap-2">
 												<Input
