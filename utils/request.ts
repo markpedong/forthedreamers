@@ -55,7 +55,7 @@ export const deleteProduct = async (id: string) => deleteF({ url: `/api/products
 
 export const getProduct = async (id: string) => get<TProductItem & { seller: TSellerItem }>({ url: `/api/products/${id}` })
 
-export const getSellerInfo = async (id: string) => get<SellerInfo>({ url: `/api/sellers/${id}` })
+export const getSellerInfo = async (id: string) => get<SellerInfo>({ url: `/api/sellers/${id}`, tags: TAGS.SELLER })
 
 export const addItemToCart = async (data: AddToCartHandler) => post({ url: '/api/cart', data })
 

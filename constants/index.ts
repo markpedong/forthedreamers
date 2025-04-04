@@ -70,6 +70,7 @@ export enum TAGS {
   PAYMENT_METHODS = 'payment-methods',
   WISHLIST = 'wishlist',
   CART = 'cart'
+  SELLER = 'seller'
 }
 
 export const statusColorMap = {

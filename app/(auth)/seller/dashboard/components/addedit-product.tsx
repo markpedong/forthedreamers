@@ -1,5 +1,6 @@
-import { DEFAULT_VARIATION } from '@/constants'
+import { DEFAULT_VARIATION, TAGS } from '@/constants'
 import { AddProductModalProps, TProductItem, TVariationItem } from '@/constants/types'
+import { refetch } from '@/lib/server'
 import { createProduct, updateProduct } from '@/utils/request'
 import {
 	addToast,
@@ -16,17 +17,15 @@ import {
 } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import React, { FC, FormEvent, useEffect, useRef, useState, useTransition } from 'react'
 
 const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) => {
 	const [variations, setVariations] = useState<TVariationItem[]>([DEFAULT_VARIATION])
-	const [images, setImages] = useState<File[]>([])
-	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([])
+	const [existingImages, setExistingImages] = useState<string[]>([]) // Existing images
+	const [newImages, setNewImages] = useState<File[]>([]) // New images
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const formRef = useRef<HTMLFormElement>(null)
 	const [isPending, startTransition] = useTransition()
-	const router = useRouter()
 	const { data: session } = useSession()
 	const [initialData, setInitialData] = useState<TProductItem>()
 
@@ -34,6 +33,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 		if (product) {
 			setVariations(product.variations)
 			setInitialData(product)
+			setExistingImages(product.images || []) // Load existing images
 		}
 	}, [product])
 
@@ -44,40 +44,31 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 			variation => variation.discountedPrice && variation.discountedPrice > variation.price
 		)
 		if (invalidVariation) {
-			addToast({
-				title: 'Discounted price cannot be greater than original price',
-				color: 'warning'
-			})
+			addToast({ title: 'Discounted price cannot be greater than original price', color: 'warning' })
 			return
 		}
 
-		if (initialData?.description?.length! < 20) {
-			addToast({
-				title: 'Description must be at least 20 characters',
-				color: 'warning'
-			})
+		if ((initialData?.description?.length || 0) < 20) {
+			addToast({ title: 'Description must be at least 20 characters', color: 'warning' })
 			return
 		}
 
-		if (imagePreviewUrls.length === 0 && initialData?.images?.length === 0) {
-			addToast({
-				title: 'Please add at least one image',
-				color: 'warning'
-			})
+		if (existingImages.length === 0 && newImages.length === 0) {
+			addToast({ title: 'Please add at least one image', color: 'warning' })
 			return
 		}
 
 		startTransition(async () => {
 			const formData = new FormData()
-			formData.append('name', `${initialData?.name || ''}`)
-			formData.append('description', `${initialData?.description || ''}`)
+			formData.append('name', initialData?.name || '')
+			formData.append('description', initialData?.description || '')
 			formData.append('variations', JSON.stringify(variations.filter(v => v.label && v.price > 0)))
-			images.forEach(file => formData.append('newImages', file))
+			newImages.forEach(file => formData.append('newImages', file))
+			formData.append('images', JSON.stringify(existingImages)) // Only send remaining existing images
 
 			let res
 			if (initialData?.id) {
-				formData.append('images', JSON.stringify(initialData.images))
-				res = await updateProduct(formData, initialData?.id || '')
+				res = await updateProduct(formData, initialData.id)
 			} else {
 				formData.append('sellerID', session?.user?.id || '')
 				res = await createProduct(formData)
@@ -85,25 +76,31 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 
 			if (res?.success) {
 				setInitialData(undefined)
+				setExistingImages([])
+				setNewImages([])
 				addToast({ title: 'Success', description: 'Product saved successfully', color: 'success' })
 				onClose()
-				router.refresh()
+				refetch(TAGS.SELLER)
 			}
 		})
 	}
 
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const files = Array.from(e.target.files || [])
-		if (files.length + images.length > 10) return addToast({ title: 'Maximum 10 images allowed', color: 'warning' })
-
-		setImages([...images, ...files])
-		setImagePreviewUrls([...imagePreviewUrls, ...files.map(file => URL.createObjectURL(file))])
+		if (files.length + existingImages.length + newImages.length > 10) {
+			addToast({ title: 'Maximum 10 images allowed', color: 'warning' })
+			return
+		}
+		setNewImages(prev => [...prev, ...files])
 	}
 
-	const removeImage = (index: number) => {
-		URL.revokeObjectURL(imagePreviewUrls[index])
-		setImages(images.filter((_, i) => i !== index))
-		setImagePreviewUrls(imagePreviewUrls.filter((_, i) => i !== index))
+	const removeExistingImage = (index: number) => {
+		setExistingImages(existingImages.filter((_, i) => i !== index))
+	}
+
+	const removeNewImage = (index: number, url: string) => {
+		URL.revokeObjectURL(url)
+		setNewImages(newImages.filter((_, i) => i !== index))
 	}
 
 	const updateVariation = (index: number, field: keyof TVariationItem, value: string | number) => {
@@ -114,10 +111,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 
 	const handleChange = (key: keyof TProductItem) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		//@ts-expect-error type error
-		setInitialData(prev => ({
-			...(prev ?? {}),
-			[key]: e.target.value
-		}))
+		setInitialData(prev => ({ ...(prev ?? {}), [key]: e.target.value }))
 	}
 
 	return (
@@ -129,8 +123,8 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 			onOpenChange={isOpen => {
 				if (!isOpen) {
 					setVariations([DEFAULT_VARIATION])
-					setImages([])
-					setImagePreviewUrls([])
+					setExistingImages([])
+					setNewImages([])
 					setInitialData(undefined)
 				}
 			}}
@@ -153,19 +147,20 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 								value={initialData?.description || ''}
 								onChange={handleChange('description')}
 								isRequired
-								min={30}
+								min={20}
 							/>
 
 							{/* Images */}
 							<div>
 								<p className="text-small font-medium mb-2">Product Images (Max 10)</p>
 								<div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
-									{imagePreviewUrls.map((url, index) => (
-										<Card key={index} className="relative group">
+									{/* Existing Images */}
+									{existingImages.map((url, index) => (
+										<Card key={`existing-${index}`} className="relative group">
 											<CardBody className="p-2">
 												<img
 													src={url}
-													alt={`Preview ${index + 1}`}
+													alt={`Existing ${index + 1}`}
 													className="w-full aspect-square object-cover rounded-lg"
 												/>
 												<Button
@@ -174,14 +169,42 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 													color="danger"
 													variant="flat"
 													className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
-													onPress={() => removeImage(index)}
+													onPress={() => removeExistingImage(index)}
 												>
 													<Icon icon="lucide:x" className="w-4 h-4" />
 												</Button>
 											</CardBody>
 										</Card>
 									))}
-									{imagePreviewUrls.length < 10 && (
+
+									{/* New Images */}
+									{newImages.map((file, index) => {
+										const previewUrl = URL.createObjectURL(file)
+										return (
+											<Card key={`new-${index}`} className="relative group">
+												<CardBody className="p-2">
+													<img
+														src={previewUrl}
+														alt={`New ${index + 1}`}
+														className="w-full aspect-square object-cover rounded-lg"
+													/>
+													<Button
+														isIconOnly
+														size="sm"
+														color="danger"
+														variant="flat"
+														className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
+														onPress={() => removeNewImage(index, previewUrl)}
+													>
+														<Icon icon="lucide:x" className="w-4 h-4" />
+													</Button>
+												</CardBody>
+											</Card>
+										)
+									})}
+
+									{/* Add Image Button */}
+									{existingImages.length + newImages.length < 10 && (
 										<Button variant="flat" className="h-[100px] w-full" onPress={() => fileInputRef.current?.click()}>
 											<Icon icon="lucide:upload" className="w-6 h-6" />
 											<span className="text-tiny">Add Image</span>
@@ -197,7 +220,6 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 									onChange={handleImageChange}
 								/>
 							</div>
-
 							{/* Variations */}
 							<div>
 								<div className="flex justify-between items-center mb-2">
@@ -206,15 +228,16 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 										size="sm"
 										variant="flat"
 										color="primary"
-										className=""
+										className="text-inherit"
 										onPress={() => setVariations([...variations, DEFAULT_VARIATION])}
+										disabled={variations?.length > 5}
 									>
 										<Icon icon="lucide:plus" className="w-4 h-4" />
 										Add Variation
 									</Button>
 								</div>
 								{variations.map((variation, index) => (
-									<Card key={index}>
+									<Card key={index} className="mb-4">
 										<CardBody className="gap-4">
 											<Input
 												label="Variation Name"
@@ -255,7 +278,7 @@ const AddEditProduct: FC<AddProductModalProps> = ({ isOpen, onClose, product }) 
 						<Button variant="flat" onPress={onClose}>
 							Cancel
 						</Button>
-						<Button className="" color="primary" type="submit" isLoading={isPending}>
+						<Button color="primary" type="submit" isLoading={isPending}>
 							{initialData?.id ? 'Update' : 'Add'} Product
 						</Button>
 					</ModalFooter>

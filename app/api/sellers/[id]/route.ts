@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       include: {
         products: {
           include: {
-            variations: { select: { price: true, discountedPrice: true } },
+            variations: { select: { price: true, discountedPrice: true, id: true, label: true, stock: true } },
             reviews: { select: { rating: true } }
           },
           where: { deletedAt: null }

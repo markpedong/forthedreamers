@@ -63,7 +63,7 @@ const Header: FC<Props> = ({ userInfo, onEditProfile }) => {
 					</div>
 				</div>
 				<Button
-					className=""
+					className="text-inherit"
 					variant="flat"
 					color="primary"
 					startContent={<Icon icon="lucide:edit" />}
