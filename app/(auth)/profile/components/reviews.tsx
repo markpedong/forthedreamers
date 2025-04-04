@@ -15,11 +15,13 @@ const Reviews: FC = () => {
 		}
 	})
 
+	console.log('REVIEWS', data)
+
 	return (
 		<div>
-			{data?.map(review => (
-				<Review data={review} />
-			))}
+			{/* {data?.map(review => (
+				<Review data={review} key={review.id} />
+			))} */}
 		</div>
 	)
 }

@@ -178,4 +178,4 @@ export type TOrdersResponse = Orders & {
   orderItems: Array<TOrderItems>
 }
 
-export type TReviewPayload = { id: string; productId: string; ordersId: string; rating: number; comment: string }
+export type TReviewPayload = { id: string; userId: string, productId: string; orderId: string; rating: number; comment: string }

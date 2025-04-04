@@ -1,4 +1,4 @@
-import { statusColorMap } from '@/constants'
+import { statusColorMap, TAGS } from '@/constants'
 import { TOrderItems, TOrdersResponse, TReviewPayload } from '@/constants/types'
 import { dateFormatter } from '@/utils/helpers'
 import {
@@ -21,10 +21,11 @@ import {
 } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { STATUS } from '@prisma/client'
-import React, { ChangeEvent, Dispatch, FC, useEffect, useState } from 'react'
+import React, { ChangeEvent, Dispatch, FC, useEffect, useState, useTransition } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Rate } from 'antd'
-import { submitReview } from '@/lib/server'
+import { refetch, submitReview } from '@/lib/server'
+import { useSession } from 'next-auth/react'
 
 type Props = {
 	selectedOrder: TOrdersResponse | null
@@ -45,6 +46,8 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
 	const [currTab, setCurrTab] = useState('review')
 	const [hasOpened, setHasOpened] = useState(false)
 	const [userReview, setUserReview] = useState<TReviewPayload[]>([])
+	const [isPending, startTransition] = useTransition()
+	const { data: session } = useSession()
 
 	useEffect(() => {
 		if (selectedOrder) {
@@ -53,9 +56,10 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
 				selectedOrder?.orderItems?.map(item => ({
 					id: item.id,
 					productId: item.productId,
-					ordersId: item.ordersId,
+					orderId: item.ordersId,
 					rating: 0,
-					comment: ''
+					comment: '',
+					userId: `${session?.user.id}`
 				}))
 			)
 
@@ -91,6 +95,32 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
 				return review
 			})
 		})
+	}
+
+	const handleSubmitReview = (onClose: () => void) => {
+		if (currTab === 'review') {
+			if (userReview.some(item => item.rating === 0)) {
+				addToast({ title: 'Rating is required', color: 'warning' })
+				return
+			}
+
+			if (userReview.some(item => item.comment?.length < 10)) {
+				addToast({ title: 'Review must be at least 10 characters', color: 'warning' })
+				return
+			}
+
+			startTransition(async () => {
+				const res = await submitReview(userReview)
+				if (res.success) {
+					setUserReview([])
+					addToast({ title: 'Review submitted successfully!', color: 'success' })
+					refetch(TAGS.ORDERS)
+					onClose()
+				}
+			})
+		} else {
+			setCurrTab('review')
+		}
 	}
 
 	return (
@@ -197,7 +227,7 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
 											</div>
 										) : (
 											<div className="flex flex-col gap-1">
-												{selectedOrder?.orderItems.map((item, idx) => (
+												{selectedOrder?.orderItems.filter(item => !item.hasReview).map((item, idx) => (
 													<div className="flex flex-col gap-1 mb-6" key={item.id}>
 														<div className="flex justify-between items-center">
 															<div className="flex gap-1 font-bold">
@@ -221,40 +251,19 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
 								<Button color="primary" variant="faded" onPress={onClose}>
 									Close
 								</Button>
-								{selectedOrder.status === STATUS.DELIVERED && (
-									<Button
-										color="primary"
-										variant="solid"
-										startContent={<Icon icon="lucide:star" />}
-										onPress={async () => {
-											if (currTab === 'review') {
-												if (userReview.some(item => item.rating === 0)) {
-													addToast({ title: 'Rating is required', color: 'warning' })
-													return
-												}
-
-												if (userReview.some(item => item.comment?.length < 10)) {
-													addToast({ title: 'Review must be at least 10 characters', color: 'warning' })
-													return
-												}
-
-												const res = await submitReview(userReview)
-												if (res.success) {
-													setUserReview([])
-													addToast({ title: 'Review submitted successfully!', color: 'success' })
-													onClose()
-												}
-											} else {
-												setCurrTab('review')
-											}
-										}}
-										// isDisabled={
-										//   currTab === 'review' && userReview?.some(review => review.comment === '' || review.rating === 0)
-										// }
-									>
-										{currTab === 'review' ? 'Submit Review' : 'Write a Review'}
-									</Button>
-								)}
+								{selectedOrder.status === STATUS.DELIVERED &&
+									selectedOrder.orderItems.some(item => !item.hasReview) && (
+										<Button
+											color="primary"
+											variant="solid"
+											startContent={<Icon icon="lucide:star" />}
+											isDisabled={isPending}
+											isLoading={isPending}
+											onPress={() => handleSubmitReview(onClose)}
+										>
+											{currTab === 'review' ? 'Submit Review' : 'Write a Review'}
+										</Button>
+									)}
 							</ModalFooter>
 						</>
 					)
