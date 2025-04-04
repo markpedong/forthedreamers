@@ -1,9 +1,8 @@
 import Review from '@/components/profile/reviews'
 import { getReviews } from '@/lib/server'
-import { Reviews as TReviews } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 const Reviews: FC = () => {
 	const { data: session } = useSession()

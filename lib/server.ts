@@ -5,7 +5,7 @@ import { TAGS } from '@/constants'
 import { CartResponse, CookieOptions, TCartItem, TOrderItems, TWishListItem } from '@/constants/types'
 import prisma from '@/db'
 import { get, patch } from '@/utils/http'
-import { Reviews } from '@prisma/client'
+import { Addresses, PaymentMethods, Reviews } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { revalidateTag } from 'next/cache'
 import { cookies } from 'next/headers'
@@ -105,3 +105,8 @@ export const getOrders = async (id: string) => get<TOrderItems[]>({ url: `/api/o
 export const getWishlist = async (id: string) => get<TWishListItem[]>({ url: `/api/wishlist/${id}`, tags: TAGS.WISHLIST })
 
 export const getReviews = async (id: string) => get<Reviews[]>({ url: `/api/reviews/${id}`, tags: TAGS.REVIEWS })
+
+export const getAddress = async (id: string) => get<Addresses[]>({ url: `/api/address/${id}`, tags: TAGS.ADDRESS })
+
+export const getPaymentMethod = async (id: string) => get<PaymentMethods[]>({ url: `/api/payment-methods/${id}`, tags: TAGS.PAYMENT_METHODS })
+

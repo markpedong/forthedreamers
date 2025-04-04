@@ -24,8 +24,6 @@ export const updateProfile = async (data?: Users | SellerInfo) =>
 
 export const createNewAddress = async (data: any) => post<any>({ url: '/api/address', data })
 
-export const getAddress = async (id: string) => get<Addresses[]>({ url: `/api/address/${id}`, tags: TAGS.ADDRESS })
-
 export const setDefaultAddress = async (data: any) => post<any>({ url: '/api/address/set-default', data })
 
 export const deleteAddress = async (id: string) => deleteF({ url: `/api/address/${id}` })
@@ -40,9 +38,6 @@ export const setDefaultPaymentMethod = async (id: string) =>
   post<any>({ url: `/api/payment-methods/set-default`, data: { id } })
 
 export const deletePaymentMethod = async (id: string) => deleteF({ url: `/api/payment-methods/${id}` })
-
-export const getPaymentMethod = async (id: string) =>
-  get<PaymentMethods[]>({ url: `/api/payment-methods/${id}`, tags: TAGS.PAYMENT_METHODS })
 
 export const getProducts = async () => get<TProductItem[]>({ url: `/api/products` })
 
