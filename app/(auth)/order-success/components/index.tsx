@@ -1,7 +1,6 @@
 'use client'
 
 import { removeServerCookie } from '@/lib/server'
-import { useAppDispatch } from '@/redux/store'
 import { Button, Card, CardBody, Divider } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { useRouter } from 'next/navigation'
@@ -13,7 +12,6 @@ type Props = {
 
 const OrderSuccess: FC<Props> = ({ orderId }) => {
 	const { push } = useRouter()
-	const dispatch = useAppDispatch()
 
 	const handleUserLeave = async (path: string) => {
 		await removeServerCookie('orderID')
@@ -60,7 +58,7 @@ const OrderSuccess: FC<Props> = ({ orderId }) => {
 							variant="bordered"
 							color="primary"
 							onPress={() => {
-								handleUserLeave('/profile')
+								handleUserLeave('/profile?tab=orders')
 							}}
 							startContent={<Icon icon="lucide:package" />}
 							fullWidth

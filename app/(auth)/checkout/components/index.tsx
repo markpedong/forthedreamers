@@ -1,7 +1,8 @@
 'use client'
 
 import AddEditAddress from '@/components/profile/addressAddEdit'
-import { setCartOpen } from '@/redux/slices/appSlice'
+import { setCartOpen, setHasChangesInCart, setHasDefaultAddress } from '@/redux/slices/appSlice'
+import { setAddress, setCartItems } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { getCardIcon } from '@/utils/helpers'
 import { checkoutCart } from '@/utils/request'
@@ -45,6 +46,10 @@ const Checkout: FC<Props> = ({ addresses, paymentMethods }) => {
 		if (!res.success) return
 
 		addToast({ title: 'Success', description: 'Order placed successfully', color: 'success' })
+		dispatch(setCartOpen(false))
+		dispatch(setCartItems([]))
+		dispatch(setHasChangesInCart(false))
+		dispatch(setAddress(null))
 		push('/order-success')
 	}
 
