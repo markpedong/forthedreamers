@@ -14,7 +14,7 @@ import {
 } from '@heroui/react'
 import classNames from 'classnames'
 import { usePathname, useRouter } from 'next/navigation'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import SearchDrawer from './search-drawer'
 import { NO_NAVBAR_FOOTER_PAGES } from '@/constants'
 import { useTheme } from 'next-themes'
@@ -25,6 +25,7 @@ import { Icon } from '@iconify/react'
 import { USER_ROLE } from '@prisma/client'
 import { LOGINFORM_STATE } from '@/constants/types'
 import CartDrawer from './cart-drawer'
+import { useWithDispatch } from '@/hooks/useWithDispatch'
 
 const NavBar: FC = () => {
 	const pathname = usePathname()
@@ -36,12 +37,17 @@ const NavBar: FC = () => {
 	const menuItems = ['Home', 'Shop', 'Collection', 'Support']
 	const { setTheme } = useTheme()
 	const dispatch = useAppDispatch()
+	const { fetchCartItem } = useWithDispatch()
 	const toggle = () => {
 		dispatch(toggleDarkMode())
 		setTheme(darkMode ? 'light' : 'dark')
 	}
 	const p = (name: string) => push(`/${name === 'home' ? '' : name}`)
 	const isUser = session?.user.role === USER_ROLE.USER
+
+	useEffect(() => {
+		fetchCartItem()
+	}, [])
 
 	return (
 		!NO_NAVBAR_FOOTER_PAGES.includes(pathname) && (

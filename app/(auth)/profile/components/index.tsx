@@ -2,9 +2,8 @@
 
 import UploadImage from '@/components/profile/uploadImage'
 import { clearUserData } from '@/lib'
-import { getCartItems } from '@/lib/server'
 import { setProfileTab, toggleDarkMode } from '@/redux/slices/appSlice'
-import { setCartItems, setUserData } from '@/redux/slices/userSlice'
+import { setUserData } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { uploadProfile } from '@/utils/request'
 import { getLocalStorage, setLocalStorage } from '@/utils/xLocalStorage'
@@ -36,7 +35,7 @@ const Profile: FC<Props> = ({ userInfo }) => {
 	const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
 	const dispatch = useAppDispatch()
 	const { data: session } = useSession()
-	const { userData, cartItems } = useAppSelector(state => state.user)
+	const { userData } = useAppSelector(state => state.user)
 	const [isPending, startTransition] = useTransition()
 	const router = useRouter()
 	const { setTheme } = useTheme()
@@ -67,11 +66,6 @@ const Profile: FC<Props> = ({ userInfo }) => {
 
 		if (!session?.user?.id || !session?.accessToken) return
 		if (!getLocalStorage('accessToken')) setLocalStorage('accessToken', session.accessToken)
-		if (cartItems.length === 0) {
-			const carts = await getCartItems(`${session?.user?.id}`)
-
-			dispatch(setCartItems(carts.data))
-		}
 
 		dispatch(setUserData(userInfo))
 	}
