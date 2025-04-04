@@ -105,7 +105,7 @@ const Shop: FC<Props> = ({ products }) => {
 							<Button
 								color="primary"
 								variant="flat"
-								className="mt-4"
+								className="mt-4 text-inherit"
 								onPress={handleReset}
 								startContent={<Icon icon="lucide:refresh-ccw" />}
 							>
