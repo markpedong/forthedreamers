@@ -227,21 +227,23 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
 											</div>
 										) : (
 											<div className="flex flex-col gap-1">
-												{selectedOrder?.orderItems.filter(item => !item.hasReview).map((item, idx) => (
-													<div className="flex flex-col gap-1 mb-6" key={item.id}>
-														<div className="flex justify-between items-center">
-															<div className="flex gap-1 font-bold">
-																{idx + 1}. {item.product.name}
+												{selectedOrder?.orderItems
+													.filter(item => !item.hasReview)
+													.map((item, idx) => (
+														<div className="flex flex-col gap-1 mb-6" key={item.id}>
+															<div className="flex justify-between items-center">
+																<div className="flex gap-1 font-bold">
+																	{idx + 1}. {item.product.name}
+																</div>
+																<Rate onChange={val => handleRateChange(val, item)} allowHalf />
 															</div>
-															<Rate onChange={val => handleRateChange(val, item)} />
+															<Textarea
+																required
+																placeholder="Write a review"
+																onChange={e => handleTextAreaChange(e, item)}
+															/>
 														</div>
-														<Textarea
-															required
-															placeholder="Write a review"
-															onChange={e => handleTextAreaChange(e, item)}
-														/>
-													</div>
-												))}
+													))}
 											</div>
 										)}
 									</motion.div>

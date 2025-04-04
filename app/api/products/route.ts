@@ -51,8 +51,8 @@ export async function GET() {
         seller: { storeName: { not: null } }
       }
     },
-    select: { id: true, name: true, images: true, categories: true, variations: { select: { price: true, discountedPrice: true } } },
-    orderBy: { createdAt: 'desc' }
+    select: { id: true, name: true, images: true, categories: true, variations: { select: { price: true, discountedPrice: true } }, reviews: { select: { rating: true } } },
+    orderBy: { createdAt: 'desc' },
   })
 
   return generateResponse({ data: products, message: 'Products fetched successfully' })

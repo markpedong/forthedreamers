@@ -9,7 +9,6 @@ type Props = {
 }
 
 const Review: FC<Props> = ({ data }) => {
-
 	return (
 		<Card key={data.id} className="w-full">
 			<CardBody>
@@ -21,7 +20,7 @@ const Review: FC<Props> = ({ data }) => {
 						<p className="text-small text-default-500">{dateFormatter(data.createdAt)}</p>
 					</div>
 					<div className="flex items-center gap-2">
-						<Rate value={data.rating} />
+						<Rate value={data.rating} allowHalf disabled />
 						<span className="text-small text-default-500">{data.rating}/5</span>
 					</div>
 					<Divider className="my-1" />

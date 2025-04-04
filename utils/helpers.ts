@@ -1,4 +1,4 @@
-import { ApiResponse, TDecodedToken } from '@/constants/types'
+import { ApiResponse, TDecodedToken, TReviewItem } from '@/constants/types'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import { uuidSchema } from '@/lib/rules'
@@ -75,3 +75,10 @@ export const dateFormatter = (createdAt: string | Date) => {
     timeStyle: 'short'
   }).format(new Date(createdAt))
 }
+
+export const calculateAverageRating = (reviews: TReviewItem[]) =>
+  reviews.length
+    ? Math.round(
+      (reviews.reduce((sum, { rating }) => sum + rating, 0) / reviews.length) * 10
+    ) / 10
+    : 0;

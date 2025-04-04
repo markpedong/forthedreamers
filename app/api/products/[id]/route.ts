@@ -95,28 +95,26 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     where: { id, deletedAt: null },
     include: {
       variations: true,
-      reviews: true,
-      seller: {
-        omit: {
-          email: true,
-          username: true,
-          phoneNumber: true,
-          password: true,
-          role: true,
-          updatedAt: true,
-          deletedAt: true,
-          firstName: true,
-          lastName: true,
-          refreshToken: true,
-          birthday: true
-        },
+      reviews: {
         include: {
+          user: {
+            select: {
+              firstName: true, lastName: true, image: true
+            }
+          }
+        }
+      },
+      seller: {
+        select: {
+          createdAt: true,
+          image: true,
+          storeName: true,
           _count: {
             select: {
               products: { where: { deletedAt: null } }
             }
           }
-        }
+        },
       }
     }
   })

@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react'
 import { TProductItem } from '@/constants/types'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { calculateAverageRating } from '@/utils/helpers'
 
 interface ProductCardProps {
 	product: TProductItem
@@ -38,7 +39,9 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
 					/>
 					<div className="absolute top-0 left-0 p-2 flex flex-col gap-2 z-10">
 						{discountPercentage > 0 && (
-							<div className="bg-danger-500 px-2 py-1 rounded-lg text-xs font-medium text-white">-{discountPercentage}% OFF</div>
+							<div className="bg-danger-500 px-2 py-1 rounded-lg text-xs font-medium text-white">
+								-{discountPercentage}% OFF
+							</div>
 						)}
 					</div>
 					<div className="absolute top-0 right-0 p-2">
@@ -68,8 +71,8 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
 					</div>
 					<div className="flex items-center gap-1">
 						<Icon icon="lucide:star" className="text-warning" />
-						<span className="font-medium">4.5</span>
-						<span className="text-default-500 text-sm">(120)</span>
+						<span className="font-medium">{calculateAverageRating(product.reviews)}</span>
+						<span className="text-default-500 text-sm">({product.reviews.length})</span>
 					</div>
 				</div>
 			</CardFooter>

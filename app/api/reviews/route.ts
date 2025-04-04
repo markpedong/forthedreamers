@@ -26,7 +26,6 @@ export async function POST(req: NextRequest) {
 
     return generateResponse({ message: "review submitted" })
   } catch (error) {
-    console.log("REVIEW SUBMISSION ERROR", error)
     return generateResponse({ status: 500, error, message: "error in submitting review" })
 
   }

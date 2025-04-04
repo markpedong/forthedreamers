@@ -1,14 +1,13 @@
 'use client'
 
-import Image from 'next/image'
-import { FC } from 'react'
+import NewsLetter from '@/components/newsletter'
+import { TProductItem } from '@/constants/types'
 import { Icon } from '@iconify/react'
 import { motion } from 'framer-motion'
-import TrendingNow from './trending-now'
-import NewsLetter from '@/components/newsletter'
-import { Products } from '@prisma/client'
-import { TProductItem } from '@/constants/types'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { FC } from 'react'
+import TrendingNow from './trending-now'
 
 const Home: FC<{ products: TProductItem[] }> = ({ products }) => {
 	const imageVariants = {

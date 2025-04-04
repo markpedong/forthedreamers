@@ -4,10 +4,8 @@ import ProductImages from '@/components/product-details/product-images'
 import QuantitySelector from '@/components/product-details/quantity-selector'
 import SellerInformation from '@/components/product-details/seller-information'
 import VariationSelector from '@/components/product-details/variantion-selector'
-import { TAGS } from '@/constants'
 import { TProductItem, TSellerItem, TVariationItem } from '@/constants/types'
 import { useWithDispatch } from '@/hooks/useWithDispatch'
-import { refetch } from '@/lib/server'
 import { addItemToCart } from '@/utils/request'
 import { addToast, Button, Divider, Spinner } from '@heroui/react'
 import { Icon } from '@iconify/react'
@@ -16,6 +14,7 @@ import { Typography } from 'antd'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { FC, Suspense, useEffect, useState } from 'react'
+import ProductReviews from './product-reviews'
 
 type Props = {
 	product: TProductItem & { seller: TSellerItem }
@@ -114,6 +113,10 @@ const ProductPage: FC<Props> = ({ product }) => {
 				<Divider className="my-10" />
 				<Typography.Title level={4}>Seller Information</Typography.Title>
 				<SellerInformation seller={product.seller} />
+				<div className="my-8">
+					<Typography.Title level={4}>Customer Reviews</Typography.Title>
+					<ProductReviews reviews={product.reviews} />
+				</div>
 			</div>
 		</Suspense>
 	)
