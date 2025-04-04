@@ -15,7 +15,6 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
 
     if (path === "/order-success") {
       if (!orderID) {
-        console.log("NO ORDER ID")
         return NextResponse.redirect(new URL('/', request.url))
       }
     }
