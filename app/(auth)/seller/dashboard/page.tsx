@@ -6,6 +6,7 @@ import SellerDashboard from './components'
 import styles from './styles.module.scss'
 import { USER_ROLE } from '@prisma/client'
 import { unauthorized } from 'next/navigation'
+import { TOrdersResponse } from '@/constants/types'
 
 const Page = async () => {
 	const session = await getServerSession(authOptions)
@@ -21,7 +22,12 @@ const Page = async () => {
 
 	return (
 		<div className={styles.sellerWrapper}>
-			<SellerDashboard userInfo={userInfo.data} orders={orders} products={userInfo.data.products} reviews={reviews} />
+			<SellerDashboard
+				userInfo={userInfo.data}
+				orders={orders as unknown as TOrdersResponse[]}
+				products={userInfo.data.products}
+				reviews={reviews}
+			/>
 		</div>
 	)
 }

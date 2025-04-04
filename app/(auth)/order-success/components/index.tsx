@@ -1,9 +1,7 @@
 'use client'
 
 import { removeServerCookie } from '@/lib/server'
-import { setProfileTab } from '@/redux/slices/appSlice'
 import { useAppDispatch } from '@/redux/store'
-import { deleteOrderID } from '@/utils/request'
 import { Button, Card, CardBody, Divider } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { useRouter } from 'next/navigation'
