@@ -12,18 +12,17 @@ import React, { FC, useEffect, useState } from 'react'
 type Props = {}
 
 const OrderList: FC<Props> = () => {
-	const ordersPerPage = 5
 	const [currentPage, setCurrentPage] = useState(1)
 	const { data: session } = useSession()
-	const { data } = useQuery<TOrderItems[]>({
+	const { data = [] } = useQuery<TOrderItems[]>({
 		queryKey: ['orders', session?.user?.id],
 		queryFn: async () => {
 			const response = await getOrders(`${session?.user?.id}`)
-
 			return response.data
 		}
 	})
-	const totalPages = Math.ceil(data!.length / ordersPerPage)
+	const ordersPerPage = 5
+	const totalPages = Math.ceil((data.length || 0) / ordersPerPage)
 	const currentOrders = data?.slice((currentPage - 1) * ordersPerPage, currentPage * ordersPerPage)
 
 	return (
