@@ -67,8 +67,9 @@ export const getSoldProducts = async (id?: string) => {
       }
     },
     include: {
+      user: {select: {firstName: true, lastName: true}},
       orderItems: {
-        include: { product: true }
+        include: { product: {select: {name: true, id: true,}} }
       }
     },
     orderBy: { createdAt: 'desc' }

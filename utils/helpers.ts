@@ -1,4 +1,4 @@
-import { ApiResponse, CartResponse, TDecodedToken, TProductItem, TReviewItem } from '@/constants/types'
+import { ApiResponse, CartResponse, DateFormat, TDecodedToken, TProductItem, TReviewItem } from '@/constants/types'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import { uuidSchema } from '@/lib/rules'
@@ -69,11 +69,17 @@ export const getCardIcon = (type: PaymentMethods['type']) => {
   }
 }
 
-export const dateFormatter = (createdAt: string | Date) => {
-  return new DateFormatter('en-US', {
-    dateStyle: 'long',
-    timeStyle: 'short'
-  }).format(new Date(createdAt))
+export const dateFormatter = (createdAt: string | Date, format: DateFormat = 'full') => {
+  const date = new Date(createdAt)
+
+  const formatter =
+    format === 'monthYear'
+      ? new DateFormatter('en-US', { year: 'numeric', month: 'long' })
+      : format === 'monthDayYear'
+      ? new DateFormatter('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+      : new DateFormatter('en-US', { dateStyle: 'long', timeStyle: 'short' })
+
+  return formatter.format(date)
 }
 
 export const calculateAverageRating = (reviews: TReviewItem[]) =>

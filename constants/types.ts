@@ -192,3 +192,5 @@ export type TReviewItem = Reviews & {
     image: string
   }
 }
+
+export type DateFormat = 'full' | 'monthYear' | 'monthDayYear';

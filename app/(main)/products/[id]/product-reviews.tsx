@@ -47,7 +47,7 @@ const ProductReviews: FC<{ reviews: TReviewItem[] }> = ({ reviews }) => {
 										{review.user.firstName} {review.user.lastName}
 									</span>
 								</div>
-								<span className="text-xs text-default-500">{dateFormatter(review.createdAt)}</span>
+								<span className="text-xs text-default-500">{dateFormatter(review.createdAt, 'monthDayYear')}</span>
 							</div>
 							<div className="flex items-center gap-2">
 								{<Rate value={review.rating} allowHalf disabled />}

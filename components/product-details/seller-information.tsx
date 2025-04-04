@@ -24,7 +24,7 @@ const SellerInformation: FC<Props> = ({ seller }) => {
 								<Icon icon="lucide:star" className="text-warning" />
 								<span className="text-sm">{calculateSellerRating(seller.products)}</span>
 							</div>
-							<p className="text-xs text-default-500">Seller since {dateFormatter(seller.createdAt)}</p>
+							<p className="text-xs text-default-500">Seller since {dateFormatter(seller.createdAt, 'monthYear')}</p>
 						</div>
 					</div>
 

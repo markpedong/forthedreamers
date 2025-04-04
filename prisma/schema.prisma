@@ -53,7 +53,8 @@ model Addresses {
   number    String
   type      ADDRESS_TYPE @default(NONE)
 
-  user Users? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   Users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Orders Orders[]
 
   @@index([userId])
 }
@@ -86,7 +87,7 @@ model NewsLetter {
 
 model Orders {
   id         String    @id @default(uuid()) @db.Uuid
-  addressID  String
+  addressID  String?   @db.Uuid
   total      Float?
   totalItems Int       @default(0)
   status     STATUS
@@ -95,9 +96,11 @@ model Orders {
   updatedAt  DateTime  @updatedAt
   deletedAt  DateTime?
 
-  user       Users?       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orderItems OrderItems[] // One order can have many order items
-  reviews    Reviews[]
+  user        Users?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address     Addresses?   @relation(fields: [addressesId], references: [id])
+  orderItems  OrderItems[] // One order can have many order items
+  reviews     Reviews[]
+  addressesId String?      @db.Uuid
 
   @@index([userId])
   @@index([status])

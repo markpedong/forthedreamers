@@ -61,7 +61,7 @@ const Seller: FC<Props> = ({ seller }) => {
 								</div>
 								<div className="flex items-center gap-1">
 									<Icon icon="lucide:calendar" />
-									<span>Since {dateFormatter(seller.createdAt)}</span>
+									<span>Since {dateFormatter(seller.createdAt, 'monthYear')}</span>
 								</div>
 							</div>
 						</div>
