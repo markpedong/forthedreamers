@@ -63,8 +63,6 @@ export const deleteProduct = async (id: string) => deleteF({ url: `/api/products
 export const getProduct = async (id: string) =>
   get<TProductItem & { seller: TSellerItem }>({ url: `/api/products/${id}` })
 
-export const getOrders = async (id: string) => get<TOrderItems[]>({ url: `/api/orders/${id}`, tags: TAGS.ORDERS })
-
 export const getReviews = async (id: string) => get<Reviews[]>({ url: `/api/reviews/${id}`, tags: TAGS.REVIEWS })
 
 export const getWishlist = async (id: string) =>

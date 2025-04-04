@@ -2,7 +2,7 @@
 
 import authOptions from '@/app/api/auth/[...nextauth]/options'
 import { TAGS } from '@/constants'
-import { CartResponse, CookieOptions, TCartItem } from '@/constants/types'
+import { CartResponse, CookieOptions, TCartItem, TOrderItems } from '@/constants/types'
 import prisma from '@/db'
 import { get, patch } from '@/utils/http'
 import { getServerSession } from 'next-auth'
@@ -98,3 +98,5 @@ export const getServerToken = async () => {
 export const getCartItems = async (id?: string) => get<CartResponse[]>({ url: `/api/cart/${id}`, tags: TAGS.CART })
 
 export const updateCartItems = async (body: TCartItem[]) => patch<CartResponse[]>({ url: '/api/cart', data: body })
+
+export const getOrders = async (id: string) => get<TOrderItems[]>({ url: `/api/orders/${id}`, tags: TAGS.ORDERS })

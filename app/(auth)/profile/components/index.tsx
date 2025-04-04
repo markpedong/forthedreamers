@@ -33,7 +33,6 @@ type Props = {
   userInfo: Users
   addresses: TAddresses[]
   paymentMethods: TPaymentMethods[]
-  orders: TOrderItems[]
   reviews: TReviews[]
   wishlist: TWishListItem[]
   carts: CartResponse[]
@@ -45,7 +44,7 @@ const PaymentMethods = dynamic(() => import('./payment-methods'), { ssr: false }
 const Orders = dynamic(() => import('./orders'), { ssr: false })
 const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 
-const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, reviews, wishlist, carts }) => {
+const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, reviews, wishlist, carts }) => {
   const { darkMode, profileTab } = useAppSelector(state => state.app)
   const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
   const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
@@ -111,7 +110,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
               <Button
                 size="sm"
                 color="primary"
-								variant='solid'
+                variant="solid"
                 onPress={() => {
                   clearUserData()
                   signOut()
@@ -162,7 +161,7 @@ const Profile: FC<Props> = ({ addresses, userInfo, paymentMethods, orders, revie
           {activeMenu === 'Personal Information' && <>{userData && <PersonalInformation />}</>}
           {activeMenu === 'Addresses' && <Addresses data={addresses} />}
           {activeMenu === 'Payment Methods' && <PaymentMethods data={paymentMethods} />}
-          {activeMenu === 'Orders' && <Orders data={orders} />}
+          {activeMenu === 'Orders' && <Orders />}
           {activeMenu === 'Wishlist' && <WishList data={wishlist} />}
           {activeMenu === 'Reviews' && <Reviews data={reviews} />}
         </div>
