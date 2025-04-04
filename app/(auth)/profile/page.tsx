@@ -13,12 +13,9 @@ const Page = async () => {
 		unauthorized()
 	}
 
-	const [userInfo, carts] = await Promise.all([
-		getUserData(`${session?.user.id}`),
-		getCartItems(`${session?.user?.id}`)
-	])
+	const userInfo = await getUserData(`${session?.user.id}`)
 
-	return <Profile userInfo={userInfo.data} carts={carts.data} />
+	return <Profile userInfo={userInfo.data} />
 }
 
 export default Page

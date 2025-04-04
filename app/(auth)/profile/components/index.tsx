@@ -1,22 +1,16 @@
 'use client'
 
 import UploadImage from '@/components/profile/uploadImage'
-import { CartResponse } from '@/constants/types'
 import { clearUserData } from '@/lib'
-import { setHasDefaultAddress, setProfileTab, toggleDarkMode } from '@/redux/slices/appSlice'
+import { getCartItems } from '@/lib/server'
+import { setProfileTab, toggleDarkMode } from '@/redux/slices/appSlice'
 import { setCartItems, setUserData } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { uploadProfile } from '@/utils/request'
 import { getLocalStorage, setLocalStorage } from '@/utils/xLocalStorage'
 import { Button, Switch } from '@heroui/react'
 import { Icon } from '@iconify/react'
-import {
-	ADDRESS_TYPE,
-	Addresses as TAddresses,
-	PaymentMethods as TPaymentMethods,
-	Reviews as TReviews,
-	Users
-} from '@prisma/client'
+import { Users } from '@prisma/client'
 import classNames from 'classnames'
 import { signOut, useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
@@ -28,7 +22,6 @@ import WishList from './wishlist'
 
 type Props = {
 	userInfo: Users
-	carts: CartResponse[]
 }
 
 const PersonalInformation = dynamic(() => import('./personal-information'), { ssr: false })
@@ -37,13 +30,13 @@ const PaymentMethods = dynamic(() => import('./payment-methods'), { ssr: false }
 const Orders = dynamic(() => import('./orders'), { ssr: false })
 const Reviews = dynamic(() => import('./reviews'), { ssr: false })
 
-const Profile: FC<Props> = ({ userInfo, carts }) => {
+const Profile: FC<Props> = ({ userInfo }) => {
 	const { darkMode, profileTab } = useAppSelector(state => state.app)
 	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
 	const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
 	const dispatch = useAppDispatch()
 	const { data: session } = useSession()
-	const userData = useAppSelector(state => state.user.userData)
+	const { userData, cartItems } = useAppSelector(state => state.user)
 	const [isPending, startTransition] = useTransition()
 	const router = useRouter()
 	const { setTheme } = useTheme()
@@ -74,8 +67,12 @@ const Profile: FC<Props> = ({ userInfo, carts }) => {
 
 		if (!session?.user?.id || !session?.accessToken) return
 		if (!getLocalStorage('accessToken')) setLocalStorage('accessToken', session.accessToken)
+		if (cartItems.length === 0) {
+			const carts = await getCartItems(`${session?.user?.id}`)
 
-		dispatch(setCartItems(carts))
+			dispatch(setCartItems(carts.data))
+		}
+
 		dispatch(setUserData(userInfo))
 	}
 
