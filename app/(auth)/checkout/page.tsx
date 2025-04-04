@@ -2,7 +2,7 @@ import React from 'react'
 import Checkout from './components'
 import { getServerSession } from 'next-auth'
 import authOptions from '@/app/api/auth/[...nextauth]/options'
-import { getAddress, getPaymentMethod } from '@/utils/request'
+import { getAddress, getPaymentMethod } from '@/lib/server'
 
 const Page = async () => {
 	const session = await getServerSession(authOptions)
