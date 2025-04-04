@@ -2,9 +2,9 @@
 
 import authOptions from '@/app/api/auth/[...nextauth]/options'
 import { TAGS } from '@/constants'
-import { CartResponse, CookieOptions, TCartItem, TOrderItems, TWishListItem } from '@/constants/types'
+import { CartResponse, CookieOptions, TCartItem, TOrderItems, TReviewPayload, TWishListItem } from '@/constants/types'
 import prisma from '@/db'
-import { get, patch } from '@/utils/http'
+import { get, patch, post } from '@/utils/http'
 import { Addresses, PaymentMethods, Reviews } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { revalidateTag } from 'next/cache'
@@ -110,3 +110,4 @@ export const getAddress = async (id: string) => get<Addresses[]>({ url: `/api/ad
 
 export const getPaymentMethod = async (id: string) => get<PaymentMethods[]>({ url: `/api/payment-methods/${id}`, tags: TAGS.PAYMENT_METHODS })
 
+export const submitReview = async (data: TReviewPayload[]) => post({ url: "/api/reviews", data })
