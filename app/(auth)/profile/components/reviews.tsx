@@ -1,19 +1,28 @@
 import Review from '@/components/profile/reviews'
+import { getReviews } from '@/lib/server'
 import { Reviews as TReviews } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
+import { useSession } from 'next-auth/react'
 import React, { FC } from 'react'
 
-type Props = {
-  data: TReviews[]
-}
+const Reviews: FC = () => {
+	const { data: session } = useSession()
+	const { data = [] } = useQuery({
+		queryKey: ['reviews', session?.user?.id],
+		queryFn: async () => {
+			const response = await getReviews(`${session?.user?.id}`)
 
-const Reviews: FC<Props> = ({ data }) => {
-  return (
-    <div>
-      {data?.map(review => (
-        <Review data={review} />
-      ))}
-    </div>
-  )
+			return response.data
+		}
+	})
+
+	return (
+		<div>
+			{data?.map(review => (
+				<Review data={review} />
+			))}
+		</div>
+	)
 }
 
 export default Reviews

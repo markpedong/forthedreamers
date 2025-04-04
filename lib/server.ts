@@ -2,9 +2,10 @@
 
 import authOptions from '@/app/api/auth/[...nextauth]/options'
 import { TAGS } from '@/constants'
-import { CartResponse, CookieOptions, TCartItem, TOrderItems } from '@/constants/types'
+import { CartResponse, CookieOptions, TCartItem, TOrderItems, TWishListItem } from '@/constants/types'
 import prisma from '@/db'
 import { get, patch } from '@/utils/http'
+import { Reviews } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { revalidateTag } from 'next/cache'
 import { cookies } from 'next/headers'
@@ -100,3 +101,7 @@ export const getCartItems = async (id?: string) => get<CartResponse[]>({ url: `/
 export const updateCartItems = async (body: TCartItem[]) => patch<CartResponse[]>({ url: '/api/cart', data: body })
 
 export const getOrders = async (id: string) => get<TOrderItems[]>({ url: `/api/orders/${id}`, tags: TAGS.ORDERS })
+
+export const getWishlist = async (id: string) => get<TWishListItem[]>({ url: `/api/wishlist/${id}`, tags: TAGS.WISHLIST })
+
+export const getReviews = async (id: string) => get<Reviews[]>({ url: `/api/reviews/${id}`, tags: TAGS.REVIEWS })

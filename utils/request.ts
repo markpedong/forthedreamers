@@ -60,13 +60,7 @@ export const removeFromCart = async (id?: string) => post<any>({ url: '/api/cart
 
 export const deleteProduct = async (id: string) => deleteF({ url: `/api/products/${id}` })
 
-export const getProduct = async (id: string) =>
-  get<TProductItem & { seller: TSellerItem }>({ url: `/api/products/${id}` })
-
-export const getReviews = async (id: string) => get<Reviews[]>({ url: `/api/reviews/${id}`, tags: TAGS.REVIEWS })
-
-export const getWishlist = async (id: string) =>
-  get<TWishListItem[]>({ url: `/api/wishlist/${id}`, tags: TAGS.WISHLIST })
+export const getProduct = async (id: string) => get<TProductItem & { seller: TSellerItem }>({ url: `/api/products/${id}` })
 
 export const getSellerInfo = async (id: string) => get<SellerInfo>({ url: `/api/sellers/${id}` })
 

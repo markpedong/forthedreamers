@@ -1,37 +1,24 @@
 import authOptions from '@/app/api/auth/[...nextauth]/options'
-import { getAddress, getPaymentMethod, getReviews, getUserData, getWishlist } from '@/utils/request'
-import { getServerSession } from 'next-auth'
-import Profile from './components'
 import { getCartItems } from '@/lib/server'
-import { unauthorized } from 'next/navigation'
+import { getUserData } from '@/utils/request'
 import { USER_ROLE } from '@prisma/client'
+import { getServerSession } from 'next-auth'
+import { unauthorized } from 'next/navigation'
+import Profile from './components'
 
 const Page = async () => {
-  const session = await getServerSession(authOptions)
+	const session = await getServerSession(authOptions)
 
-  if (session?.user.role === USER_ROLE.SELLER) {
-    unauthorized()
-  }
+	if (session?.user.role === USER_ROLE.SELLER) {
+		unauthorized()
+	}
 
-  const [userInfo, addresses, paymentMethods, reviews, wishlist, carts] = await Promise.all([
-    getUserData(`${session?.user.id}`),
-    getAddress(`${session?.user?.id}`),
-    getPaymentMethod(`${session?.user?.id}`),
-    getReviews(`${session?.user?.id}`),
-    getWishlist(`${session?.user?.id}`),
-    getCartItems(`${session?.user?.id}`)
-  ])
+	const [userInfo, carts] = await Promise.all([
+		getUserData(`${session?.user.id}`),
+		getCartItems(`${session?.user?.id}`)
+	])
 
-  return (
-    <Profile
-      userInfo={userInfo.data}
-      addresses={addresses.data}
-      paymentMethods={paymentMethods.data}
-      reviews={reviews.data}
-      wishlist={wishlist.data}
-      carts={carts.data}
-    />
-  )
+	return <Profile userInfo={userInfo.data} carts={carts.data} />
 }
 
 export default Page
