@@ -2,7 +2,6 @@ import { TReviewItem } from '@/constants/types'
 import { dateFormatter } from '@/utils/helpers'
 import { Card, CardBody, Divider, Link } from '@heroui/react'
 import { Rate } from 'antd'
-import { useRouter } from 'next/navigation'
 import { FC } from 'react'
 
 type Props = {
@@ -10,7 +9,6 @@ type Props = {
 }
 
 const Review: FC<Props> = ({ data }) => {
-	const { push } = useRouter()
 
 	return (
 		<Card key={data.id} className="w-full">
