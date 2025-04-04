@@ -183,7 +183,6 @@ model Reviews {
   product Products @relation(fields: [productId], references: [id], onDelete: Cascade)
   order   Orders   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, productId, orderId])
   @@index([userId])
   @@index([productId])
   @@index([rating])
