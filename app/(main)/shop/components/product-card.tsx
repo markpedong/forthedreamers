@@ -59,7 +59,7 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
 
 			<CardFooter className="flex flex-col items-start gap-2">
 				<h3 className="text-lg font-semibold line-clamp-1">{product.name}</h3>
-				<p className="text-default-500 text-sm line-clamp-2">{product.description}</p>
+				<p className="text-default-500 text-sm line-clamp-2 text-start">{product.description}</p>
 				<div className="flex justify-between items-center w-full">
 					<div className="flex flex-col">
 						<span className="font-bold">${lowestPrice.toFixed(2)}</span>
