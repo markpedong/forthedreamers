@@ -1,32 +1,15 @@
 import Address from '@/components/profile/address'
 import AddEditAddress from '@/components/profile/addressAddEdit'
-import { getAddress } from '@/lib/server'
-import { setHasDefaultAddress } from '@/redux/slices/appSlice'
 import { setAddress } from '@/redux/slices/userSlice'
 import { useAppDispatch } from '@/redux/store'
 import { Button, useDisclosure } from '@heroui/react'
-import { ADDRESS_TYPE } from '@prisma/client'
-import { useQuery } from '@tanstack/react-query'
+import { Addresses as TAddresses } from '@prisma/client'
 import { Typography } from 'antd'
-import { useSession } from 'next-auth/react'
 import { FC } from 'react'
 
-const Addresses: FC = () => {
+const Addresses: FC<{ data: TAddresses[] }> = ({ data }) => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure()
 	const dispatch = useAppDispatch()
-	const { data: session } = useSession()
-	const { data = [] } = useQuery({
-		queryKey: ['addresses', session?.user?.id],
-		queryFn: async () => {
-			const response = await getAddress(`${session?.user?.id}`)
-
-			if (response?.data.findIndex(address => address.type === ADDRESS_TYPE.DEFAULT) !== -1) {
-				dispatch(setHasDefaultAddress(true))
-			}
-
-			return response.data
-		}
-	})
 
 	return (
 		<>

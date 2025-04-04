@@ -1,52 +1,57 @@
 'use client'
 
+import Loading from '@/components/loading'
 import UploadImage from '@/components/profile/uploadImage'
+import { TOrdersResponse, TReviewItem, TWishListItem } from '@/constants/types'
 import { clearUserData } from '@/lib'
-import { setProfileTab, toggleDarkMode } from '@/redux/slices/appSlice'
+import { toggleDarkMode } from '@/redux/slices/appSlice'
 import { setUserData } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { uploadProfile } from '@/utils/request'
 import { getLocalStorage, setLocalStorage } from '@/utils/xLocalStorage'
 import { Button, Switch } from '@heroui/react'
 import { Icon } from '@iconify/react'
-import { Users } from '@prisma/client'
+import { Addresses as TAddresses, PaymentMethods as TPaymentMethods, Users } from '@prisma/client'
 import classNames from 'classnames'
 import { signOut, useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import dynamic from 'next/dynamic'
-import { useRouter } from 'next/navigation'
-import { FC, useEffect, useState, useTransition } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { FC, useEffect, useTransition } from 'react'
 import styles from '../styles.module.scss'
 import WishList from './wishlist'
 
 type Props = {
-	userInfo: Users
+	userInfo: Users | null
+	addresses: TAddresses[]
+	paymentMethods: TPaymentMethods[]
+	orders: TOrdersResponse[]
+	wishlist: TWishListItem[]
+	reviews: TReviewItem[]
 }
 
-const PersonalInformation = dynamic(() => import('./personal-information'), { ssr: false })
-const Addresses = dynamic(() => import('./addresses'), { ssr: false })
-const PaymentMethods = dynamic(() => import('./payment-methods'), { ssr: false })
-const Orders = dynamic(() => import('./orders'), { ssr: false })
-const Reviews = dynamic(() => import('./reviews'), { ssr: false })
+const PersonalInformation = dynamic(() => import('./personal-information'))
+const Addresses = dynamic(() => import('./addresses'))
+const PaymentMethods = dynamic(() => import('./payment-methods'))
+const Orders = dynamic(() => import('./orders'))
+const Reviews = dynamic(() => import('./reviews'))
 
-const Profile: FC<Props> = ({ userInfo }) => {
-	const { darkMode, profileTab } = useAppSelector(state => state.app)
-	const menus = ['Personal Information', 'Addresses', 'Payment Methods', 'Orders', 'Wishlist', 'Reviews']
-	const [activeMenu, setActiveMenu] = useState<string>('Personal Information')
+const Profile: FC<Props> = ({ userInfo, addresses, paymentMethods, orders, wishlist, reviews }) => {
+	const { darkMode } = useAppSelector(state => state.app)
+	const menus = ['personal-information', 'addresses', 'payment-methods', 'orders', 'wishlist', 'reviews']
 	const dispatch = useAppDispatch()
 	const { data: session } = useSession()
 	const { userData } = useAppSelector(state => state.user)
 	const [isPending, startTransition] = useTransition()
+	const [isNavigating, startNavigate] = useTransition()
 	const router = useRouter()
 	const { setTheme } = useTheme()
+	const params = useSearchParams()
+	const tab = params.get('tab')
 
 	useEffect(() => {
 		fetchUserData()
 	}, [session, userInfo])
-
-	useEffect(() => {
-		if (profileTab === 'Orders') setActiveMenu('Orders')
-	}, [])
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0]
@@ -61,11 +66,10 @@ const Profile: FC<Props> = ({ userInfo }) => {
 		})
 	}
 
-	const fetchUserData = async () => {
-		dispatch(setProfileTab(''))
-
+	const fetchUserData = () => {
 		if (!session?.user?.id || !session?.accessToken) return
 		if (!getLocalStorage('accessToken')) setLocalStorage('accessToken', session.accessToken)
+		if (!tab) router.push('/profile?tab=personal-information')
 
 		dispatch(setUserData(userInfo))
 	}
@@ -111,13 +115,15 @@ const Profile: FC<Props> = ({ userInfo }) => {
 							{menus.map((menu, index) => (
 								<span
 									key={index}
-									onClick={() => setActiveMenu(menu)}
+									onClick={() =>
+										tab !== menu && !isNavigating && startNavigate(() => router.push(`/profile?tab=${menu}`))
+									}
 									className={classNames('cursor-pointer px-3 py-2 transition-all', {
-										'border-l-2 border-gray-500 text-black bg-gray-100': activeMenu === menu,
-										'text-neutral-400': activeMenu !== menu
+										'border-l-2 border-gray-500 text-black bg-gray-100': tab === menu,
+										'text-neutral-400': tab !== menu
 									})}
 								>
-									{menu}
+									{menu?.replaceAll('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
 								</span>
 							))}
 						</div>
@@ -138,14 +144,18 @@ const Profile: FC<Props> = ({ userInfo }) => {
 						/>
 					</div>
 				</div>
-				<div className="p-5 h-full">
-					{activeMenu === 'Personal Information' && <>{userData && <PersonalInformation />}</>}
-					{activeMenu === 'Addresses' && <Addresses />}
-					{activeMenu === 'Payment Methods' && <PaymentMethods />}
-					{activeMenu === 'Orders' && <Orders />}
-					{activeMenu === 'Wishlist' && <WishList />}
-					{activeMenu === 'Reviews' && <Reviews />}
-				</div>
+				{isNavigating ? (
+					<Loading />
+				) : (
+					<div className="p-5 h-full">
+						{tab === 'personal-information' && <>{userData && <PersonalInformation />}</>}
+						{tab === 'addresses' && <Addresses data={addresses} />}
+						{tab === 'payment-methods' && <PaymentMethods data={paymentMethods} />}
+						{tab === 'orders' && <Orders data={orders} />}
+						{tab === 'wishlist' && <WishList data={wishlist} />}
+						{tab === 'reviews' && <Reviews data={reviews} />}
+					</div>
+				)}
 			</div>
 		</div>
 	)

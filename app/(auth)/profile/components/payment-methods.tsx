@@ -1,26 +1,15 @@
 import PaymentMethods from '@/components/profile/payment-methods'
 import AddEditPaymentMethods from '@/components/profile/payment-methodsAddEdit'
-import { getPaymentMethod } from '@/lib/server'
 import { setPaymentMethod } from '@/redux/slices/userSlice'
 import { useAppDispatch } from '@/redux/store'
 import { Button, useDisclosure } from '@heroui/react'
-import { useQuery } from '@tanstack/react-query'
+import { PaymentMethods as TPaymentMethods } from '@prisma/client'
 import { Typography } from 'antd'
-import { useSession } from 'next-auth/react'
 import { FC } from 'react'
 
-const PaymentMethod: FC = () => {
+const PaymentMethod: FC<{ data: TPaymentMethods[] }> = ({ data }) => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure()
 	const dispatch = useAppDispatch()
-	const { data: session } = useSession()
-	const { data = [] } = useQuery({
-		queryKey: ['payment-method', session?.user?.id],
-		queryFn: async () => {
-			const response = await getPaymentMethod(`${session?.user?.id}`)
-
-			return response.data
-		}
-	})
 
 	return (
 		<div>

@@ -83,7 +83,7 @@ const Address: FC<Props> = ({ openEditModal, address }) => {
                 {address?.firstName} {address?.lastName} / {address?.number}
               </span>
               {address?.type !== ADDRESS_TYPE.NONE && (
-                <span className="px-2 py-1 text-tiny bg-primary-50 text-primary rounded-full">{address?.type}</span>
+                <span className="px-2 py-1 text-tiny bg-primary-200 text-black rounded-full">{address?.type}</span>
               )}
             </div>
             <div className="text-default-500 text-xs">

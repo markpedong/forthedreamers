@@ -1,31 +1,18 @@
 'use client'
 
 import Orders from '@/components/profile/order'
-import { getOrders } from '@/lib/server'
-import { Pagination, Spinner } from '@heroui/react'
-import { useQuery } from '@tanstack/react-query'
-import { useSession } from 'next-auth/react'
+import { TOrdersResponse } from '@/constants/types'
+import { Pagination } from '@heroui/react'
 import { FC, useState } from 'react'
 
-type Props = {}
-
-const OrderList: FC<Props> = () => {
+const OrderList: FC<{ data: TOrdersResponse[] }> = ({ data }) => {
 	const [currentPage, setCurrentPage] = useState(1)
-	const { data: session } = useSession()
-	const { data = [], isLoading } = useQuery	({
-		queryKey: ['orders', session?.user?.id],
-		queryFn: async () => {
-			const response = await getOrders(`${session?.user?.id}`)
-			return response.data
-		}
-	})
 	const ordersPerPage = 5
 	const totalPages = Math.ceil((data.length || 0) / ordersPerPage)
 	const currentOrders = data?.slice((currentPage - 1) * ordersPerPage, currentPage * ordersPerPage)
 
 	return (
-		<div className='flex justify-center items-center'>
-			{isLoading && <Spinner />}
+		<div className="flex justify-center items-center">
 			{currentOrders?.map(order => (
 				<Orders order={order} key={order.id} />
 			))}

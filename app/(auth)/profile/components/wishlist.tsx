@@ -1,20 +1,12 @@
 import WishListComp from '@/components/profile/wishlist'
+import { TWishListItem } from '@/constants/types'
 import { getWishlist } from '@/lib/server'
+import { Wishlists } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { FC } from 'react'
 
-const WishList: FC = () => {
-	const { data: session } = useSession()
-	const { data = [] } = useQuery({
-		queryKey: ['wishlist', session?.user?.id],
-		queryFn: async () => {
-			const response = await getWishlist(`${session?.user?.id}`)
-
-			return response.data
-		}
-	})
-
+const WishList: FC<{ data: TWishListItem[] }> = ({ data }) => {
 	return (
 		<div>
 			{data?.map(item => (

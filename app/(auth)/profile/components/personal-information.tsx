@@ -1,13 +1,12 @@
 import { personalInformation } from '@/actions/auth'
-import { addToast, Button, DatePicker, Form, Input } from '@heroui/react'
-import { Users } from '@prisma/client'
-import { Typography } from 'antd'
-import { FC, useActionState, useEffect, useTransition } from 'react'
-import { getLocalTimeZone, parseDate, today } from '@internationalized/date'
-import { updateProfile } from '@/utils/request'
-import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { setUserData } from '@/redux/slices/userSlice'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { updateProfile } from '@/utils/request'
+import { addToast, Button, DatePicker, Form, Input } from '@heroui/react'
+import { getLocalTimeZone, parseDate, today } from '@internationalized/date'
+import { Typography } from 'antd'
 import { useSession } from 'next-auth/react'
+import { FC, useActionState, useEffect, useTransition } from 'react'
 
 const PersonalInformation: FC = () => {
   const dispatch = useAppDispatch()

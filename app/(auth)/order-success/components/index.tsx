@@ -63,7 +63,6 @@ const OrderSuccess: FC<Props> = ({ orderId }) => {
 							color="primary"
 							onPress={() => {
 								handleUserLeave('/profile')
-								dispatch(setProfileTab('Orders'))
 							}}
 							startContent={<Icon icon="lucide:package" />}
 							fullWidth

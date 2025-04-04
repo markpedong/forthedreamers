@@ -25,6 +25,7 @@ import React, { FC, memo, useActionState, useEffect, useRef, useState, useTransi
 type Props = {
 	isOpen?: boolean
 	onOpenChange: () => void
+	refetch?: () => void
 }
 
 const AddEditAddress: FC<Props> = ({ isOpen, onOpenChange }) => {
