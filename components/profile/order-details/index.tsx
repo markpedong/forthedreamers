@@ -1,5 +1,5 @@
 import { statusColorMap } from '@/constants'
-import { TOrderItems, TReviewPayload } from '@/constants/types'
+import { TOrderItems, TOrdersResponse, TReviewPayload } from '@/constants/types'
 import { dateFormatter } from '@/utils/helpers'
 import {
 	addToast,
@@ -21,14 +21,14 @@ import {
 } from '@heroui/react'
 import { Icon } from '@iconify/react'
 import { STATUS } from '@prisma/client'
-import React, { Dispatch, FC, useEffect, useState } from 'react'
+import React, { ChangeEvent, Dispatch, FC, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Rate } from 'antd'
 import { submitReview } from '@/lib/server'
 
 type Props = {
-	selectedOrder: TOrderItems | null
-	setSelectedOrder: Dispatch<React.SetStateAction<TOrderItems | null>>
+	selectedOrder: TOrdersResponse | null
+	setSelectedOrder: Dispatch<React.SetStateAction<TOrdersResponse | null>>
 }
 
 const variants = {
@@ -64,6 +64,34 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
 			setHasOpened(false)
 		}
 	}, [selectedOrder])
+
+	const handleRateChange = (val: number, item: TOrderItems) => {
+		setUserReview(prev => {
+			return prev.map(review => {
+				if (review.id === item.id) {
+					return {
+						...review,
+						rating: val
+					}
+				}
+				return review
+			})
+		})
+	}
+
+	const handleTextAreaChange = (e: ChangeEvent<HTMLInputElement>, item: TOrderItems) => {
+		setUserReview(prev => {
+			return prev.map(review => {
+				if (review.id === item.id) {
+					return {
+						...review,
+						comment: e.target.value
+					}
+				}
+				return review
+			})
+		})
+	}
 
 	return (
 		<Modal
@@ -175,38 +203,12 @@ const OrderDetails: FC<Props> = ({ setSelectedOrder, selectedOrder }) => {
 															<div className="flex gap-1 font-bold">
 																{idx + 1}. {item.product.name}
 															</div>
-															<Rate
-																onChange={val => {
-																	setUserReview(prev => {
-																		return prev.map(review => {
-																			if (review.id === item.id) {
-																				return {
-																					...review,
-																					rating: val
-																				}
-																			}
-																			return review
-																		})
-																	})
-																}}
-															/>
+															<Rate onChange={val => handleRateChange(val, item)} />
 														</div>
 														<Textarea
 															required
 															placeholder="Write a review"
-															onChange={e => {
-																setUserReview(prev => {
-																	return prev.map(review => {
-																		if (review.id === item.id) {
-																			return {
-																				...review,
-																				comment: e.target.value
-																			}
-																		}
-																		return review
-																	})
-																})
-															}}
+															onChange={e => handleTextAreaChange(e, item)}
 														/>
 													</div>
 												))}

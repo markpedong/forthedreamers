@@ -3,7 +3,7 @@ import {
   AddToCartHandler,
   SellerInfo,
   TCheckoutPayload,
-  TOrderItems,
+  TOrdersResponse,
   TProductItem,
   TSellerItem,
   TWishListItem

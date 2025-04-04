@@ -1,7 +1,7 @@
 'use client'
 
 import Orders from '@/components/profile/order'
-import { TOrderItems } from '@/constants/types'
+import { TOrdersResponse } from '@/constants/types'
 import { getOrders } from '@/lib/server'
 import { Pagination, Spinner } from '@heroui/react'
 import { Orders as TOrders } from '@prisma/client'
@@ -14,7 +14,7 @@ type Props = {}
 const OrderList: FC<Props> = () => {
 	const [currentPage, setCurrentPage] = useState(1)
 	const { data: session } = useSession()
-	const { data = [], isLoading } = useQuery<TOrderItems[]>({
+	const { data = [], isLoading } = useQuery<TOrdersResponse[]>({
 		queryKey: ['orders', session?.user?.id],
 		queryFn: async () => {
 			const response = await getOrders(`${session?.user?.id}`)

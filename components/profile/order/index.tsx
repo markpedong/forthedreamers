@@ -5,14 +5,14 @@ import { Icon } from '@iconify/react'
 import { STATUS, Orders as TOrders } from '@prisma/client'
 import { FC, useState } from 'react'
 import OrderDetails from '../order-details'
-import { TOrderItems } from '@/constants/types'
+import { TOrdersResponse } from '@/constants/types'
 
 type Props = {
-  order: TOrderItems
+  order: TOrdersResponse
 }
 
 const Orders: FC<Props> = ({ order }) => {
-  const [selectedOrder, setSelectedOrder] = useState<TOrderItems | null>(null)
+  const [selectedOrder, setSelectedOrder] = useState<TOrdersResponse | null>(null)
 
   return (
     <>

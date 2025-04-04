@@ -3,9 +3,9 @@ import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, Chip, 
 import { Orders, STATUS } from '@prisma/client'
 import { dateFormatter } from '@/utils/helpers'
 import { statusColorMap } from '@/constants'
-import { TOrderItems } from '@/constants/types'
+import { TOrdersResponse } from '@/constants/types'
 
-const TableOrders: FC<{ orders: TOrderItems[] }> = ({ orders }) => {
+const TableOrders: FC<{ orders: TOrdersResponse[] }> = ({ orders }) => {
   return (
     <Table aria-label="Orders table">
       <TableHeader>

@@ -167,15 +167,15 @@ export type CookieOptions = {
 
 export type TCheckoutPayload = { ids: string[]; address?: string; payment?: string }
 
-export type TOrderItems = Orders & {
-  orderItems: Array<
-    OrderItems & {
-      product: {
-        images: string[]
-        name: string
-      }
-    }
-  >
+export type TOrderItems = OrderItems & {
+  product: {
+    images: string[]
+    name: string
+  }
+}
+
+export type TOrdersResponse = Orders & {
+  orderItems: Array<TOrderItems>
 }
 
 export type TReviewPayload = { id: string; productId: string; ordersId: string; rating: number; comment: string }
