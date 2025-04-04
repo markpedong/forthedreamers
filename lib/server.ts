@@ -2,7 +2,7 @@
 
 import authOptions from '@/app/api/auth/[...nextauth]/options'
 import { TAGS } from '@/constants'
-import { CartResponse, CookieOptions, TCartItem, TOrdersResponse, TReviewPayload, TWishListItem } from '@/constants/types'
+import { CartResponse, CookieOptions, TCartItem, TOrdersResponse, TReviewItem, TReviewPayload, TWishListItem } from '@/constants/types'
 import prisma from '@/db'
 import { get, patch, post } from '@/utils/http'
 import { Addresses, PaymentMethods, Reviews } from '@prisma/client'
@@ -104,7 +104,7 @@ export const getOrders = async (id: string) => get<TOrdersResponse[]>({ url: `/a
 
 export const getWishlist = async (id: string) => get<TWishListItem[]>({ url: `/api/wishlist/${id}`, tags: TAGS.WISHLIST })
 
-export const getReviews = async (id: string) => get<Reviews[]>({ url: `/api/reviews/${id}`, tags: TAGS.REVIEWS })
+export const getReviews = async (id: string) => get<TReviewItem[]>({ url: `/api/reviews/${id}`, tags: TAGS.REVIEWS })
 
 export const getAddress = async (id: string) => get<Addresses[]>({ url: `/api/address/${id}`, tags: TAGS.ADDRESS })
 

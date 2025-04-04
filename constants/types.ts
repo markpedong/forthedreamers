@@ -1,4 +1,4 @@
-import { OrderItems, Orders, Products, Users, Variations, Wishlists } from '@prisma/client'
+import { OrderItems, Orders, Products, Reviews, Users, Variations, Wishlists } from '@prisma/client'
 import { GetProp, UploadProps } from 'antd'
 
 export type TSessionUser = Pick<Users, 'id' | 'email' | 'username' | 'password' | 'firstName' | 'lastName' | 'role'>
@@ -179,3 +179,9 @@ export type TOrdersResponse = Orders & {
 }
 
 export type TReviewPayload = { id: string; userId: string, productId: string; orderId: string; rating: number; comment: string }
+
+export type TReviewItem = Reviews & {
+  product: {
+    name: string
+  }
+}
