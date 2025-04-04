@@ -141,10 +141,11 @@ model Variations {
 }
 
 model OrderItems {
-  id        String @id @default(uuid()) @db.Uuid
-  productId String @db.Uuid
+  id        String  @id @default(uuid()) @db.Uuid
+  productId String  @db.Uuid
   quantity  Int
   price     Float
+  hasReview Boolean @default(false)
 
   product  Products @relation(fields: [productId], references: [id], onDelete: Cascade)
   ordersId String   @db.Uuid
