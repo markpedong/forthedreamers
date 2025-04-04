@@ -26,11 +26,12 @@ import { USER_ROLE } from '@prisma/client'
 import { LOGINFORM_STATE } from '@/constants/types'
 import CartDrawer from './cart-drawer'
 import { useWithDispatch } from '@/hooks/useWithDispatch'
+import { cartItemsLength } from '@/utils/helpers'
 
 const NavBar: FC = () => {
 	const pathname = usePathname()
 	const darkMode = useAppSelector(state => state.app.darkMode)
-	const cartItems = useAppSelector(state => state.user.cartItems)?.reduce((acc, item) => acc + item.quantity, 0)
+	const cartItems = useAppSelector(state => state.user.cartItems)
 	const { push } = useRouter()
 	const { data: session } = useSession()
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -73,9 +74,9 @@ const NavBar: FC = () => {
 					) : (
 						<Icon icon="solar:moon-bold" className="cursor-pointer" onClick={toggle} />
 					)}
-					{session?.user.role === 'USER' && cartItems > 0 && (
+					{session?.user.role === 'USER' && cartItemsLength(cartItems) > 0 && (
 						<div onClick={() => dispatch(setCartOpen(true))} className="cursor-pointer">
-							<Badge content={cartItems} isInvisible={cartItems === 0} shape="circle" color="danger" size="sm">
+							<Badge content={cartItemsLength(cartItems)} isInvisible={cartItemsLength(cartItems) === 0} shape="circle" color="danger" size="sm">
 								<Icon icon="lucide:shopping-cart" />
 							</Badge>
 						</div>

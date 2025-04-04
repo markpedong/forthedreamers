@@ -3,6 +3,7 @@ import { updateCartItems } from '@/lib/server'
 import { setCartOpen, setHasChangesInCart } from '@/redux/slices/appSlice'
 import { increaseCartItem, reduceCartItem } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { cartSubTotal } from '@/utils/helpers'
 import { deleteItemsFromCart } from '@/utils/request'
 import { Button, Divider, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader } from '@heroui/react'
 import { Icon } from '@iconify/react'
@@ -15,7 +16,6 @@ const CartDrawer: FC = () => {
 	const cartItems = useAppSelector(state => state.user.cartItems)
 	const dispatch = useAppDispatch()
 	const { fetchCartItem } = useWithDispatch()
-	const subtotal = cartItems?.reduce((sum, item) => sum + item.variation.price * item.quantity, 0)
 	const [isDeleting, startDeleting] = useTransition()
 	const { push } = useRouter()
 
@@ -160,7 +160,7 @@ const CartDrawer: FC = () => {
 							<div className="flex flex-col gap-4 w-full">
 								<div className="flex justify-between">
 									<span className="font-medium">Subtotal</span>
-									<span className="font-medium">${subtotal.toFixed(2)}</span>
+									<span className="font-medium">${cartSubTotal(cartItems).toFixed(2)}</span>
 								</div>
 								<p className="text-xs text-default-500">Shipping and taxes calculated at checkout</p>
 								<Button

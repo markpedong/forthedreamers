@@ -1,4 +1,4 @@
-import { ApiResponse, TDecodedToken, TProductItem, TReviewItem } from '@/constants/types'
+import { ApiResponse, CartResponse, TDecodedToken, TProductItem, TReviewItem } from '@/constants/types'
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 import { uuidSchema } from '@/lib/rules'
@@ -77,16 +77,15 @@ export const dateFormatter = (createdAt: string | Date) => {
 }
 
 export const calculateAverageRating = (reviews: TReviewItem[]) =>
-  reviews.length
-    ? Math.round(
-      (reviews.reduce((sum, { rating }) => sum + rating, 0) / reviews.length) * 10
-    ) / 10
-    : 0;
+  reviews.length ? Math.round((reviews.reduce((sum, { rating }) => sum + rating, 0) / reviews.length) * 10) / 10 : 0
 
 export const calculateSellerRating = (data: TProductItem[]) => {
-  const allRatings = data.flatMap(products => products.reviews.map((r) => r.rating));
+  const allRatings = data.flatMap(products => products.reviews.map(r => r.rating))
 
-  return allRatings.length
-    ? Math.round((allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length) * 10) / 10
-    : 0;
-};
+  return allRatings.length ? Math.round((allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length) * 10) / 10 : 0
+}
+
+export const cartItemsLength = (cartItems: CartResponse[]) => cartItems?.reduce((acc, item) => acc + item.quantity, 0)
+
+export const cartSubTotal = (cartItems: CartResponse[]) =>
+  cartItems?.reduce((sum, item) => sum + item.variation.price * item.quantity, 0)

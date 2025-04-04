@@ -10,6 +10,8 @@ export const useWithDispatch = () => {
   const dispatch = useAppDispatch()
 
   const fetchCartItem = async () => {
+    if (!session?.user.id) return
+    
     const cart = await getCartItems(session?.user.id)
 
     if (cart.data.length === 0) {

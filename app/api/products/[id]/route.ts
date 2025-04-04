@@ -107,6 +107,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       seller: {
         // include: { products: true },
         select: {
+          id: true,
           createdAt: true,
           image: true,
           storeName: true,
