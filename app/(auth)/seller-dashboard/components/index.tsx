@@ -36,7 +36,7 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 	const { setTheme } = useTheme()
 	const router = useRouter()
 	const params = useSearchParams()
-	const tab = params.get('tab')
+	const [tab, setTab] = useState('products')
 
 	const handleEditProduct = (product: any) => {
 		setSelectedProduct(product)
@@ -118,7 +118,7 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 			</div>
 			<Card>
 				<CardHeader className="flex flex-col gap-3 md:flex-row justify-between items-center">
-					<Tabs selectedKey={tab} onSelectionChange={tab => router.push(`/seller-dashboard?tab=${tab}`)}>
+					<Tabs selectedKey={tab} onSelectionChange={tab => setTab(`${tab}`)}>
 						{SELLER_DASHBOARD_MENUS.map(menu => (
 							<Tab key={menu} title={menu.charAt(0).toUpperCase() + menu.slice(1)} />
 						))}

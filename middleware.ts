@@ -40,11 +40,11 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
       return NextResponse.redirect(url)
     }
 
-    if (pathname === '/seller-dashboard' && (!searchParams.has('tab') || !SELLER_DASHBOARD_MENUS.includes(`${searchParams.get('tab')}`))) {
-      const url = request.nextUrl.clone()
-      url.searchParams.set('tab', 'products')
-      return NextResponse.redirect(url)
-    }
+    // if (pathname === '/seller-dashboard' && (!searchParams.has('tab') || !SELLER_DASHBOARD_MENUS.includes(`${searchParams.get('tab')}`))) {
+    //   const url = request.nextUrl.clone()
+    //   url.searchParams.set('tab', 'products')
+    //   return NextResponse.redirect(url)
+    // }
 
   } else {
     if (protectedRoutes.includes(pathname) || userRestrictedRoutes.includes(pathname)) {

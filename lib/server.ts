@@ -2,7 +2,7 @@
 
 import authOptions from '@/app/api/auth/[...nextauth]/options'
 import { TAGS } from '@/constants'
-import { CartResponse, CookieOptions, SellerInfo, TCartItem, TOrdersResponse, TProductItem, TReviewItem, TReviewPayload, TWishListItem } from '@/constants/types'
+import { CartResponse, CookieOptions, SellerInfo, TCartItem, TOrdersResponse, TProductItem, TReviewItem, TReviewPayload, TReviewResponse, TWishListItem } from '@/constants/types'
 import prisma from '@/db'
 import { get, patch, post } from '@/utils/http'
 import { Addresses, PaymentMethods, Reviews } from '@prisma/client'
@@ -80,7 +80,7 @@ export const submitReview = async (data: TReviewPayload[]) => post({ url: "/api/
 
 export const getSoldProducts = async (id: string) => get<TOrdersResponse[]>({ url: `/api/sellers/sold-products/${id}`, tags: TAGS.SOLD_PRODUCTS })
 
-export const getProductReviews = async (id: string) => get<TReviewItem[]>({ url: `/api/sellers/reviews/${id}`, tags: TAGS.PRODUCT_REVIEWS })
+export const getProductReviews = async (id: string) => get<TReviewResponse[]>({ url: `/api/sellers/reviews/${id}`, tags: TAGS.PRODUCT_REVIEWS })
 
 export const getSellerProducts = async (id: string) => get<TProductItem[]>({ url: `/api/sellers/products/${id}`, tags: TAGS.SELLER_PRODUCTS })
 

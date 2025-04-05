@@ -8,24 +8,25 @@ import { SellerInfo, TOrdersResponse, TProductItem, TReviewItem } from '@/consta
 
 const Page = async ({ searchParams }: { searchParams: Promise<{ tab: string }> }) => {
 	const session = await getServerSession(authOptions)
-	const tab = (await searchParams).tab
-	const userInfo: SellerInfo = (await getSellerInfo(`${session?.user?.id}`)).data
+	// const tab = (await searchParams).tab
+	const [userInfo, products, orders, reviews] = await Promise.all([
+		getSellerInfo(`${session?.user?.id}`),
+		getSellerProducts(`${session?.user?.id}`),
+		getSoldProducts(`${session?.user?.id}`),
+		getProductReviews(`${session?.user?.id}`)
+	])
 
-	let products: TProductItem[] = [],
-		orders: TOrdersResponse[] = [],
-		reviews: TReviewItem[] = []
-
-	switch (tab) {
-		case 'products':
-			products = (await getSellerProducts(`${session?.user?.id}`)).data
-			break
-		case 'orders':
-			orders = (await getSoldProducts(`${session?.user?.id}`)).data
-			break
-		case 'reviews':
-			reviews = (await getProductReviews(`${session?.user?.id}`)).data
-			break
-	}
+	// switch (tab) {
+	// 	case 'products':
+	// 		products = (await getSellerProducts(`${session?.user?.id}`)).data
+	// 		break
+	// 	case 'orders':
+	// 		orders = (await getSoldProducts(`${session?.user?.id}`)).data
+	// 		break
+	// 	case 'reviews':
+	// 		reviews = (await getProductReviews(`${session?.user?.id}`)).data
+	// 		break
+	// }
 
 	if (session?.user.role === USER_ROLE.USER) {
 		unauthorized()
@@ -33,7 +34,7 @@ const Page = async ({ searchParams }: { searchParams: Promise<{ tab: string }> }
 
 	return (
 		<div className="max-w-7xl mx-auto h-screen">
-			<SellerDashboard userInfo={userInfo} orders={orders} products={products} reviews={reviews} />
+			<SellerDashboard userInfo={userInfo.data} orders={orders.data} products={products.data} reviews={reviews.data} />
 		</div>
 	)
 }

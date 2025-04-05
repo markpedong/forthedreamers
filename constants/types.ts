@@ -207,6 +207,7 @@ export type TReviewResponse = {
     image: string | null
   };
   product: {
+    id: string
     name: string;
   };
   createdAt: Date

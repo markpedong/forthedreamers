@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       id: true,
       comment: true,
       rating: true,
-      product: { select: { name: true } },
+      product: { select: { name: true, id: true } },
       user: { select: { firstName: true, lastName: true, image: true } },
       createdAt: true
     }
