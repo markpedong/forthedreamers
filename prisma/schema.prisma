@@ -96,11 +96,10 @@ model Orders {
   updatedAt  DateTime  @updatedAt
   deletedAt  DateTime?
 
-  user        Users?       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  address     Addresses?   @relation(fields: [addressesId], references: [id])
-  orderItems  OrderItems[] // One order can have many order items
-  reviews     Reviews[]
-  addressesId String?      @db.Uuid
+  user       Users?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address    Addresses?   @relation(fields: [addressID], references: [id], onDelete: Cascade)
+  orderItems OrderItems[] // One order can have many order items
+  reviews    Reviews[]
 
   @@index([userId])
   @@index([status])

@@ -9,114 +9,117 @@ import { setHasDefaultAddress } from '@/redux/slices/appSlice'
 import { Icon } from '@iconify/react'
 
 type Props = {
-  address: Addresses
-  openEditModal: () => void
+	address: Addresses
+	openEditModal?: () => void
+	readonly?: boolean
 }
 
-const Address: FC<Props> = ({ openEditModal, address }) => {
-  const darkMode = useAppSelector(s => s.app.darkMode)
-  const [isPending, startTransition] = useTransition()
-  const [delP, delT] = useTransition()
-  const { refresh } = useRouter()
-  const [isOpen, setIsOpen] = useState(false)
-  const dispatch = useAppDispatch()
+const Address: FC<Props> = ({ openEditModal, address, readonly }) => {
+	const darkMode = useAppSelector(s => s.app.darkMode)
+	const [isPending, startTransition] = useTransition()
+	const [delP, delT] = useTransition()
+	const { refresh } = useRouter()
+	const [isOpen, setIsOpen] = useState(false)
+	const dispatch = useAppDispatch()
 
-  const handleSetDefaultAddress = () => {
-    startTransition(async () => {
-      const res = await setDefaultAddress({ id: address?.id })
+	const handleSetDefaultAddress = () => {
+		startTransition(async () => {
+			const res = await setDefaultAddress({ id: address?.id })
 
-      if (res.success) {
-        addToast({ title: 'Success', description: 'Address set as default', color: 'success' })
-        refresh()
-      }
-    })
-  }
+			if (res.success) {
+				addToast({ title: 'Success', description: 'Address set as default', color: 'success' })
+				refresh()
+			}
+		})
+	}
 
-  const handleDelete = () => {
-    delT(async () => {
-      const res = await deleteAddress(`${address?.id}`)
+	const handleDelete = () => {
+		delT(async () => {
+			const res = await deleteAddress(`${address?.id}`)
 
-      if (address.type === ADDRESS_TYPE.DEFAULT) {
-        dispatch(setHasDefaultAddress(false))
-      }
-      if (res.success) {
-        addToast({ title: 'Success', description: 'Address deleted successfully', color: 'success' })
-        refresh()
-        setIsOpen(false)
-      }
-    })
-  }
+			if (address.type === ADDRESS_TYPE.DEFAULT) {
+				dispatch(setHasDefaultAddress(false))
+			}
+			if (res.success) {
+				addToast({ title: 'Success', description: 'Address deleted successfully', color: 'success' })
+				refresh()
+				setIsOpen(false)
+			}
+		})
+	}
 
-  const renderDelete = () => {
-    return (
-      <Popover isOpen={isOpen} onOpenChange={setIsOpen} backdrop="opaque" isDismissable={false}>
-        <PopoverTrigger>
-          <Button isIconOnly size="sm" variant="light" aria-label="Delete address" onPress={() => setIsOpen(true)}>
-            <Icon icon="mdi:trash" className="text-danger" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent>
-          <div className="px-4 py-3">
-            <div className="text-small font-bold mb-2">Delete Address</div>
-            <div className="text-tiny mb-4">Are you sure you want to delete this address?</div>
-            <div className="flex items-center justify-end gap-2">
-              <Button size="sm" variant="light" onPress={() => setIsOpen(false)} className="text-xs h-7">
-                Cancel
-              </Button>
-              <Button size="sm" color="danger" onPress={handleDelete} className="text-xs h-7">
-                {delP ? 'Deleting...' : 'Delete'}
-              </Button>
-            </div>
-          </div>
-        </PopoverContent>
-      </Popover>
-    )
-  }
+	const renderDelete = () => {
+		return (
+			<Popover isOpen={isOpen} onOpenChange={setIsOpen} backdrop="opaque" isDismissable={false}>
+				<PopoverTrigger>
+					<Button isIconOnly size="sm" variant="light" aria-label="Delete address" onPress={() => setIsOpen(true)}>
+						<Icon icon="mdi:trash" className="text-danger" />
+					</Button>
+				</PopoverTrigger>
+				<PopoverContent>
+					<div className="px-4 py-3">
+						<div className="text-small font-bold mb-2">Delete Address</div>
+						<div className="text-tiny mb-4">Are you sure you want to delete this address?</div>
+						<div className="flex items-center justify-end gap-2">
+							<Button size="sm" variant="light" onPress={() => setIsOpen(false)} className="text-xs h-7">
+								Cancel
+							</Button>
+							<Button size="sm" color="danger" onPress={handleDelete} className="text-xs h-7">
+								{delP ? 'Deleting...' : 'Delete'}
+							</Button>
+						</div>
+					</div>
+				</PopoverContent>
+			</Popover>
+		)
+	}
 
-  return (
-    <Card key={address?.id} className="w-full" shadow="sm">
-      <CardBody>
-        <div className="flex justify-between items-start">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-medium">
-                {address?.firstName} {address?.lastName} / {address?.number}
-              </span>
-              {address?.type !== ADDRESS_TYPE.NONE && (
-                <span className="px-2 py-1 text-tiny bg-primary-200 text-black rounded-full">{address?.type}</span>
-              )}
-            </div>
-            <div className="text-default-500 text-xs">
-              <p>{address?.street}</p>
-              <p>{`${address?.city}, ${address?.state} ${address?.zipCode}`}</p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              isIconOnly
-              size="sm"
-              variant="light"
-              aria-label="Edit address"
-              onPress={() => {
-                dispatch(setAddress(address))
-                openEditModal()
-              }}
-            >
-              <Icon className="text-default-500" icon="akar-icons:edit" color={darkMode ? 'white' : 'black'} />
-            </Button>
-            {renderDelete()}
-          </div>
-        </div>
-        {address?.type !== ADDRESS_TYPE.DEFAULT && (
-          <div className="mt-2 pt-2 border-t">
-            <Button variant="flat" size="sm" onPress={handleSetDefaultAddress} isLoading={isPending}>
-              {isPending ? 'Setting...' : 'Set as default'}
-            </Button>
-          </div>
-        )}
-      </CardBody>
-    </Card>
-  )
+	return (
+		<Card key={address?.id} className="w-full" shadow="sm">
+			<CardBody>
+				<div className="flex justify-between items-start">
+					<div className="space-y-1">
+						<div className="flex items-center gap-2">
+							<span className="font-semibold text-medium">
+								{address?.firstName} {address?.lastName} / {address?.number}
+							</span>
+							{address?.type !== ADDRESS_TYPE.NONE && (
+								<span className="px-2 py-1 text-tiny bg-primary-200 text-black rounded-full">{address?.type}</span>
+							)}
+						</div>
+						<div className="text-default-500 text-xs">
+							<p>{address?.street}</p>
+							<p>{`${address?.city}, ${address?.state} ${address?.zipCode}`}</p>
+						</div>
+					</div>
+					{!readonly && (
+						<div className="flex gap-2">
+							<Button
+								isIconOnly
+								size="sm"
+								variant="light"
+								aria-label="Edit address"
+								onPress={() => {
+									dispatch(setAddress(address))
+									openEditModal?.()
+								}}
+							>
+								<Icon className="text-default-500" icon="akar-icons:edit" color={darkMode ? 'white' : 'black'} />
+							</Button>
+							{renderDelete()}
+						</div>
+					)}
+				</div>
+				{address?.type !== ADDRESS_TYPE.DEFAULT && (
+					<div className="mt-2 pt-2 border-t">
+						<Button variant="flat" size="sm" onPress={handleSetDefaultAddress} isLoading={isPending}>
+							{isPending ? 'Setting...' : 'Set as default'}
+						</Button>
+					</div>
+				)}
+			</CardBody>
+		</Card>
+	)
 }
 
 export default memo(Address)

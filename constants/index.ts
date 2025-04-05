@@ -69,7 +69,7 @@ export enum TAGS {
   ORDERS = 'orders',
   PAYMENT_METHODS = 'payment-methods',
   WISHLIST = 'wishlist',
-  CART = 'cart'
+  CART = 'cart',
   SELLER = 'seller'
 }
 
