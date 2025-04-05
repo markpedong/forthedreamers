@@ -196,3 +196,18 @@ export type TReviewItem = Reviews & {
 }
 
 export type DateFormat = 'full' | 'monthYear' | 'monthDayYear';
+
+export type TReviewResponse = {
+  id: string;
+  rating: number;
+  comment: string | null;
+  user: {
+    firstName: string | null;
+    lastName: string | null;
+    image: string | null
+  };
+  product: {
+    name: string;
+  };
+  createdAt: Date
+}

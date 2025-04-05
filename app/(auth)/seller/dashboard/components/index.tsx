@@ -8,7 +8,7 @@ import StatsCard from './stats-card'
 import styles from '../styles.module.scss'
 import AddEditProduct from './addedit-product'
 import { Icon } from '@iconify/react'
-import { SellerInfo, TOrdersResponse, TProductItem } from '@/constants/types'
+import { SellerInfo, TOrdersResponse, TProductItem, TReviewResponse } from '@/constants/types'
 import ProductTable from './table-product'
 import OrdersTable from './table-orders'
 import ReviewsSection from './table-review'
@@ -23,7 +23,7 @@ type Props = {
 	userInfo: SellerInfo
 	products: TProductItem[]
 	orders: TOrdersResponse[]
-	reviews: Reviews[]
+	reviews: TReviewResponse[]
 }
 
 const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => {

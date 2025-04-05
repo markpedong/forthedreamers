@@ -84,10 +84,13 @@ export const getProductReviews = async (id?: string) => {
         sellerID: id
       }
     },
-    include: {
-      product: true,
-      user: true,
-      order: true
+    select: {
+      id: true,
+      comment: true,
+      rating: true,
+      product: { select: { name: true } },
+      user: { select: { firstName: true, lastName: true, image: true } },
+      createdAt: true
     }
   })
 }
