@@ -16,7 +16,7 @@ const ProductReviews: FC<{ reviews: TReviewItem[] }> = ({ reviews }) => {
 	const totalPages = Math.ceil(reviews.length / reviewsPerPage)
 
 	return (
-		<Card>
+		<Card className='p-4'>
 			<CardHeader className="flex flex-col gap-1">
 				<div className="flex items-center justify-between">
 					<h3 className="text-lg font-semibold">Customer Reviews</h3>
