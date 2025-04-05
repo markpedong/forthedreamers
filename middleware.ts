@@ -1,6 +1,6 @@
 import { getToken } from 'next-auth/jwt'
 import { NextFetchEvent, NextRequest, NextResponse } from 'next/server'
-import { AUTH_SECRET, PROFILE_MENUS } from './constants'
+import { AUTH_SECRET, PROFILE_MENUS, SELLER_DASHBOARD_MENUS } from './constants'
 
 export const middleware = async (request: NextRequest, event: NextFetchEvent) => {
   const token = await getToken({ req: request, secret: AUTH_SECRET })
@@ -37,6 +37,12 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
     if (pathname === '/profile' && (!searchParams.has('tab') || !PROFILE_MENUS.includes(`${searchParams.get('tab')}`))) {
       const url = request.nextUrl.clone()
       url.searchParams.set('tab', 'personal-information')
+      return NextResponse.redirect(url)
+    }
+
+    if (pathname === '/seller-dashboard' && (!searchParams.has('tab') || !SELLER_DASHBOARD_MENUS.includes(`${searchParams.get('tab')}`))) {
+      const url = request.nextUrl.clone()
+      url.searchParams.set('tab', 'products')
       return NextResponse.redirect(url)
     }
 

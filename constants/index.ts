@@ -71,7 +71,9 @@ export enum TAGS {
   WISHLIST = 'wishlist',
   CART = 'cart',
   SELLER = 'seller',
-  SOLD_PRODUCTS = 'sold-products'
+  SOLD_PRODUCTS = 'sold-products',
+  PRODUCT_REVIEWS = 'product-reviews',
+  SELLER_PRODUCTS = 'seller-products'
 }
 
 export const statusColorMap = {
@@ -83,3 +85,5 @@ export const statusColorMap = {
 } as const
 
 export const PROFILE_MENUS = ['personal-information', 'addresses', 'payment-methods', 'orders', 'wishlist', 'reviews']
+
+export const SELLER_DASHBOARD_MENUS = ['products', 'orders', 'reviews']

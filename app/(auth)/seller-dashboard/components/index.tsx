@@ -15,9 +15,10 @@ import ReviewsSection from './table-review'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { toggleDarkMode } from '@/redux/slices/appSlice'
 import { useTheme } from 'next-themes'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { clearUserData } from '@/lib'
 import { signOut } from 'next-auth/react'
+import { SELLER_DASHBOARD_MENUS } from '@/constants'
 
 type Props = {
 	userInfo: SellerInfo
@@ -30,11 +31,12 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 	const editProfileModal = useDisclosure()
 	const addEditProductModal = useDisclosure()
 	const [selectedProduct, setSelectedProduct] = useState<any>(null)
-	const [selectedTab, setSelectedTab] = useState('products')
 	const darkMode = useAppSelector(state => state.app.darkMode)
 	const dispatch = useAppDispatch()
 	const { setTheme } = useTheme()
 	const router = useRouter()
+	const params = useSearchParams()
+	const tab = params.get('tab')
 
 	const handleEditProduct = (product: any) => {
 		setSelectedProduct(product)
@@ -116,12 +118,12 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 			</div>
 			<Card>
 				<CardHeader className="flex flex-col gap-3 md:flex-row justify-between items-center">
-					<Tabs selectedKey={selectedTab} onSelectionChange={tab => setSelectedTab(tab.toString())}>
-						<Tab key="products" title="Products" />
-						<Tab key="orders" title="Orders" />
-						<Tab key="reviews" title="Reviews" />
+					<Tabs selectedKey={tab} onSelectionChange={tab => router.push(`/seller-dashboard?tab=${tab}`)}>
+						{SELLER_DASHBOARD_MENUS.map(menu => (
+							<Tab key={menu} title={menu.charAt(0).toUpperCase() + menu.slice(1)} />
+						))}
 					</Tabs>
-					{selectedTab === 'products' && (
+					{tab === 'products' && (
 						<Button
 							color="primary"
 							className=" cursor-pointer"
@@ -133,9 +135,9 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 					)}
 				</CardHeader>
 				<CardBody>
-					{selectedTab === 'products' && <ProductTable products={products} onEdit={handleEditProduct} />}
-					{selectedTab === 'orders' && <OrdersTable orders={orders} />}
-					{selectedTab === 'reviews' && <ReviewsSection reviews={reviews} />}
+					{tab === 'products' && <ProductTable products={products} onEdit={handleEditProduct} />}
+					{tab === 'orders' && <OrdersTable orders={orders} />}
+					{tab === 'reviews' && <ReviewsSection reviews={reviews} />}
 				</CardBody>
 			</Card>
 

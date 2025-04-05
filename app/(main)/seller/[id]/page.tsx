@@ -1,7 +1,6 @@
 import React from 'react'
 import Seller from './components'
-import { getSellerInfo } from '@/utils/request'
-import { getAllSellers } from '@/lib/server'
+import { getAllSellers, getSellerInfo } from '@/lib/server'
 
 export async function generateStaticParams() {
 	const sellers = await getAllSellers()

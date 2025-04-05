@@ -17,7 +17,7 @@ export const refreshToken = async () => post<{ accessToken: string }>({ url: '/a
 
 export const uploadProfile = async (file: File) => upload<{ secure_url: string }>('/api/uploadProfile', file)
 
-export const updateProfile = async (data?: Users | SellerInfo) =>
+export const updateProfile = async (data?: Users | SellerInfo | null) =>
   post<Users>({ url: `/api/users/${data?.id}`, data: data })
 
 export const createNewAddress = async (data: any) => post<any>({ url: '/api/address', data })
@@ -41,8 +41,6 @@ export const getProducts = async () => get<TProductItem[]>({ url: `/api/products
 
 export const registerSeller = async (data: any) => post<Users>({ url: '/api/sellers', data })
 
-export const getSellerProducts = async (id: string) => get<TProductItem[]>({ url: `/api/sellers/products/${id}` })
-
 export const updateProduct = async (data: any, id: string) => post({ url: `/api/products/${id}`, data, isJSON: false })
 
 export const createProduct = async (data: any) => post<any>({ url: '/api/products', data, isJSON: false })
@@ -54,8 +52,6 @@ export const removeFromCart = async (id?: string) => post<any>({ url: '/api/cart
 export const deleteProduct = async (id: string) => deleteF({ url: `/api/products/${id}` })
 
 export const getProduct = async (id: string) => get<TProductItem & { seller: TSellerItem }>({ url: `/api/products/${id}` })
-
-export const getSellerInfo = async (id: string) => get<SellerInfo>({ url: `/api/sellers/${id}`, tags: TAGS.SELLER })
 
 export const addItemToCart = async (data: AddToCartHandler) => post({ url: '/api/cart', data })
 

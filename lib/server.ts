@@ -2,7 +2,7 @@
 
 import authOptions from '@/app/api/auth/[...nextauth]/options'
 import { TAGS } from '@/constants'
-import { CartResponse, CookieOptions, TCartItem, TOrdersResponse, TReviewItem, TReviewPayload, TWishListItem } from '@/constants/types'
+import { CartResponse, CookieOptions, SellerInfo, TCartItem, TOrdersResponse, TProductItem, TReviewItem, TReviewPayload, TWishListItem } from '@/constants/types'
 import prisma from '@/db'
 import { get, patch, post } from '@/utils/http'
 import { Addresses, PaymentMethods, Reviews } from '@prisma/client'
@@ -55,45 +55,6 @@ export const getAllSellers = async () => {
     }
   })
 }
-// export const getSoldProducts = async (id?: string) => {
-//   return await prisma.orders.findMany({
-//     where: {
-//       orderItems: {
-//         some: {
-//           product: {
-//             sellerID: id
-//           }
-//         }
-//       }
-//     },
-//     include: {
-//       user: { select: { firstName: true, lastName: true } },
-//       orderItems: {
-//         include: { product: { select: { name: true, id: true, images: true } } }
-//       },
-//       address: true
-//     },
-//     orderBy: { createdAt: 'desc' }
-//   })
-// }
-
-export const getProductReviews = async (id?: string) => {
-  return await prisma.reviews.findMany({
-    where: {
-      product: {
-        sellerID: id
-      }
-    },
-    select: {
-      id: true,
-      comment: true,
-      rating: true,
-      product: { select: { name: true } },
-      user: { select: { firstName: true, lastName: true, image: true } },
-      createdAt: true
-    }
-  })
-}
 
 export const getServerToken = async () => {
   const session = await getServerSession(authOptions);
@@ -118,3 +79,9 @@ export const getPaymentMethod = async (id: string) => get<PaymentMethods[]>({ ur
 export const submitReview = async (data: TReviewPayload[]) => post({ url: "/api/reviews", data })
 
 export const getSoldProducts = async (id: string) => get<TOrdersResponse[]>({ url: `/api/sellers/sold-products/${id}`, tags: TAGS.SOLD_PRODUCTS })
+
+export const getProductReviews = async (id: string) => get<TReviewItem[]>({ url: `/api/sellers/reviews/${id}`, tags: TAGS.PRODUCT_REVIEWS })
+
+export const getSellerProducts = async (id: string) => get<TProductItem[]>({ url: `/api/sellers/products/${id}`, tags: TAGS.SELLER_PRODUCTS })
+
+export const getSellerInfo = async (id: string) => get<SellerInfo>({ url: `/api/sellers/${id}`, tags: TAGS.SELLER })

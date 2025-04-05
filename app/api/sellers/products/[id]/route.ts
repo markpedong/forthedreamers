@@ -13,7 +13,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const sellerProducts = await prisma.products.findMany({
     where: { sellerID: id, deletedAt: null },
-    include: { variations: true },
+    include: {
+      variations: { select: { price: true, discountedPrice: true, id: true, label: true, stock: true } },
+      reviews: { select: { rating: true } }
+    },
     orderBy: { createdAt: 'desc' }
   })
 
