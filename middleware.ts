@@ -7,7 +7,7 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
   const { pathname, searchParams } = request.nextUrl
 
   const protectedRoutes = ['/profile', '/checkout', '/cart']
-  const userRestrictedRoutes = ['/seller/dashboard']
+  const userRestrictedRoutes = ['/seller-dashboard']
 
   if (token) {
     const orderID = request.cookies.get('orderID')?.value

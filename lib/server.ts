@@ -55,27 +55,27 @@ export const getAllSellers = async () => {
     }
   })
 }
-export const getSoldProducts = async (id?: string) => {
-  return await prisma.orders.findMany({
-    where: {
-      orderItems: {
-        some: {
-          product: {
-            sellerID: id
-          }
-        }
-      }
-    },
-    include: {
-      user: { select: { firstName: true, lastName: true } },
-      orderItems: {
-        include: { product: { select: { name: true, id: true, images: true } } }
-      },
-      address: true
-    },
-    orderBy: { createdAt: 'desc' }
-  })
-}
+// export const getSoldProducts = async (id?: string) => {
+//   return await prisma.orders.findMany({
+//     where: {
+//       orderItems: {
+//         some: {
+//           product: {
+//             sellerID: id
+//           }
+//         }
+//       }
+//     },
+//     include: {
+//       user: { select: { firstName: true, lastName: true } },
+//       orderItems: {
+//         include: { product: { select: { name: true, id: true, images: true } } }
+//       },
+//       address: true
+//     },
+//     orderBy: { createdAt: 'desc' }
+//   })
+// }
 
 export const getProductReviews = async (id?: string) => {
   return await prisma.reviews.findMany({
@@ -116,3 +116,5 @@ export const getAddress = async (id: string) => get<Addresses[]>({ url: `/api/ad
 export const getPaymentMethod = async (id: string) => get<PaymentMethods[]>({ url: `/api/payment-methods/${id}`, tags: TAGS.PAYMENT_METHODS })
 
 export const submitReview = async (data: TReviewPayload[]) => post({ url: "/api/reviews", data })
+
+export const getSoldProducts = async (id: string) => get<TOrdersResponse[]>({ url: `/api/sellers/sold-products/${id}`, tags: TAGS.SOLD_PRODUCTS })

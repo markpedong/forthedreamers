@@ -81,8 +81,8 @@ const NavBar: FC = () => {
 							</Badge>
 						</div>
 					)}
-					{session?.user?.id && !['/profile', '/seller/dashboard'].includes(pathname) && (
-						<Link color="foreground" href={isUser ? '/profile' : '/seller/dashboard'}>
+					{session?.user?.id && !['/profile', '/seller-dashboard'].includes(pathname) && (
+						<Link color="foreground" href={isUser ? '/profile' : '/seller-dashboard'}>
 							{isUser ? 'Profile' : 'Dashboard'}
 						</Link>
 					)}

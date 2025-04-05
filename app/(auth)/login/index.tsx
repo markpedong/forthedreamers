@@ -65,7 +65,7 @@ const Login = () => {
 			const userinfo = await getSession()
 			addToast({ title: 'Success', description: 'Login successful', color: 'success' })
 			setLocalStorage('accessToken', userinfo?.accessToken)
-			push(userinfo?.user.role === USER_ROLE.SELLER ? '/seller/dashboard' : '/profile')
+			push(userinfo?.user.role === USER_ROLE.SELLER ? '/seller-dashboard' : '/profile')
 		})
 	}
 
