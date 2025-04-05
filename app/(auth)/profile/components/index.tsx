@@ -69,7 +69,7 @@ const Profile: FC<Props> = ({ userInfo, addresses, paymentMethods, orders, wishl
 	const fetchUserData = () => {
 		if (!session?.user?.id || !session?.accessToken) return
 		if (!getLocalStorage('accessToken')) setLocalStorage('accessToken', session.accessToken)
-		if (!tab) router.push('/profile?tab=personal-information')
+		if (!tab) router.push('/profile')
 
 		dispatch(setUserData(userInfo))
 	}
