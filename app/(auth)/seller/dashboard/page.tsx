@@ -21,7 +21,7 @@ const Page = async () => {
 	}
 
 	return (
-		<div className={styles.sellerWrapper}>
+		<div className="max-w-7xl mx-auto h-screen">
 			<SellerDashboard
 				userInfo={userInfo.data}
 				orders={orders as unknown as TOrdersResponse[]}

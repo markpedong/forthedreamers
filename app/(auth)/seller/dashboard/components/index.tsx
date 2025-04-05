@@ -50,7 +50,7 @@ const SellerDashboard: FC<Props> = ({ userInfo, products, orders, reviews }) => 
 	}
 
 	return (
-		<div className={styles.sellerContainer}>
+		<div className="grid items-center gap-8 p-6">
 			<div className="flex justify-between">
 				<div className="flex gap-2 items-center cursor-pointer" onClick={() => router.push('/')}>
 					<Icon icon="bx:arrow-back" height={15} />
