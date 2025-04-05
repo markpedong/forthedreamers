@@ -1,11 +1,10 @@
 import { getToken } from 'next-auth/jwt'
 import { NextFetchEvent, NextRequest, NextResponse } from 'next/server'
-import { AUTH_SECRET } from './constants'
-import { getCookie } from './lib/server'
+import { AUTH_SECRET, PROFILE_MENUS } from './constants'
 
 export const middleware = async (request: NextRequest, event: NextFetchEvent) => {
   const token = await getToken({ req: request, secret: AUTH_SECRET })
-  const path = request.nextUrl.pathname
+  const { pathname, searchParams } = request.nextUrl
 
   const protectedRoutes = ['/profile', '/checkout', '/cart']
   const userRestrictedRoutes = ['/seller/dashboard']
@@ -13,13 +12,13 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
   if (token) {
     const orderID = request.cookies.get('orderID')?.value
 
-    if (path === "/order-success") {
+    if (pathname === "/order-success") {
       if (!orderID) {
         return NextResponse.redirect(new URL('/', request.url))
       }
     }
 
-    if (path === '/checkout') {
+    if (pathname === '/checkout') {
       if (!!orderID) {
         return NextResponse.redirect(new URL('/order-success', request.url))
       }
@@ -31,11 +30,18 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
       }
     }
 
-    if (path === '/login') {
+    if (pathname === '/login') {
       return NextResponse.redirect(new URL('/', request.url))
     }
+
+    if (pathname === '/profile' && (!searchParams.has('tab') || !PROFILE_MENUS.includes(`${searchParams.get('tab')}`))) {
+      const url = request.nextUrl.clone()
+      url.searchParams.set('tab', 'personal-information')
+      return NextResponse.redirect(url)
+    }
+
   } else {
-    if (protectedRoutes.includes(path) || userRestrictedRoutes.includes(path)) {
+    if (protectedRoutes.includes(pathname) || userRestrictedRoutes.includes(pathname)) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
   }

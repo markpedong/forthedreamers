@@ -20,6 +20,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { FC, useEffect, useTransition } from 'react'
 import styles from '../styles.module.scss'
 import WishList from './wishlist'
+import { PROFILE_MENUS } from '@/constants'
 
 type Props = {
 	userInfo: Users | null
@@ -38,7 +39,6 @@ const Reviews = dynamic(() => import('./reviews'))
 
 const Profile: FC<Props> = ({ userInfo, addresses, paymentMethods, orders, wishlist, reviews }) => {
 	const { darkMode } = useAppSelector(state => state.app)
-	const menus = ['personal-information', 'addresses', 'payment-methods', 'orders', 'wishlist', 'reviews']
 	const dispatch = useAppDispatch()
 	const { data: session } = useSession()
 	const { userData } = useAppSelector(state => state.user)
@@ -112,7 +112,7 @@ const Profile: FC<Props> = ({ userInfo, addresses, paymentMethods, orders, wishl
 							<span className="text-neutral-400">Customer</span>
 						</div>
 						<div className="flex flex-col gap-1 text-sm mt-7">
-							{menus.map((menu, index) => (
+							{PROFILE_MENUS.map((menu, index) => (
 								<span
 									key={index}
 									onClick={() =>

@@ -80,3 +80,5 @@ export const statusColorMap = {
   [STATUS.DELIVERED]: 'success',
   [STATUS.CANCELED]: 'danger'
 } as const
+
+export const PROFILE_MENUS = ['personal-information', 'addresses', 'payment-methods', 'orders', 'wishlist', 'reviews']
