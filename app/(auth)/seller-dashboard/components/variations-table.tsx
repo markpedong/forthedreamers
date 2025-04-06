@@ -6,18 +6,20 @@ const VariationsTable: FC<{ variations: TVariationItem[] }> = ({ variations }) =
 	return (
 		<Table className="max-w-full" removeWrapper isCompact>
 			<TableHeader>
-				<TableColumn className='text-xs'>LABEL</TableColumn>
-				<TableColumn className='text-xs'>STOCK</TableColumn>
-				<TableColumn className='text-xs'>PRICE</TableColumn>
-				<TableColumn className='text-xs'>DISCOUNTED PRICE</TableColumn>
+				<TableColumn>{null}</TableColumn>
+				<TableColumn>LABEL</TableColumn>
+				<TableColumn>STOCK</TableColumn>
+				<TableColumn>PRICE</TableColumn>
+				<TableColumn>DISCOUNTED PRICE</TableColumn>
 			</TableHeader>
 			<TableBody>
 				{variations.map(variation => (
 					<TableRow key={variation.id}>
-						<TableCell className='text-xs'>{variation.label}</TableCell>
-						<TableCell className='text-xs'>{variation.stock}</TableCell>
-						<TableCell className='text-xs'>${variation.price.toFixed(2)}</TableCell>
-						<TableCell className='text-xs'>{variation.discountedPrice ? `$${variation.discountedPrice.toFixed(2)}` : '-'}</TableCell>
+						<TableCell>{null}</TableCell>
+						<TableCell>{variation.label}</TableCell>
+						<TableCell>{variation.stock}</TableCell>
+						<TableCell>${variation.price.toFixed(2)}</TableCell>
+						<TableCell>{variation.discountedPrice ? `$${variation.discountedPrice.toFixed(2)}` : '-'}</TableCell>
 					</TableRow>
 				))}
 			</TableBody>
