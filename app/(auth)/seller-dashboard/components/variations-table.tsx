@@ -4,7 +4,7 @@ import { TVariationItem } from '@/constants/types'
 
 const VariationsTable: FC<{ variations: TVariationItem[] }> = ({ variations }) => {
 	return (
-		<Table className="max-w-full" removeWrapper isCompact>
+		<Table className="max-w-full" removeWrapper>
 			<TableHeader>
 				<TableColumn>{null}</TableColumn>
 				<TableColumn>LABEL</TableColumn>

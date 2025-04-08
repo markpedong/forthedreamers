@@ -36,7 +36,6 @@ const ProductTable: FC<ProductTableProps> = ({ products, onEdit }) => {
 			</TableHeader>
 			<TableBody emptyContent="No rows to display.">
 				{products.map(product => {
-					console.log('product', product)
 					return (
 						<>
 							<TableRow className="select-none">
