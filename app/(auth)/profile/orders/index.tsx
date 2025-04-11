@@ -1,11 +1,11 @@
 'use client'
 
-import Orders from '@/components/profile/order'
+import Order from '@/components/profile/order'
 import { TOrdersResponse } from '@/constants/types'
 import { Pagination } from '@heroui/react'
 import { FC, useState } from 'react'
 
-const OrderList: FC<{ data: TOrdersResponse[] }> = ({ data }) => {
+const Orders: FC<{ data: TOrdersResponse[] }> = ({ data }) => {
 	const [currentPage, setCurrentPage] = useState(1)
 	const ordersPerPage = 5
 	const totalPages = Math.ceil((data.length || 0) / ordersPerPage)
@@ -14,7 +14,7 @@ const OrderList: FC<{ data: TOrdersResponse[] }> = ({ data }) => {
 	return (
 		<div className="flex justify-center items-center">
 			{currentOrders?.map(order => (
-				<Orders order={order} key={order.id} />
+				<Order order={order} key={order.id} />
 			))}
 			{totalPages > 1 && (
 				<div className="flex justify-center mt-6">
@@ -25,4 +25,4 @@ const OrderList: FC<{ data: TOrdersResponse[] }> = ({ data }) => {
 	)
 }
 
-export default OrderList
+export default Orders

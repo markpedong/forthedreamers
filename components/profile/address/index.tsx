@@ -1,12 +1,13 @@
-import { ADDRESS_TYPE, Addresses } from '@prisma/client'
-import React, { FC, memo, useState, useTransition } from 'react'
-import { Card, CardBody, Button, addToast, Popover, PopoverTrigger, PopoverContent } from '@heroui/react'
+import { TAGS } from '@/constants'
+import { refetch } from '@/lib/server'
+import { setHasDefaultAddress } from '@/redux/slices/appSlice'
+import { setAddress } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { deleteAddress, setDefaultAddress } from '@/utils/request'
-import { useRouter } from 'next/navigation'
-import { setAddress } from '@/redux/slices/userSlice'
-import { setHasDefaultAddress } from '@/redux/slices/appSlice'
+import { addToast, Button, Card, CardBody, Popover, PopoverContent, PopoverTrigger } from '@heroui/react'
 import { Icon } from '@iconify/react'
+import { ADDRESS_TYPE, Addresses } from '@prisma/client'
+import { FC, memo, useState, useTransition } from 'react'
 
 type Props = {
 	address: Addresses
@@ -18,7 +19,6 @@ const Address: FC<Props> = ({ openEditModal, address, readonly }) => {
 	const darkMode = useAppSelector(s => s.app.darkMode)
 	const [isPending, startTransition] = useTransition()
 	const [delP, delT] = useTransition()
-	const { refresh } = useRouter()
 	const [isOpen, setIsOpen] = useState(false)
 	const dispatch = useAppDispatch()
 
@@ -28,7 +28,7 @@ const Address: FC<Props> = ({ openEditModal, address, readonly }) => {
 
 			if (res.success) {
 				addToast({ title: 'Success', description: 'Address set as default', color: 'success' })
-				refresh()
+				refetch(TAGS.ADDRESS)
 			}
 		})
 	}
@@ -42,7 +42,7 @@ const Address: FC<Props> = ({ openEditModal, address, readonly }) => {
 			}
 			if (res.success) {
 				addToast({ title: 'Success', description: 'Address deleted successfully', color: 'success' })
-				refresh()
+				refetch(TAGS.ADDRESS)
 				setIsOpen(false)
 			}
 		})

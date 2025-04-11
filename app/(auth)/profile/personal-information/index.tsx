@@ -1,14 +1,20 @@
+'use client'
+
 import { personalInformation } from '@/actions/auth'
+import { TAGS } from '@/constants'
+import { refetch } from '@/lib/server'
 import { setUserData } from '@/redux/slices/userSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { updateProfile } from '@/utils/request'
+import { getLocalStorage, setLocalStorage } from '@/utils/xLocalStorage'
 import { addToast, Button, DatePicker, Form, Input } from '@heroui/react'
 import { getLocalTimeZone, parseDate, today } from '@internationalized/date'
+import { Users } from '@prisma/client'
 import { Typography } from 'antd'
 import { useSession } from 'next-auth/react'
 import { FC, useActionState, useEffect, useTransition } from 'react'
 
-const PersonalInformation: FC = () => {
+const PersonalInformation: FC<{ userInfo: Users | null }> = ({ userInfo }) => {
   const dispatch = useAppDispatch()
   const [state, action] = useActionState(personalInformation, {
     errors: {},
@@ -18,6 +24,16 @@ const PersonalInformation: FC = () => {
   const container = 'grid grid-cols-2 gap-3 w-full'
   const { data: session } = useSession()
   const user = useAppSelector(s => s.user.userData)
+
+  useEffect(() => {
+    if (state.success) {
+      handleUpdate()
+    }
+  }, [state])
+
+  useEffect(() => {
+    fetchUserData()
+  }, [session, userInfo])
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -33,18 +49,20 @@ const PersonalInformation: FC = () => {
 
     if (res.success) {
       dispatch(setUserData(res.data))
+      refetch(TAGS.USER)
       addToast({ title: 'Success', description: 'Personal information updated successfully', color: 'success' })
     }
   }
 
-  useEffect(() => {
-    if (state.success) {
-      handleUpdate()
-    }
-  }, [state])
+  const fetchUserData = () => {
+    if (!session?.user?.id || !session?.accessToken) return
+    if (!getLocalStorage('accessToken')) setLocalStorage('accessToken', session.accessToken)
+
+    dispatch(setUserData(userInfo))
+  }
 
   return (
-    <div className='select-none'>
+    <div className="select-none">
       <Typography.Title level={4}>Personal Information</Typography.Title>
       <Form action={action} validationErrors={state?.errors} onSubmit={handleSubmit}>
         <div className={container}>
@@ -84,7 +102,7 @@ const PersonalInformation: FC = () => {
           isLoading={isPending}
           fullWidth
           className="mt-7"
-          color='primary'
+          color="primary"
           variant="shadow"
           radius="sm"
         >

@@ -1,4 +1,6 @@
-import PaymentMethods from '@/components/profile/payment-methods'
+'use client'
+
+import PaymentMethod from '@/components/profile/payment-methods'
 import AddEditPaymentMethods from '@/components/profile/payment-methodsAddEdit'
 import { setPaymentMethod } from '@/redux/slices/userSlice'
 import { useAppDispatch } from '@/redux/store'
@@ -7,7 +9,7 @@ import { PaymentMethods as TPaymentMethods } from '@prisma/client'
 import { Typography } from 'antd'
 import { FC } from 'react'
 
-const PaymentMethod: FC<{ data: TPaymentMethods[] }> = ({ data }) => {
+const PaymentMethods: FC<{ data: TPaymentMethods[] }> = ({ data }) => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure()
 	const dispatch = useAppDispatch()
 
@@ -36,11 +38,11 @@ const PaymentMethod: FC<{ data: TPaymentMethods[] }> = ({ data }) => {
 			</div>
 			<div className="grid gap-3 mt-8">
 				{data?.map(method => (
-					<PaymentMethods key={method.id} method={method} />
+					<PaymentMethod key={method.id} method={method} />
 				))}
 			</div>
 		</div>
 	)
 }
 
-export default PaymentMethod
+export default PaymentMethods

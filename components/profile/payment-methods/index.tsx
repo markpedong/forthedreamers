@@ -8,7 +8,7 @@ import { PaymentMethods as TPaymentMethods } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import { FC, useTransition } from 'react'
 
-const PaymentMethods: FC<{ method: TPaymentMethods }> = ({ method }) => {
+const PaymentMethod: FC<{ method: TPaymentMethods }> = ({ method }) => {
 	const [isPending, startTransition] = useTransition()
 	const [isDeleting, startDeleting] = useTransition()
 	const { refresh } = useRouter()
@@ -71,4 +71,4 @@ const PaymentMethods: FC<{ method: TPaymentMethods }> = ({ method }) => {
 	)
 }
 
-export default PaymentMethods
+export default PaymentMethod

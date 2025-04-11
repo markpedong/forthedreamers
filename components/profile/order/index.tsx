@@ -11,7 +11,7 @@ type Props = {
   order: TOrdersResponse
 }
 
-const Orders: FC<Props> = ({ order }) => {
+const Order: FC<Props> = ({ order }) => {
   const [selectedOrder, setSelectedOrder] = useState<TOrdersResponse | null>(null)
 
   return (
@@ -50,4 +50,4 @@ const Orders: FC<Props> = ({ order }) => {
   )
 }
 
-export default Orders
+export default Order
