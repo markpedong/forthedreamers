@@ -35,16 +35,8 @@ export const middleware = async (request: NextRequest, event: NextFetchEvent) =>
     }
 
     if (pathname === '/profile' && (!searchParams.has('tab') || !PROFILE_MENUS.includes(`${searchParams.get('tab')}`))) {
-      // const url = request.nextUrl.clone()
-      // url.searchParams.set('tab', 'personal-information')
       return NextResponse.redirect(new URL(`/profile/personal-information`, request.url))
     }
-
-    // if (pathname === '/seller-dashboard' && (!searchParams.has('tab') || !SELLER_DASHBOARD_MENUS.includes(`${searchParams.get('tab')}`))) {
-    //   const url = request.nextUrl.clone()
-    //   url.searchParams.set('tab', 'products')
-    //   return NextResponse.redirect(url)
-    // }
 
   } else {
     if (protectedRoutes.includes(pathname) || userRestrictedRoutes.includes(pathname)) {
