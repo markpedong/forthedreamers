@@ -5,7 +5,8 @@ import transporter from "./nodemailer";
 import ResetPassword from "@/components/emails/reset-password";
 import { render } from "@react-email/render";
 import VerifyEmail from "@/components/emails/verify-email";
-
+import { lastLoginMethod } from 'better-auth/plugins';
+import { nextCookies } from "better-auth/next-js";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
@@ -51,4 +52,8 @@ export const auth = betterAuth({
       });
     },
   },
+  plugins: [
+    lastLoginMethod(),
+    nextCookies(),
+  ]
 });

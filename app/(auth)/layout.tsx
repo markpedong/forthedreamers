@@ -1,8 +1,8 @@
 import { getSession } from '@/lib/server-actions';
 import { redirect } from 'next/navigation';
-import { ReactNode } from 'react';
+import { FC, PropsWithChildren } from 'react';
 
-export default async function AuthLayout({ children }: { children: ReactNode }) {
+const AuthLayout: FC<PropsWithChildren> = async ({ children }) => {
   const session = await getSession();
 
   if (session) {
@@ -10,4 +10,6 @@ export default async function AuthLayout({ children }: { children: ReactNode }) 
   }
 
   return children;
-}
+};
+
+export default AuthLayout;

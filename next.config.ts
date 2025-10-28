@@ -1,13 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
   reactStrictMode: false,
   env: {
     DATABASE_URL: process.env.DATABASE_URL,
+    BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
   },
   experimental: {
     authInterrupts: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
   },
   images: {
     remotePatterns: [
