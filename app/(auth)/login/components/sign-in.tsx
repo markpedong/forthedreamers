@@ -5,36 +5,35 @@ import { Input } from '@/components/ui/input';
 import { AppleIcon, FacebookIcon, GoogleIcon, TikTokIcon } from '@/components/icons/oauth';
 import { Button } from '@/components/ui/button';
 
-const RegisterPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => (
+const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => (
   <PageWrapper>
     <div>
       <div className='text-center mb-8'>
-        <h1 className='text-3xl font-bold mb-2'>Create account</h1>
-        <p className='text-muted-foreground'>Sign up to get started</p>
+        <h1 className='text-3xl font-bold mb-2'>Welcome back</h1>
+        <p className='text-muted-foreground'>Sign in to your account to continue</p>
       </div>
 
       <div className='space-y-5'>
         <div className='space-y-2'>
-          <Label htmlFor='name'>Full Name</Label>
-          <Input id='name' type='text' placeholder='John Doe' className='h-11' />
+          <Label htmlFor='email'>Email</Label>
+          <Input id='email' type='email' placeholder='you@example.com' className='h-11' />
         </div>
 
         <div className='space-y-2'>
-          <Label htmlFor='reg-email'>Email</Label>
-          <Input id='reg-email' type='email' placeholder='you@example.com' className='h-11' />
+          <Label htmlFor='password'>Password</Label>
+          <Input id='password' type='password' placeholder='••••••••' className='h-11' />
         </div>
 
-        <div className='space-y-2'>
-          <Label htmlFor='reg-password'>Password</Label>
-          <Input id='reg-password' type='password' placeholder='••••••••' className='h-11' />
+        <div className='flex items-center justify-end'>
+          <button
+            onClick={() => onNavigate('forgot')}
+            className='text-sm text-primary hover:underline'
+          >
+            Forgot password?
+          </button>
         </div>
 
-        <div className='space-y-2'>
-          <Label htmlFor='confirm-password'>Confirm Password</Label>
-          <Input id='confirm-password' type='password' placeholder='••••••••' className='h-11' />
-        </div>
-
-        <Button className='w-full h-11'>Create Account</Button>
+        <Button className='w-full h-11'>Sign in</Button>
       </div>
 
       <div className='relative my-6'>
@@ -56,13 +55,13 @@ const RegisterPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => (
       </div>
 
       <p className='text-center text-sm text-muted-foreground mt-6'>
-        Already have an account?{' '}
-        <button onClick={() => onNavigate('login')} className='text-primary hover:underline'>
-          Sign in
+        Don't have an account?{' '}
+        <button onClick={() => onNavigate('register')} className='text-primary hover:underline'>
+          Create account
         </button>
       </p>
     </div>
   </PageWrapper>
 );
 
-export default RegisterPage;
+export default SignIn;

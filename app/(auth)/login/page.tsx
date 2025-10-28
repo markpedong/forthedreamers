@@ -8,8 +8,8 @@ import loginImage from '@/public/images/login-image.webp';
 import Image from 'next/image';
 import { TOnNavigate } from '@/lib/types';
 import PageWrapper from './components/page-wrapper';
-import LoginPage from './components/login';
-import RegisterPage from './components/register';
+import SignIn from './components/sign-in';
+import SignUp from './components/sign-up';
 import TwoFactorPage from './components/2fa';
 
 const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => (
@@ -52,8 +52,8 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => (
 export default function AuthInterface() {
   const [currentPage, setCurrentPage] = useState('login');
   const pages = {
-    login: <LoginPage onNavigate={setCurrentPage} />,
-    register: <RegisterPage onNavigate={setCurrentPage} />,
+    login: <SignIn onNavigate={setCurrentPage} />,
+    register: <SignUp onNavigate={setCurrentPage} />,
     forgot: <ForgotPasswordPage onNavigate={setCurrentPage} />,
     '2fa': <TwoFactorPage onNavigate={setCurrentPage} />,
   };
