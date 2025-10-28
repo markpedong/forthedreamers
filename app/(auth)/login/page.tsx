@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AppleIcon, FacebookIcon, GoogleIcon, TikTokIcon } from '@/components/icons/oauth';
+import loginImage from '@/public/images/login-image.webp';
+import Image from 'next/image';
 
 type TOnNavigate = (page: string) => void;
 
@@ -260,24 +262,22 @@ export default function AuthInterface() {
   };
 
   return (
-    <div className='relative'>
-      <div className='fixed top-4 right-4 z-50 bg-card border rounded-lg shadow-md p-2 flex gap-2'>
-        {Object.keys(pages).map((key) => (
-          <button
-            key={key}
-            onClick={() => setCurrentPage(key)}
-            className={`px-3 py-1 rounded text-xs font-medium ${
-              currentPage === key
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted text-muted-foreground hover:bg-muted/70'
-            }`}
-          >
-            {key.toUpperCase()}
-          </button>
-        ))}
+    <div className='flex min-h-screen bg-background'>
+      {/* Left Side - Image (Desktop only) */}
+      <div className='hidden lg:flex flex-1 relative'>
+        <Image
+          src={loginImage}
+          alt='Login illustration'
+          fill
+          priority
+          className='object-cover object-center'
+        />
       </div>
 
-      {pages[currentPage as keyof typeof pages]}
+      {/* Right Side - Auth Form */}
+      <div className='flex flex-1 items-center justify-center'>
+        <div className='w-full max-w-md'>{pages[currentPage as keyof typeof pages]}</div>
+      </div>
     </div>
   );
 }

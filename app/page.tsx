@@ -1,10 +1,13 @@
+import Link from 'next/link';
 
-type Props = {}
+type Props = {};
 
 const Page = (props: Props) => {
   return (
-    <div>Page</div>
-  )
-}
+    <div>
+      <Link href='/login'>Login</Link>
+    </div>
+  );
+};
 
-export default Page
+export default Page;
