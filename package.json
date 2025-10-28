@@ -11,7 +11,8 @@
 		"db:migrate": "npx prisma migrate dev",
 		"db:deploy": "npx prisma migrate deploy",
 		"db:studio": "npx prisma studio",
-		"db:reset": "prisma migrate reset && prisma migrate dev"
+		"db:reset": "prisma migrate reset && prisma migrate dev",
+		"auth:generate": "npx @better-auth/cli generate --config ./lib/auth.ts"
 	},
 	"dependencies": {
 		"@prisma/client": "^6.18.0",
