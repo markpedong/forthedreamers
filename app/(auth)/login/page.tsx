@@ -1,53 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import loginImage from '@/public/images/login-image.webp';
 import Image from 'next/image';
-import { TOnNavigate } from '@/lib/types';
-import PageWrapper from './components/page-wrapper';
+import { useState } from 'react';
+import TwoFactorPage from './components/2fa';
+import ForgotPasswordPage from './components/forgot-password';
 import SignIn from './components/sign-in';
 import SignUp from './components/sign-up';
-import TwoFactorPage from './components/2fa';
-
-const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => (
-  <PageWrapper>
-    <div>
-      <div className='text-center mb-8'>
-        <h1 className='text-3xl font-bold mb-2'>Reset password</h1>
-        <p className='text-muted-foreground'>Enter your email to receive a reset link</p>
-      </div>
-
-      <div className='space-y-5'>
-        <div className='space-y-2'>
-          <Label htmlFor='forgot-email'>Email</Label>
-          <Input id='forgot-email' type='email' placeholder='you@example.com' className='h-11' />
-        </div>
-
-        <Button className='w-full h-11'>Send reset link</Button>
-      </div>
-
-      <div className='mt-6 text-center'>
-        <button
-          onClick={() => onNavigate('login')}
-          className='text-sm text-muted-foreground hover:text-foreground inline-flex items-center transition-colors'
-        >
-          <svg className='w-4 h-4 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth={2}
-              d='M10 19l-7-7m0 0l7-7m-7 7h18'
-            />
-          </svg>
-          Back to sign in
-        </button>
-      </div>
-    </div>
-  </PageWrapper>
-);
 
 export default function AuthInterface() {
   const [currentPage, setCurrentPage] = useState('login');
@@ -60,7 +19,6 @@ export default function AuthInterface() {
 
   return (
     <div className='flex min-h-screen bg-background'>
-      {/* Left Side - Image (Desktop only) */}
       <div className='hidden lg:flex flex-1 relative'>
         <Image
           src={loginImage}
@@ -71,7 +29,6 @@ export default function AuthInterface() {
         />
       </div>
 
-      {/* Right Side - Auth Form */}
       <div className='flex flex-1 items-center justify-center'>
         <div className='w-full max-w-xl'>{pages[currentPage as keyof typeof pages]}</div>
       </div>

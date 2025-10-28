@@ -2,8 +2,8 @@ import { TOnNavigate } from '@/lib/types';
 import PageWrapper from './page-wrapper';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { AppleIcon, FacebookIcon, GoogleIcon, TikTokIcon } from '@/components/icons/oauth';
 import { Button } from '@/components/ui/button';
+import OauthButtons from './oauth-buttons';
 
 const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   return (
@@ -48,12 +48,7 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         </div>
 
         <div className='grid grid-cols-2 gap-3'>
-          {[GoogleIcon, AppleIcon, FacebookIcon, TikTokIcon].map((Icon, i) => (
-            <Button key={i} variant='outline' className='h-11'>
-              <Icon />
-              <span className='ml-2'>{['Google', 'Apple', 'Facebook', 'TikTok'][i]}</span>
-            </Button>
-          ))}
+          <OauthButtons />
         </div>
 
         <p className='text-center text-sm text-muted-foreground mt-6'>
