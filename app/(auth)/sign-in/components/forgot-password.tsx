@@ -1,10 +1,38 @@
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { TOnNavigate } from '@/lib/types';
+import Input from '@/components/reusable/input';
+import { SchemaForm, TOnNavigate } from '@/lib/types';
 import PageWrapper from './page-wrapper';
+import useFormSchema from '@/hooks/useFormSchema';
+import { useTransition } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from '@/components/ui/form';
+import { sendForgotPasswordEmail } from '@/lib/server-actions';
+import { toast } from 'sonner';
 
 const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
+  const { emailSchema } = useFormSchema();
+  const [isSending, startSending] = useTransition();
+  const form = useForm<SchemaForm<typeof emailSchema>>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: {
+      email: '',
+    },
+  });
+
+  const onSubmit = async (values: SchemaForm<typeof emailSchema>) => {
+    startSending(async () => {
+      try {
+        await sendForgotPasswordEmail(values.email);
+        toast.success('Reset link sent successfully!', { duration: 2000 });
+        onNavigate('login');
+      } catch (error) {
+        if (error instanceof Error) {
+          toast.error(`Error: ${error.message}`);
+        }
+      }
+    });
+  };
   return (
     <PageWrapper>
       <div>
@@ -14,12 +42,21 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         </div>
 
         <div className='space-y-5'>
-          <div className='space-y-2'>
-            <Label htmlFor='forgot-email'>Email</Label>
-            <Input id='forgot-email' type='email' placeholder='you@example.com' className='h-11' />
-          </div>
-
-          <Button className='w-full h-11'>Send reset link</Button>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+              <Input
+                control={form.control}
+                name='email'
+                label='Forgot Email'
+                placeholder='you@example.com'
+                description='Must contain uppercase, lowercase, and numbers'
+                disabled={isSending}
+              />
+              <Button className='w-full h-11'>
+                {isSending ? 'Sending...' : 'Send reset link'}
+              </Button>
+            </form>
+          </Form>
         </div>
 
         <div className='mt-6 text-center'>

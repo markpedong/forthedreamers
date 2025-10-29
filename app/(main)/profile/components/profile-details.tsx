@@ -16,10 +16,10 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [isSubmitting, startSubmitting] = useTransition();
-  const { profileSchema } = useFormSchema();
-  const form = useForm<SchemaForm<typeof profileSchema>>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: { name: user.name ?? '', email: user.email ?? '' },
+  const { nameEmailSchema } = useFormSchema();
+  const form = useForm<SchemaForm<typeof nameEmailSchema>>({
+    resolver: zodResolver(nameEmailSchema),
+    defaultValues: { name: user.name ?? '' },
   });
 
   const handleResendVerification = () => {
@@ -33,7 +33,7 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
     });
   };
 
-  const onSubmit = async ({ name }: SchemaForm<typeof profileSchema>) => {
+  const onSubmit = async ({ name }: SchemaForm<typeof nameEmailSchema>) => {
     startSubmitting(async () => {
       try {
         await updateUser({ name });

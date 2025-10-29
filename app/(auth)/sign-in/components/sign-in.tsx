@@ -27,7 +27,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => (
         <div className='flex items-center justify-end'>
           <button
             onClick={() => onNavigate('forgot')}
-            className='text-sm text-primary hover:underline'
+            className='text-sm text-primary hover:underline cursor-pointer'
           >
             Forgot password?
           </button>
