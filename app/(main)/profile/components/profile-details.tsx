@@ -9,10 +9,8 @@ import useValidate from '@/hooks/useFormValidate';
 import { SessionUser } from '@/lib/types';
 import Input from '@/components/reusable/input';
 import { sendVerificationEmailAction, updateUser } from '@/lib/server-actions';
-import { useRouter } from 'next/navigation';
 
 const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
-  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [isSubmitting, startSubmitting] = useTransition();
@@ -42,9 +40,10 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
         await updateUser({ name });
 
         toast.success('Success', { description: 'Profile updated' });
-        setIsEditing(false);
       } catch {
         toast.error('Error', { description: 'Failed to update profile' });
+      } finally {
+        setIsEditing(false);
       }
     });
   };
@@ -70,16 +69,14 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
             <Input id='email' label='Email' type='email' disabled defaultValue={user.email} />
           </div>
 
-          <div className='rounded-lg bg-muted p-4'>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p className='font-medium text-foreground'>Email Verification</p>
-                <p className='text-sm text-muted-foreground'>
-                  {user.emailVerified ? 'Your email is verified' : 'Your email is not verified'}
-                </p>
-              </div>
+          {!user.emailVerified && (
+            <div className='rounded-lg bg-muted p-4'>
+              <div className='flex items-center justify-between'>
+                <div>
+                  <p className='font-medium text-foreground'>Email Verification</p>
+                  <p className='text-sm text-muted-foreground'>Your email is not verified</p>
+                </div>
 
-              {user.emailVerified && (
                 <Button
                   className='cursor-pointer'
                   type='button'
@@ -90,11 +87,11 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
                 >
                   {isPending ? 'Sending...' : 'Resend'}
                 </Button>
-              )}
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className='flex gap-2'>
+          <div className='flex gap-2 justify-end'>
             {!isEditing ? (
               <Button
                 type='reset'

@@ -5,11 +5,22 @@ import { useState, FC } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProfileLayoutProps } from '@/lib/types';
+import { Loader2 } from 'lucide-react';
 
 const ProfileLayout: FC<ProfileLayoutProps> = ({ sections }) => {
-  const isMobile = Number(useWindowSize().width) < 768;
-  const effectiveLayout = isMobile ? 'tabs' : 'sidebar';
+  const { width } = useWindowSize();
   const [activeSection, setActiveSection] = useState(sections[0]?.id || 'profile');
+
+  if (!width) {
+    return (
+      <div className='flex justify-center items-center h-64'>
+        <Loader2 className='animate-spin w-8 h-8' />
+      </div>
+    );
+  }
+
+  const isMobile = width < 768;
+  const effectiveLayout = isMobile ? 'tabs' : 'sidebar';
 
   if (effectiveLayout === 'tabs') {
     return (
