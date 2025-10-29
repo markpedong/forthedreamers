@@ -1,9 +1,9 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { FC, useEffect } from 'react';
+import { FC, Suspense, useEffect } from 'react';
 
-const Page: FC = () => {
+const ErrorPage: FC = () => {
   const error = useSearchParams().get('error');
   const router = useRouter();
 
@@ -12,6 +12,14 @@ const Page: FC = () => {
   }, [error]);
 
   return null;
+};
+
+const Page = () => {
+  return (
+    <Suspense fallback={null}>
+      <ErrorPage />
+    </Suspense>
+  );
 };
 
 export default Page;
