@@ -96,6 +96,10 @@ export const updateUser = async ({ name }: { name: string }) => {
   return await auth.api.updateUser({ body: { name }, headers: await headers() });
 }
 
+export const updateUserImage = async ({ image }: { image: string }) => {
+  return await auth.api.updateUser({ body: { image }, headers: await headers() });
+}
+
 // export const updateRole = async ({ role, id }: { role: UserRole, id: string }) => {
 //   return await auth.api.setRole({ body: { role, userId: id }, headers: await headers() });
 // }

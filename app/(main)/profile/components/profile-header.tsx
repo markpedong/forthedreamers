@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/card';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { SessionUser } from '@/lib/types';
 import { FC } from 'react';
+import AvatarUpload from './avatar-upload';
 
 interface ProfileHeaderProps {
   user: SessionUser;
@@ -18,10 +18,7 @@ const ProfileHeader: FC<ProfileHeaderProps> = ({ user }: ProfileHeaderProps) => 
   return (
     <Card className='border-0 bg-gradient-to-r from-primary/10 to-primary/5 p-6'>
       <div className='flex items-center gap-4'>
-        <Avatar className='h-16 w-16'>
-          <AvatarImage src={user.image || undefined} alt={user.name} />
-          <AvatarFallback>{initials}</AvatarFallback>
-        </Avatar>
+        <AvatarUpload src={user.image ?? ''} alt={user.name} initials={initials} />
         <div>
           <h1 className='text-3xl font-bold text-foreground'>{user.name}</h1>
           <p className='text-muted-foreground'>{user.email}</p>
