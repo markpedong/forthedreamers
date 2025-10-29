@@ -26,6 +26,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
           />
         )}
         <InputUI
+          ref={ref}
           id={id}
           type={type}
           disabled={disabled}

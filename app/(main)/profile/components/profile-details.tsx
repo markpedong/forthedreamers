@@ -8,24 +8,26 @@ import useFormSchema from '@/hooks/useFormSchema';
 import useValidate from '@/hooks/useFormValidate';
 import { SessionUser } from '@/lib/types';
 import Input from '@/components/reusable/input';
+import { sendVerificationEmailAction, updateUser } from '@/lib/server-actions';
+import { useRouter } from 'next/navigation';
 
-interface ProfileDetailsProps {
-  user: SessionUser;
-}
-
-const ProfileDetails: FC<ProfileDetailsProps> = ({ user }) => {
+const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const { profileSchema, profileDefaultValues } = useFormSchema();
-  const { handleSubmit, register, values, errors, reset, setValue, handleErrors } = useValidate({
+  const [isSubmitting, startSubmitting] = useTransition();
+  const { profileSchema } = useFormSchema();
+  const { handleSubmit, register, values, errors, reset, handleErrors } = useValidate({
     schema: profileSchema,
-    defaultValues: profileDefaultValues,
+    defaultValues: {
+      name: user.name ?? '',
+    },
   });
 
   const handleResendVerification = () => {
     startTransition(async () => {
       try {
-        // await resendVerificationEmail(user.email);
+        await sendVerificationEmailAction(user.email);
         toast.success('Success', { description: 'Verification email sent' });
       } catch {
         toast.error('Error', { description: 'Failed to send verification email' });
@@ -33,7 +35,19 @@ const ProfileDetails: FC<ProfileDetailsProps> = ({ user }) => {
     });
   };
 
-  const onSubmit = () => {};
+  const onSubmit = () => {
+    startSubmitting(async () => {
+      try {
+        const { name } = values();
+        await updateUser({ name });
+
+        toast.success('Success', { description: 'Profile updated' });
+        setIsEditing(false);
+      } catch {
+        toast.error('Error', { description: 'Failed to update profile' });
+      }
+    });
+  };
 
   return (
     <Card>
@@ -49,18 +63,11 @@ const ProfileDetails: FC<ProfileDetailsProps> = ({ user }) => {
               id='name'
               label='Name'
               type='text'
-              disabled={!isEditing || isPending}
+              disabled={!isEditing || isSubmitting}
               formState={errors('name')}
               {...register('name')}
             />
-            <Input
-              id='email'
-              label='Email'
-              type='email'
-              disabled={!isEditing || isPending}
-              formState={errors('email')}
-              {...register('email')}
-            />
+            <Input id='email' label='Email' type='email' disabled defaultValue={user.email} />
           </div>
 
           <div className='rounded-lg bg-muted p-4'>
@@ -72,8 +79,9 @@ const ProfileDetails: FC<ProfileDetailsProps> = ({ user }) => {
                 </p>
               </div>
 
-              {!user.emailVerified && (
+              {user.emailVerified && (
                 <Button
+                  className='cursor-pointer'
                   type='button'
                   variant='outline'
                   size='sm'
@@ -88,22 +96,28 @@ const ProfileDetails: FC<ProfileDetailsProps> = ({ user }) => {
 
           <div className='flex gap-2'>
             {!isEditing ? (
-              <Button type='button' onClick={() => setIsEditing(true)}>
+              <Button
+                type='reset'
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsEditing(true);
+                }}
+              >
                 Edit Profile
               </Button>
             ) : (
               <>
-                <Button type='submit' disabled={isPending}>
-                  {isPending ? 'Saving...' : 'Save Changes'}
+                <Button type='submit' disabled={isSubmitting}>
+                  {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </Button>
                 <Button
                   type='button'
                   variant='outline'
                   onClick={() => {
                     setIsEditing(false);
-                    reset({ name: user.name, email: user.email });
+                    reset({ name: user.name });
                   }}
-                  disabled={isPending}
+                  disabled={isSubmitting}
                 >
                   Cancel
                 </Button>

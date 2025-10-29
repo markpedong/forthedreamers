@@ -92,8 +92,8 @@ export const changePassword = async ({ currentPassword, newPassword, }: TChangeP
   return { error: `There was an error changing your password` };
 }
 
-export const updateUser = async ({ name, image }: { name: string, image: string }) => {
-  return await auth.api.updateUser({ body: { name, image }, headers: await headers() });
+export const updateUser = async ({ name }: { name: string }) => {
+  return await auth.api.updateUser({ body: { name }, headers: await headers() });
 }
 
 // export const updateRole = async ({ role, id }: { role: UserRole, id: string }) => {
