@@ -1,11 +1,24 @@
-import { TOnNavigate } from '@/lib/types';
+import { SchemaForm, TOnNavigate } from '@/lib/types';
 import PageWrapper from './page-wrapper';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import OauthButtons from './oauth-buttons';
+import useFormSchema from '@/hooks/useFormSchema';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
+  const { registrationSchema } = useFormSchema();
+  const form = useForm<SchemaForm<typeof registrationSchema>>({
+    resolver: zodResolver(registrationSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
   return (
     <PageWrapper>
       <div>

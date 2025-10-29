@@ -11,16 +11,16 @@ import { sendForgotPasswordEmail } from '@/lib/server-actions';
 import { toast } from 'sonner';
 
 const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
-  const { emailSchema } = useFormSchema();
+  const { forgotPasswordSchema } = useFormSchema();
   const [isSending, startSending] = useTransition();
-  const form = useForm<SchemaForm<typeof emailSchema>>({
-    resolver: zodResolver(emailSchema),
+  const form = useForm<SchemaForm<typeof forgotPasswordSchema>>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: '',
     },
   });
 
-  const onSubmit = async (values: SchemaForm<typeof emailSchema>) => {
+  const onSubmit = async (values: SchemaForm<typeof forgotPasswordSchema>) => {
     startSending(async () => {
       try {
         await sendForgotPasswordEmail(values.email);
