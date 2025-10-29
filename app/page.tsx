@@ -5,7 +5,7 @@ type Props = {};
 const Page = (props: Props) => {
   return (
     <div>
-      <Link href='/login'>Login</Link>
+      <Link href='/sign-in'>Login</Link>
     </div>
   );
 };

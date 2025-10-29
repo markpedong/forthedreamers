@@ -8,7 +8,7 @@ const ErrorPage: FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    router.push('/login?error=' + error);
+    router.push('/sign-in?error=' + error);
   }, [error]);
 
   return null;

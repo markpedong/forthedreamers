@@ -1,6 +1,6 @@
 'use client';
 
-import loginImage from '@/public/images/login-image.webp';
+import loginImage from '@/public/images/sign-in.webp';
 import Image from 'next/image';
 import { useState } from 'react';
 import TwoFactorPage from './components/2fa';

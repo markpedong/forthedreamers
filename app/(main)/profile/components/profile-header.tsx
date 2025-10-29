@@ -2,6 +2,8 @@ import { Card } from '@/components/ui/card';
 import { SessionUser } from '@/lib/types';
 import { FC } from 'react';
 import AvatarUpload from './avatar-upload';
+import { Button } from '@/components/ui/button';
+import { signOut } from '@/lib/server-actions';
 
 interface ProfileHeaderProps {
   user: SessionUser;
@@ -19,7 +21,7 @@ const ProfileHeader: FC<ProfileHeaderProps> = ({ user }: ProfileHeaderProps) => 
     <Card className='border-0 bg-gradient-to-r from-primary/10 to-primary/5 p-6'>
       <div className='flex items-center gap-4'>
         <AvatarUpload src={user.image ?? ''} alt={user.name} initials={initials} />
-        <div>
+        <div className='flex-1'>
           <h1 className='text-3xl font-bold text-foreground'>{user.name}</h1>
           <p className='text-muted-foreground'>{user.email}</p>
           <div className='mt-2 flex gap-2'>
@@ -37,6 +39,9 @@ const ProfileHeader: FC<ProfileHeaderProps> = ({ user }: ProfileHeaderProps) => 
             )} */}
           </div>
         </div>
+        <Button className='cursor-pointer' variant='destructive' onClick={signOut}>
+          Logout
+        </Button>
       </div>
     </Card>
   );

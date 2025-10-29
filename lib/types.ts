@@ -15,3 +15,4 @@ export type ProfileLayoutProps = {
     content?: React.ReactNode;
   }>;
 }
+

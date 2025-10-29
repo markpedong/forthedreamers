@@ -23,7 +23,7 @@ const ProfilePage = async () => {
   const session = await getSession();
 
   if (!session) {
-    redirect('/login');
+    redirect('/sign-in');
   }
 
   const sections = [
