@@ -5,21 +5,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import useFormSchema from '@/hooks/useFormSchema';
-import useValidate from '@/hooks/useFormValidate';
-import { SessionUser } from '@/lib/types';
-import Input from '@/components/reusable/input';
+import { SchemaForm, SessionUser } from '@/lib/types';
 import { sendVerificationEmailAction, updateUser } from '@/lib/server-actions';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from '@/components/ui/form';
+import Input from '@/components/reusable/input';
 
 const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [isSubmitting, startSubmitting] = useTransition();
   const { profileSchema } = useFormSchema();
-  const { handleSubmit, register, values, errors, reset, handleErrors } = useValidate({
-    schema: profileSchema,
-    defaultValues: {
-      name: user.name ?? '',
-    },
+  const form = useForm<SchemaForm<typeof profileSchema>>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: { name: user.name ?? '', email: user.email ?? '' },
   });
 
   const handleResendVerification = () => {
@@ -33,10 +33,9 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
     });
   };
 
-  const onSubmit = () => {
+  const onSubmit = async ({ name }: SchemaForm<typeof profileSchema>) => {
     startSubmitting(async () => {
       try {
-        const { name } = values();
         await updateUser({ name });
 
         toast.success('Success', { description: 'Profile updated' });
@@ -56,72 +55,80 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
       </CardHeader>
 
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit, handleErrors)} className='space-y-4'>
-          <div className='grid gap-4 sm:grid-cols-2'>
-            <Input
-              id='name'
-              label='Name'
-              type='text'
-              disabled={!isEditing || isSubmitting}
-              formState={errors('name')}
-              {...register('name')}
-            />
-            <Input id='email' label='Email' type='email' disabled defaultValue={user.email} />
-          </div>
-
-          {!user.emailVerified && (
-            <div className='rounded-lg bg-muted p-4'>
-              <div className='flex items-center justify-between'>
-                <div>
-                  <p className='font-medium text-foreground'>Email Verification</p>
-                  <p className='text-sm text-muted-foreground'>Your email is not verified</p>
-                </div>
-
-                <Button
-                  className='cursor-pointer'
-                  type='button'
-                  variant='outline'
-                  size='sm'
-                  onClick={handleResendVerification}
-                  disabled={isPending}
-                >
-                  {isPending ? 'Sending...' : 'Resend'}
-                </Button>
-              </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+            <div className='grid gap-4 items-start sm:grid-cols-2'>
+              <Input
+                control={form.control}
+                name='name'
+                type='text'
+                label='Name'
+                description='Your name as displayed on your profile page'
+                disabled={!isEditing || isSubmitting}
+              />
+              <Input
+                control={form.control}
+                name='email'
+                label='Email'
+                disabled
+                description='For security purposes, we disabled editing of email'
+              />
             </div>
-          )}
 
-          <div className='flex gap-2 justify-end'>
-            {!isEditing ? (
-              <Button
-                type='reset'
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsEditing(true);
-                }}
-              >
-                Edit Profile
-              </Button>
-            ) : (
-              <>
-                <Button type='submit' disabled={isSubmitting}>
-                  {isSubmitting ? 'Saving...' : 'Save Changes'}
-                </Button>
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={() => {
-                    setIsEditing(false);
-                    reset({ name: user.name });
-                  }}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </Button>
-              </>
+            {!user.emailVerified && (
+              <div className='rounded-lg bg-muted p-4'>
+                <div className='flex items-center justify-between'>
+                  <div>
+                    <p className='font-medium text-foreground'>Email Verification</p>
+                    <p className='text-sm text-muted-foreground'>Your email is not verified</p>
+                  </div>
+
+                  <Button
+                    className='cursor-pointer'
+                    type='button'
+                    variant='outline'
+                    size='sm'
+                    onClick={handleResendVerification}
+                    disabled={isPending}
+                  >
+                    {isPending ? 'Sending...' : 'Resend'}
+                  </Button>
+                </div>
+              </div>
             )}
-          </div>
-        </form>
+
+            <div className='flex gap-2 justify-end'>
+              {!isEditing ? (
+                <Button
+                  type='reset'
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsEditing(true);
+                  }}
+                >
+                  Edit Profile
+                </Button>
+              ) : (
+                <>
+                  <Button type='submit' disabled={isSubmitting}>
+                    {isSubmitting ? 'Saving...' : 'Save Changes'}
+                  </Button>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => {
+                      setIsEditing(false);
+                      form.reset({ name: user.name });
+                    }}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              )}
+            </div>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   );

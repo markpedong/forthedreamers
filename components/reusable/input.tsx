@@ -1,42 +1,68 @@
-import { forwardRef, ComponentPropsWithRef } from 'react';
-import { Label } from '../ui/label';
+import { ComponentPropsWithRef } from 'react';
 import { Input as InputUI } from '../ui/input';
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../ui/form';
+import type { Control, Path, FieldValues } from 'react-hook-form';
 
-type InputProps = ComponentPropsWithRef<'input'> & {
+type InputProps<T extends FieldValues> = ComponentPropsWithRef<'input'> & {
   label: string;
-  id: string;
   type?: string;
   formState?: string | undefined;
   disabled?: boolean;
-  prefixIconSrc?: string; // source for the icon image
+  prefixIconSrc?: string;
+  description?: string;
+  control: Control<T>;
+  name: Path<T>;
 };
 
-const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
-  const { label, id, type = 'text', formState, disabled = false, prefixIconSrc, ...rest } = props;
-
+const Input = <T extends FieldValues>({
+  type = 'text',
+  formState,
+  disabled,
+  prefixIconSrc,
+  description,
+  control,
+  name,
+  label,
+  ...rest
+}: InputProps<T>) => {
   return (
-    <div className='space-y-2'>
-      <Label htmlFor={id}>{label}</Label>
-      <div className='relative'>
-        {prefixIconSrc && (
-          <img
-            src={prefixIconSrc}
-            alt={`${id}-icon`}
-            className='absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none'
-          />
-        )}
-        <InputUI
-          ref={ref}
-          id={id}
-          type={type}
-          disabled={disabled}
-          className={prefixIconSrc ? 'pl-10' : ''}
-          {...rest}
-        />
-      </div>
-      {!!formState && <p className='text-sm text-red-500'>{formState}</p>}
-    </div>
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel htmlFor={name}>{label}</FormLabel>
+          <FormControl>
+            <div className='relative'>
+              {prefixIconSrc && (
+                <img
+                  src={prefixIconSrc}
+                  alt={`${name}-icon`}
+                  className='absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none h-4 w-4'
+                />
+              )}
+              <InputUI
+                type={type}
+                disabled={disabled}
+                {...field}
+                {...rest}
+                className={prefixIconSrc ? 'pl-10' : ''}
+              />
+            </div>
+          </FormControl>
+          {description && <FormDescription>{description}</FormDescription>}
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
-});
+};
 
 export default Input;

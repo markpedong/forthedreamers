@@ -1,4 +1,5 @@
 import { auth } from "./auth";
+import type { z, ZodTypeAny } from 'zod';
 
 export type TOnNavigate = (page: string) => void;
 
@@ -16,3 +17,4 @@ export type ProfileLayoutProps = {
   }>;
 }
 
+export type SchemaForm<T extends ZodTypeAny> = z.infer<T>;
