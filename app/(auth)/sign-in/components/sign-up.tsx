@@ -1,14 +1,18 @@
 import { SchemaForm, TOnNavigate } from '@/lib/types';
 import PageWrapper from './page-wrapper';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import OauthButtons from './oauth-buttons';
 import useFormSchema from '@/hooks/useFormSchema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Input from '@/components/reusable/input';
+import { useTransition } from 'react';
+import { Form } from '@/components/ui/form';
+import { toast } from 'sonner';
+import { signUp } from '@/lib/server-actions';
 
 const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
+  const [isSigningUp, startSigningUp] = useTransition();
   const { registrationSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof registrationSchema>>({
     resolver: zodResolver(registrationSchema),
@@ -19,6 +23,21 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       confirmPassword: '',
     },
   });
+
+  const onSubmit = async (values: SchemaForm<typeof registrationSchema>) => {
+    startSigningUp(async () => {
+      try {
+        await signUp(values.email, values.password, values.name);
+        onNavigate('login');
+        toast.success('Account created successfully!', { duration: 3000 });
+      } catch (error) {
+        if (error instanceof Error) {
+          toast.error(`Error: ${error.message}`);
+        }
+      }
+    });
+  };
+
   return (
     <PageWrapper>
       <div>
@@ -27,30 +46,43 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           <p className='text-muted-foreground'>Sign up to get started</p>
         </div>
 
-        <div className='space-y-5'>
-          <div className='space-y-2'>
-            <Label htmlFor='name'>Full Name</Label>
-            <Input id='name' type='text' placeholder='John Doe' className='h-11' />
-          </div>
-
-          <div className='space-y-2'>
-            <Label htmlFor='reg-email'>Email</Label>
-            <Input id='reg-email' type='email' placeholder='you@example.com' className='h-11' />
-          </div>
-
-          <div className='space-y-2'>
-            <Label htmlFor='reg-password'>Password</Label>
-            <Input id='reg-password' type='password' placeholder='••••••••' className='h-11' />
-          </div>
-
-          <div className='space-y-2'>
-            <Label htmlFor='confirm-password'>Confirm Password</Label>
-            <Input id='confirm-password' type='password' placeholder='••••••••' className='h-11' />
-          </div>
-
-          <Button className='w-full h-11'>Create Account</Button>
-        </div>
-
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+            <Input
+              control={form.control}
+              name='name'
+              label='Full Name'
+              placeholder='John Doe'
+              disabled={isSigningUp}
+            />
+            <Input
+              control={form.control}
+              name='email'
+              label='Email'
+              placeholder='you@example.com'
+              disabled={isSigningUp}
+            />
+            <Input
+              control={form.control}
+              name='password'
+              label='Password'
+              type='password'
+              placeholder='••••••••'
+              disabled={isSigningUp}
+            />
+            <Input
+              control={form.control}
+              name='confirmPassword'
+              label='Confirm Password'
+              type='password'
+              placeholder='••••••••'
+              disabled={isSigningUp}
+            />
+            <Button className='w-full h-11 mt-6' disabled={isSigningUp} type='submit'>
+              {isSigningUp ? 'Signing up...' : 'Sign up'}
+            </Button>
+          </form>
+        </Form>
         <div className='relative my-6'>
           <div className='absolute inset-0 flex items-center'>
             <div className='w-full border-t' />
