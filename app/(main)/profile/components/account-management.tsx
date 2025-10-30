@@ -1,11 +1,6 @@
 'use client';
 
-import { FC, useState, useTransition } from 'react';
-import type { SessionUser, Account } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import AccountCard from '@/components/reusable/account-card';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,8 +10,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { OAUTH_PROVIDERS } from '@/constants';
+import { authClient } from '@/lib/auth-client';
+import { changePassword, deleteAccount, signOut, unlinkAccount } from '@/lib/server-actions';
+import { Account, SessionUser } from '@/lib/types';
+import { useRouter } from 'next/navigation';
+import { FC, useState, useTransition } from 'react';
 import { toast } from 'sonner';
-import { changePassword, deleteAccount, unlinkAccount, signOut } from '@/lib/server-actions';
 
 interface AccountManagementProps {
   user: SessionUser;
@@ -24,6 +28,7 @@ interface AccountManagementProps {
 }
 
 const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
+  const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [passwordData, setPasswordData] = useState({
@@ -42,7 +47,10 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
 
     startTransition(async () => {
       try {
-        await changePassword(user.id, passwordData.current, passwordData.new);
+        await changePassword({
+          currentPassword: passwordData.current,
+          newPassword: passwordData.new,
+        });
         toast('Success', { description: 'Password changed successfully' });
         setShowPasswordDialog(false);
         setPasswordData({ current: '', new: '', confirm: '' });
@@ -55,7 +63,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
   const handleDeleteAccount = () => {
     startTransition(async () => {
       try {
-        await deleteAccount(user.id);
+        await deleteAccount();
         toast('Success', { description: 'Account deleted successfully' });
       } catch {
         toast('Error', { description: 'Failed to delete account' });
@@ -63,12 +71,14 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
     });
   };
 
-  const handleUnlinkAccount = (accountId: string) => {
+  const handleUnlinkAccount = (accountId: string, providerId: string) => {
     startTransition(async () => {
       try {
-        await unlinkAccount(accountId);
+        console.log("Unlinking account", accountId, providerId);
+        await unlinkAccount({ accountId, providerId });
         toast('Success', { description: 'Account unlinked successfully' });
-      } catch {
+        router.refresh();
+      } catch (err) {
         toast('Error', { description: 'Failed to unlink account' });
       }
     });
@@ -93,33 +103,44 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
         </CardHeader>
         <CardContent className='space-y-6'>
           {/* Linked Accounts */}
-          <div>
-            <h3 className='mb-4 font-semibold text-foreground'>Linked Accounts</h3>
-            {accounts.length > 0 ? (
-              <div className='space-y-2'>
-                {accounts.map((account) => (
-                  <div
-                    key={account.id}
-                    className='flex items-center justify-between rounded-lg border border-border bg-muted/50 p-3'
-                  >
-                    <div>
-                      <p className='font-medium text-foreground capitalize'>{account.providerId}</p>
-                      <p className='text-sm text-muted-foreground'>{account.accountId}</p>
-                    </div>
-                    <Button
-                      variant='destructive'
-                      size='sm'
-                      onClick={() => handleUnlinkAccount(account.id)}
-                      disabled={isPending}
-                    >
-                      Unlink
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className='text-sm text-muted-foreground'>No linked accounts</p>
-            )}
+          <h3 className='mb-4 font-semibold text-foreground'>Linked Accounts</h3>
+          {accounts.length > 0 ? (
+            <div className='space-y-2'>
+              {accounts.map((account) => (
+                <AccountCard
+                  key={account.id}
+                  provider={account.providerId}
+                  account={account}
+                  loading={isPending}
+                  onClick={(provider) => handleUnlinkAccount(account.accountId, provider)}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className='text-sm text-muted-foreground'>No linked accounts</p>
+          )}
+
+          {/* Available Accounts */}
+          <h3 className='mb-4 mt-6 font-semibold text-foreground'>
+            Available Accounts for Linking
+          </h3>
+          <div className='grid gap-3'>
+            {OAUTH_PROVIDERS.filter(
+              (provider) => !accounts.some((a) => a.providerId === provider),
+            ).map((provider) => (
+              <AccountCard
+                key={provider}
+                provider={provider}
+                account={null}
+                loading={isPending}
+                onClick={(provider) =>
+                  authClient.linkSocial({
+                    provider,
+                    callbackURL: '/profile',
+                  })
+                }
+              />
+            ))}
           </div>
 
           {/* Change Password */}

@@ -2,7 +2,7 @@ import { inferAdditionalFields, lastLoginMethodClient } from "better-auth/client
 import { createAuthClient } from "better-auth/react"
 import { auth } from "./auth"
 
-export const { useSession, getLastUsedLoginMethod, changeEmail, changePassword, revokeSession, revokeOtherSessions, linkSocial, signIn } = createAuthClient({
+export const authClient = createAuthClient({
     baseURL: process.env.BETTER_AUTH_URL,
     plugins: [
         lastLoginMethodClient(),

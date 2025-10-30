@@ -9,10 +9,10 @@ import {
   Smartphone,
   User,
 } from 'lucide-react';
-import { getSession } from '@/lib/server-actions';
+import { getSession, listUserAccounts } from '@/lib/server-actions';
 import ProfileDetails from './components/profile-details';
-import ProfileHeader from './components/profile-header';
 import ProfileLayout from './components/profile-layout';
+import AccountManagement from './components/account-management';
 
 export const metadata = {
   title: 'Profile',
@@ -26,6 +26,8 @@ const ProfilePage = async () => {
     redirect('/sign-in');
   }
 
+  const accounts = (await listUserAccounts()).filter((a) => a.providerId !== 'credential');
+
   const sections = [
     {
       id: 'profile',
@@ -37,6 +39,7 @@ const ProfilePage = async () => {
       id: 'account',
       label: 'Account',
       icon: <Settings className='h-4 w-4' />,
+      content: <AccountManagement user={session.user} accounts={accounts} />,
     },
     {
       id: 'orders',
@@ -73,7 +76,7 @@ const ProfilePage = async () => {
   return (
     <main className='min-h-screen bg-background dark'>
       <div className='mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8'>
-        <ProfileHeader user={session.user} />
+        {/* <ProfileHeader user={session.user} /> */}
 
         <div className='mt-8'>
           <ProfileLayout sections={sections} children={null} />

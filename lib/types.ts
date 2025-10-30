@@ -1,5 +1,6 @@
 import { auth } from "./auth";
 import type { z, ZodTypeAny } from 'zod';
+import { listUserAccounts } from "./server-actions";
 
 export type TOnNavigate = (page: string) => void;
 
@@ -18,3 +19,5 @@ export type ProfileLayoutProps = {
 }
 
 export type SchemaForm<T extends ZodTypeAny> = z.infer<T>;
+
+export type Account = Awaited<ReturnType<typeof listUserAccounts>>[number];
