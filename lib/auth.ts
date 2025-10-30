@@ -7,6 +7,7 @@ import { render } from "@react-email/render";
 import VerifyEmail from "@/components/emails/verify-email";
 import { lastLoginMethod } from 'better-auth/plugins';
 import { nextCookies } from "better-auth/next-js";
+import DeleteAccountEmail from "@/components/emails/delete-account-email";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
@@ -54,7 +55,17 @@ export const auth = betterAuth({
   },
   user: {
     deleteUser: {
-      enabled: true
+      enabled: true,
+      sendDeleteAccountVerification: async ({ user, url }) => {
+        const html = await render(DeleteAccountEmail({ userName: user.name, url }));
+
+        await transporter.sendMail({
+          from: `${process.env.EMAIL_SENDER_NAME} <${process.env.GMAIL_USER}>`,
+          to: user.email,
+          subject: "Delete your account",
+          html: html,
+        });
+      }
     }
   },
   plugins: [

@@ -11,7 +11,7 @@ import {
   Tailwind,
 } from '@react-email/components';
 
-const DeleteAccountEmail = ({ userName, email }: { userName: string; email: string }) => {
+const DeleteAccountEmail = ({ userName, url }: { userName: string; url: string }) => {
   return (
     <Html lang='en' dir='ltr'>
       <Tailwind>
@@ -64,7 +64,7 @@ const DeleteAccountEmail = ({ userName, email }: { userName: string; email: stri
               {/* Action Buttons */}
               <Section className='text-center mb-[24px]'>
                 <Button
-                  href={email}
+                  href={url}
                   className='bg-red-600 text-white px-[32px] py-[14px] rounded-[6px] text-[16px] font-medium no-underline box-border mb-[12px] mr-[12px]'
                 >
                   Yes, Delete My Account

@@ -77,9 +77,9 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
     startSubmitting(async () => {
       try {
         await deleteAccount();
-        toast.success('Account deleted successfully');
+        toast.success('Confirmation Email sent successfully');
       } catch {
-        toast.error('Failed to delete account');
+        toast.error('Failed to send confirmation email');
       }
     });
   };
