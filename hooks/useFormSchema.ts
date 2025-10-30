@@ -6,6 +6,7 @@ const useFormSchema = () => {
     .email("Invalid email address")
     .min(2, { message: 'Email must be at least 2 characters' })
     .max(50, { message: 'Email must be less than 50 characters' })
+    .transform((password) => password.trim());
 
   const nameEmailSchema = z.object({
     name: z
@@ -18,10 +19,11 @@ const useFormSchema = () => {
 
   const passwordSchema = z
     .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number")
+    .min(8, "Must be at least 8 characters")
+    .regex(/[A-Z]/, "Must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Must contain at least one number")
+    .transform((password) => password.trim());
 
 
   const resetPasswordSchema = z
@@ -56,6 +58,30 @@ const useFormSchema = () => {
       password: passwordSchema,
     })
 
+  const changePasswordSchema = z
+    .object({
+      currentPassword: passwordSchema,
+      newPassword: passwordSchema,
+      confirmPassword: passwordSchema,
+    })
+    .superRefine((data, ctx) => {
+      if (data.newPassword !== data.confirmPassword) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Passwords do not match',
+          path: ['confirmPassword'],
+        });
+      }
+
+      if (data.currentPassword === data.newPassword) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'New password must be different from the current password',
+          path: ['newPassword'],
+        });
+      }
+    });
+
   return {
     nameEmailSchema,
     passwordSchema,
@@ -63,7 +89,8 @@ const useFormSchema = () => {
     emailSchema,
     registrationSchema,
     forgotPasswordSchema,
-    loginSchema
+    loginSchema,
+    changePasswordSchema
   }
 }
 

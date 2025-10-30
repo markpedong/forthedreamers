@@ -9,6 +9,7 @@ import { useTransition } from 'react';
 import Form from '@/components/reusable/form';
 import { toast } from 'sonner';
 import { signUp } from '@/lib/server-actions';
+import Divider from '@/components/reusable/divider';
 import { useRouter } from 'next/navigation';
 
 const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
@@ -30,7 +31,7 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       try {
         await signUp(values.email, values.password, values.name);
         toast.success('Account created successfully!', { duration: 3000 });
-        router.refresh()
+        router.refresh();
       } catch (error) {
         if (error instanceof Error) {
           toast.error(`Error: ${error.message}`);
@@ -83,14 +84,7 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
             disabled={isSigningUp}
           />
         </Form>
-        <div className='relative my-6'>
-          <div className='absolute inset-0 flex items-center'>
-            <div className='w-full border-t' />
-          </div>
-          <div className='relative flex justify-center text-sm'>
-            <span className='px-4 bg-card text-muted-foreground'>or continue with</span>
-          </div>
-        </div>
+        <Divider title='or continue with' />
 
         <div className='grid grid-cols-2 gap-3'>
           <OauthButtons />

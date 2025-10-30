@@ -1,7 +1,7 @@
 'use client';
 
-import { useWindowSize } from '@uidotdev/usehooks';
-import { useState, FC } from 'react';
+import { useLocalStorage, useWindowSize } from '@uidotdev/usehooks';
+import { FC } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProfileLayoutProps } from '@/lib/types';
@@ -11,7 +11,7 @@ import { useSearchParams } from 'next/navigation';
 const ProfileLayout: FC<ProfileLayoutProps> = ({ sections }) => {
   const tab = useSearchParams().get('tab');
   const { width } = useWindowSize();
-  const [activeSection, setActiveSection] = useState(tab || sections[0]?.id);
+  const [activeSection, setActiveSection] = useLocalStorage('tab', tab || sections[0]?.id);
 
   if (!width) {
     return (

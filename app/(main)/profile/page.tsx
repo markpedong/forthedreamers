@@ -13,6 +13,7 @@ import { getSession, listUserAccounts } from '@/lib/server-actions';
 import ProfileDetails from './components/profile-details';
 import ProfileLayout from './components/profile-layout';
 import AccountManagement from './components/account-management';
+import ClientOnly from '@/components/provider/client-only';
 
 export const metadata = {
   title: 'Profile',
@@ -79,7 +80,9 @@ const ProfilePage = async () => {
         {/* <ProfileHeader user={session.user} /> */}
 
         <div className='mt-8'>
-          <ProfileLayout sections={sections} children={null} />
+          <ClientOnly>
+            <ProfileLayout sections={sections} />
+          </ClientOnly>
         </div>
       </div>
     </main>

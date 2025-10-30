@@ -9,7 +9,6 @@ export type Session = typeof auth.$Infer.Session;
 export type SessionUser = typeof auth.$Infer.Session.user;
 
 export type ProfileLayoutProps = {
-  children: React.ReactNode;
   sections: Array<{
     id: string;
     label: string;

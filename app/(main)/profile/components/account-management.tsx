@@ -1,6 +1,7 @@
 'use client';
 
 import AccountCard from '@/components/reusable/account-card';
+import Form from '@/components/reusable/form';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,15 +13,18 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import Input from '@/components/reusable/input';
 import { OAUTH_PROVIDERS } from '@/constants';
+import useFormSchema from '@/hooks/useFormSchema';
 import { authClient } from '@/lib/auth-client';
-import { changePassword, deleteAccount, signOut, unlinkAccount } from '@/lib/server-actions';
-import { Account, SessionUser } from '@/lib/types';
+import { changePassword, deleteAccount, unlinkAccount } from '@/lib/server-actions';
+import { Account, SchemaForm, SessionUser } from '@/lib/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { FC, useState, useTransition } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import Divider from '@/components/reusable/divider';
 
 interface AccountManagementProps {
   user: SessionUser;
@@ -29,30 +33,30 @@ interface AccountManagementProps {
 
 const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
   const router = useRouter();
+  const { changePasswordSchema } = useFormSchema();
+  const form = useForm<SchemaForm<typeof changePasswordSchema>>({
+    resolver: zodResolver(changePasswordSchema),
+    defaultValues: {
+      currentPassword: '',
+      confirmPassword: '',
+      newPassword: '',
+    },
+  });
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [passwordData, setPasswordData] = useState({
-    current: '',
-    new: '',
-    confirm: '',
-  });
-  const [isPending, startTransition] = useTransition();
+  const [isSubmitting, startSubmitting] = useTransition();
 
-  const handleChangePassword = () => {
-    if (passwordData.new !== passwordData.confirm) {
-      toast('Error', { description: 'Passwords do not match' });
-      return;
-    }
-
-    startTransition(async () => {
+  const onSubmit = (values: SchemaForm<typeof changePasswordSchema>) => {
+    startSubmitting(async () => {
       try {
         await changePassword({
-          currentPassword: passwordData.current,
-          newPassword: passwordData.new,
+          currentPassword: values.currentPassword,
+          newPassword: values.confirmPassword,
         });
-        toast('Success', { description: 'Password changed successfully' });
+        toast('Success - Password changed successfully!', {
+          description: 'Revoking other sessions...',
+        });
         setShowPasswordDialog(false);
-        setPasswordData({ current: '', new: '', confirm: '' });
       } catch {
         toast('Error', { description: 'Failed to change password' });
       }
@@ -60,7 +64,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
   };
 
   const handleDeleteAccount = () => {
-    startTransition(async () => {
+    startSubmitting(async () => {
       try {
         await deleteAccount();
         toast('Success', { description: 'Account deleted successfully' });
@@ -71,24 +75,15 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
   };
 
   const handleUnlinkAccount = (accountId: string, providerId: string) => {
-    startTransition(async () => {
+    startSubmitting(async () => {
       try {
-        console.log('Unlinking account', accountId, providerId);
         await unlinkAccount({ accountId, providerId });
         toast('Success', { description: 'Account unlinked successfully' });
         router.refresh();
       } catch (err) {
-        toast('Error', { description: 'Failed to unlink account' });
-      }
-    });
-  };
-
-  const handleLogout = () => {
-    startTransition(async () => {
-      try {
-        await signOut();
-      } catch {
-        toast('Error', { description: 'Failed to logout' });
+        if (err instanceof Error) {
+          toast('Error', { description: err.message });
+        }
       }
     });
   };
@@ -109,7 +104,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
                   key={account.id}
                   provider={account.providerId}
                   account={account}
-                  loading={isPending}
+                  loading={isSubmitting}
                   onClick={(provider) => handleUnlinkAccount(account.accountId, provider)}
                 />
               ))}
@@ -129,7 +124,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
                 key={provider}
                 provider={provider}
                 account={null}
-                loading={isPending}
+                loading={isSubmitting}
                 onClick={(provider) =>
                   authClient.linkSocial({
                     provider,
@@ -139,33 +134,22 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
               />
             ))}
           </div>
+          <Divider />
+          <h3 className='mb-4 font-semibold text-foreground'>Security</h3>
+          <Button
+            variant='outline'
+            onClick={() => setShowPasswordDialog(true)}
+            disabled={isSubmitting}
+          >
+            Change Password
+          </Button>
 
-          {/* Change Password */}
-          <div className='border-t border-border pt-6'>
-            <h3 className='mb-4 font-semibold text-foreground'>Security</h3>
-            <Button
-              variant='outline'
-              onClick={() => setShowPasswordDialog(true)}
-              disabled={isPending}
-            >
-              Change Password
-            </Button>
-          </div>
-
-          {/* Logout */}
-          <div className='border-t border-border pt-6'>
-            <Button variant='outline' onClick={handleLogout} disabled={isPending}>
-              Logout
-            </Button>
-          </div>
-
-          {/* Delete Account */}
           <div className='border-t border-border pt-6'>
             <h3 className='mb-4 font-semibold text-destructive'>Danger Zone</h3>
             <Button
               variant='destructive'
               onClick={() => setShowDeleteDialog(true)}
-              disabled={isPending}
+              disabled={isSubmitting}
             >
               Delete Account
             </Button>
@@ -182,30 +166,36 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
               Enter your current password and new password
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <div className='space-y-4'>
-            {['current', 'new', 'confirm'].map((field) => (
-              <div key={field} className='space-y-2'>
-                <Label htmlFor={`${field}-password`}>
-                  {field === 'current'
-                    ? 'Current Password'
-                    : field === 'new'
-                      ? 'New Password'
-                      : 'Confirm Password'}
-                </Label>
-                <Input
-                  id={`${field}-password`}
-                  type='password'
-                  value={passwordData[field as keyof typeof passwordData]}
-                  onChange={(e) => setPasswordData({ ...passwordData, [field]: e.target.value })}
-                  disabled={isPending}
-                />
-              </div>
-            ))}
-          </div>
+          <Form form={form} onSubmit={onSubmit} customSubmitButton>
+            <Input
+              control={form.control}
+              name='currentPassword'
+              label='Current Password'
+              type='password'
+              placeholder='••••••••'
+              disabled={isSubmitting}
+            />
+            <Input
+              control={form.control}
+              name='newPassword'
+              label='New Password'
+              type='password'
+              placeholder='••••••••'
+              disabled={isSubmitting}
+            />
+            <Input
+              control={form.control}
+              name='confirmPassword'
+              label='Confirm Password'
+              type='password'
+              placeholder='••••••••'
+              disabled={isSubmitting}
+            />
+          </Form>
           <div className='flex gap-2'>
-            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleChangePassword} disabled={isPending}>
-              {isPending ? 'Changing...' : 'Change Password'}
+            <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction disabled={isSubmitting} onClick={form.handleSubmit(onSubmit)}>
+              {isSubmitting ? 'Changing...' : 'Change Password'}
             </AlertDialogAction>
           </div>
         </AlertDialogContent>
@@ -222,13 +212,13 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className='flex gap-2'>
-            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteAccount}
-              disabled={isPending}
+              disabled={isSubmitting}
               className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
             >
-              {isPending ? 'Deleting...' : 'Delete Account'}
+              {isSubmitting ? 'Deleting...' : 'Delete Account'}
             </AlertDialogAction>
           </div>
         </AlertDialogContent>

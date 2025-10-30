@@ -1,7 +1,7 @@
 import { FC } from 'react';
 
 type Props = {
-  title: string;
+  title?: string;
 };
 
 const Divider: FC<Props> = ({ title }) => {
@@ -11,7 +11,7 @@ const Divider: FC<Props> = ({ title }) => {
         <div className='w-full border-t' />
       </div>
       <div className='relative flex justify-center text-sm'>
-        <span className='px-4 bg-card text-muted-foreground'>{title}</span>
+        {title && <div className='px-4 bg-card text-muted-foreground'>{title}</div>}
       </div>
     </div>
   );
