@@ -9,12 +9,13 @@ import {
   Smartphone,
   User,
 } from 'lucide-react';
-import { getSession, listUserAccounts } from '@/lib/server-actions';
+import { getSession, listAllSessions, listUserAccounts } from '@/lib/server-actions';
 import ProfileDetails from './components/profile-details';
 import ProfileLayout from './components/profile-layout';
 import AccountManagement from './components/account-management';
 import ClientOnly from '@/components/provider/client-only';
 import ProfileHeader from './components/profile-header';
+import SessionManagement from './components/session-management';
 
 export const metadata = {
   title: 'Profile',
@@ -28,7 +29,7 @@ const ProfilePage = async () => {
     redirect('/sign-in');
   }
 
-  const accounts = await listUserAccounts();
+  const [accounts, sessions] = await Promise.all([listUserAccounts(), listAllSessions()]);
   const nonCredentialAccounts = accounts.filter((a) => a.providerId !== 'credential');
   const hasPassword = accounts.some((a) => a.providerId === 'credential');
 
@@ -75,6 +76,7 @@ const ProfilePage = async () => {
       id: 'sessions',
       label: 'Sessions',
       icon: <Smartphone className='h-4 w-4' />,
+      content: <SessionManagement currentSessionToken={session.session.token} sessions={sessions} />,
     },
     {
       id: '2fa',
