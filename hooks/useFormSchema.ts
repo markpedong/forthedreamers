@@ -50,6 +50,11 @@ const useFormSchema = () => {
       path: ["confirmPassword"],
     });
 
+  const loginSchema = z
+    .object({
+      email: emailSchema,
+      password: passwordSchema,
+    })
 
   return {
     nameEmailSchema,
@@ -57,7 +62,8 @@ const useFormSchema = () => {
     resetPasswordSchema,
     emailSchema,
     registrationSchema,
-    forgotPasswordSchema
+    forgotPasswordSchema,
+    loginSchema
   }
 }
 
