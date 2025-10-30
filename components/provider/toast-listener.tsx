@@ -24,8 +24,6 @@ const ToastListener = () => {
   };
 
   useEffect(() => {
-    if (pathname !== '/profile') return;
-
     if (emailVerified) {
       toast.success('Email verified successfully!', { duration: 3000 });
       deleteParameters(['emailVerified']);

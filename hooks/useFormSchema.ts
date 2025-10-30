@@ -17,7 +17,7 @@ const useFormSchema = () => {
     email: emailSchema
   });
 
-  const passwordSchema = z
+  const password = z
     .string()
     .min(8, "Must be at least 8 characters")
     .regex(/[A-Z]/, "Must contain at least one uppercase letter")
@@ -27,10 +27,7 @@ const useFormSchema = () => {
 
 
   const resetPasswordSchema = z
-    .object({
-      password: passwordSchema,
-      confirmPassword: z.string(),
-    })
+    .object({ password, confirmPassword: z.string() })
     .refine((data) => data.password === data.confirmPassword, {
       message: "Passwords do not match",
       path: ["confirmPassword"],
@@ -42,28 +39,16 @@ const useFormSchema = () => {
     })
 
   const registrationSchema = nameEmailSchema
-    .extend({
-      email: emailSchema,
-      password: passwordSchema,
-      confirmPassword: z.string(),
-    })
+    .extend({ email: emailSchema, password, confirmPassword: z.string() })
     .refine((data) => data.password === data.confirmPassword, {
       message: "Passwords do not match",
       path: ["confirmPassword"],
     });
 
-  const loginSchema = z
-    .object({
-      email: emailSchema,
-      password: passwordSchema,
-    })
+  const loginSchema = z.object({ email: emailSchema, password })
 
   const changePasswordSchema = z
-    .object({
-      currentPassword: passwordSchema,
-      newPassword: passwordSchema,
-      confirmPassword: passwordSchema,
-    })
+    .object({ currentPassword: password, newPassword: password, confirmPassword: password })
     .superRefine((data, ctx) => {
       if (data.newPassword !== data.confirmPassword) {
         ctx.addIssue({
@@ -82,15 +67,21 @@ const useFormSchema = () => {
       }
     });
 
+  const twoFactorSchema = z.object({
+    password: password.optional(),
+    otp: z.string()
+  })
+
   return {
     nameEmailSchema,
-    passwordSchema,
+    password,
     resetPasswordSchema,
     emailSchema,
     registrationSchema,
     forgotPasswordSchema,
     loginSchema,
     changePasswordSchema,
+    twoFactorSchema
   }
 }
 

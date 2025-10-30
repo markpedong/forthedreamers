@@ -136,10 +136,10 @@ export const twoFactorEnable = async (password: string) => {
   return auth.api.enableTwoFactor({ headers: await headers(), body: { password } });
 }
 
-// export const twoFactorDisable = async (password: string) => {
-//   return auth.api.disableTwoFactor({ headers: await headers(), body: { password } });
-// }
+export const twoFactorDisable = async (password: string) => {
+  return auth.api.disableTwoFactor({ headers: await headers(), body: { password } });
+}
 
-// export const verifyTOTP = async (token: string) => {
-//   return auth.api.verifyTOTP({ headers: await headers(), body: { code: token } });
-// }
+export const verifyTOTP = async (token: string) => {
+  return auth.api.verifyTOTP({ headers: await headers(), body: { code: token } });
+}

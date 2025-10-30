@@ -25,7 +25,14 @@ const Form = <T extends FieldValues>({
   return (
     <FormUI {...form}>
       <form
-        {...(onSubmit && { onSubmit: form.handleSubmit(onSubmit) })}
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          if (onSubmit && !customSubmitButton) {
+            form.handleSubmit(onSubmit)(e);
+          }
+        }}
         {...rest}
         className={classnames('space-y-6', className)}
       >

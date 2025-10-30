@@ -49,7 +49,11 @@ const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
             <Button
               variant='outline'
               size='sm'
-              onClick={signOut}
+              onClick={() => {
+                localStorage.clear();
+                sessionStorage.clear();
+                signOut();
+              }}
               className='w-full md:w-auto gap-2 whitespace-nowrap bg-transparent'
             >
               <LogOut className='h-4 w-4' /> Logout

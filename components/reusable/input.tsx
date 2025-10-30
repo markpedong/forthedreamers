@@ -14,7 +14,7 @@ import {
 import type { Control, Path, FieldValues } from 'react-hook-form';
 
 type InputProps<T extends FieldValues> = ComponentPropsWithoutRef<'input'> & {
-  label: string;
+  label?: string;
   type?: string;
   disabled?: boolean;
   prefixIconSrc?: string;

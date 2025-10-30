@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -121,6 +121,7 @@
   }
 }
 
-button {
-  @apply cursor-pointer
+button,
+.btn {
+  @apply transform hover:scale-105 active:scale-95 transition-transform duration-150 ease-in-out cursor-pointer;
 }
