@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProfileLayoutProps } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import { Card } from '@/components/ui/card';
 
 const ProfileLayout: FC<ProfileLayoutProps> = ({ sections }) => {
   const tab = useSearchParams().get('tab');
@@ -26,10 +27,13 @@ const ProfileLayout: FC<ProfileLayoutProps> = ({ sections }) => {
 
   if (effectiveLayout === 'tabs') {
     return (
-      <Tabs defaultValue={sections[0]?.id} className='w-full'>
+      <Tabs defaultValue={sections[0]?.id} className='w-ful gap-8 mt-8'>
         <TabsList
           className='grid w-full h-[unset]'
-          style={{ gridTemplateColumns: `repeat(${Math.min(sections.length, 6)}, 1fr)` }}
+          style={{
+            gridTemplateColumns: `repeat(${Math.min(sections.length, 6)}, 1fr)`,
+            ...(isMobile && { rowGap: '0.3rem', padding: '1rem' }),
+          }}
         >
           {sections.map((section) => (
             <TabsTrigger key={section.id} value={section.id} className='flex items-center gap-2'>
@@ -48,8 +52,8 @@ const ProfileLayout: FC<ProfileLayoutProps> = ({ sections }) => {
   }
 
   return (
-    <div className='flex gap-6'>
-      <div className='w-48 space-y-2 flex-shrink-0'>
+    <div className='flex gap-6 mt-8'>
+      <Card className='w-48 px-2 gap-1'>
         {sections.map((section) => (
           <Button
             key={section.id}
@@ -61,7 +65,7 @@ const ProfileLayout: FC<ProfileLayoutProps> = ({ sections }) => {
             {section.label}
           </Button>
         ))}
-      </div>
+      </Card>
 
       <div className='flex-1'>{sections.find((s) => s.id === activeSection)?.content}</div>
     </div>

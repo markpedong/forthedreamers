@@ -14,6 +14,7 @@ import ProfileDetails from './components/profile-details';
 import ProfileLayout from './components/profile-layout';
 import AccountManagement from './components/account-management';
 import ClientOnly from '@/components/provider/client-only';
+import ProfileHeader from './components/profile-header';
 
 export const metadata = {
   title: 'Profile',
@@ -83,15 +84,12 @@ const ProfilePage = async () => {
   ];
 
   return (
-    <main className='min-h-screen bg-background dark'>
+    <main className='min-h-screen bg-background'>
       <div className='mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8'>
-        {/* <ProfileHeader user={session.user} /> */}
-
-        <div className='mt-8'>
-          <ClientOnly>
-            <ProfileLayout sections={sections} />
-          </ClientOnly>
-        </div>
+        <ProfileHeader user={session.user} />
+        <ClientOnly>
+          <ProfileLayout sections={sections} />
+        </ClientOnly>
       </div>
     </main>
   );

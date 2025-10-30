@@ -1,15 +1,19 @@
-import { Card } from '@/components/ui/card';
-import { SessionUser } from '@/lib/types';
-import { FC } from 'react';
-import AvatarUpload from './avatar-upload';
+'use client';
+
+import type { FC } from 'react';
+import { Card, CardAction, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import type { SessionUser } from '@/lib/types';
 import { signOut } from '@/lib/server-actions';
+import AvatarUpload from './avatar-upload';
+import { LogOut } from 'lucide-react';
 
 interface ProfileHeaderProps {
   user: SessionUser;
 }
 
-const ProfileHeader: FC<ProfileHeaderProps> = ({ user }: ProfileHeaderProps) => {
+const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
   const initials =
     user.name
       ?.split(' ')
@@ -17,32 +21,42 @@ const ProfileHeader: FC<ProfileHeaderProps> = ({ user }: ProfileHeaderProps) => 
       .join('')
       .toUpperCase() || 'U';
 
+  const userRole = (user as any)?.role || 'User';
+
   return (
-    <Card className='border-0 bg-gradient-to-r from-primary/10 to-primary/5 p-6'>
-      <div className='flex items-center gap-4'>
-        <AvatarUpload src={user.image ?? ''} alt={user.name} initials={initials} />
-        <div className='flex-1'>
-          <h1 className='text-3xl font-bold text-foreground'>{user.name}</h1>
-          <p className='text-muted-foreground'>{user.email}</p>
-          <div className='mt-2 flex gap-2'>
-            {/* <span className='inline-block rounded-full bg-primary/20 px-3 py-1 text-sm font-medium text-primary'>
-              {user.role}
-            </span>
-            {user.banned ? (
-              <span className='inline-block rounded-full bg-destructive/20 px-3 py-1 text-sm font-medium text-destructive'>
-                Banned
-              </span>
-            ) : (
-              <span className='inline-block rounded-full bg-green-500/20 px-3 py-1 text-sm font-medium text-green-700 dark:text-green-400'>
-                Active
-              </span>
-            )} */}
+    <Card>
+      <CardHeader>
+        <div className='flex flex-col md:flex-row md:items-start md:justify-between gap-4'>
+          {/* Avatar and user info section */}
+          <div className='flex items-start gap-3 sm:gap-4 flex-1 min-w-0'>
+            <AvatarUpload src={user.image ?? ''} alt={user.name} initials={initials} />
+            <div className='flex-1 min-w-0'>
+              <p className='text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1'>
+                Signed in as
+              </p>
+              <div className='flex flex-col sm:flex-row sm:items-center gap-2 mb-1'>
+                <CardTitle className='text-lg sm:text-2xl truncate'>{user.name}</CardTitle>
+                <Badge variant='secondary' className='text-xs font-medium w-fit'>
+                  {userRole}
+                </Badge>
+              </div>
+              <CardDescription className='truncate text-sm'>{user.email}</CardDescription>
+            </div>
           </div>
+
+          {/* Logout button - full width on mobile, fixed on larger screens */}
+          <CardAction className='mt-2 md:mt-0 w-full md:w-auto'>
+            <Button
+              variant='outline'
+              size='sm'
+              onClick={signOut}
+              className='w-full md:w-auto gap-2 whitespace-nowrap bg-transparent'
+            >
+              <LogOut className='h-4 w-4' /> Logout
+            </Button>
+          </CardAction>
         </div>
-        <Button variant='destructive' onClick={signOut}>
-          Logout
-        </Button>
-      </div>
+      </CardHeader>
     </Card>
   );
 };

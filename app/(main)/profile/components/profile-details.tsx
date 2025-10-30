@@ -156,14 +156,23 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
               {[
                 { label: 'Role', value: 'User', icon: Badge },
                 { label: 'Status', value: 'Active', icon: Users },
-                { label: 'Member Since', value: formatDate(user.createdAt), icon: Clock },
+                {
+                  label: 'Member Since',
+                  value: formatDate(user.createdAt, 'MM/DD/YYYY'),
+                  icon: Clock,
+                },
                 { label: 'Last Updated', value: formatDate(user.updatedAt), icon: Clock },
               ].map(({ label, value, icon: Icon }) => (
-                <div key={label} className='flex items-center justify-between'>
+                <div
+                  key={label}
+                  className='flex flex-col items-start justify-between rounded-lg border p-3 sm:flex-row sm:items-center sm:border-0 sm:p-0'
+                >
                   <span className='flex items-center gap-2 text-sm text-muted-foreground'>
                     <Icon className='h-4 w-4' /> {label}
                   </span>
-                  <span className='font-medium text-foreground capitalize'>{value}</span>
+                  <span className='font-medium text-foreground capitalize text-sm sm:text-base'>
+                    {value}
+                  </span>
                 </div>
               ))}
             </div>

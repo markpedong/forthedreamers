@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import dayjs from 'dayjs';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -13,11 +14,4 @@ export const toBase64 = (file: File) =>
     reader.onerror = (error) => reject(error);
   });
 
-export const formatDate = (date: Date | undefined) => {
-  if (!date) return "Not set"
-  return new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
-}
+export const formatDate = (date: Date, format = "MM/DD/YYYY h:mm A") => dayjs(date).format(format);
