@@ -35,7 +35,7 @@ export const auth = betterAuth({
         subject: "Reset your password",
         html: html,
       });
-    }
+    },
   },
   emailVerification: {
     sendOnSignUp: false,

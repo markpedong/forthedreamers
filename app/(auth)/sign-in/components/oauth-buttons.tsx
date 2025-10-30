@@ -17,7 +17,7 @@ const OauthButtons = (props: Props) => {
         const Icon = item.icon;
 
         return (
-          <Button key={i} variant='outline' className='h-11 cursor-pointer' onClick={item.onClick}>
+          <Button key={i} variant='outline' className='h-11' onClick={item.onClick}>
             <Icon />
             <span className='ml-2'>{item.text}</span>
           </Button>

@@ -39,7 +39,7 @@ const ProfileHeader: FC<ProfileHeaderProps> = ({ user }: ProfileHeaderProps) => 
             )} */}
           </div>
         </div>
-        <Button className='cursor-pointer' variant='destructive' onClick={signOut}>
+        <Button variant='destructive' onClick={signOut}>
           Logout
         </Button>
       </div>

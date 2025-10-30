@@ -61,7 +61,7 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         <div className='mt-6 text-center'>
           <button
             onClick={() => onNavigate('login')}
-            className='text-sm text-muted-foreground hover:text-foreground inline-flex items-center transition-colors cursor-pointer'
+            className='text-sm text-muted-foreground hover:text-foreground inline-flex items-center transition-colors'
           >
             <svg className='w-4 h-4 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
               <path

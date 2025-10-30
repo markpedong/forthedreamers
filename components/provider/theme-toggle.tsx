@@ -31,7 +31,7 @@ const ThemeToggleButton = () => {
           variant='outline'
           size='icon'
           onClick={toggleTheme}
-          className='rounded-full shadow-md border border-border bg-background hover:bg-accent cursor-pointer'
+          className='rounded-full shadow-md border border-border bg-background hover:bg-accent'
         >
           {theme === 'light' ? (
             <Moon className='h-[1.2rem] w-[1.2rem]' />

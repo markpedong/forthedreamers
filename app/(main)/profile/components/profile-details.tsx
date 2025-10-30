@@ -83,7 +83,6 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
                 </div>
 
                 <Button
-                  className='cursor-pointer'
                   type='button'
                   variant='outline'
                   size='sm'
