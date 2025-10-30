@@ -132,9 +132,9 @@ export const deleteAccount = async () => {
   return auth.api.deleteUser({ headers: await headers(), body: { callbackURL: '/' } });
 }
 
-// export const twoFactorEnable = async (password: string) => {
-//   return auth.api.enableTwoFactor({ headers: await headers(), body: { password } });
-// }
+export const twoFactorEnable = async (password: string) => {
+  return auth.api.enableTwoFactor({ headers: await headers(), body: { password } });
+}
 
 // export const twoFactorDisable = async (password: string) => {
 //   return auth.api.disableTwoFactor({ headers: await headers(), body: { password } });

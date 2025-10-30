@@ -16,7 +16,7 @@ import AccountManagement from './components/account-management';
 import ClientOnly from '@/components/provider/client-only';
 import ProfileHeader from './components/profile-header';
 import SessionManagement from './components/session-management';
-import TwoFactor from './components/two-factor';
+import { TwoFactorSection } from './components/2fa';
 
 export const metadata = {
   title: 'Profile',
@@ -85,7 +85,15 @@ const ProfilePage = async () => {
       id: '2fa',
       label: '2FA',
       icon: <Shield className='h-4 w-4' />,
-      content: <TwoFactor />,
+      content: (
+        <TwoFactorSection
+          user={{
+            id: 'user-123',
+            email: 'user@example.com',
+            name: 'John Doe',
+          }}
+        />
+      ),
     },
   ];
 
