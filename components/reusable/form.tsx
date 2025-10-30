@@ -6,7 +6,7 @@ import classnames from 'classnames';
 
 type FormProps<T extends FieldValues> = Omit<ComponentPropsWithoutRef<'form'>, 'onSubmit'> & {
   form: UseFormReturn<T>;
-  onSubmit: SubmitHandler<T>;
+  onSubmit?: SubmitHandler<T>;
   isSending?: boolean;
   children: ReactNode;
   submitLabel?: string;
@@ -25,7 +25,7 @@ const Form = <T extends FieldValues>({
   return (
     <FormUI {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        {...(onSubmit && { onSubmit: form.handleSubmit(onSubmit) })}
         {...rest}
         className={classnames('space-y-6', className)}
       >

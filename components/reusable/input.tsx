@@ -19,7 +19,7 @@ type InputProps<T extends FieldValues> = ComponentPropsWithoutRef<'input'> & {
   disabled?: boolean;
   prefixIconSrc?: string;
   description?: string;
-  control: Control<T>;
+  control?: Control<T>;
   name: Path<T>;
   /** show/hide password toggle (only relevant for password inputs) */
   eyeIcon?: boolean;

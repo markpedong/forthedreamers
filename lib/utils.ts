@@ -12,3 +12,12 @@ export const toBase64 = (file: File) =>
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
   });
+
+export const formatDate = (date: Date | undefined) => {
+  if (!date) return "Not set"
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
+}
