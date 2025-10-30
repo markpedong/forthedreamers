@@ -82,6 +82,9 @@ const useFormSchema = () => {
       }
     });
 
+  const changePasswordDefault = { currentPassword: '', confirmPassword: '', newPassword: '' }
+
+
   return {
     nameEmailSchema,
     passwordSchema,
@@ -90,7 +93,8 @@ const useFormSchema = () => {
     registrationSchema,
     forgotPasswordSchema,
     loginSchema,
-    changePasswordSchema
+    changePasswordSchema,
+    changePasswordDefault
   }
 }
 

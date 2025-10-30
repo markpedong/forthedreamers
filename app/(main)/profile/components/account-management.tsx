@@ -1,19 +1,11 @@
 'use client';
 
-import AccountCard from '@/components/reusable/account-card';
-import Form from '@/components/reusable/form';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { FC, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import Input from '@/components/reusable/input';
+import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { OAUTH_PROVIDERS } from '@/constants';
 import useFormSchema from '@/hooks/useFormSchema';
 import { authClient } from '@/lib/auth-client';
@@ -24,13 +16,12 @@ import {
   unlinkAccount,
 } from '@/lib/server-actions';
 import { Account, SchemaForm, SessionUser } from '@/lib/types';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
-import { FC, useState, useTransition } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
+import Form from '@/components/reusable/form';
+import Input from '@/components/reusable/input';
 import Divider from '@/components/reusable/divider';
-import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
+import AccountCard from '@/components/reusable/account-card';
+import AlertDialog from '@/components/reusable/alert-dialog';
+import useValidate from '@/hooks/useFormValidate';
 
 interface AccountManagementProps {
   user: SessionUser;
@@ -40,15 +31,17 @@ interface AccountManagementProps {
 
 const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, user }) => {
   const router = useRouter();
-  const { changePasswordSchema } = useFormSchema();
-  const form = useForm<SchemaForm<typeof changePasswordSchema>>({
-    resolver: zodResolver(changePasswordSchema),
-    defaultValues: {
-      currentPassword: '',
-      confirmPassword: '',
-      newPassword: '',
-    },
+  const { changePasswordSchema, changePasswordDefault } = useFormSchema();
+
+  // const form = useForm<SchemaForm<typeof changePasswordSchema>>({
+  //   resolver: zodResolver(changePasswordSchema),
+  //   defaultValues: { currentPassword: '', confirmPassword: '', newPassword: '' },
+  // });
+  const { form } = useValidate({
+    schema: changePasswordSchema,
+    defaultValues: changePasswordDefault,
   });
+
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [isSubmitting, startSubmitting] = useTransition();
@@ -60,25 +53,26 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
           currentPassword: values.currentPassword,
           newPassword: values.confirmPassword,
         });
-        toast('Success - Password changed successfully!', {
+
+        toast.success('Password changed successfully!', {
           description: 'Revoking other sessions...',
         });
+
+        form.reset(changePasswordDefault);
         setShowPasswordDialog(false);
       } catch {
-        toast('Error', { description: 'Failed to change password' });
+        toast.error('Failed to change password');
       }
     });
   };
 
-  const handleSetPassword = async () => {
+  const handleSetPassword = () => {
     startSubmitting(async () => {
       try {
         await requestPasswordReset(user.email);
-        toast('Success', { description: 'Password reset link sent successfully' });
+        toast.success('Password reset link sent successfully');
       } catch (error) {
-        if (error instanceof Error) {
-          toast('Error', { description: error.message });
-        }
+        toast.error(error instanceof Error ? error.message : 'Failed to send reset link');
       }
     });
   };
@@ -87,9 +81,9 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
     startSubmitting(async () => {
       try {
         await deleteAccount();
-        toast('Success', { description: 'Account deleted successfully' });
+        toast.success('Account deleted successfully');
       } catch {
-        toast('Error', { description: 'Failed to delete account' });
+        toast.error('Failed to delete account');
       }
     });
   };
@@ -98,12 +92,10 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
     startSubmitting(async () => {
       try {
         await unlinkAccount({ accountId, providerId });
-        toast('Success', { description: 'Account unlinked successfully' });
+        toast.success('Account unlinked successfully');
         router.refresh();
       } catch (err) {
-        if (err instanceof Error) {
-          toast('Error', { description: err.message });
-        }
+        toast.error(err instanceof Error ? err.message : 'Failed to unlink account');
       }
     });
   };
@@ -115,51 +107,57 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
           <CardTitle>Account Management</CardTitle>
           <CardDescription>Manage your account security and linked accounts</CardDescription>
         </CardHeader>
+
         <CardContent className='space-y-6'>
-          <h3 className='mb-4 font-semibold text-foreground'>Linked Accounts</h3>
-          {accounts.length > 0 ? (
-            <div className='space-y-2'>
-              {accounts.map((account) => (
+          <section>
+            <p className='mb-2 font-semibold text-foreground'>Linked Accounts</p>
+            {accounts.length ? (
+              <div className='space-y-2'>
+                {accounts.map((account) => (
+                  <AccountCard
+                    key={account.id}
+                    provider={account.providerId}
+                    account={account}
+                    loading={isSubmitting}
+                    onClick={(provider) => handleUnlinkAccount(account.accountId, provider)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className='text-sm text-muted-foreground'>No linked accounts</p>
+            )}
+          </section>
+
+          <section>
+            <p className='mb-2 font-semibold text-foreground'>Available for Linking</p>
+            <div className='grid gap-3'>
+              {OAUTH_PROVIDERS.filter(
+                (provider) => !accounts.some((a) => a.providerId === provider),
+              ).map((provider) => (
                 <AccountCard
-                  key={account.id}
-                  provider={account.providerId}
-                  account={account}
+                  key={provider}
+                  provider={provider}
+                  account={null}
                   loading={isSubmitting}
-                  onClick={(provider) => handleUnlinkAccount(account.accountId, provider)}
+                  onClick={(provider) =>
+                    authClient.linkSocial({
+                      provider,
+                      callbackURL: '/profile?accountLinked=true&tab=account',
+                    })
+                  }
                 />
               ))}
             </div>
-          ) : (
-            <p className='text-sm text-muted-foreground'>No linked accounts</p>
-          )}
+          </section>
 
-          <h3 className='mb-4 mt-6 font-semibold text-foreground'>
-            Available Accounts for Linking
-          </h3>
-          <div className='grid gap-3'>
-            {OAUTH_PROVIDERS.filter(
-              (provider) => !accounts.some((a) => a.providerId === provider),
-            ).map((provider) => (
-              <AccountCard
-                key={provider}
-                provider={provider}
-                account={null}
-                loading={isSubmitting}
-                onClick={(provider) =>
-                  authClient.linkSocial({
-                    provider,
-                    callbackURL: '/profile?accountLinked=true&tab=account',
-                  })
-                }
-              />
-            ))}
-          </div>
           <Divider />
-          <h3 className='mb-4 font-semibold text-foreground'>Password Security</h3>
-          <div className='rounded-lg border border-border bg-muted/30 p-4'>
+
+          <section className='rounded-lg border border-border bg-muted/30 p-4'>
             <div className='flex items-start gap-4'>
               <div
-                className={`rounded-full p-2 ${hasPassword ? 'bg-green-500/10' : 'bg-amber-500/10'}`}
+                className={`rounded-full p-2 ${
+                  hasPassword ? 'bg-green-500/10' : 'bg-amber-500/10'
+                }`}
               >
                 {hasPassword ? (
                   <ShieldCheck className='h-5 w-5 text-green-600 dark:text-green-400' />
@@ -167,6 +165,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
                   <ShieldAlert className='h-5 w-5 text-amber-600 dark:text-amber-400' />
                 )}
               </div>
+
               <div className='flex-1 space-y-3'>
                 <div>
                   <p className='font-medium text-foreground'>
@@ -178,12 +177,11 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
                       : 'Set a password to secure your account and enable additional login options.'}
                   </p>
                 </div>
+
                 <Button
                   variant={hasPassword ? 'outline' : 'default'}
                   size='sm'
-                  onClick={() => {
-                    !hasPassword ? setShowPasswordDialog(true) : handleSetPassword();
-                  }}
+                  onClick={() => (hasPassword ? setShowPasswordDialog(true) : handleSetPassword())}
                   disabled={isSubmitting}
                   className='gap-2'
                 >
@@ -192,85 +190,69 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
                 </Button>
               </div>
             </div>
-          </div>
+          </section>
+
           <Divider />
-          <h3 className='mb-4 font-semibold text-destructive'>Danger Zone</h3>
-          <Button
-            variant='destructive'
-            onClick={() => setShowDeleteDialog(true)}
-            disabled={isSubmitting}
-          >
-            Delete Account
-          </Button>
+
+          <section>
+            <p className='mb-2 font-semibold text-destructive'>Danger Zone</p>
+            <Button
+              variant='destructive'
+              onClick={() => setShowDeleteDialog(true)}
+              disabled={isSubmitting}
+            >
+              Delete Account
+            </Button>
+          </section>
         </CardContent>
       </Card>
-
-      {/* Change Password Dialog */}
-      <AlertDialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Change Password</AlertDialogTitle>
-            <AlertDialogDescription>
-              Enter your current password and new password
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <Form form={form} onSubmit={onSubmit} customSubmitButton>
-            <Input
-              control={form.control}
-              name='currentPassword'
-              label='Current Password'
-              type='password'
-              placeholder='••••••••'
-              disabled={isSubmitting}
-            />
-            <Input
-              control={form.control}
-              name='newPassword'
-              label='New Password'
-              type='password'
-              placeholder='••••••••'
-              disabled={isSubmitting}
-            />
-            <Input
-              control={form.control}
-              name='confirmPassword'
-              label='Confirm Password'
-              type='password'
-              placeholder='••••••••'
-              disabled={isSubmitting}
-            />
-          </Form>
-          <div className='flex gap-2'>
-            <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction disabled={isSubmitting} onClick={form.handleSubmit(onSubmit)}>
-              {isSubmitting ? 'Changing...' : 'Change Password'}
-            </AlertDialogAction>
-          </div>
-        </AlertDialogContent>
+      <AlertDialog
+        open={showPasswordDialog}
+        onOpenChange={setShowPasswordDialog}
+        title='Change Password'
+        description='Enter your current and new password.'
+        confirmText='Change Password'
+        loading={isSubmitting}
+        onConfirm={form.handleSubmit(onSubmit)}
+        onCancel={() => form.reset({ currentPassword: '', newPassword: '', confirmPassword: '' })}
+      >
+        <Form form={form} onSubmit={onSubmit} customSubmitButton>
+          <Input
+            control={form.control}
+            name='currentPassword'
+            label='Current Password'
+            type='password'
+            placeholder='••••••••'
+            disabled={isSubmitting}
+          />
+          <Input
+            control={form.control}
+            name='newPassword'
+            label='New Password'
+            type='password'
+            placeholder='••••••••'
+            disabled={isSubmitting}
+          />
+          <Input
+            control={form.control}
+            name='confirmPassword'
+            label='Confirm Password'
+            type='password'
+            placeholder='••••••••'
+            disabled={isSubmitting}
+          />
+        </Form>
       </AlertDialog>
-
-      {/* Delete Account Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Account</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your account and all
-              associated data.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className='flex gap-2'>
-            <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteAccount}
-              disabled={isSubmitting}
-              className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
-            >
-              {isSubmitting ? 'Deleting...' : 'Delete Account'}
-            </AlertDialogAction>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
+      <AlertDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title='Delete Account'
+        description='This action cannot be undone. This will permanently delete your account and all associated data.'
+        confirmText='Delete'
+        destructive
+        loading={isSubmitting}
+        onConfirm={handleDeleteAccount}
+      />
     </>
   );
 };
