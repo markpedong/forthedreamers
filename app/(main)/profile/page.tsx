@@ -27,7 +27,9 @@ const ProfilePage = async () => {
     redirect('/sign-in');
   }
 
-  const accounts = (await listUserAccounts()).filter((a) => a.providerId !== 'credential');
+  const accounts = await listUserAccounts();
+  const nonCredentialAccounts = accounts.filter((a) => a.providerId !== 'credential');
+  const hasPassword = accounts.some((a) => a.providerId === 'credential');
 
   const sections = [
     {
@@ -40,7 +42,13 @@ const ProfilePage = async () => {
       id: 'account',
       label: 'Account',
       icon: <Settings className='h-4 w-4' />,
-      content: <AccountManagement user={session.user} accounts={accounts} />,
+      content: (
+        <AccountManagement
+          accounts={nonCredentialAccounts}
+          hasPassword={hasPassword}
+          user={session.user}
+        />
+      ),
     },
     {
       id: 'orders',

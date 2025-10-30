@@ -17,7 +17,12 @@ import Input from '@/components/reusable/input';
 import { OAUTH_PROVIDERS } from '@/constants';
 import useFormSchema from '@/hooks/useFormSchema';
 import { authClient } from '@/lib/auth-client';
-import { changePassword, deleteAccount, unlinkAccount } from '@/lib/server-actions';
+import {
+  changePassword,
+  deleteAccount,
+  requestPasswordReset,
+  unlinkAccount,
+} from '@/lib/server-actions';
 import { Account, SchemaForm, SessionUser } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -25,13 +30,15 @@ import { FC, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import Divider from '@/components/reusable/divider';
+import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
 
 interface AccountManagementProps {
   user: SessionUser;
   accounts: Account[];
+  hasPassword: boolean;
 }
 
-const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
+const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, user }) => {
   const router = useRouter();
   const { changePasswordSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof changePasswordSchema>>({
@@ -59,6 +66,19 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
         setShowPasswordDialog(false);
       } catch {
         toast('Error', { description: 'Failed to change password' });
+      }
+    });
+  };
+
+  const handleSetPassword = async () => {
+    startSubmitting(async () => {
+      try {
+        await requestPasswordReset(user.email);
+        toast('Success', { description: 'Password reset link sent successfully' });
+      } catch (error) {
+        if (error instanceof Error) {
+          toast('Error', { description: error.message });
+        }
       }
     });
   };
@@ -135,25 +155,53 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
             ))}
           </div>
           <Divider />
-          <h3 className='mb-4 font-semibold text-foreground'>Security</h3>
+          <h3 className='mb-4 font-semibold text-foreground'>Password Security</h3>
+          <div className='rounded-lg border border-border bg-muted/30 p-4'>
+            <div className='flex items-start gap-4'>
+              <div
+                className={`rounded-full p-2 ${hasPassword ? 'bg-green-500/10' : 'bg-amber-500/10'}`}
+              >
+                {hasPassword ? (
+                  <ShieldCheck className='h-5 w-5 text-green-600 dark:text-green-400' />
+                ) : (
+                  <ShieldAlert className='h-5 w-5 text-amber-600 dark:text-amber-400' />
+                )}
+              </div>
+              <div className='flex-1 space-y-3'>
+                <div>
+                  <p className='font-medium text-foreground'>
+                    {hasPassword ? 'Password Protection Active' : 'No Password Set'}
+                  </p>
+                  <p className='text-sm text-muted-foreground'>
+                    {hasPassword
+                      ? 'Your account is secured with a password. You can update it anytime.'
+                      : 'Set a password to secure your account and enable additional login options.'}
+                  </p>
+                </div>
+                <Button
+                  variant={hasPassword ? 'outline' : 'default'}
+                  size='sm'
+                  onClick={() => {
+                    !hasPassword ? setShowPasswordDialog(true) : handleSetPassword();
+                  }}
+                  disabled={isSubmitting}
+                  className='gap-2'
+                >
+                  <KeyRound className='h-4 w-4' />
+                  {hasPassword ? 'Change Password' : 'Set Password'}
+                </Button>
+              </div>
+            </div>
+          </div>
+          <Divider />
+          <h3 className='mb-4 font-semibold text-destructive'>Danger Zone</h3>
           <Button
-            variant='outline'
-            onClick={() => setShowPasswordDialog(true)}
+            variant='destructive'
+            onClick={() => setShowDeleteDialog(true)}
             disabled={isSubmitting}
           >
-            Change Password
+            Delete Account
           </Button>
-
-          <div className='border-t border-border pt-6'>
-            <h3 className='mb-4 font-semibold text-destructive'>Danger Zone</h3>
-            <Button
-              variant='destructive'
-              onClick={() => setShowDeleteDialog(true)}
-              disabled={isSubmitting}
-            >
-              Delete Account
-            </Button>
-          </div>
         </CardContent>
       </Card>
 
