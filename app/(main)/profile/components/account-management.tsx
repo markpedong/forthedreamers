@@ -11,9 +11,7 @@ import useFormSchema from '@/hooks/useFormSchema';
 import { authClient } from '@/lib/auth-client';
 import {
   changePassword,
-  deleteAccount,
-  requestPasswordReset,
-  unlinkAccount,
+  deleteAccount, unlinkAccount
 } from '@/lib/server-actions';
 import { Account, SchemaForm, SessionUser } from '@/lib/types';
 import Form from '@/components/reusable/form';
@@ -65,7 +63,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
   const handleSetPassword = () => {
     startSubmitting(async () => {
       try {
-        await requestPasswordReset(user.email);
+        await authClient.requestPasswordReset({ email: user.email, redirectTo: '/reset-password' });
         toast.success('Password reset link sent successfully');
       } catch (error) {
         toast.error(error instanceof Error ? error.message : 'Failed to send reset link');
