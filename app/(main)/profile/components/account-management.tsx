@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
-import { OAUTH_PROVIDERS } from '@/constants';
+import { CHANGE_PASSWORD_DEFAULT, OAUTH_PROVIDERS } from '@/constants';
 import useFormSchema from '@/hooks/useFormSchema';
 import { authClient } from '@/lib/auth-client';
 import {
@@ -21,7 +21,8 @@ import Input from '@/components/reusable/input';
 import Divider from '@/components/reusable/divider';
 import AccountCard from '@/components/reusable/account-card';
 import AlertDialog from '@/components/reusable/alert-dialog';
-import useValidate from '@/hooks/useFormValidate';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 interface AccountManagementProps {
   user: SessionUser;
@@ -31,15 +32,10 @@ interface AccountManagementProps {
 
 const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, user }) => {
   const router = useRouter();
-  const { changePasswordSchema, changePasswordDefault } = useFormSchema();
-
-  // const form = useForm<SchemaForm<typeof changePasswordSchema>>({
-  //   resolver: zodResolver(changePasswordSchema),
-  //   defaultValues: { currentPassword: '', confirmPassword: '', newPassword: '' },
-  // });
-  const { form } = useValidate({
-    schema: changePasswordSchema,
-    defaultValues: changePasswordDefault,
+  const { changePasswordSchema } = useFormSchema();
+  const form = useForm<SchemaForm<typeof changePasswordSchema>>({
+    resolver: zodResolver(changePasswordSchema),
+    defaultValues: CHANGE_PASSWORD_DEFAULT,
   });
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -58,7 +54,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
           description: 'Revoking other sessions...',
         });
 
-        form.reset(changePasswordDefault);
+        form.reset(CHANGE_PASSWORD_DEFAULT);
         setShowPasswordDialog(false);
       } catch {
         toast.error('Failed to change password');

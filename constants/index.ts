@@ -11,3 +11,6 @@ export const OAUTH_PROVIDER_DETAILS: Record<OAuthProvider, { name: string; Icon:
   tiktok: { name: "TikTok", Icon: TikTokIcon },
 
 }
+
+export const CHANGE_PASSWORD_DEFAULT = { currentPassword: '', confirmPassword: '', newPassword: '' }
+
