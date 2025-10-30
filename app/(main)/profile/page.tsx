@@ -16,6 +16,7 @@ import AccountManagement from './components/account-management';
 import ClientOnly from '@/components/provider/client-only';
 import ProfileHeader from './components/profile-header';
 import SessionManagement from './components/session-management';
+import TwoFactor from './components/two-factor';
 
 export const metadata = {
   title: 'Profile',
@@ -76,12 +77,15 @@ const ProfilePage = async () => {
       id: 'sessions',
       label: 'Sessions',
       icon: <Smartphone className='h-4 w-4' />,
-      content: <SessionManagement currentSessionToken={session.session.token} sessions={sessions} />,
+      content: (
+        <SessionManagement currentSessionToken={session.session.token} sessions={sessions} />
+      ),
     },
     {
       id: '2fa',
       label: '2FA',
       icon: <Shield className='h-4 w-4' />,
+      content: <TwoFactor />,
     },
   ];
 
@@ -90,7 +94,7 @@ const ProfilePage = async () => {
       <div className='mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8'>
         <ProfileHeader user={session.user} />
         <ClientOnly>
-          <ProfileLayout sections={sections} />
+          <ProfileLayout sections={sections} hasPassword={hasPassword} />
         </ClientOnly>
       </div>
     </main>

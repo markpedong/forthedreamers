@@ -15,6 +15,7 @@ export type ProfileLayoutProps = {
     icon: React.ReactNode;
     content?: React.ReactNode;
   }>;
+  hasPassword: boolean;
 }
 
 export type SchemaForm<T extends ZodTypeAny> = z.infer<T>;

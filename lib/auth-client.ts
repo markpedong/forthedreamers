@@ -1,4 +1,4 @@
-import { inferAdditionalFields, lastLoginMethodClient } from "better-auth/client/plugins"
+import { inferAdditionalFields, lastLoginMethodClient, twoFactorClient } from "better-auth/client/plugins"
 import { createAuthClient } from "better-auth/react"
 import { auth } from "./auth"
 
@@ -7,5 +7,6 @@ export const authClient = createAuthClient({
     plugins: [
         lastLoginMethodClient(),
         inferAdditionalFields<typeof auth>(),
+        twoFactorClient()
     ]
 })

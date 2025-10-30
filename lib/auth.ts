@@ -5,7 +5,7 @@ import transporter from "./nodemailer";
 import ResetPassword from "@/components/emails/reset-password";
 import { render } from "@react-email/render";
 import VerifyEmail from "@/components/emails/verify-email";
-import { lastLoginMethod } from 'better-auth/plugins';
+import { lastLoginMethod, twoFactor } from 'better-auth/plugins';
 import { nextCookies } from "better-auth/next-js";
 import DeleteAccountEmail from "@/components/emails/delete-account-email";
 
@@ -71,5 +71,6 @@ export const auth = betterAuth({
   plugins: [
     lastLoginMethod(),
     nextCookies(),
+    twoFactor(),
   ]
 });
