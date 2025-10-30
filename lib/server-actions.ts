@@ -67,7 +67,7 @@ export const signOut = async () => {
 };
 
 export async function sendVerificationEmailAction(email: string) {
-  await auth.api.sendVerificationEmail({ body: { email } });
+  await auth.api.sendVerificationEmail({ body: { email, callbackURL: '/profile?emailVerified=true' } });
 }
 export const sendForgotPasswordEmail = async (email: string) => {
   return await auth.api.forgetPassword({ body: { email, redirectTo: '/reset-password' } });

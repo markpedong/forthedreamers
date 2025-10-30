@@ -9,8 +9,10 @@ import { useTransition } from 'react';
 import Form from '@/components/reusable/form';
 import { toast } from 'sonner';
 import { signUp } from '@/lib/server-actions';
+import { useRouter } from 'next/navigation';
 
 const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
+  const router = useRouter();
   const [isSigningUp, startSigningUp] = useTransition();
   const { registrationSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof registrationSchema>>({
@@ -27,8 +29,8 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     startSigningUp(async () => {
       try {
         await signUp(values.email, values.password, values.name);
-        onNavigate('login');
         toast.success('Account created successfully!', { duration: 3000 });
+        router.refresh()
       } catch (error) {
         if (error instanceof Error) {
           toast.error(`Error: ${error.message}`);

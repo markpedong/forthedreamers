@@ -11,8 +11,10 @@ import { useTransition } from 'react';
 import { signIn } from '@/lib/server-actions';
 import { toast } from 'sonner';
 import Divider from '@/components/reusable/divider';
+import { useRouter } from 'next/navigation';
 
 const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
+  const router = useRouter();
   const { loginSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -28,6 +30,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       try {
         await signIn(values.email, values.password, false);
         toast.success('Sign in successfully!', { duration: 2000 });
+        router.refresh()
       } catch (error) {
         if (error instanceof Error) {
           toast.error(`Error: ${error.message}`);
