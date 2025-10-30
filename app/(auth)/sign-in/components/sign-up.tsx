@@ -1,13 +1,12 @@
 import { SchemaForm, TOnNavigate } from '@/lib/types';
 import PageWrapper from './page-wrapper';
-import { Button } from '@/components/ui/button';
 import OauthButtons from './oauth-buttons';
 import useFormSchema from '@/hooks/useFormSchema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Input from '@/components/reusable/input';
 import { useTransition } from 'react';
-import { Form } from '@/components/ui/form';
+import Form from '@/components/reusable/form';
 import { toast } from 'sonner';
 import { signUp } from '@/lib/server-actions';
 
@@ -46,42 +45,41 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           <p className='text-muted-foreground'>Sign up to get started</p>
         </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-            <Input
-              control={form.control}
-              name='name'
-              label='Full Name'
-              placeholder='John Doe'
-              disabled={isSigningUp}
-            />
-            <Input
-              control={form.control}
-              name='email'
-              label='Email'
-              placeholder='you@example.com'
-              disabled={isSigningUp}
-            />
-            <Input
-              control={form.control}
-              name='password'
-              label='Password'
-              type='password'
-              placeholder='••••••••'
-              disabled={isSigningUp}
-            />
-            <Input
-              control={form.control}
-              name='confirmPassword'
-              label='Confirm Password'
-              type='password'
-              placeholder='••••••••'
-              disabled={isSigningUp}
-            />
-            <Button className='w-full h-11 mt-6' disabled={isSigningUp} type='submit'>
-              {isSigningUp ? 'Signing up...' : 'Sign up'}
-            </Button>
-          </form>
+        <Form
+          form={form}
+          onSubmit={onSubmit}
+          submitLabel={isSigningUp ? 'Signing up...' : 'Sign up'}
+        >
+          <Input
+            control={form.control}
+            name='name'
+            label='Full Name'
+            placeholder='John Doe'
+            disabled={isSigningUp}
+          />
+          <Input
+            control={form.control}
+            name='email'
+            label='Email'
+            placeholder='you@example.com'
+            disabled={isSigningUp}
+          />
+          <Input
+            control={form.control}
+            name='password'
+            label='Password'
+            type='password'
+            placeholder='••••••••'
+            disabled={isSigningUp}
+          />
+          <Input
+            control={form.control}
+            name='confirmPassword'
+            label='Confirm Password'
+            type='password'
+            placeholder='••••••••'
+            disabled={isSigningUp}
+          />
         </Form>
         <div className='relative my-6'>
           <div className='absolute inset-0 flex items-center'>

@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import Input from '@/components/reusable/input';
 import { SchemaForm, TOnNavigate } from '@/lib/types';
 import PageWrapper from './page-wrapper';
@@ -6,9 +5,9 @@ import useFormSchema from '@/hooks/useFormSchema';
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form } from '@/components/ui/form';
 import { sendForgotPasswordEmail } from '@/lib/server-actions';
 import { toast } from 'sonner';
+import Form from '@/components/reusable/form';
 
 const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const { forgotPasswordSchema } = useFormSchema();
@@ -33,6 +32,7 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       }
     });
   };
+
   return (
     <PageWrapper>
       <div>
@@ -42,20 +42,19 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         </div>
 
         <div className='space-y-5'>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-              <Input
-                control={form.control}
-                name='email'
-                label='Forgot Email'
-                placeholder='you@example.com'
-                description='Must contain uppercase, lowercase, and numbers'
-                disabled={isSending}
-              />
-              <Button className='w-full h-11'>
-                {isSending ? 'Sending...' : 'Send reset link'}
-              </Button>
-            </form>
+          <Form
+            form={form}
+            onSubmit={onSubmit}
+            submitLabel={isSending ? 'Sending...' : 'Send reset link'}
+          >
+            <Input
+              control={form.control}
+              name='email'
+              label='Forgot Email'
+              placeholder='you@example.com'
+              description='Must contain uppercase, lowercase, and numbers'
+              disabled={isSending}
+            />
           </Form>
         </div>
 

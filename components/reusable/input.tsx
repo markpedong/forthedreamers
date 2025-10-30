@@ -1,4 +1,4 @@
-import { ComponentPropsWithRef } from 'react';
+import { ComponentPropsWithoutRef } from 'react';
 import { Input as InputUI } from '../ui/input';
 import {
   FormControl,
@@ -10,7 +10,7 @@ import {
 } from '../ui/form';
 import type { Control, Path, FieldValues } from 'react-hook-form';
 
-type InputProps<T extends FieldValues> = ComponentPropsWithRef<'input'> & {
+type InputProps<T extends FieldValues> = ComponentPropsWithoutRef<'input'> & {
   label: string;
   type?: string;
   formState?: string | undefined;

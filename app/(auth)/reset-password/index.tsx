@@ -5,9 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form } from '@/components/ui/form';
+import Form from '@/components/reusable/form';
 import useFormSchema from '@/hooks/useFormSchema';
 import Input from '@/components/reusable/input';
 import { SchemaForm } from '@/lib/types';
@@ -51,30 +50,29 @@ const ResetPassword: FC<{ token: string }> = ({ token }) => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-                <Input
-                  control={form.control}
-                  name='password'
-                  type='password'
-                  label='New Password'
-                  description='Must contain uppercase, lowercase, and numbers'
-                  placeholder='Enter your new password'
-                  disabled={isLoading}
-                />
-                <Input
-                  control={form.control}
-                  name='confirmPassword'
-                  label='Confirm Password'
-                  type='password'
-                  placeholder='Confirm your new password'
-                  disabled={isLoading}
-                  description='Passwords must match'
-                />
-                <Button type='submit' className='w-full' disabled={isLoading} aria-busy={isLoading}>
-                  {isLoading ? 'Resetting...' : 'Reset Password'}
-                </Button>
-              </form>
+            <Form
+              form={form}
+              onSubmit={onSubmit}
+              submitLabel={isLoading ? 'Resetting...' : 'Reset Password'}
+            >
+              <Input
+                control={form.control}
+                name='password'
+                type='password'
+                label='New Password'
+                description='Must contain uppercase, lowercase, and numbers'
+                placeholder='Enter your new password'
+                disabled={isLoading}
+              />
+              <Input
+                control={form.control}
+                name='confirmPassword'
+                label='Confirm Password'
+                type='password'
+                placeholder='Confirm your new password'
+                disabled={isLoading}
+                description='Passwords must match'
+              />
             </Form>
           </CardContent>
         </Card>
