@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProfileLayoutProps } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 
 const ProfileLayout: FC<ProfileLayoutProps> = ({ sections }) => {
+  const tab = useSearchParams().get('tab');
   const { width } = useWindowSize();
-  const [activeSection, setActiveSection] = useState(sections[0]?.id || 'profile');
+  const [activeSection, setActiveSection] = useState(tab || sections[0]?.id);
 
   if (!width) {
     return (

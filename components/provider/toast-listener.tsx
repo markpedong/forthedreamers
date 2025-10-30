@@ -8,32 +8,41 @@ const ToastListener = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+
   const error = searchParams.get('error');
   const emailVerified = searchParams.get('emailVerified');
+  const accountLinked = searchParams.get('accountLinked');
 
-  const deleteParameter = (param: string) => {
+  const deleteParameters = (keys: string[]) => {
     const nextSearchParams = new URLSearchParams(searchParams.toString());
-    nextSearchParams.delete(param);
+    keys.forEach((key) => nextSearchParams.delete(key));
 
     const newQuery = nextSearchParams.toString();
     const newUrl = newQuery ? `${pathname}?${newQuery}` : pathname;
 
-    router.replace(newUrl);
+    setTimeout(() => router.replace(newUrl, { scroll: false }), 100);
   };
 
   useEffect(() => {
-    if (pathname === '/profile' && emailVerified === 'true') {
+    if (pathname !== '/profile') return;
+
+    if (emailVerified) {
       toast.success('Email verified successfully!', { duration: 3000 });
-      deleteParameter('emailVerified');
+      deleteParameters(['emailVerified']);
+      return;
+    }
+
+    if (accountLinked) {
+      toast.success('Account linked successfully!', { duration: 3000 });
+      deleteParameters(['accountLinked', 'tab']);
       return;
     }
 
     if (error) {
       toast.error(`Error: ${error}, please try again.`, { duration: 3000 });
-      deleteParameter('error');
-      return;
+      deleteParameters(['error']);
     }
-  }, []);
+  }, [pathname, emailVerified, accountLinked, error]);
 
   return null;
 };

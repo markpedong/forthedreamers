@@ -36,7 +36,6 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
     new: '',
     confirm: '',
   });
-
   const [isPending, startTransition] = useTransition();
 
   const handleChangePassword = () => {
@@ -74,7 +73,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
   const handleUnlinkAccount = (accountId: string, providerId: string) => {
     startTransition(async () => {
       try {
-        console.log("Unlinking account", accountId, providerId);
+        console.log('Unlinking account', accountId, providerId);
         await unlinkAccount({ accountId, providerId });
         toast('Success', { description: 'Account unlinked successfully' });
         router.refresh();
@@ -102,7 +101,6 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
           <CardDescription>Manage your account security and linked accounts</CardDescription>
         </CardHeader>
         <CardContent className='space-y-6'>
-          {/* Linked Accounts */}
           <h3 className='mb-4 font-semibold text-foreground'>Linked Accounts</h3>
           {accounts.length > 0 ? (
             <div className='space-y-2'>
@@ -120,7 +118,6 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
             <p className='text-sm text-muted-foreground'>No linked accounts</p>
           )}
 
-          {/* Available Accounts */}
           <h3 className='mb-4 mt-6 font-semibold text-foreground'>
             Available Accounts for Linking
           </h3>
@@ -136,7 +133,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ user, accounts }) => {
                 onClick={(provider) =>
                   authClient.linkSocial({
                     provider,
-                    callbackURL: '/profile',
+                    callbackURL: '/profile?accountLinked=true&tab=account',
                   })
                 }
               />
