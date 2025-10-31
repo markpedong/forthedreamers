@@ -40,8 +40,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
     'qr-code': 'Scan this QR code with your authenticator app, then enter the 6-digit code below.',
     'backup-codes': 'Your backup codes are ready. Save them in a secure place.',
     regenerate: 'Enter your password to regenerate your backup codes',
-    'backup-codes-regenerated':
-      'Your backup codes have been regenerated. Store these new codes in a safe place.',
+    'backup-codes-regenerated': 'Your backup codes have been regenerated. Store them safely.',
     '': '',
   };
 
@@ -71,14 +70,14 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
             if (is2faEnabled) {
               const res = await authClient.twoFactor.disable({ password: password! });
               if (handleApiError(res, 'password', 'Invalid password')) return;
-              toast.success('Two-factor authentication has been disabled');
+              toast.success('Two-factor authentication disabled');
               setSetupStep('');
               form.reset(TWOFACTOR_DEFAULT);
               router.refresh();
             } else {
               const res = await twoFactorEnable(password!);
               if (!res.totpURI || !res.backupCodes?.length) {
-                toast.error('Failed to enable two-factor authentication');
+                toast.error('Failed to enable 2FA');
                 form.setError('password', { message: 'Invalid password or server error' });
                 return;
               }
@@ -120,16 +119,9 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
           },
           '': async () => {},
         };
-
         await stepHandlers[setupStep]();
       } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : is2faEnabled
-              ? 'Failed to disable two-factor authentication'
-              : 'Failed to enable two-factor authentication';
-        toast.error(message);
+        toast.error(error instanceof Error ? error.message : 'Operation failed');
       }
     });
   };
@@ -155,14 +147,12 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
           <p className='text-xs text-muted-foreground break-all font-mono'>{qrCodeUrl}</p>
         </div>
       </div>
-
       <div className='rounded-lg bg-blue-50 border border-blue-200 p-3 flex gap-2'>
         <AlertCircle className='h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5' />
         <p className='text-sm text-blue-800'>
           Enter the 6-digit code from your authenticator app to confirm setup.
         </p>
       </div>
-
       <Input
         id='otp'
         label='Enter 6-digit code'
@@ -176,14 +166,12 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
 
   const BackupCodeButton: FC<{ code: string }> = ({ code }) => {
     const [copied, setCopied] = useState(false);
-
     const handleCopy = () => {
       navigator.clipboard.writeText(code);
       setCopied(true);
-      toast.success('Copied to clipboard');
+      toast.success('Copied');
       setTimeout(() => setCopied(false), 500);
     };
-
     return (
       <button
         onClick={handleCopy}
@@ -211,14 +199,13 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
         <div className='h-20 w-20 rounded-full bg-green-100 flex items-center justify-center'>
           <Check className='h-10 w-10 text-green-600' />
         </div>
-
         <p className='text-lg text-center font-semibold text-green-600'>
           {step === 'backup-codes' ? 'Verification successful!' : 'New backup codes generated!'}
         </p>
         <p className='text-sm text-center text-muted-foreground'>
           {step === 'backup-codes'
             ? 'Your authenticator is now linked.'
-            : 'Your old codes are no longer valid. Each new code can only be used once.'}
+            : 'Your old codes are invalid. Each new code can only be used once.'}
         </p>
       </motion.div>
 
@@ -229,21 +216,19 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
             className='size-3 cursor-pointer'
             onClick={() => {
               navigator.clipboard.writeText(backupCodes.join('\n'));
-              toast.success('Copied to clipboard');
+              toast.success('Copied all');
             }}
           />
         </div>
-
         <div className='grid grid-cols-2 gap-2'>
           {backupCodes.map((code) => (
             <BackupCodeButton key={code} code={code} />
           ))}
         </div>
-
         <div className='rounded-lg bg-amber-50 border border-amber-200 p-3 flex gap-2'>
           <AlertCircle className='h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5' />
           <p className='text-xs text-amber-800'>
-            Save these codes in a safe place. Each can only be used once.
+            Save these codes safely. Each can only be used once.
           </p>
         </div>
       </div>
@@ -253,26 +238,21 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
   return (
     <>
       <Card>
-        <CardHeader>
-          <div className='flex items-center justify-between'>
-            <div>
-              <CardTitle>Two-Factor Authentication</CardTitle>
-              <CardDescription>Add an extra layer of security to your account.</CardDescription>
-            </div>
-            <Badge variant={is2faEnabled ? 'default' : 'secondary'}>
-              {is2faEnabled ? 'Enabled' : 'Disabled'}
-            </Badge>
+        <CardHeader className='flex justify-between items-center'>
+          <div>
+            <CardTitle>Two-Factor Authentication</CardTitle>
+            <CardDescription>Add extra security to your account.</CardDescription>
           </div>
+          <Badge variant={is2faEnabled ? 'default' : 'secondary'}>
+            {is2faEnabled ? 'Enabled' : 'Disabled'}
+          </Badge>
         </CardHeader>
-
         <CardContent className='space-y-4'>
           <div className='rounded-lg bg-muted p-4 flex items-center justify-between'>
             <div>
               <p className='font-medium'>Status</p>
               <p className='text-sm text-muted-foreground'>
-                {is2faEnabled
-                  ? 'Your account is protected with two-factor authentication'
-                  : 'Enable two-factor authentication to secure your account'}
+                {is2faEnabled ? 'Your account is protected' : 'Enable two-factor authentication'}
               </p>
             </div>
             <Button
@@ -283,17 +263,14 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
               {is2faEnabled ? 'Disable' : 'Enable'}
             </Button>
           </div>
-
           {is2faEnabled && (
-            <div className='border-t border-border pt-4'>
-              <Button
-                variant='outline'
-                onClick={() => setSetupStep('regenerate')}
-                disabled={isPending}
-              >
-                Regenerate Backup Codes
-              </Button>
-            </div>
+            <Button
+              variant='outline'
+              onClick={() => setSetupStep('regenerate')}
+              disabled={isPending}
+            >
+              Regenerate Backup Codes
+            </Button>
           )}
         </CardContent>
       </Card>
@@ -327,13 +304,12 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
               id='password'
               type='password'
               name='password'
-              placeholder='Enter your password'
+              placeholder='Enter password'
               disabled={isPending}
             />
           )}
           {setupStep === 'qr-code' && <QRCodeStep />}
         </Form>
-
         {(setupStep === 'backup-codes-regenerated' ||
           (setupStep === 'backup-codes' && showVerificationSuccess)) && (
           <BackupCodesStep step={setupStep as 'backup-codes' | 'backup-codes-regenerated'} />
