@@ -125,3 +125,8 @@ button,
 .btn {
   @apply transform hover:scale-105 active:scale-95 transition-transform duration-150 ease-in-out cursor-pointer;
 }
+
+* {
+  scrollbar-width: 10px; /* Firefox */
+  scrollbar-color: rgba(120, 120, 120, 0.6) transparent;
+}

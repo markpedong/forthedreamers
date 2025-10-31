@@ -24,6 +24,7 @@ interface ReusableAlertProps {
   onConfirm?: () => void;
   onCancel?: () => void;
   children?: ReactNode;
+  containerClassName?: string;
 }
 
 const AlertDialog: FC<ReusableAlertProps> = ({
@@ -38,10 +39,12 @@ const AlertDialog: FC<ReusableAlertProps> = ({
   onConfirm,
   children,
   onCancel,
+  containerClassName,
 }) => {
   return (
     <AlertDialogUI open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent
+        className={`${containerClassName} flex flex-col max-h-[90vh] p-0 gap-0`}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             e.preventDefault();
@@ -52,14 +55,18 @@ const AlertDialog: FC<ReusableAlertProps> = ({
           }
         }}
       >
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          {description && <AlertDialogDescription>{description}</AlertDialogDescription>}
-        </AlertDialogHeader>
+        {/* Scrollable content with padding */}
+        <div className='flex-1 overflow-auto p-4 pt-0 mt-4'>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{title}</AlertDialogTitle>
+            {description && <AlertDialogDescription>{description}</AlertDialogDescription>}
+          </AlertDialogHeader>
 
-        {children}
+          {children}
+        </div>
 
-        <AlertDialogFooter>
+        {/* Sticky footer */}
+        <AlertDialogFooter className='m-4 flex-shrink-0'>
           <AlertDialogCancel disabled={loading} onClick={onCancel}>
             {cancelText}
           </AlertDialogCancel>

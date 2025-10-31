@@ -180,29 +180,30 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
       <p className='text-sm text-muted-foreground'>Your authenticator is now linked.</p>
 
       <div className='w-full mt-6 space-y-3'>
-        <div className='flex justify-between items-center'>
+        <div className='flex gap-3 items-center'>
           <p className='text-sm font-medium text-foreground'>Backup Codes</p>
           <CopyIcon
             className='size-3 cursor-pointer'
             onClick={() => {
               navigator.clipboard.writeText(backupCodes.join('\n'));
-              toast.success('Copied to clipboard');
+              toast.success('Copied all backup codes to clipboard');
             }}
           />
         </div>
 
         <div className='grid grid-cols-2 gap-2'>
-          {backupCodes.map((code, i) => (
+          {backupCodes.map((code, index) => (
             <button
-              key={i}
-              type='button'
-              onClick={() => {
-                navigator.clipboard.writeText(code);
-                toast.success('Copied to clipboard');
-              }}
-              className='rounded-lg border border-border bg-muted p-2 text-left'
+              key={index}
+              onClick={() => copyToClipboard(code, index)}
+              className='flex items-center justify-between rounded-lg border border-border bg-muted p-2 hover:bg-muted/80 transition-colors text-left'
             >
-              {code}
+              <span className='font-mono text-sm font-medium'>{code}</span>
+              {copiedIndex === index ? (
+                <Check className='h-4 w-4 text-green-600' />
+              ) : (
+                <Copy className='h-4 w-4 text-muted-foreground' />
+              )}
             </button>
           ))}
         </div>
@@ -266,6 +267,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
       </Card>
 
       <AlertDialog
+        containerClassName='max-h-[80vh] overflow-y-auto'
         open={!!setupStep}
         onOpenChange={(open) => {
           if (!open) {
