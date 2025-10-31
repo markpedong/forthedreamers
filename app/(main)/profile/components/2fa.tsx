@@ -20,7 +20,6 @@ import { AlertCircle, Check, Copy, CopyIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
-
 const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
   const router = useRouter();
   const is2faEnabled = user.twoFactorEnabled;
@@ -35,7 +34,6 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const [showVerificationSuccess, setShowVerificationSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const dialogDescription: Record<SetupStep, string> = {
     password: `Enter your password to ${is2faEnabled ? 'disable' : 'enable'} two-factor authentication`,
@@ -136,13 +134,6 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
     });
   };
 
-  const copyToClipboard = (text: string, index?: number) => {
-    navigator.clipboard.writeText(text);
-    if (typeof index === 'number') setCopiedIndex(index);
-    toast.success('Copied to clipboard');
-    setTimeout(() => setCopiedIndex(null), 2000);
-  };
-
   const QRCodeStep = () => (
     <>
       <div className='flex flex-col items-center gap-4'>
@@ -155,7 +146,10 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
             <p className='text-xs font-medium'>Can't scan?</p>
             <CopyIcon
               className='size-3 cursor-pointer'
-              onClick={() => copyToClipboard(qrCodeUrl ?? '')}
+              onClick={() => {
+                navigator.clipboard.writeText(qrCodeUrl ?? '');
+                toast.success('Copied to clipboard');
+              }}
             />
           </div>
           <p className='text-xs text-muted-foreground break-all font-mono'>{qrCodeUrl}</p>
@@ -180,42 +174,69 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
     </>
   );
 
-  const BackupCodesStep = () => (
-    <motion.div
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className='flex flex-col items-center gap-3 pt-8'
-    >
-      <div className='h-20 w-20 rounded-full bg-green-100 flex items-center justify-center'>
-        <Check className='h-10 w-10 text-green-600' />
-      </div>
-      <p className='text-lg font-semibold text-green-600'>Verification successful!</p>
-      <p className='text-sm text-muted-foreground'>Your authenticator is now linked.</p>
+  const BackupCodeButton: FC<{ code: string }> = ({ code }) => {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+      navigator.clipboard.writeText(code);
+      setCopied(true);
+      toast.success('Copied to clipboard');
+      setTimeout(() => setCopied(false), 500);
+    };
+
+    return (
+      <button
+        onClick={handleCopy}
+        className='flex items-center justify-between rounded-lg border border-border bg-muted p-2 hover:bg-muted/80 transition-colors text-left'
+      >
+        <span className='font-mono text-sm font-medium'>{code}</span>
+        {copied ? (
+          <Check className='h-4 w-4 text-green-600' />
+        ) : (
+          <Copy className='h-4 w-4 text-muted-foreground' />
+        )}
+      </button>
+    );
+  };
+
+  const BackupCodesStep: FC<{ step: 'backup-codes' | 'backup-codes-regenerated' }> = ({ step }) => (
+    <>
+      <motion.div
+        key={step}
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className='flex flex-col items-center gap-3 pt-8'
+      >
+        <div className='h-20 w-20 rounded-full bg-green-100 flex items-center justify-center'>
+          <Check className='h-10 w-10 text-green-600' />
+        </div>
+
+        <p className='text-lg text-center font-semibold text-green-600'>
+          {step === 'backup-codes' ? 'Verification successful!' : 'New backup codes generated!'}
+        </p>
+        <p className='text-sm text-center text-muted-foreground'>
+          {step === 'backup-codes'
+            ? 'Your authenticator is now linked.'
+            : 'Your old codes are no longer valid. Each new code can only be used once.'}
+        </p>
+      </motion.div>
 
       <div className='w-full mt-6 space-y-3'>
         <div className='flex gap-3 items-center'>
           <p className='text-sm font-medium text-foreground'>Backup Codes</p>
           <CopyIcon
             className='size-3 cursor-pointer'
-            onClick={() => copyToClipboard(backupCodes.join('\n'))}
+            onClick={() => {
+              navigator.clipboard.writeText(backupCodes.join('\n'));
+              toast.success('Copied to clipboard');
+            }}
           />
         </div>
 
         <div className='grid grid-cols-2 gap-2'>
-          {backupCodes.map((code, index) => (
-            <button
-              key={index}
-              onClick={() => copyToClipboard(code, index)}
-              className='flex items-center justify-between rounded-lg border border-border bg-muted p-2 hover:bg-muted/80 transition-colors text-left'
-            >
-              <span className='font-mono text-sm font-medium'>{code}</span>
-              {copiedIndex === index ? (
-                <Check className='h-4 w-4 text-green-600' />
-              ) : (
-                <Copy className='h-4 w-4 text-muted-foreground' />
-              )}
-            </button>
+          {backupCodes.map((code) => (
+            <BackupCodeButton key={code} code={code} />
           ))}
         </div>
 
@@ -226,7 +247,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
           </p>
         </div>
       </div>
-    </motion.div>
+    </>
   );
 
   return (
@@ -313,8 +334,10 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
           {setupStep === 'qr-code' && <QRCodeStep />}
         </Form>
 
-        {setupStep === 'backup-codes-regenerated' && <BackupCodesStep />}
-        {setupStep === 'backup-codes' && showVerificationSuccess && <BackupCodesStep />}
+        {(setupStep === 'backup-codes-regenerated' ||
+          (setupStep === 'backup-codes' && showVerificationSuccess)) && (
+          <BackupCodesStep step={setupStep as 'backup-codes' | 'backup-codes-regenerated'} />
+        )}
       </AlertDialog>
     </>
   );
