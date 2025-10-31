@@ -231,6 +231,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
               name='password'
               placeholder='Enter password'
               disabled={isPending}
+              preventSpaces
             />
           )}
           {setupStep === 'qr-code' && <QRCodeStep />}

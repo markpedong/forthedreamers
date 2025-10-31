@@ -34,45 +34,44 @@ const Input = <T extends FieldValues>({
   name,
   label,
   eyeIcon = true,
+  preventSpaces = false,
   ...rest
 }: InputProps<T>) => {
   const [showPassword, setShowPassword] = useState(false);
-  const isPasswordProp = type === 'password';
+  const isPassword = type === 'password';
   const isNumber = type === 'number';
-  const computedType = eyeIcon && isPasswordProp ? (showPassword ? 'text' : 'password') : type;
+  const computedType = eyeIcon && isPassword ? (showPassword ? 'text' : 'password') : type;
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (isNumber) {
-      const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Enter'];
+    const isShortcut = e.ctrlKey || e.metaKey;
+    if (isShortcut) return; // always allow copy/paste/select all/cut
 
-      if (e.ctrlKey || e.metaKey) return;
+    if (preventSpaces && e.key === ' ') {
+      e.preventDefault();
+    }
 
-      const currentLength = (e.currentTarget.value ?? '').length;
-      if (
-        rest.maxLength &&
-        !allowedKeys.includes(e.key) &&
-        /[0-9]/.test(e.key) &&
-        currentLength >= rest.maxLength
-      ) {
-        e.preventDefault();
-        return;
-      }
-
-      if (!/[0-9]/.test(e.key) && !allowedKeys.includes(e.key)) {
-        e.preventDefault();
-      }
+    if (
+      isNumber &&
+      !/[0-9]/.test(e.key) &&
+      !['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Enter'].includes(e.key)
+    ) {
+      e.preventDefault();
     }
 
     rest.onKeyDown?.(e);
   };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    if (isNumber) {
-      const paste = e.clipboardData.getData('text');
-      if (!/^-?\d*$/.test(paste)) {
-        e.preventDefault();
-      }
+    const paste = e.clipboardData.getData('text');
+
+    if (preventSpaces && paste.includes(' ')) {
+      e.preventDefault();
     }
+
+    if (isNumber && !/^\d*$/.test(paste)) {
+      e.preventDefault();
+    }
+
     rest.onPaste?.(e);
   };
 
@@ -99,17 +98,12 @@ const Input = <T extends FieldValues>({
                 type={computedType}
                 disabled={disabled}
                 id={String(name)}
-                className={`${prefixIconSrc ? 'pl-10' : ''} ${
-                  eyeIcon && isPasswordProp ? 'pr-10' : ''
-                }`}
+                className={`${prefixIconSrc ? 'pl-10' : ''} ${eyeIcon && isPassword ? 'pr-10' : ''}`}
                 onKeyDown={handleKeyDown}
                 onPaste={handlePaste}
-                style={{
-                  MozAppearance: 'textfield',
-                }}
               />
 
-              {eyeIcon && isPasswordProp && (
+              {eyeIcon && isPassword && (
                 <button
                   type='button'
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
