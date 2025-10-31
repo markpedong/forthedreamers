@@ -59,7 +59,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
 
     startTransition(async () => {
       try {
-        if (is2faEnabled) {
+        if (is2faEnabled && setupStep === 'password') {
           await authClient.twoFactor.disable({ password: `${password}` });
           setSetupStep('');
           toast.success('Two-factor authentication has been disabled');
@@ -80,6 +80,12 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
           await new Promise((r) => setTimeout(r, 500));
           setShowVerificationSuccess(true);
           setSetupStep('backup-codes');
+        }
+
+        if (setupStep === 'backup-codes') {
+          setSetupStep('');
+          form.reset(TWOFACTOR_DEFAULT);
+          router.refresh();
         }
       } catch (error) {
         const message =
