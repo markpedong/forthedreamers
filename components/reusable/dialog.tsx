@@ -1,9 +1,11 @@
 import { Button } from '@/components/ui/button';
 import {
-  Dialog as DialogUI, DialogContent,
-  DialogDescription, DialogHeader,
+  Dialog as DialogUI,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { ReactNode } from 'react';
 import { FieldValues } from 'react-hook-form';
@@ -44,7 +46,7 @@ const Dialog = <T extends FieldValues>({
           {triggerText}
         </Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>

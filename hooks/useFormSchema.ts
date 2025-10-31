@@ -69,7 +69,7 @@ const useFormSchema = () => {
 
   const twoFactorSchema = z.object({
     password: password.optional(),
-    otp: z.string()
+    otp: z.string().optional()
   })
 
   return {
