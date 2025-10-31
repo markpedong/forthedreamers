@@ -11,16 +11,22 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { TWOFACTOR_DEFAULT } from '@/constants';
 import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
-import { twoFactorEnable } from '@/lib/server-actions';
+import { generateBackupCodes, twoFactorEnable } from '@/lib/server-actions';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import QRCode from 'react-qr-code';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
-import { AlertCircle, Check, CopyIcon } from 'lucide-react';
+import { AlertCircle, Check, Copy, CopyIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
-type SetupStep = 'password' | 'qr-code' | 'backup-codes' | '';
+type SetupStep =
+  | 'password'
+  | 'qr-code'
+  | 'backup-codes'
+  | 'regenerate'
+  | 'backup-codes-regenerated'
+  | '';
 
 const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
   const router = useRouter();
@@ -42,12 +48,17 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
     ['qr-code']:
       'Scan this QR code with your authenticator app, then enter the 6-digit code below.',
     ['backup-codes']: 'Your backup codes are ready. Save them in a secure place.',
+    ['regenerate']: 'Enter your password to regenerate your backup codes',
+    ['backup-codes-regenerated']:
+      'Your backup codes have been regenerated. Store these new codes in a safe place.',
   };
 
   const submitTitle = {
     password: is2faEnabled ? 'Disable' : 'Validate Password',
     ['qr-code']: 'Validate OTP Code',
     ['backup-codes']: 'Done',
+    ['regenerate']: 'Continue',
+    ['backup-codes-regenerated']: 'Done',
   };
 
   const onSubmit = async ({ password, otp }: SchemaForm<typeof twoFactorSchema>) => {
@@ -65,6 +76,13 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
           toast.success('Two-factor authentication has been disabled');
           form.reset(TWOFACTOR_DEFAULT);
           router.refresh();
+          return;
+        }
+
+        if (is2faEnabled && setupStep === 'regenerate') {
+          const { backupCodes } = await generateBackupCodes(`${password}`);
+          setBackupCodes(backupCodes);
+          setSetupStep('backup-codes-regenerated');
           return;
         }
 
@@ -97,6 +115,14 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
         toast.error(message);
       }
     });
+  };
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  const copyToClipboard = (text: string, index: number) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(index);
+    toast.success('Copied to clipboard');
+    setTimeout(() => setCopiedIndex(null), 2000);
   };
 
   const renderQRCodeStep = () => (
@@ -229,7 +255,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
             <div className='border-t border-border pt-4'>
               <Button
                 variant='outline'
-                onClick={() => setSetupStep('password')}
+                onClick={() => setSetupStep('regenerate')}
                 disabled={isPending}
               >
                 Regenerate Backup Codes
@@ -248,7 +274,13 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
           }
         }}
         title={
-          is2faEnabled ? 'Disable Two-Factor Authentication' : 'Enable Two-Factor Authentication'
+          setupStep === 'regenerate'
+            ? 'Regenerate Backup Codes'
+            : setupStep === 'backup-codes-regenerated'
+              ? 'New Backup Codes'
+              : is2faEnabled
+                ? 'Disable Two-Factor Authentication'
+                : 'Enable Two-Factor Authentication'
         }
         description={dialogDescription[setupStep as keyof typeof dialogDescription]}
         confirmText={submitTitle[setupStep as keyof typeof submitTitle]}
@@ -256,7 +288,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
         onConfirm={form.handleSubmit(onSubmit)}
       >
         <Form form={form} customSubmitButton>
-          {setupStep === 'password' && (
+          {['password', 'regenerate'].includes(setupStep) && (
             <Input
               id='password'
               type='password'
@@ -267,7 +299,32 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
           )}
           {setupStep === 'qr-code' && renderQRCodeStep()}
         </Form>
-
+        {setupStep === 'backup-codes-regenerated' && (
+          <div className='space-y-4'>
+            <div className='rounded-lg bg-amber-50 border border-amber-200 p-3 flex gap-2'>
+              <AlertCircle className='h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5' />
+              <p className='text-sm text-amber-800'>
+                Your old codes are no longer valid. Each new code can only be used once.
+              </p>
+            </div>
+            <div className='grid grid-cols-2 gap-2'>
+              {backupCodes.map((code, index) => (
+                <button
+                  key={index}
+                  onClick={() => copyToClipboard(code, index)}
+                  className='flex items-center justify-between rounded-lg border border-border bg-muted p-2 hover:bg-muted/80 transition-colors text-left'
+                >
+                  <span className='font-mono text-sm font-medium'>{code}</span>
+                  {copiedIndex === index ? (
+                    <Check className='h-4 w-4 text-green-600' />
+                  ) : (
+                    <Copy className='h-4 w-4 text-muted-foreground' />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {setupStep === 'backup-codes' && showVerificationSuccess && renderBackupCodesStep()}
       </AlertDialog>
     </>
