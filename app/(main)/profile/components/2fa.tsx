@@ -62,16 +62,16 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
   };
 
   const onSubmit = async ({ password, otp }: SchemaForm<typeof twoFactorSchema>) => {
-    if (setupStep === 'qr-code' && (!otp || otp.length < 6)) {
-      form.setFocus('otp');
-      form.setError('otp', { message: 'OTP must be 6 digits' });
-      return;
-    }
-
     startTransition(async () => {
       try {
         if (is2faEnabled && setupStep === 'password') {
-          await authClient.twoFactor.disable({ password: `${password}` });
+          const res = await authClient.twoFactor.disable({ password: `${password}` });
+          
+          if (!!res.error?.code) {
+            form.setError('password', { message: 'Invalid password' });
+            return;
+          }
+
           setSetupStep('');
           toast.success('Two-factor authentication has been disabled');
           form.reset(TWOFACTOR_DEFAULT);
@@ -80,26 +80,53 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
         }
 
         if (is2faEnabled && setupStep === 'regenerate') {
-          const { backupCodes } = await generateBackupCodes(`${password}`);
-          setBackupCodes(backupCodes);
+          const res = await generateBackupCodes(`${password}`);
+
+          if (!res.backupCodes?.length) {
+            toast.error('Failed to regenerate backup codes');
+            form.setError('password', { message: 'Invalid password' });
+            return;
+          }
+
+          setBackupCodes(res.backupCodes);
           setSetupStep('backup-codes-regenerated');
           return;
         }
 
         if (setupStep === 'password') {
-          const { totpURI, backupCodes } = await twoFactorEnable(`${password}`);
-          setQrCodeUrl(totpURI);
-          setBackupCodes(backupCodes);
+          const res = await twoFactorEnable(`${password}`);
+
+          if (!res.totpURI || !res.backupCodes?.length) {
+            toast.error('Failed to enable two-factor authentication');
+            form.setError('password', { message: 'Invalid password or server error' });
+            return;
+          }
+
+          setQrCodeUrl(res.totpURI);
+          setBackupCodes(res.backupCodes);
           setSetupStep('qr-code');
+          return;
         }
 
         if (setupStep === 'qr-code') {
-          await authClient.twoFactor.verifyTotp({ code: `${otp}` });
-          await new Promise((r) => setTimeout(r, 500));
+          if (!otp || otp.length < 6) {
+            form.setError('otp', { message: 'OTP must be 6 digits' });
+            form.setFocus('otp');
+            return;
+          }
+
+          const res = await authClient.twoFactor.verifyTotp({ code: otp });
+
+          if (!!res.error?.code) {
+              form.setError('otp', { message: 'Invalid OTP code' });
+              return;
+          }
+
+          await new Promise((r) => setTimeout(r, 1500));
           setShowVerificationSuccess(true);
           setSetupStep('backup-codes');
+          return;
         }
-
         if (setupStep === 'backup-codes') {
           setSetupStep('');
           form.reset(TWOFACTOR_DEFAULT);
@@ -116,6 +143,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
       }
     });
   };
+
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const copyToClipboard = (text: string, index: number) => {
@@ -159,7 +187,6 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
         label='Enter 6-digit code'
         name='otp'
         placeholder='000000'
-        disabled={isPending || showVerificationSuccess}
         autoFocus
         maxLength={6}
       />
