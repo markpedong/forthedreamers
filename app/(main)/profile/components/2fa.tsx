@@ -18,7 +18,7 @@ import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import { AlertCircle, CopyIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { BackupCodesStep } from './2fa-backup-codestep';
+import { BackupCodesStep } from './2fa-components';
 
 const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
   const router = useRouter();
