@@ -130,3 +130,9 @@ button,
   scrollbar-width: 10px; /* Firefox */
   scrollbar-color: rgba(120, 120, 120, 0.6) transparent;
 }
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

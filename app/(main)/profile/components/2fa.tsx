@@ -154,6 +154,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
       <Input
         id='otp'
         label='Enter 6-digit code'
+        type='number'
         name='otp'
         placeholder='000000'
         autoFocus

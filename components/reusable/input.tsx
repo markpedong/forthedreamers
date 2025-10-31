@@ -21,8 +21,8 @@ type InputProps<T extends FieldValues> = ComponentPropsWithoutRef<'input'> & {
   description?: string;
   control?: Control<T>;
   name: Path<T>;
-  /** show/hide password toggle (only relevant for password inputs) */
   eyeIcon?: boolean;
+  preventSpaces?: boolean;
 };
 
 const Input = <T extends FieldValues>({
@@ -38,7 +38,43 @@ const Input = <T extends FieldValues>({
 }: InputProps<T>) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPasswordProp = type === 'password';
+  const isNumber = type === 'number';
   const computedType = eyeIcon && isPasswordProp ? (showPassword ? 'text' : 'password') : type;
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (isNumber) {
+      const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Enter', '-'];
+
+      if (e.ctrlKey || e.metaKey) return;
+
+      const currentLength = (e.currentTarget.value ?? '').length;
+      if (
+        rest.maxLength &&
+        !allowedKeys.includes(e.key) &&
+        /[0-9]/.test(e.key) &&
+        currentLength >= rest.maxLength
+      ) {
+        e.preventDefault();
+        return;
+      }
+
+      if (!/[0-9]/.test(e.key) && !allowedKeys.includes(e.key)) {
+        e.preventDefault();
+      }
+    }
+
+    rest.onKeyDown?.(e);
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    if (isNumber) {
+      const paste = e.clipboardData.getData('text');
+      if (!/^-?\d*$/.test(paste)) {
+        e.preventDefault();
+      }
+    }
+    rest.onPaste?.(e);
+  };
 
   return (
     <FormField
@@ -66,14 +102,18 @@ const Input = <T extends FieldValues>({
                 className={`${prefixIconSrc ? 'pl-10' : ''} ${
                   eyeIcon && isPasswordProp ? 'pr-10' : ''
                 }`}
+                onKeyDown={handleKeyDown}
+                onPaste={handlePaste}
+                style={{
+                  MozAppearance: 'textfield',
+                }}
               />
 
               {eyeIcon && isPasswordProp && (
                 <button
-                  type='button' // critical: avoid submitting any parent form
+                  type='button'
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   onClick={() => setShowPassword((s) => !s)}
-                  // prevent the button from stealing focus (keeps cursor in input)
                   onMouseDown={(e) => e.preventDefault()}
                   className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground'
                 >
