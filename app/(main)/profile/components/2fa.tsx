@@ -4,7 +4,7 @@ import { FC, useState, useTransition } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { SchemaForm, SessionUser } from '@/lib/types';
+import { SchemaForm, SessionUser, SetupStep } from '@/lib/types';
 import { useForm } from 'react-hook-form';
 import useFormSchema from '@/hooks/useFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,13 +20,6 @@ import { AlertCircle, Check, Copy, CopyIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
-type SetupStep =
-  | 'password'
-  | 'qr-code'
-  | 'backup-codes'
-  | 'regenerate'
-  | 'backup-codes-regenerated'
-  | '';
 
 const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
   const router = useRouter();
@@ -42,96 +35,95 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const [showVerificationSuccess, setShowVerificationSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-  const dialogDescription = {
+  const dialogDescription: Record<SetupStep, string> = {
     password: `Enter your password to ${is2faEnabled ? 'disable' : 'enable'} two-factor authentication`,
-    ['qr-code']:
-      'Scan this QR code with your authenticator app, then enter the 6-digit code below.',
-    ['backup-codes']: 'Your backup codes are ready. Save them in a secure place.',
-    ['regenerate']: 'Enter your password to regenerate your backup codes',
-    ['backup-codes-regenerated']:
+    'qr-code': 'Scan this QR code with your authenticator app, then enter the 6-digit code below.',
+    'backup-codes': 'Your backup codes are ready. Save them in a secure place.',
+    regenerate: 'Enter your password to regenerate your backup codes',
+    'backup-codes-regenerated':
       'Your backup codes have been regenerated. Store these new codes in a safe place.',
+    '': '',
   };
 
-  const submitTitle = {
+  const submitTitle: Record<SetupStep, string> = {
     password: is2faEnabled ? 'Disable' : 'Validate Password',
-    ['qr-code']: 'Validate OTP Code',
-    ['backup-codes']: 'Done',
-    ['regenerate']: 'Continue',
-    ['backup-codes-regenerated']: 'Done',
+    'qr-code': 'Validate OTP Code',
+    'backup-codes': 'Done',
+    regenerate: 'Continue',
+    'backup-codes-regenerated': 'Done',
+    '': '',
+  };
+
+  const handleApiError = (res: any, field?: 'password' | 'otp', message?: string) => {
+    if (res?.error?.code) {
+      if (field) form.setError(field, { message: message || 'Invalid input' });
+      toast.error(message || 'Operation failed');
+      return true;
+    }
+    return false;
   };
 
   const onSubmit = async ({ password, otp }: SchemaForm<typeof twoFactorSchema>) => {
     startTransition(async () => {
       try {
-        if (is2faEnabled && setupStep === 'password') {
-          const res = await authClient.twoFactor.disable({ password: `${password}` });
-          
-          if (!!res.error?.code) {
-            form.setError('password', { message: 'Invalid password' });
-            return;
-          }
-
-          setSetupStep('');
-          toast.success('Two-factor authentication has been disabled');
-          form.reset(TWOFACTOR_DEFAULT);
-          router.refresh();
-          return;
-        }
-
-        if (is2faEnabled && setupStep === 'regenerate') {
-          const res = await generateBackupCodes(`${password}`);
-
-          if (!res.backupCodes?.length) {
-            toast.error('Failed to regenerate backup codes');
-            form.setError('password', { message: 'Invalid password' });
-            return;
-          }
-
-          setBackupCodes(res.backupCodes);
-          setSetupStep('backup-codes-regenerated');
-          return;
-        }
-
-        if (setupStep === 'password') {
-          const res = await twoFactorEnable(`${password}`);
-
-          if (!res.totpURI || !res.backupCodes?.length) {
-            toast.error('Failed to enable two-factor authentication');
-            form.setError('password', { message: 'Invalid password or server error' });
-            return;
-          }
-
-          setQrCodeUrl(res.totpURI);
-          setBackupCodes(res.backupCodes);
-          setSetupStep('qr-code');
-          return;
-        }
-
-        if (setupStep === 'qr-code') {
-          if (!otp || otp.length < 6) {
-            form.setError('otp', { message: 'OTP must be 6 digits' });
-            form.setFocus('otp');
-            return;
-          }
-
-          const res = await authClient.twoFactor.verifyTotp({ code: otp });
-
-          if (!!res.error?.code) {
-              form.setError('otp', { message: 'Invalid OTP code' });
+        const stepHandlers: Record<SetupStep, () => Promise<void>> = {
+          password: async () => {
+            if (is2faEnabled) {
+              const res = await authClient.twoFactor.disable({ password: password! });
+              if (handleApiError(res, 'password', 'Invalid password')) return;
+              toast.success('Two-factor authentication has been disabled');
+              setSetupStep('');
+              form.reset(TWOFACTOR_DEFAULT);
+              router.refresh();
+            } else {
+              const res = await twoFactorEnable(password!);
+              if (!res.totpURI || !res.backupCodes?.length) {
+                toast.error('Failed to enable two-factor authentication');
+                form.setError('password', { message: 'Invalid password or server error' });
+                return;
+              }
+              setQrCodeUrl(res.totpURI);
+              setBackupCodes(res.backupCodes);
+              setSetupStep('qr-code');
+            }
+          },
+          'qr-code': async () => {
+            if (!otp || otp.length < 6) {
+              form.setError('otp', { message: 'OTP must be 6 digits' });
+              form.setFocus('otp');
               return;
-          }
+            }
+            const res = await authClient.twoFactor.verifyTotp({ code: otp });
+            if (handleApiError(res, 'otp', 'Invalid OTP code')) return;
+            await new Promise((r) => setTimeout(r, 1500));
+            setShowVerificationSuccess(true);
+            setSetupStep('backup-codes');
+          },
+          'backup-codes': async () => {
+            setSetupStep('');
+            form.reset(TWOFACTOR_DEFAULT);
+            router.refresh();
+          },
+          regenerate: async () => {
+            const res = await generateBackupCodes(password!);
+            if (!res.backupCodes?.length) {
+              toast.error('Failed to regenerate backup codes');
+              form.setError('password', { message: 'Invalid password' });
+              return;
+            }
+            setBackupCodes(res.backupCodes);
+            setSetupStep('backup-codes-regenerated');
+          },
+          'backup-codes-regenerated': async () => {
+            setSetupStep('');
+            form.reset(TWOFACTOR_DEFAULT);
+          },
+          '': async () => {},
+        };
 
-          await new Promise((r) => setTimeout(r, 1500));
-          setShowVerificationSuccess(true);
-          setSetupStep('backup-codes');
-          return;
-        }
-        if (setupStep === 'backup-codes') {
-          setSetupStep('');
-          form.reset(TWOFACTOR_DEFAULT);
-          router.refresh();
-        }
+        await stepHandlers[setupStep]();
       } catch (error) {
         const message =
           error instanceof Error
@@ -144,16 +136,14 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
     });
   };
 
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-
-  const copyToClipboard = (text: string, index: number) => {
+  const copyToClipboard = (text: string, index?: number) => {
     navigator.clipboard.writeText(text);
-    setCopiedIndex(index);
+    if (typeof index === 'number') setCopiedIndex(index);
     toast.success('Copied to clipboard');
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  const renderQRCodeStep = () => (
+  const QRCodeStep = () => (
     <>
       <div className='flex flex-col items-center gap-4'>
         <QRCode
@@ -165,10 +155,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
             <p className='text-xs font-medium'>Can't scan?</p>
             <CopyIcon
               className='size-3 cursor-pointer'
-              onClick={() => {
-                navigator.clipboard.writeText(qrCodeUrl ?? '');
-                toast.success('Copied to clipboard');
-              }}
+              onClick={() => copyToClipboard(qrCodeUrl ?? '')}
             />
           </div>
           <p className='text-xs text-muted-foreground break-all font-mono'>{qrCodeUrl}</p>
@@ -193,12 +180,12 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
     </>
   );
 
-  const renderBackupCodesStep = () => (
+  const BackupCodesStep = () => (
     <motion.div
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className='flex flex-col items-center gap-3 py-8'
+      className='flex flex-col items-center gap-3 pt-8'
     >
       <div className='h-20 w-20 rounded-full bg-green-100 flex items-center justify-center'>
         <Check className='h-10 w-10 text-green-600' />
@@ -211,10 +198,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
           <p className='text-sm font-medium text-foreground'>Backup Codes</p>
           <CopyIcon
             className='size-3 cursor-pointer'
-            onClick={() => {
-              navigator.clipboard.writeText(backupCodes.join('\n'));
-              toast.success('Copied all backup codes to clipboard');
-            }}
+            onClick={() => copyToClipboard(backupCodes.join('\n'))}
           />
         </div>
 
@@ -311,8 +295,8 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
                 ? 'Disable Two-Factor Authentication'
                 : 'Enable Two-Factor Authentication'
         }
-        description={dialogDescription[setupStep as keyof typeof dialogDescription]}
-        confirmText={submitTitle[setupStep as keyof typeof submitTitle]}
+        description={dialogDescription[setupStep]}
+        confirmText={submitTitle[setupStep]}
         loading={isPending}
         onConfirm={form.handleSubmit(onSubmit)}
       >
@@ -326,35 +310,11 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
               disabled={isPending}
             />
           )}
-          {setupStep === 'qr-code' && renderQRCodeStep()}
+          {setupStep === 'qr-code' && <QRCodeStep />}
         </Form>
-        {setupStep === 'backup-codes-regenerated' && (
-          <div className='space-y-4'>
-            <div className='rounded-lg bg-amber-50 border border-amber-200 p-3 flex gap-2'>
-              <AlertCircle className='h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5' />
-              <p className='text-sm text-amber-800'>
-                Your old codes are no longer valid. Each new code can only be used once.
-              </p>
-            </div>
-            <div className='grid grid-cols-2 gap-2'>
-              {backupCodes.map((code, index) => (
-                <button
-                  key={index}
-                  onClick={() => copyToClipboard(code, index)}
-                  className='flex items-center justify-between rounded-lg border border-border bg-muted p-2 hover:bg-muted/80 transition-colors text-left'
-                >
-                  <span className='font-mono text-sm font-medium'>{code}</span>
-                  {copiedIndex === index ? (
-                    <Check className='h-4 w-4 text-green-600' />
-                  ) : (
-                    <Copy className='h-4 w-4 text-muted-foreground' />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-        {setupStep === 'backup-codes' && showVerificationSuccess && renderBackupCodesStep()}
+
+        {setupStep === 'backup-codes-regenerated' && <BackupCodesStep />}
+        {setupStep === 'backup-codes' && showVerificationSuccess && <BackupCodesStep />}
       </AlertDialog>
     </>
   );

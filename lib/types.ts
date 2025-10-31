@@ -21,3 +21,11 @@ export type ProfileLayoutProps = {
 export type SchemaForm<T extends ZodTypeAny> = z.infer<T>;
 
 export type Account = Awaited<ReturnType<typeof listUserAccounts>>[number];
+
+export type SetupStep =
+  | 'password'
+  | 'qr-code'
+  | 'backup-codes'
+  | 'regenerate'
+  | 'backup-codes-regenerated'
+  | '';
