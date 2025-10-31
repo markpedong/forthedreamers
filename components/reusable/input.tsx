@@ -43,7 +43,7 @@ const Input = <T extends FieldValues>({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (isNumber) {
-      const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Enter', '-'];
+      const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Enter'];
 
       if (e.ctrlKey || e.metaKey) return;
 
