@@ -4,19 +4,14 @@ import { FC, useState, useTransition } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
 import { SchemaForm, SessionUser } from '@/lib/types';
-import { twoFactorEnable, twoFactorDisable, verifyTOTP } from '@/lib/server-actions';
 import { useForm } from 'react-hook-form';
 import useFormSchema from '@/hooks/useFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import { TWOFACTOR_DEFAULT } from '@/constants';
-import AlertDialog from '@/components/reusable/alert-dialog';
-import { AlertCircle, Check, CopyIcon } from 'lucide-react';
-import QrCode from 'react-qr-code';
-import { motion } from 'framer-motion';
+import Dialog from '@/components/reusable/dialog';
+import { Form } from '@/components/ui/form';
 
 type SetupStep = 'password' | 'qr-code' | 'backup-codes' | '';
 
@@ -45,46 +40,47 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
     ['backup-codes']: 'Done',
   };
   const onSubmit = async ({ password, otp }: SchemaForm<typeof twoFactorSchema>) => {
-    if (setupStep === 'qr-code') {
-      if (otp.length < 6) {
-        form.setFocus('otp');
-        form.setError('otp', { message: 'OTP must be 6 digits' });
-        return;
-      }
-    }
+    console.log({ password, otp });
+    // if (setupStep === 'qr-code') {
+    //   if (otp.length < 6) {
+    //     form.setFocus('otp');
+    //     form.setError('otp', { message: 'OTP must be 6 digits' });
+    //     return;
+    //   }
+    // }
 
-    startTransition(async () => {
-      try {
-        if (is2faEnabled) {
-          await twoFactorDisable(`${password}`);
-          setSetupStep('');
-          toast.success('Two-factor authentication has been disabled');
-          return;
-        }
+    // startTransition(async () => {
+    //   try {
+    //     if (is2faEnabled) {
+    //       await twoFactorDisable(`${password}`);
+    //       setSetupStep('');
+    //       toast.success('Two-factor authentication has been disabled');
+    //       return;
+    //     }
 
-        if (setupStep === 'password') {
-          const result = await twoFactorEnable(`${password}`);
-          setQrCodeUrl(result.totpURI);
-          setBackupCodes(result.backupCodes);
-          setSetupStep('qr-code');
-        }
+    //     if (setupStep === 'password') {
+    //       const result = await twoFactorEnable(`${password}`);
+    //       setQrCodeUrl(result.totpURI);
+    //       setBackupCodes(result.backupCodes);
+    //       setSetupStep('qr-code');
+    //     }
 
-        if (setupStep === 'qr-code') {
-          const result = await verifyTOTP(`${otp}`);
-          setSetupStep('backup-codes');
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          setShowVerificationSuccess(true);
-        }
-      } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : is2faEnabled
-              ? 'Failed to disable two-factor authentication'
-              : 'Failed to enable two-factor authentication';
-        toast.error(message);
-      }
-    });
+    //     if (setupStep === 'qr-code') {
+    //       const result = await verifyTOTP(`${otp}`);
+    //       setSetupStep('backup-codes');
+    //       await new Promise((resolve) => setTimeout(resolve, 500));
+    //       setShowVerificationSuccess(true);
+    //     }
+    //   } catch (error) {
+    //     const message =
+    //       error instanceof Error
+    //         ? error.message
+    //         : is2faEnabled
+    //           ? 'Failed to disable two-factor authentication'
+    //           : 'Failed to enable two-factor authentication';
+    //     toast.error(message);
+    //   }
+    // });
   };
 
   return (
@@ -112,7 +108,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
                     : 'Enable two-factor authentication to secure your account'}
                 </p>
               </div>
-              {is2faEnabled ? (
+              {/* {is2faEnabled ? (
                 <Button
                   variant='destructive'
                   onClick={() => setSetupStep('password')}
@@ -124,7 +120,42 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
                 <Button onClick={() => setSetupStep('password')} disabled={isPending}>
                   Enable
                 </Button>
-              )}
+              )} */}
+              <Dialog
+                triggerText={is2faEnabled ? 'Disable' : 'Enable'}
+                title={
+                  is2faEnabled
+                    ? 'Disable Two-Factor Authentication'
+                    : 'Enable Two-Factor Authentication'
+                }
+              >
+                <Form {...form}>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      form.handleSubmit(onSubmit)();
+                    }}
+                  >
+                    <Input
+                      id='password'
+                      type='password'
+                      name='password'
+                      placeholder='Enter your password'
+                      disabled={isPending}
+                    />
+                    <Input
+                      id='otp'
+                      label='Enter 6-digit code'
+                      name='otp'
+                      placeholder='000000'
+                      disabled={isPending || showVerificationSuccess}
+                      autoFocus
+                      maxLength={6}
+                    />
+                    <Button type='submit'>Submit</Button>
+                  </form>
+                </Form>
+              </Dialog>
             </div>
           </div>
 
@@ -141,7 +172,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
           )}
         </CardContent>
       </Card>
-      <AlertDialog
+      {/* <AlertDialog
         open={!!setupStep}
         onOpenChange={(open: boolean) => {
           if (!open) {
@@ -257,7 +288,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
             </div>
           </motion.div>
         )}
-      </AlertDialog>
+      </AlertDialog> */}
     </>
   );
 };
