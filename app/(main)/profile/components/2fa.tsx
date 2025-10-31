@@ -20,6 +20,34 @@ import { AlertCircle, Check, Copy, CopyIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
+interface CopyAllButtonProps {
+  textToCopy: string;
+}
+
+const CopyAllButton: FC<CopyAllButtonProps> = ({ textToCopy }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(textToCopy);
+    setCopied(true);
+    toast.success('Copied all to clipboard');
+    setTimeout(() => setCopied(false), 800);
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className='flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors'
+    >
+      {copied ? (
+        <Check className='h-4 w-4 text-green-600 animate-scale-in' />
+      ) : (
+        <Copy className='h-4 w-4' />
+      )}
+    </button>
+  );
+};
+
 const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
   const router = useRouter();
   const is2faEnabled = user.twoFactorEnabled;
@@ -65,20 +93,18 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
   const onSubmit = async ({ password, otp }: SchemaForm<typeof twoFactorSchema>) => {
     startTransition(async () => {
       try {
-        const stepHandlers: Record<SetupStep, () => Promise<void>> = {
+        const steps: Record<SetupStep, () => Promise<void>> = {
           password: async () => {
             if (is2faEnabled) {
               const res = await authClient.twoFactor.disable({ password: password! });
               if (handleApiError(res, 'password', 'Invalid password')) return;
               toast.success('Two-factor authentication disabled');
-              setSetupStep('');
-              form.reset(TWOFACTOR_DEFAULT);
-              router.refresh();
+              resetSetup();
             } else {
               const res = await twoFactorEnable(password!);
               if (!res.totpURI || !res.backupCodes?.length) {
-                toast.error('Failed to enable 2FA');
                 form.setError('password', { message: 'Invalid password or server error' });
+                toast.error('Failed to enable 2FA');
                 return;
               }
               setQrCodeUrl(res.totpURI);
@@ -98,32 +124,32 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
             setShowVerificationSuccess(true);
             setSetupStep('backup-codes');
           },
-          'backup-codes': async () => {
-            setSetupStep('');
-            form.reset(TWOFACTOR_DEFAULT);
-            router.refresh();
-          },
+          'backup-codes': resetSetup,
           regenerate: async () => {
             const res = await generateBackupCodes(password!);
             if (!res.backupCodes?.length) {
-              toast.error('Failed to regenerate backup codes');
               form.setError('password', { message: 'Invalid password' });
+              toast.error('Failed to regenerate backup codes');
               return;
             }
             setBackupCodes(res.backupCodes);
             setSetupStep('backup-codes-regenerated');
           },
-          'backup-codes-regenerated': async () => {
-            setSetupStep('');
-            form.reset(TWOFACTOR_DEFAULT);
-          },
+          'backup-codes-regenerated': resetSetup,
           '': async () => {},
         };
-        await stepHandlers[setupStep]();
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Operation failed');
+
+        await steps[setupStep]();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Operation failed');
       }
     });
+  };
+
+  const resetSetup = async () => {
+    setSetupStep('');
+    form.reset(TWOFACTOR_DEFAULT);
+    router.refresh();
   };
 
   const QRCodeStep = () => (
@@ -212,13 +238,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
       <div className='w-full mt-6 space-y-3'>
         <div className='flex gap-3 items-center'>
           <p className='text-sm font-medium text-foreground'>Backup Codes</p>
-          <CopyIcon
-            className='size-3 cursor-pointer'
-            onClick={() => {
-              navigator.clipboard.writeText(backupCodes.join('\n'));
-              toast.success('Copied all');
-            }}
-          />
+          <CopyAllButton textToCopy={backupCodes.join('\n')} />
         </div>
         <div className='grid grid-cols-2 gap-2'>
           {backupCodes.map((code) => (
@@ -279,10 +299,7 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
         containerClassName='max-h-[80vh] overflow-y-auto'
         open={!!setupStep}
         onOpenChange={(open) => {
-          if (!open) {
-            setSetupStep('');
-            form.reset(TWOFACTOR_DEFAULT);
-          }
+          if (!open) resetSetup();
         }}
         title={
           setupStep === 'regenerate'
