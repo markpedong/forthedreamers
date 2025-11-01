@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 const AdminHeader = () => {
   return (
     <header className='h-14 border-b border-border bg-card px-8 flex items-center justify-between'>
-      <h2 className='text-sm font-medium text-foreground tracking-tight'>Admin Portal</h2>
+      <h2 className='text-sm font-medium text-foreground tracking-tight opacity-0 lg:opacity-100'>Admin Portal</h2>
 
       <div className='flex items-center gap-2'>
         <Button variant='ghost' size='icon' className='size-8'>
