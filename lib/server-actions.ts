@@ -32,7 +32,8 @@ export const signUp = async (email: string, password: string, name: string) => {
 };
 
 export const signIn = async (email: string, password: string, rememberMe: boolean) => {
-  const result = await auth.api.signInEmail({
+
+  return await auth.api.signInEmail({
     body: {
       email,
       password,
@@ -41,8 +42,6 @@ export const signIn = async (email: string, password: string, rememberMe: boolea
     },
     headers: await headers(),
   });
-
-  return result;
 };
 
 export const signInSocial = async (provider: "github" | "google") => {

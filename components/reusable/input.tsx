@@ -12,6 +12,7 @@ import {
   FormMessage,
 } from '../ui/form';
 import type { Control, Path, FieldValues } from 'react-hook-form';
+import { ALLOWED_KEYS } from '@/constants';
 
 type InputProps<T extends FieldValues> = ComponentPropsWithoutRef<'input'> & {
   label?: string;
@@ -46,15 +47,19 @@ const Input = <T extends FieldValues>({
     const isShortcut = e.ctrlKey || e.metaKey;
     if (isShortcut) return; // always allow copy/paste/select all/cut
 
+    const input = e.currentTarget;
+    const { maxLength } = input;
+
+    if (maxLength > 0 && input.value.length >= maxLength && !ALLOWED_KEYS.includes(e.key)) {
+      e.preventDefault();
+      return;
+    }
+
     if (preventSpaces && e.key === ' ') {
       e.preventDefault();
     }
 
-    if (
-      isNumber &&
-      !/[0-9]/.test(e.key) &&
-      !['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Enter'].includes(e.key)
-    ) {
+    if (isNumber && !/[0-9]/.test(e.key) && ![...ALLOWED_KEYS, 'Enter'].includes(e.key)) {
       e.preventDefault();
     }
 

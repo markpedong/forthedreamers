@@ -15,3 +15,5 @@ export const OAUTH_PROVIDER_DETAILS: Record<OAuthProvider, { name: string; Icon:
 export const CHANGE_PASSWORD_DEFAULT = { currentPassword: '', confirmPassword: '', newPassword: '' }
 
 export const TWOFACTOR_DEFAULT = { password: '', otp: '' }
+
+export const ALLOWED_KEYS = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete']

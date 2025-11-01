@@ -9,10 +9,7 @@ import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { CHANGE_PASSWORD_DEFAULT, OAUTH_PROVIDERS } from '@/constants';
 import useFormSchema from '@/hooks/useFormSchema';
 import { authClient } from '@/lib/auth-client';
-import {
-  changePassword,
-  deleteAccount, unlinkAccount
-} from '@/lib/server-actions';
+import { changePassword, deleteAccount, unlinkAccount } from '@/lib/server-actions';
 import { Account, SchemaForm, SessionUser } from '@/lib/types';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
@@ -180,7 +177,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
                   className='gap-2'
                 >
                   <KeyRound className='h-4 w-4' />
-                  {hasPassword ? 'Change Password' : 'Set Password'}
+                  {hasPassword ? 'Change Password' : isSubmitting ? 'Sending...' : 'Set Password'}
                 </Button>
               </div>
             </div>
