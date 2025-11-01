@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ComponentPropsWithoutRef } from 'react';
+import { useState, ComponentPropsWithoutRef, KeyboardEvent } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Input as InputUI } from '../ui/input';
 import {
@@ -42,7 +42,7 @@ const Input = <T extends FieldValues>({
   const isNumber = type === 'number';
   const computedType = eyeIcon && isPassword ? (showPassword ? 'text' : 'password') : type;
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     const isShortcut = e.ctrlKey || e.metaKey;
     if (isShortcut) return; // always allow copy/paste/select all/cut
 

@@ -210,7 +210,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
         onConfirm={form.handleSubmit(onSubmit)}
         onCancel={() => form.reset({ currentPassword: '', newPassword: '', confirmPassword: '' })}
       >
-        <Form form={form} onSubmit={onSubmit} customSubmitButton>
+        <Form form={form} onSubmit={onSubmit} customSubmitButton className='mt-8'>
           <Input
             control={form.control}
             name='currentPassword'
