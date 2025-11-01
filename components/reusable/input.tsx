@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ComponentPropsWithoutRef, KeyboardEvent } from 'react';
+import { useState, ComponentPropsWithoutRef } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Input as InputUI } from '../ui/input';
 import {
@@ -12,7 +12,6 @@ import {
   FormMessage,
 } from '../ui/form';
 import type { Control, Path, FieldValues } from 'react-hook-form';
-import { ALLOWED_KEYS } from '@/constants';
 
 type InputProps<T extends FieldValues> = ComponentPropsWithoutRef<'input'> & {
   label?: string;
@@ -41,44 +40,8 @@ const Input = <T extends FieldValues>({
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === 'password';
   const isNumber = type === 'number';
-  const computedType = eyeIcon && isPassword ? (showPassword ? 'text' : 'password') : type;
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    const isShortcut = e.ctrlKey || e.metaKey;
-    if (isShortcut) return; // always allow copy/paste/select all/cut
-
-    const input = e.currentTarget;
-    const { maxLength } = input;
-
-    if (maxLength > 0 && input.value.length >= maxLength && !ALLOWED_KEYS.includes(e.key)) {
-      e.preventDefault();
-      return;
-    }
-
-    if (preventSpaces && e.key === ' ') {
-      e.preventDefault();
-    }
-
-    if (isNumber && !/[0-9]/.test(e.key) && ![...ALLOWED_KEYS, 'Enter'].includes(e.key)) {
-      e.preventDefault();
-    }
-
-    rest.onKeyDown?.(e);
-  };
-
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const paste = e.clipboardData.getData('text');
-
-    if (preventSpaces && paste.includes(' ')) {
-      e.preventDefault();
-    }
-
-    if (isNumber && !/^\d*$/.test(paste)) {
-      e.preventDefault();
-    }
-
-    rest.onPaste?.(e);
-  };
+  const computedType =
+    eyeIcon && isPassword ? (showPassword ? 'text' : 'password') : isNumber ? 'text' : type;
 
   return (
     <FormField
@@ -86,7 +49,7 @@ const Input = <T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel htmlFor={String(name)}>{label}</FormLabel>
+          {label && <FormLabel htmlFor={String(name)}>{label}</FormLabel>}
           <FormControl>
             <div className='relative'>
               {prefixIconSrc && (
@@ -101,11 +64,29 @@ const Input = <T extends FieldValues>({
                 {...field}
                 {...rest}
                 type={computedType}
+                inputMode={isNumber ? 'numeric' : undefined}
                 disabled={disabled}
                 id={String(name)}
-                className={`${prefixIconSrc ? 'pl-10' : ''} ${eyeIcon && isPassword ? 'pr-10' : ''}`}
-                onKeyDown={handleKeyDown}
-                onPaste={handlePaste}
+                className={`${prefixIconSrc ? 'pl-10' : ''} ${
+                  eyeIcon && isPassword ? 'pr-10' : ''
+                }`}
+                onChange={(e) => {
+                  let value = e.target.value;
+
+                  if (preventSpaces) value = value.replace(/\s+/g, '');
+
+                  if (isNumber) value = value.replace(/\D+/g, '');
+
+                  field.onChange(value);
+                }}
+                onKeyDown={(e) => {
+                  if (preventSpaces && e.key === ' ') e.preventDefault();
+
+                  if (isNumber && ['e', 'E', '+', '-', '.', ','].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                value={field.value ?? ''}
               />
 
               {eyeIcon && isPassword && (
