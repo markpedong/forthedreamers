@@ -1,6 +1,5 @@
 import { SchemaForm, TOnNavigate } from '@/lib/types';
 import PageWrapper from './page-wrapper';
-import { Button } from '@/components/ui/button';
 import OauthButtons from './oauth-buttons';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
@@ -8,12 +7,14 @@ import { useForm } from 'react-hook-form';
 import useFormSchema from '@/hooks/useFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition } from 'react';
-import { signIn } from '@/lib/server-actions';
 import { toast } from 'sonner';
 import Divider from '@/components/reusable/divider';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { authClient } from '@/lib/auth-client';
 
 const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
+  const { refetch } = authClient.useSession();
   const router = useRouter();
   const { loginSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof loginSchema>>({
@@ -28,9 +29,18 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const onSubmit = async (values: SchemaForm<typeof loginSchema>) => {
     startSubmitting(async () => {
       try {
-        await signIn(values.email, values.password, false);
+        const res = await authClient.signIn.email({
+          email: values.email,
+          password: values.password,
+        });
+
+        if ((res?.data as any).twoFactorRedirect) {
+          onNavigate('2fa');
+          return;
+        }
+
         toast.success('Sign in successfully!', { duration: 2000 });
-        router.refresh()
+        router.refresh();
       } catch (error) {
         if (error instanceof Error) {
           toast.error(`Error: ${error.message}`);
@@ -38,6 +48,20 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       }
     });
   };
+
+  const handlePasskeySignin = () => {
+    const res = authClient.signIn.passkey(undefined, {
+      onSuccess: () => {
+        refetch();
+        router.push('/profile');
+      },
+    });
+  };
+
+  // enable this if you want to use passkey upon refresh.
+  // useEffect(() => {
+  //   handlePasskeySignin();
+  // }, [refetch, router]);
 
   return (
     <PageWrapper>
@@ -48,19 +72,18 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         </div>
 
         <div className='space-y-5'>
-          <Form form={form} customSubmitButton onSubmit={onSubmit}>
-            <Input
-              name='email'
-              label='Email'
-              control={form.control}
-              placeholder='you@example.com'
-            />
+          <Form
+            form={form}
+            onSubmit={onSubmit}
+            submitLabel={isSubmit ? 'Signing in...' : 'Sign in'}
+          >
+            <Input name='email' label='Email' placeholder='you@example.com' preventSpaces />
             <Input
               name='password'
               label='Password'
-              control={form.control}
               type='password'
               placeholder='••••••••'
+              preventSpaces
             />
             <div className='flex items-center justify-end'>
               <span
@@ -73,11 +96,15 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
                 Forgot password?
               </span>
             </div>
-
-            <Button className='w-full h-11' type='submit' disabled={isSubmit}>
-              Sign in
-            </Button>
           </Form>
+          <Button
+            className='w-full h-11'
+            type='button'
+            variant='secondary'
+            onClick={handlePasskeySignin}
+          >
+            Login with Passkey
+          </Button>
         </div>
         <Divider title='or continue with' />
         <div className='grid grid-cols-2 gap-3'>

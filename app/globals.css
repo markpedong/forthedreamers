@@ -123,7 +123,7 @@
 
 button,
 .btn {
-  @apply active:opacity-50 active:scale-95 transition-all duration-200 cursor-pointer;
+  @apply active:opacity-50 active:scale-95 transition-all duration-200 cursor-pointer select-none;
 }
 
 * {

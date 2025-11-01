@@ -59,6 +59,7 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
             label='Full Name'
             placeholder='John Doe'
             disabled={isSigningUp}
+            preventSpaces
           />
           <Input
             control={form.control}
@@ -66,6 +67,7 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
             label='Email'
             placeholder='you@example.com'
             disabled={isSigningUp}
+            preventSpaces
           />
           <Input
             control={form.control}
@@ -74,6 +76,7 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
             type='password'
             placeholder='••••••••'
             disabled={isSigningUp}
+            preventSpaces
           />
           <Input
             control={form.control}
@@ -82,6 +85,7 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
             type='password'
             placeholder='••••••••'
             disabled={isSigningUp}
+            preventSpaces
           />
         </Form>
         <Divider title='or continue with' />
