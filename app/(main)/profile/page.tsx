@@ -5,9 +5,8 @@ import {
   MapPin,
   Package,
   Settings,
-  Shield,
-  Smartphone,
-  User,
+  Shield, Smartphone,
+  User
 } from 'lucide-react';
 import { getSession, listAllSessions, listPasskeys, listUserAccounts } from '@/lib/server-actions';
 import ProfileDetails from './components/profile-details';

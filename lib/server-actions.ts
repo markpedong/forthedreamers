@@ -146,3 +146,11 @@ export const listPasskeys = async () => {
 export const deletePasskey = async (id: string) => {
   return auth.api.deletePasskey({ headers: await headers(), body: { id } });
 }
+
+export const permissionListUsers = async () => {
+  return auth.api.userHasPermission({ headers: await headers(), body: { permission: { user: ["list"] } } });
+}
+
+export const listUsers = async () => {
+  return auth.api.listUsers({ headers: await headers(), query: {} });
+}
