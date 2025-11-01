@@ -133,7 +133,7 @@ const PasskeysSection: FC<{ passkeys: Passkey[] }> = ({ passkeys }) => {
         onConfirm={isAddModal ? form.handleSubmit(onSubmit) : () => onSubmit({ name: '' })}
       >
         {isAddModal && (
-          <Form form={form} customSubmitButton>
+          <Form form={form} customSubmitButton className='mt-4'>
             <Input
               name='name'
               type='text'
