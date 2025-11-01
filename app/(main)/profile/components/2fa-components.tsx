@@ -1,33 +1,17 @@
 import { FC, useState } from 'react';
-import { motion } from 'framer-motion';
-import { AlertCircle, Check, Copy } from 'lucide-react';
+import { Check, CheckCircle2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
 type TBackUpCodeStep = { step: 'backup-codes' | 'backup-codes-regenerated'; backupCodes: string[] };
 
 const BackupCodesStep: FC<TBackUpCodeStep> = ({ step, backupCodes }) => (
   <>
-    <motion.div
-      key={step}
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className='flex flex-col items-center gap-3 pt-8'
-    >
-      <div className='h-20 w-20 rounded-full bg-green-100 flex items-center justify-center'>
-        <Check className='h-10 w-10 text-green-600' />
-      </div>
-      <p className='text-lg text-center font-semibold text-green-600'>
-        {step === 'backup-codes' ? 'Verification successful!' : 'New backup codes generated!'}
-      </p>
-      <p className='text-sm text-center text-muted-foreground'>
-        {step === 'backup-codes'
-          ? 'Your authenticator is now linked.'
-          : 'Your old codes are invalid. Each new code can only be used once.'}
-      </p>
-    </motion.div>
+    <div className='flex items-center gap-2 rounded-lg bg-green-50 border border-green-200 p-3 my-6'>
+      <CheckCircle2 className='h-5 w-5 text-green-600 flex-shrink-0' />
+      <p className='text-sm text-green-800'>Two-factor authentication enabled successfully!</p>
+    </div>
 
-    <div className='w-full mt-6 space-y-3'>
+    <div className='w-full space-y-3'>
       <div className='flex gap-3 items-center'>
         <p className='text-sm font-medium text-foreground'>Backup Codes</p>
         <TwoFactorCopyAll textToCopy={backupCodes.join('\n')} />
@@ -37,12 +21,10 @@ const BackupCodesStep: FC<TBackUpCodeStep> = ({ step, backupCodes }) => (
           <BackupCodeButton key={code} code={code} />
         ))}
       </div>
-      <div className='rounded-lg bg-amber-50 border border-amber-200 p-3 flex gap-2'>
-        <AlertCircle className='h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5' />
-        <p className='text-xs text-amber-800'>
-          Save these codes safely. Each can only be used once.
-        </p>
-      </div>
+      <p className='text-xs text-muted-foreground'>
+        Store these codes in a secure place. Each code can be used once if you lose access to your
+        authenticator app.
+      </p>
     </div>
   </>
 );

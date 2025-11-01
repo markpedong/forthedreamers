@@ -8,14 +8,12 @@ const useFormSchema = () => {
     .max(50, { message: 'Email must be less than 50 characters' })
     .transform((password) => password.trim());
 
-  const nameEmailSchema = z.object({
-    name: z
-      .string()
-      .min(2, { message: 'Name must be at least 2 characters' })
-      .max(50, { message: 'Name must be less than 50 characters' }),
-  }).extend({
-    email: emailSchema
-  });
+  const nameSchema = z
+    .string()
+    .min(2, { message: 'Name must be at least 2 characters' })
+    .max(50, { message: 'Name must be less than 50 characters' })
+
+  const nameEmailSchema = z.object({ name: nameSchema, }).extend({ email: emailSchema });
 
   const password = z
     .string()
@@ -72,6 +70,10 @@ const useFormSchema = () => {
     otp: z.string().optional()
   })
 
+  const passkeySchema = z.object({
+    name: nameSchema.optional(),
+  });
+
   return {
     nameEmailSchema,
     password,
@@ -81,7 +83,8 @@ const useFormSchema = () => {
     forgotPasswordSchema,
     loginSchema,
     changePasswordSchema,
-    twoFactorSchema
+    twoFactorSchema,
+    passkeySchema
   }
 }
 

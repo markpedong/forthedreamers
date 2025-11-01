@@ -8,6 +8,7 @@ import VerifyEmail from "@/components/emails/verify-email";
 import { lastLoginMethod, twoFactor } from 'better-auth/plugins';
 import { nextCookies } from "better-auth/next-js";
 import DeleteAccountEmail from "@/components/emails/delete-account-email";
+import { passkey } from "better-auth/plugins/passkey";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
@@ -72,5 +73,6 @@ export const auth = betterAuth({
     lastLoginMethod(),
     nextCookies(),
     twoFactor(),
+    passkey()
   ]
 });

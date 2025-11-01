@@ -140,6 +140,10 @@ export const generateBackupCodes = async (password: string) => {
   return auth.api.generateBackupCodes({ headers: await headers(), body: { password } });
 }
 
-// export const verifyTOTP = async (token: string) => {
-//   return auth.api.verifyTOTP({ headers: await headers(), body: { code: token } });
-// }
+export const listPasskeys = async () => {
+  return auth.api.listPasskeys({ headers: await headers() });
+}
+
+export const deletePasskey = async (id: string) => {
+  return auth.api.deletePasskey({ headers: await headers(), body: { id } });
+}

@@ -16,7 +16,7 @@ import AlertDialog from '@/components/reusable/alert-dialog';
 import QRCode from 'react-qr-code';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
-import { AlertCircle, CopyIcon } from 'lucide-react';
+import { AlertCircle, CopyIcon, RefreshCw, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { BackupCodesStep } from './2fa-components';
 
@@ -166,43 +166,66 @@ const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
   return (
     <>
       <Card>
-        <CardHeader className='flex justify-between items-center'>
-          <div>
-            <CardTitle>Two-Factor Authentication</CardTitle>
-            <CardDescription>Add extra security to your account.</CardDescription>
+        <CardHeader className='pb-4'>
+          <div className='flex items-start gap-3'>
+            <div className='rounded-lg bg-primary/10 p-2'>
+              <Shield className='h-5 w-5 text-primary' />
+            </div>
+            <div className='flex-1'>
+              <div className='flex items-center justify-between gap-2'>
+                <CardTitle>Two-Factor Authentication</CardTitle>
+                <Badge variant={is2faEnabled ? 'default' : 'secondary'}>
+                  {is2faEnabled ? 'Enabled' : 'Disabled'}
+                </Badge>
+              </div>
+              <CardDescription className='mt-1'>
+                Add an extra layer of security to your account
+              </CardDescription>
+            </div>
           </div>
-          <Badge variant={is2faEnabled ? 'default' : 'secondary'}>
-            {is2faEnabled ? 'Enabled' : 'Disabled'}
-          </Badge>
         </CardHeader>
         <CardContent className='space-y-4'>
-          <div className='rounded-lg bg-muted p-4 flex items-center justify-between'>
-            <div>
-              <p className='font-medium'>Status</p>
-              <p className='text-sm text-muted-foreground'>
-                {is2faEnabled ? 'Your account is protected' : 'Enable two-factor authentication'}
-              </p>
+          <div className='rounded-lg border bg-card p-4'>
+            <div className='mb-2 flex items-center justify-between'>
+              <span className='text-sm font-medium text-foreground'>Current Status</span>
+              {is2faEnabled && (
+                <span className='inline-flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400'>
+                  <span className='radar-blip relative inline-block h-2 w-2 rounded-full bg-green-600 dark:bg-green-400'></span>
+                  Protected
+                </span>
+              )}
             </div>
+            <p className='text-sm text-muted-foreground'>
+              {is2faEnabled
+                ? 'Your account is protected with two-factor authentication'
+                : 'Enable 2FA to add an extra layer of security to your account'}
+            </p>
+          </div>
+
+          <div className='flex gap-2'>
             <Button
+              className='flex-1'
               variant={is2faEnabled ? 'destructive' : 'default'}
               onClick={() => setSetupStep('password')}
               disabled={isPending}
             >
-              {is2faEnabled ? 'Disable' : 'Enable'}
+              {is2faEnabled ? 'Disable 2FA' : 'Enable 2FA'}
             </Button>
           </div>
+
           {is2faEnabled && (
             <Button
               variant='outline'
+              className='w-full bg-transparent'
               onClick={() => setSetupStep('regenerate')}
               disabled={isPending}
             >
+              <RefreshCw className='mr-2 h-4 w-4' />
               Regenerate Backup Codes
             </Button>
           )}
         </CardContent>
       </Card>
-
       <AlertDialog
         containerClassName='max-h-[80vh] overflow-y-auto'
         open={!!setupStep}

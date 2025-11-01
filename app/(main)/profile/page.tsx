@@ -9,7 +9,7 @@ import {
   Smartphone,
   User,
 } from 'lucide-react';
-import { getSession, listAllSessions, listUserAccounts } from '@/lib/server-actions';
+import { getSession, listAllSessions, listPasskeys, listUserAccounts } from '@/lib/server-actions';
 import ProfileDetails from './components/profile-details';
 import ProfileLayout from './components/profile-layout';
 import AccountManagement from './components/account-management';
@@ -17,6 +17,7 @@ import ClientOnly from '@/components/provider/client-only';
 import ProfileHeader from './components/profile-header';
 import SessionManagement from './components/session-management';
 import TwoFactorSection from './components/2fa';
+import PasskeysSection from './components/passkey-section';
 
 export const metadata = {
   title: 'Profile',
@@ -30,7 +31,11 @@ const ProfilePage = async () => {
     redirect('/sign-in');
   }
 
-  const [accounts, sessions] = await Promise.all([listUserAccounts(), listAllSessions()]);
+  const [accounts, sessions, passkeys] = await Promise.all([
+    listUserAccounts(),
+    listAllSessions(),
+    listPasskeys(),
+  ]);
   const nonCredentialAccounts = accounts.filter((a) => a.providerId !== 'credential');
   const hasPassword = accounts.some((a) => a.providerId === 'credential');
 
@@ -83,9 +88,21 @@ const ProfilePage = async () => {
     },
     {
       id: '2fa',
-      label: '2FA',
+      label: 'Security',
       icon: <Shield className='h-4 w-4' />,
-      content: <TwoFactorSection user={session.user} />,
+      content: (
+        <div className='space-y-8'>
+          <div>
+            <h1 className='text-3xl font-bold tracking-tight'>Security Settings</h1>
+            <p className='text-muted-foreground mt-2'>
+              Manage your account security and authentication methods
+            </p>
+          </div>
+
+          <TwoFactorSection user={session.user} />
+          <PasskeysSection passkeys={passkeys} />
+        </div>
+      ),
     },
   ];
 
