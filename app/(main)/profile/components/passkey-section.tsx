@@ -36,7 +36,13 @@ const PasskeysSection: FC<{ passkeys: Passkey[] }> = ({ passkeys }) => {
     startSubmitting(async () => {
       try {
         if (isAddModal) {
-          await authClient.passkey.addPasskey({ name });
+          const res = await authClient.passkey.addPasskey({ name });
+
+          if (res?.error) {
+            toast.error(res.error.message);
+            return;
+          }
+
           toast.success('Passkey added successfully');
         } else if (selectedPasskey) {
           await deletePasskey(selectedPasskey.id);
