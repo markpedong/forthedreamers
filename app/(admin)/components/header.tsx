@@ -3,7 +3,7 @@
 import { LogOut, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const Header = () => {
+const AdminHeader = () => {
   return (
     <header className='h-14 border-b border-border bg-card px-8 flex items-center justify-between'>
       <div>
@@ -24,4 +24,4 @@ const Header = () => {
   );
 }
 
-export default Header;
+export default AdminHeader;
