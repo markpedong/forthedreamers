@@ -8,7 +8,7 @@ import { revalidatePath as revalidatePathNext } from "next/cache";
 
 export type TChangePass = { currentPassword: string, newPassword: string }
 
-export const revalidatePath = async (path: string) => await revalidatePathNext(path)
+export const revalidatePath = async (path: string) => revalidatePathNext(path)
 
 export const getSession = async () => {
   return await auth.api.getSession({
@@ -165,3 +165,7 @@ export const stopImpersonating = async () => auth.api.stopImpersonating({ header
 export const banUser = async (userId: string) => auth.api.banUser({ headers: await headers(), body: { userId } });
 
 export const unbanUser = async (userId: string) => auth.api.unbanUser({ headers: await headers(), body: { userId } });
+
+export const revokeUserSessions = async (userId: string) => auth.api.revokeUserSessions({ headers: await headers(), body: { userId } });
+
+export const deleteUserByAdmin = async (userId: string) => auth.api.removeUser({ headers: await headers(), body: { userId } });

@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useState } from 'react';
+import { FC, useState, useTransition } from 'react';
 import { Plus, MoreHorizontal, BadgeCheckIcon, BadgeAlertIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,21 +13,40 @@ import { ProTable } from '@/components/reusable/table'; // path depends on where
 import { UserWithRole } from 'better-auth/plugins';
 import { toast } from 'sonner';
 import AlertDialog from '@/components/reusable/alert-dialog';
-import { ProColumn } from '@/lib/types';
-import { banUser, impersonateUser, revalidatePath, unbanUser } from '@/lib/server-actions';
+import { ProColumn, SchemaForm } from '@/lib/types';
+import {
+  banUser,
+  deleteUserByAdmin,
+  impersonateUser,
+  revalidatePath,
+  revokeUserSessions,
+  unbanUser,
+} from '@/lib/server-actions';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import classNames from 'classnames';
+import Form from '@/components/reusable/form';
+import Input from '@/components/reusable/input';
+import useFormSchema from '@/hooks/useFormSchema';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { authClient } from '@/lib/auth-client';
 
 const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
   const router = useRouter();
   const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null);
   const [showDetails, setShowDetails] = useState(false);
-
+  const [showDeleteUser, setShowDeleteUser] = useState(false);
+  const { twoFactorSchema } = useFormSchema();
+  const form = useForm<SchemaForm<typeof twoFactorSchema>>({
+    resolver: zodResolver(twoFactorSchema),
+    defaultValues: { otp: '' },
+  });
   const handleViewDetails = (user: UserWithRole) => {
     setSelectedUser(user);
     setShowDetails(true);
   };
+  const [isPending, startTransition] = useTransition();
 
   const handleEditUser = (userId: string) => {
     const user = users.find((u) => u.id === userId);
@@ -36,7 +55,10 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
 
   const handleDeleteUser = (userId: string) => {
     const user = users.find((u) => u.id === userId);
-    if (user) toast.success(`${user.name} has been deleted`);
+    if (user) {
+      setSelectedUser(user);
+      setShowDeleteUser(true);
+    }
   };
 
   const handleBanUnbanUser = async (user: UserWithRole) => {
@@ -64,8 +86,45 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     }
   };
 
-  const handleRevokeSession = (user: UserWithRole) => {};
+  const handleRevokeSession = async (user: UserWithRole) => {
+    try {
+      const res = await revokeUserSessions(user.id);
+      if (res.success) {
+        toast.success('Sessions revoked successfully');
+        router.refresh();
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      }
+    }
+  };
 
+  const onSubmit = async ({ otp }: SchemaForm<typeof twoFactorSchema>) => {
+    if (!otp || otp.length < 6) {
+      form.setError('otp', { message: 'OTP must be 6 digits' });
+      form.setFocus('otp');
+      return;
+    }
+
+    startTransition(async () => {
+      let res;
+      
+      res = await authClient.twoFactor.verifyTotp({ code: `${otp}` });
+
+      if (!!res.error) {
+        toast.error(`Error: ${res.error.message}`);
+        return;
+      }
+
+      res = await deleteUserByAdmin(`${selectedUser?.id}`);
+
+      toast.success('User deleted successfully!', { duration: 2000 });
+      setShowDeleteUser(false);
+      setSelectedUser(null);
+      router.refresh();
+    });
+  };
   // Columns config for ProTable
   const columns: ProColumn<UserWithRole>[] = [
     {
@@ -103,7 +162,6 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     },
     {
       title: 'Role',
-      dataIndex: 'role',
       search: {
         type: 'select',
         placeholder: 'eg: Customer',
@@ -113,6 +171,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
             { label: 'Vendor', value: 'Vendor' },
           ]),
       },
+      render: (_, record) => <Badge>{record.role}</Badge>,
     },
     // {
     //   title: 'Last Login',
@@ -152,21 +211,38 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end'>
-              <DropdownMenuItem onClick={() => handleViewDetails(record)}>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => handleViewDetails(record)}
+              >
                 View Details
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleEditUser(record.id)}>Edit</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleImpersonateUser(record.id)}>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => handleEditUser(record.id)}
+              >
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => handleImpersonateUser(record.id)}
+              >
                 Impersonate
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleRevokeSession(record)}>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => handleRevokeSession(record)}
+              >
                 Revoke Sessions
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleBanUnbanUser(record)}>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={() => handleBanUnbanUser(record)}
+              >
                 {record.banned ? 'Unban' : 'Ban'}
               </DropdownMenuItem>
               <DropdownMenuItem
-                className='text-destructive'
+                className='text-destructive cursor-pointer'
                 onClick={() => handleDeleteUser(record.id)}
               >
                 Delete
@@ -225,6 +301,19 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
           </div>
           <Button className='w-full'>Send Email</Button>
         </div>
+      </AlertDialog>
+      <AlertDialog
+        headerClassname='gap-0 mb-6'
+        title={`Delete ${selectedUser?.name}?`}
+        description='Please enter your 2FA code from your authenticator app'
+        open={showDeleteUser}
+        onOpenChange={setShowDeleteUser}
+        onConfirm={form.handleSubmit(onSubmit)}
+        confirmText={isPending ? 'Deleting...' : 'Delete'}
+      >
+        <Form form={form} customSubmitButton>
+          <Input id='otp' type='number' name='otp' placeholder='000000' autoFocus maxLength={6} />
+        </Form>
       </AlertDialog>
     </div>
   );
