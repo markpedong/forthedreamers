@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { stopImpersonating } from '@/lib/server-actions';
+import { revalidatePath, stopImpersonating } from '@/lib/server-actions';
 import { Session } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HatGlasses } from 'lucide-react';
@@ -14,6 +14,7 @@ const ImpersonationIndicator: FC<{ session?: Session }> = ({ session }) => {
   const handleStopImpersonating = async () => {
     await stopImpersonating();
     router.push('/users');
+    await revalidatePath('/users');
   };
 
   return (

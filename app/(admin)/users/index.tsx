@@ -14,7 +14,7 @@ import { UserWithRole } from 'better-auth/plugins';
 import { toast } from 'sonner';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { ProColumn } from '@/lib/types';
-import { impersonateUser } from '@/lib/server-actions';
+import { impersonateUser, revalidatePath } from '@/lib/server-actions';
 import { useRouter } from 'next/navigation';
 
 const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
@@ -42,7 +42,8 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
   const handleImpersonateUser = async (userId: string) => {
     try {
       await impersonateUser(userId);
-      router.refresh();
+      router.push('/');
+      await revalidatePath('/');
     } catch (error) {
       if (error instanceof Error) {
         toast.error(`Error: ${error.message}`);

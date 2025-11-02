@@ -4,8 +4,11 @@ import { removeCookies } from "@/utils/cookies";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { revalidatePath as revalidatePathNext } from "next/cache";
 
 export type TChangePass = { currentPassword: string, newPassword: string }
+
+export const revalidatePath = async (path: string) => await revalidatePathNext(path)
 
 export const getSession = async () => {
   return await auth.api.getSession({
