@@ -33,6 +33,7 @@ export interface ProColumn<T> {
   searchType?: SearchType;
   valueEnum?: ValueEnum;
   className?: string;
+  align?: 'left' | 'center' | 'right';
 }
 
 export type RequestParams = { page: number; pageSize: number; filters?: Record<string, any> };
@@ -269,10 +270,18 @@ export const ProTable = <T extends Record<string, any>>({
                 {columns.map((col, i) => (
                   <TableHead
                     key={i}
-                    className={col.className ?? ''}
+                    className={`${col.className ?? ''} text-${col.align ?? 'left'} cursor-pointer select-none`}
                     onClick={() => col.sorter && handleSortToggle(String(col.dataIndex ?? ''))}
                   >
-                    <div className='flex items-center justify-between gap-2'>
+                    <div
+                      className={`flex items-center gap-2 ${
+                        col.align === 'right'
+                          ? 'justify-end'
+                          : col.align === 'center'
+                            ? 'justify-center'
+                            : 'justify-start'
+                      }`}
+                    >
                       <span>{col.title}</span>
                       {col.sorter && (
                         <span className='text-xs text-muted-foreground'>
@@ -305,7 +314,10 @@ export const ProTable = <T extends Record<string, any>>({
                       const key = col.dataIndex as keyof T;
                       const val = row[key];
                       return (
-                        <TableCell key={cIdx} className='py-3 px-4 align-middle text-sm'>
+                        <TableCell
+                          key={cIdx}
+                          className={`py-3 px-4 align-middle text-sm text-${col.align ?? 'left'}`}
+                        >
                           {col.render ? col.render(val, row, rIdx) : String(val ?? '')}
                         </TableCell>
                       );

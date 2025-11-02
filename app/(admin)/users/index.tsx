@@ -183,7 +183,11 @@ const UsersPage: FC = () => {
       {/* Users Table */}
       <Card>
         <CardContent className='pt-6'>
-          <ProTable<User> rowKey='id' columns={columns} dataSource={initialUsers} />
+          <ProTable<User>
+            rowKey='id'
+            columns={columns?.map((item) => ({ ...item, align: 'center' }))}
+            dataSource={initialUsers}
+          />
         </CardContent>
       </Card>
 
