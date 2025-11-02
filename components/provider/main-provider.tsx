@@ -5,8 +5,10 @@ import { FC, PropsWithChildren, Suspense } from 'react';
 import { Toaster } from '../ui/sonner';
 import ThemeToggleButton from './theme-toggle';
 import ToastListener from './toast-listener';
+import ImpesonationIndicator from './impersonation-indicator';
+import { Session } from '@/lib/types';
 
-const MainProvider: FC<PropsWithChildren> = ({ children }) => {
+const MainProvider: FC<PropsWithChildren<{ session: Session }>> = ({ children, session }) => {
   return (
     <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
       <Suspense fallback={null}>
@@ -15,6 +17,7 @@ const MainProvider: FC<PropsWithChildren> = ({ children }) => {
       {children}
       <Toaster />
       <ThemeToggleButton />
+      <ImpesonationIndicator session={session} />
     </ThemeProvider>
   );
 };

@@ -1,12 +1,15 @@
 import { auth } from "./auth";
 import type { z, ZodTypeAny } from 'zod';
-import { listUserAccounts } from "./server-actions";
+import { getSession, listUserAccounts } from "./server-actions";
 
 export type TOnNavigate = (page: string) => void;
 
-export type Session = typeof auth.$Infer.Session;
+export type Session = Awaited<ReturnType<typeof getSession>>
 
 export type SessionUser = typeof auth.$Infer.Session.user;
+
+
+
 
 export type ProfileLayoutProps = {
   sections: Array<{

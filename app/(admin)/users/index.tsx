@@ -14,8 +14,11 @@ import { UserWithRole } from 'better-auth/plugins';
 import { toast } from 'sonner';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { ProColumn } from '@/lib/types';
+import { impersonateUser } from '@/lib/server-actions';
+import { useRouter } from 'next/navigation';
 
 const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
+  const router = useRouter();
   const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null);
   const [showDetails, setShowDetails] = useState(false);
 
@@ -36,7 +39,16 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
 
   const handleBanUnbanUser = (user: UserWithRole) => {};
 
-  const handleImpersonateUser = async (userId: string) => {};
+  const handleImpersonateUser = async (userId: string) => {
+    try {
+      await impersonateUser(userId);
+      router.refresh();
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(`Error: ${error.message}`);
+      }
+    }
+  };
 
   const handleRevokeSession = (user: UserWithRole) => {};
 

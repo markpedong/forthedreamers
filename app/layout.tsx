@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
 import './globals.css';
 import MainProvider from '@/components/provider/main-provider';
+import { getSession } from '@/lib/server-actions';
 
 const outfit = Outfit({
   variable: '--font-outfit',
@@ -17,15 +18,17 @@ export const metadata: Metadata = {
     'Learn how to handle authentication in Next.js using Better-Auth with this tutorial by Coding in Flow',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getSession();
+
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={`${outfit.className} antialiased`}>
-        <MainProvider>{children}</MainProvider>
+        <MainProvider session={session}>{children}</MainProvider>
       </body>
     </html>
   );
