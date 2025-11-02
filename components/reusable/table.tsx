@@ -1,4 +1,3 @@
-// components/shared/pro-table.tsx
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -56,8 +55,8 @@ export type PaginationProps = {
 export interface ProTableProps<T> {
   rowKey: keyof T;
   columns: ProColumn<T>[];
-  dataSource?: T[]; // static client data
-  request?: RequestFn<T>; // async server request
+  dataSource?: T[];
+  request?: RequestFn<T>;
   pagination?: false | PaginationProps;
   title?: string;
 }
@@ -70,7 +69,7 @@ export const ProTable = <T extends Record<string, any>>({
   columns,
   dataSource,
   request,
-  pagination = { current: 1, pageSize: 10, total: 0, pageSizeOptions: [10, 20, 50] },
+  pagination = false, // ✅ changed default from object → false
   title,
 }: ProTableProps<T>) => {
   const [paginationState, setPaginationState] = useState<PaginationProps>(() => {
@@ -98,7 +97,6 @@ export const ProTable = <T extends Record<string, any>>({
     paginationState.total ?? (dataSource ? dataSource.length : 0),
   );
 
-  // reflect dataSource changes when not using request
   useEffect(() => {
     if (!request && dataSource) {
       setTableData(dataSource);
@@ -107,7 +105,6 @@ export const ProTable = <T extends Record<string, any>>({
     }
   }, [dataSource, request]);
 
-  // Build fetch params for request mode
   const paramsForRequest = useMemo<RequestParams>(() => {
     return {
       page: paginationState.current ?? 1,
@@ -116,7 +113,6 @@ export const ProTable = <T extends Record<string, any>>({
     };
   }, [paginationState.current, paginationState.pageSize, filters]);
 
-  // Fetch remote data when request provided
   const fetchRemote = useCallback(async () => {
     if (!request) return;
     setLoading(true);
@@ -140,31 +136,26 @@ export const ProTable = <T extends Record<string, any>>({
     }
   }, [fetchRemote, request, paginationState.current, paginationState.pageSize, filters, sorter]);
 
-  // Client-side processed data (filter + sort + paginate)
+  // ✅ FIX: removed setPaginationState from inside useMemo (caused infinite loop)
   const processedClientData = useMemo(() => {
-    if (request) return tableData; // server mode: server already returns paged data
+    if (request) return tableData;
     let d: T[] = dataSource ? [...dataSource] : [...tableData];
 
-    // apply filters (simple includes)
     Object.entries(filters).forEach(([k, v]) => {
       if (v === undefined || v === null || v === '') return;
       const key = k;
       d = d.filter((row) => {
         const cell = String(row[key as keyof T] ?? '').toLowerCase();
-        return String(v).toLowerCase() === String(v)
-          ? cell.includes(String(v).toLowerCase())
-          : true;
+        return cell.includes(String(v).toLowerCase());
       });
     });
 
-    // apply sorter (use column.sorter if provided)
     if (sorter && sorter.field) {
       const col = columns.find((c) => String(c.dataIndex) === String(sorter.field));
       if (col?.sorter) {
         d.sort(col.sorter as (a: T, b: T) => number);
         if (sorter.order === 'desc') d.reverse();
       } else {
-        // lexicographic fallback
         d.sort((a, b) => {
           const va = String(a[sorter.field as keyof T] ?? '');
           const vb = String(b[sorter.field as keyof T] ?? '');
@@ -174,11 +165,7 @@ export const ProTable = <T extends Record<string, any>>({
       }
     }
 
-    // update total
-    setTotal(d.length);
-    setPaginationState((p) => ({ ...p, total: d.length }));
-
-    // paginate
+    // ✅ no state updates here (pure calculation)
     if (pagination !== false) {
       const start = ((paginationState.current ?? 1) - 1) * (paginationState.pageSize ?? 10);
       const end = start + (paginationState.pageSize ?? 10);
@@ -198,15 +185,22 @@ export const ProTable = <T extends Record<string, any>>({
     pagination,
   ]);
 
-  // visible rows (server returns paged rows, client uses processedClientData)
+  // ✅ update total separately after computing data
+  useEffect(() => {
+    if (!request) {
+      setTotal(processedClientData.length);
+      setPaginationState((p) => ({
+        ...p,
+        total: dataSource?.length ?? processedClientData.length,
+      }));
+    }
+  }, [processedClientData.length, dataSource?.length, request]);
+
   const visibleRows = request ? tableData : processedClientData;
 
-  // handlers
   const handleFilterChange = (key: string, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
-    // reset to first page when filtering
     setPaginationState((p) => ({ ...p, current: 1 }));
-    // if parent provided onChange, call it
     if (pagination !== false && typeof pagination.onChange === 'function') {
       pagination.onChange(1, paginationState.pageSize ?? 10);
     }
@@ -237,7 +231,6 @@ export const ProTable = <T extends Record<string, any>>({
     }
   };
 
-  // render search input per column (supports valueEnum array or async function)
   const renderSearchInput = (col: ProColumn<T>) => {
     const key = String(col.dataIndex ?? '');
     const val = filters[key] ?? '';
@@ -245,7 +238,6 @@ export const ProTable = <T extends Record<string, any>>({
     if (!col.searchType) return null;
 
     if (col.searchType === 'select') {
-      // load options (support static array or async fn)
       const [options, setOptions] = useState<ValueEnumItem[] | null>(null);
       useEffect(() => {
         let alive = true;
@@ -287,7 +279,6 @@ export const ProTable = <T extends Record<string, any>>({
       );
     }
 
-    // text/number/date fallback to Input (date uses text; swap with datepicker if desired)
     return (
       <Input
         value={val ?? ''}
@@ -313,7 +304,6 @@ export const ProTable = <T extends Record<string, any>>({
           </div>
         )}
 
-        {/* search inputs row */}
         <div className='flex flex-wrap gap-3 items-center'>
           {columns.map((col, i) => (
             <div key={i} className='min-w-[160px]'>
@@ -323,7 +313,6 @@ export const ProTable = <T extends Record<string, any>>({
           <div className='ml-auto' />
         </div>
 
-        {/* table */}
         <div className='overflow-x-auto'>
           <Table>
             <TableHeader>
@@ -389,7 +378,6 @@ export const ProTable = <T extends Record<string, any>>({
           </Table>
         </div>
 
-        {/* footer / pagination */}
         {pagination !== false && (
           <div className='flex items-center justify-between pt-4 border-t'>
             <div className='text-sm text-muted-foreground'>
