@@ -154,3 +154,5 @@ export const permissionListUsers = async () => {
 export const listUsers = async () => {
   return auth.api.listUsers({ headers: await headers(), query: {} });
 }
+
+export const impersonateUser = async (userId: string) => auth.api.impersonateUser({ headers: await headers(), body: { userId } });

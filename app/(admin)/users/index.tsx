@@ -9,44 +9,36 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Card, CardContent } from '@/components/ui/card';
-import { ProTable, ProColumn } from '@/components/reusable/table'; // path depends on where you placed it
+import { ProTable } from '@/components/reusable/table'; // path depends on where you placed it
 import { UserWithRole } from 'better-auth/plugins';
+import { toast } from 'sonner';
+import AlertDialog from '@/components/reusable/alert-dialog';
+import { ProColumn } from '@/lib/types';
 
 const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
   const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null);
   const [showDetails, setShowDetails] = useState(false);
-  const [toast, setToast] = useState('');
-
-  console.log('users', users);
-
-  const showNotification = (message: string) => {
-    setToast(message);
-    setTimeout(() => setToast(''), 3000);
-  };
 
   const handleViewDetails = (user: UserWithRole) => {
     setSelectedUser(user);
     setShowDetails(true);
-    showNotification(`Viewing ${user.name}`);
   };
 
   const handleEditUser = (userId: string) => {
     const user = users.find((u) => u.id === userId);
-    if (user) showNotification(`Editing ${user.name}`);
+    if (user) toast.success(`Editing ${user.name}`);
   };
 
   const handleDeleteUser = (userId: string) => {
     const user = users.find((u) => u.id === userId);
-    if (user) showNotification(`${user.name} has been deleted`);
+    if (user) toast.success(`${user.name} has been deleted`);
   };
+
+  const handleBanUnbanUser = (user: UserWithRole) => {};
+
+  const handleImpersonateUser = async (userId: string) => {};
+
+  const handleRevokeSession = (user: UserWithRole) => {};
 
   // Columns config for ProTable
   const columns: ProColumn<UserWithRole>[] = [
@@ -54,23 +46,32 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
       title: 'Name',
       dataIndex: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
-      searchType: 'text',
+      search: {
+        type: 'text',
+        placeholder: 'eg: John Doe',
+      },
     },
     {
       title: 'Email',
       dataIndex: 'email',
       sorter: (a, b) => a.email.localeCompare(b.email),
-      searchType: 'text',
+      search: {
+        type: 'text',
+        placeholder: 'eg: 4g2t0@example.com',
+      },
     },
     {
       title: 'Role',
       dataIndex: 'role',
-      searchType: 'select',
-      valueEnum: async () =>
-        Promise.resolve([
-          { label: 'Customer', value: 'Customer' },
-          { label: 'Vendor', value: 'Vendor' },
-        ]),
+      search: {
+        type: 'select',
+        placeholder: 'eg: Customer',
+        valueEnum: async () =>
+          Promise.resolve([
+            { label: 'Customer', value: 'Customer' },
+            { label: 'Vendor', value: 'Vendor' },
+          ]),
+      },
     },
     // {
     //   title: 'Last Login',
@@ -116,13 +117,13 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
               <DropdownMenuItem onClick={() => handleEditUser(record.id)}>
                 Edit User
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleViewDetails(record)}>
+              <DropdownMenuItem onClick={() => handleImpersonateUser(record.id)}>
                 Impersonate User
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleViewDetails(record)}>
+              <DropdownMenuItem onClick={() => handleRevokeSession(record)}>
                 Revoke Sessions
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleViewDetails(record)}>
+              <DropdownMenuItem onClick={() => handleBanUnbanUser(record)}>
                 {record.banned ? 'Unban User' : 'Ban User'}
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -145,61 +146,47 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
           <h1 className='text-3xl font-bold tracking-tight'>Users</h1>
           <p className='text-muted-foreground mt-1'>Manage your customer base</p>
         </div>
-        <Button onClick={() => showNotification('Add user dialog opened')}>
+        <Button onClick={() => toast.success('Add user dialog opened')}>
           <Plus className='w-4 h-4 mr-2' />
           Add User
         </Button>
       </div>
 
-      <Card>
-        <CardContent className='pt-6'>
-          <ProTable<UserWithRole>
-            rowKey='id'
-            columns={columns?.map((item) => ({ ...item, align: 'center' }))}
-            dataSource={users}
-          />
-        </CardContent>
-      </Card>
+      <ProTable<UserWithRole>
+        rowKey='id'
+        columns={columns?.map((item) => ({ ...item, align: 'center' }))}
+        dataSource={users}
+      />
 
-      {/* User Details Modal */}
-      {showDetails && selectedUser && (
-        <Dialog open={showDetails} onOpenChange={setShowDetails}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>User Details</DialogTitle>
-              <DialogDescription>{selectedUser.email}</DialogDescription>
-            </DialogHeader>
-            <div className='space-y-4'>
-              <div className='grid grid-cols-2 gap-4'>
-                <div>
-                  <p className='text-sm text-muted-foreground'>Name</p>
-                  <p className='font-medium'>{selectedUser.name}</p>
-                </div>
-                <div>
-                  <p className='text-sm text-muted-foreground'>Role</p>
-                  <p className='font-medium'>{selectedUser.role}</p>
-                </div>
-                <div>
-                  <p className='text-sm text-muted-foreground'>Last Login</p>
-                  {/* <p className='font-medium'>{selectedUser.lastLogin}</p> */}
-                </div>
-                <div>
-                  <p className='text-sm text-muted-foreground'>Status</p>
-                  {/* <p className='font-medium'>{selectedUser.status}</p> */}
-                </div>
-              </div>
-              <Button className='w-full'>Send Email</Button>
+      <AlertDialog
+        headerClassname='gap-0 mb-4'
+        open={showDetails}
+        onOpenChange={setShowDetails}
+        title='User Details'
+        description={selectedUser?.email}
+      >
+        <div className='space-y-4'>
+          <div className='grid grid-cols-2 gap-4'>
+            <div>
+              <p className='text-sm text-muted-foreground'>Name</p>
+              <p className='font-medium'>{selectedUser?.name}</p>
             </div>
-          </DialogContent>
-        </Dialog>
-      )}
-
-      {/* Toast */}
-      {toast && (
-        <div className='fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm shadow-lg'>
-          {toast}
+            <div>
+              <p className='text-sm text-muted-foreground'>Role</p>
+              <p className='font-medium'>{selectedUser?.role}</p>
+            </div>
+            <div>
+              <p className='text-sm text-muted-foreground'>Last Login</p>
+              {/* <p className='font-medium'>{selectedUser.lastLogin}</p> */}
+            </div>
+            <div>
+              <p className='text-sm text-muted-foreground'>Status</p>
+              {/* <p className='font-medium'>{selectedUser.status}</p> */}
+            </div>
+          </div>
+          <Button className='w-full'>Send Email</Button>
         </div>
-      )}
+      </AlertDialog>
     </div>
   );
 };

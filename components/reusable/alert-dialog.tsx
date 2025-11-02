@@ -25,6 +25,7 @@ interface ReusableAlertProps {
   onCancel?: () => void;
   children?: ReactNode;
   containerClassName?: string;
+  headerClassname?: string;
 }
 
 const AlertDialog: FC<ReusableAlertProps> = ({
@@ -40,6 +41,7 @@ const AlertDialog: FC<ReusableAlertProps> = ({
   children,
   onCancel,
   containerClassName,
+  headerClassname,
 }) => {
   return (
     <AlertDialogUI open={open} onOpenChange={onOpenChange}>
@@ -57,7 +59,7 @@ const AlertDialog: FC<ReusableAlertProps> = ({
       >
         {/* Scrollable content with padding */}
         <div className='flex-1 overflow-auto p-4 pt-0 mt-4'>
-          <AlertDialogHeader>
+          <AlertDialogHeader className={headerClassname}>
             <AlertDialogTitle>{title}</AlertDialogTitle>
             {description && <AlertDialogDescription>{description}</AlertDialogDescription>}
           </AlertDialogHeader>

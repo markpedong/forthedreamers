@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -20,45 +20,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
-
-export type ValueEnumItem = { label: string; value: string | number };
-export type ValueEnum = ValueEnumItem[] | (() => Promise<ValueEnumItem[]>);
-export type SearchType = 'text' | 'select' | 'number' | 'date';
-
-export interface ProColumn<T> {
-  title: string;
-  dataIndex?: keyof T;
-  sorter?: (a: T, b: T) => number;
-  render?: (value: T[keyof T], record: T, index: number) => React.ReactNode;
-  searchType?: SearchType;
-  valueEnum?: ValueEnum;
-  className?: string;
-  align?: 'left' | 'center' | 'right';
-}
-
-export type RequestParams = { page: number; pageSize: number; filters?: Record<string, any> };
-export type SorterInfo = { field?: string; order?: 'asc' | 'desc' };
-export type RequestFn<T> = (
-  params: RequestParams,
-  sorter?: SorterInfo,
-) => Promise<{ data: T[]; total: number }>;
-
-export type PaginationProps = {
-  current?: number;
-  pageSize?: 10 | 20 | 50;
-  total?: number;
-  pageSizeOptions?: (10 | 20 | 50)[];
-  onChange?: (page: number, pageSize: 10 | 20 | 50) => void;
-};
-
-export interface ProTableProps<T> {
-  rowKey: keyof T;
-  columns: ProColumn<T>[];
-  dataSource?: T[];
-  request?: RequestFn<T>;
-  pagination?: false | PaginationProps;
-  title?: string;
-}
+import { PaginationProps, ProColumn, ProTableProps, SorterInfo, ValueEnumItem } from '@/lib/types';
+import { Label } from '../ui/label';
 
 export const ProTable = <T extends Record<string, any>>({
   rowKey,
@@ -198,24 +161,39 @@ export const ProTable = <T extends Record<string, any>>({
     if (isPaginationEnabled(pagination)) pagination.onChange?.(1, ps);
   };
 
+  const handleResetFilters = () => {
+    setFilters({});
+    setSorter({});
+    setPaginationState((p) => ({ ...p, current: 1 }));
+
+    // Trigger optional external pagination onChange
+    if (isPaginationEnabled(pagination)) {
+      pagination.onChange?.(1, paginationState.pageSize ?? 10);
+    }
+  };
+
   const renderSearchInput = (col: ProColumn<T>) => {
     const key = String(col.dataIndex ?? '');
     const val = filters[key] ?? '';
-    if (!col.searchType) return null;
-    if (col.searchType === 'select') {
+    const type = col.search && col.search.type;
+    const valueEnum = col.search?.valueEnum;
+
+    if (!type) return null;
+    if (type === 'select') {
       const [options, setOptions] = useState<ValueEnumItem[]>([]);
       useEffect(() => {
         let active = true;
         (async () => {
-          if (col.valueEnum) {
-            const res = typeof col.valueEnum === 'function' ? await col.valueEnum() : col.valueEnum;
+          if (valueEnum) {
+            const res = typeof valueEnum === 'function' ? await valueEnum() : valueEnum;
             if (active) setOptions(res);
           }
         })();
         return () => {
           active = false;
         };
-      }, [col.valueEnum]);
+      }, [valueEnum]);
+
       return (
         <Select
           value={val || '__all__'}
@@ -236,13 +214,17 @@ export const ProTable = <T extends Record<string, any>>({
       );
     }
     return (
-      <Input
-        value={val}
-        placeholder={`Search ${col.title}`}
-        onChange={(e) => handleFilterChange(key, e.target.value)}
-        className='w-full md:w-40'
-        type={col.searchType === 'number' ? 'number' : 'text'}
-      />
+      <div className='flex items-center gap-2'>
+        <Label htmlFor={key}>{col.title}: </Label>
+        <Input
+          id={key}
+          value={val}
+          placeholder={col.search?.placeholder ?? `Search ${col.title}`}
+          onChange={(e) => handleFilterChange(key, e.target.value)}
+          className='w-full md:w-40'
+          type={type === 'number' ? 'number' : 'text'}
+        />
+      </div>
     );
   };
 
@@ -256,12 +238,25 @@ export const ProTable = <T extends Record<string, any>>({
     <Card>
       <CardContent className='p-4 space-y-4'>
         {title && <h3 className='text-lg font-medium'>{title}</h3>}
-        <div className='flex flex-wrap gap-3 items-center'>
-          {columns.map((col, i) => (
-            <div key={i} className='min-w-[160px]'>
-              {renderSearchInput(col)}
-            </div>
-          ))}
+        <div className='flex items-center justify-between gap-3'>
+          <div className='flex flex-wrap gap-3 items-center h-full'>
+            {columns.map((col, i) =>
+              col.title === 'Actions' ? null : (
+                <div key={i} className='min-w-[160px]'>
+                  {renderSearchInput(col)}
+                </div>
+              ),
+            )}
+          </div>
+
+          <Button
+            variant='default'
+            size='sm'
+            onClick={handleResetFilters}
+            disabled={Object.keys(filters).length === 0 && !sorter.field}
+          >
+            Reset
+          </Button>
         </div>
         <div className='overflow-x-auto'>
           <Table>
