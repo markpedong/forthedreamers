@@ -183,12 +183,7 @@ const UsersPage: FC = () => {
       {/* Users Table */}
       <Card>
         <CardContent className='pt-6'>
-          <ProTable<User>
-            rowKey='id'
-            columns={columns}
-            dataSource={initialUsers}
-            // pagination={{ pageSize: 10 }}
-          />
+          <ProTable<User> rowKey='id' columns={columns} dataSource={initialUsers} />
         </CardContent>
       </Card>
 
