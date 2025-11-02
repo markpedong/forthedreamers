@@ -42,11 +42,12 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     resolver: zodResolver(twoFactorSchema),
     defaultValues: { otp: '' },
   });
+  const [isPending, startTransition] = useTransition();
+
   const handleViewDetails = (user: UserWithRole) => {
     setSelectedUser(user);
     setShowDetails(true);
   };
-  const [isPending, startTransition] = useTransition();
 
   const handleEditUser = (userId: string) => {
     const user = users.find((u) => u.id === userId);
@@ -61,43 +62,55 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     }
   };
 
-  const handleBanUnbanUser = async (user: UserWithRole) => {
-    let res;
+  const handleBanUnbanUser = (user: UserWithRole) => {
+    startTransition(async () => {
+      try {
+        let res;
 
-    if (user.banned) {
-      res = await unbanUser(user.id);
-    } else {
-      res = await banUser(user.id);
-    }
+        if (user.banned) {
+          res = await unbanUser(user.id);
+        } else {
+          res = await banUser(user.id);
+        }
 
-    toast.success(`User ${res.user.name} has been ${res.user.banned ? 'unbanned' : 'banned'}`);
-    router.refresh();
+        toast.success(`User ${res.user.name} has been ${res.user.banned ? 'unbanned' : 'banned'}`);
+        router.refresh();
+      } catch (err) {
+        if (err instanceof Error) {
+          toast.error(`Error: ${err.message}`);
+        }
+      }
+    });
   };
 
-  const handleImpersonateUser = async (userId: string) => {
-    try {
-      await impersonateUser(userId);
-      router.push('/');
-      await revalidatePath('/');
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(`Error: ${error.message}`);
+  const handleImpersonateUser = (userId: string) => {
+    startTransition(async () => {
+      try {
+        await impersonateUser(userId);
+        router.push('/');
+        await revalidatePath('/');
+      } catch (error) {
+        if (error instanceof Error) {
+          toast.error(`Error: ${error.message}`);
+        }
       }
-    }
+    });
   };
 
   const handleRevokeSession = async (user: UserWithRole) => {
-    try {
-      const res = await revokeUserSessions(user.id);
-      if (res.success) {
-        toast.success('Sessions revoked successfully');
-        router.refresh();
+    startTransition(async () => {
+      try {
+        const res = await revokeUserSessions(user.id);
+        if (res.success) {
+          toast.success('Sessions revoked successfully');
+          router.refresh();
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          toast.error(err.message);
+        }
       }
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
-    }
+    });
   };
 
   const onSubmit = async ({ otp }: SchemaForm<typeof twoFactorSchema>) => {
@@ -109,7 +122,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
 
     startTransition(async () => {
       let res;
-      
+
       res = await authClient.twoFactor.verifyTotp({ code: `${otp}` });
 
       if (!!res.error) {
@@ -125,7 +138,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
       router.refresh();
     });
   };
-  // Columns config for ProTable
+
   const columns: ProColumn<UserWithRole>[] = [
     {
       title: 'Name',
@@ -214,36 +227,42 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
               <DropdownMenuItem
                 className='cursor-pointer'
                 onClick={() => handleViewDetails(record)}
+                disabled={isPending}
               >
                 View Details
               </DropdownMenuItem>
               <DropdownMenuItem
                 className='cursor-pointer'
                 onClick={() => handleEditUser(record.id)}
+                disabled={isPending}
               >
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
                 className='cursor-pointer'
                 onClick={() => handleImpersonateUser(record.id)}
+                disabled={isPending}
               >
                 Impersonate
               </DropdownMenuItem>
               <DropdownMenuItem
                 className='cursor-pointer'
                 onClick={() => handleRevokeSession(record)}
+                disabled={isPending}
               >
                 Revoke Sessions
               </DropdownMenuItem>
               <DropdownMenuItem
                 className='cursor-pointer'
                 onClick={() => handleBanUnbanUser(record)}
+                disabled={isPending}
               >
                 {record.banned ? 'Unban' : 'Ban'}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className='text-destructive cursor-pointer'
                 onClick={() => handleDeleteUser(record.id)}
+                disabled={isPending}
               >
                 Delete
               </DropdownMenuItem>
