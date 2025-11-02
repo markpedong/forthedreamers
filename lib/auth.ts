@@ -12,6 +12,7 @@ import { passkey } from "better-auth/plugins/passkey";
 import { ac, admin, user } from "./permission";
 
 export const auth = betterAuth({
+  appName: "For the Dreamers",
   database: prismaAdapter(prisma, { provider: "postgresql" }),
   socialProviders: {
     google: {

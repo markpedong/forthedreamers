@@ -4,6 +4,7 @@ import { auth } from "./auth"
 import { ac, admin, user } from "./permission"
 
 export const authClient = createAuthClient({
+    appName: "For the Dreamers",
     baseURL: process.env.BETTER_AUTH_URL,
     plugins: [
         lastLoginMethodClient(),
