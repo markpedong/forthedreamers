@@ -69,7 +69,7 @@ export const ProTable = <T extends Record<string, any>>({
   columns,
   dataSource,
   request,
-  pagination = false, // ✅ changed default from object → false
+  pagination = { pageSize: 10 }, // ✅ changed default from object → false
   title,
 }: ProTableProps<T>) => {
   const [paginationState, setPaginationState] = useState<PaginationProps>(() => {
