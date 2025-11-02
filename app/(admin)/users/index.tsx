@@ -3,7 +3,6 @@
 import { FC, useState } from 'react';
 import { Plus, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,78 +18,38 @@ import {
 } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { ProTable, ProColumn } from '@/components/reusable/table'; // path depends on where you placed it
+import { UserWithRole } from 'better-auth/plugins';
 
-// Sample user data
-const initialUsers = Array.from({ length: 50 }, (_, i) => {
-  const roles = ['Customer', 'Vendor', 'Admin'];
-  const statuses = ['Active', 'Inactive'];
-  const names = [
-    'John Doe',
-    'Jane Smith',
-    'Bob Johnson',
-    'Alice Williams',
-    'Charlie Brown',
-    'Eve Adams',
-    'Frank Miller',
-    'Grace Lee',
-    'Henry Clark',
-    'Ivy Nguyen',
-  ];
-
-  const name = names[i % names.length];
-  const role = roles[i % roles.length];
-  const status = statuses[i % statuses.length];
-
-  const date = new Date(2024, 0, 1 + (i % 15)); // simulate 15-day cycle
-  const formattedDate = date.toISOString().split('T')[0];
-
-  return {
-    id: `${i + 1}`,
-    name: `${name} ${i + 1}`,
-    email: `${name.split(' ')[0].toLowerCase()}${i + 1}@example.com`,
-    role,
-    lastLogin: formattedDate,
-    status,
-  };
-});
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  lastLogin: string;
-  status: string;
-}
-
-const UsersPage: FC = () => {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
+  const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [toast, setToast] = useState('');
+
+  console.log('users', users);
 
   const showNotification = (message: string) => {
     setToast(message);
     setTimeout(() => setToast(''), 3000);
   };
 
-  const handleViewDetails = (user: User) => {
+  const handleViewDetails = (user: UserWithRole) => {
     setSelectedUser(user);
     setShowDetails(true);
     showNotification(`Viewing ${user.name}`);
   };
 
   const handleEditUser = (userId: string) => {
-    const user = initialUsers.find((u) => u.id === userId);
+    const user = users.find((u) => u.id === userId);
     if (user) showNotification(`Editing ${user.name}`);
   };
 
   const handleDeleteUser = (userId: string) => {
-    const user = initialUsers.find((u) => u.id === userId);
+    const user = users.find((u) => u.id === userId);
     if (user) showNotification(`${user.name} has been deleted`);
   };
 
   // Columns config for ProTable
-  const columns: ProColumn<User>[] = [
+  const columns: ProColumn<UserWithRole>[] = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -113,62 +72,74 @@ const UsersPage: FC = () => {
           { label: 'Vendor', value: 'Vendor' },
         ]),
     },
-    {
-      title: 'Last Login',
-      dataIndex: 'lastLogin',
-      sorter: (a, b) => new Date(a.lastLogin).getTime() - new Date(b.lastLogin).getTime(),
-      searchType: 'date',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      searchType: 'select',
-      valueEnum: async () =>
-        Promise.resolve([
-          { label: 'Active', value: 'Active' },
-          { label: 'Inactive', value: 'Inactive' },
-        ]),
-      render: (value: string) => (
-        <Badge
-          className={`${
-            value === 'Active'
-              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-              : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
-          }`}
-        >
-          {value}
-        </Badge>
-      ),
-    },
+    // {
+    //   title: 'Last Login',
+    //   dataIndex: 'lastLogin',
+    //   sorter: (a, b) => new Date(a.lastLogin).getTime() - new Date(b.lastLogin).getTime(),
+    //   searchType: 'date',
+    // },
+    // {
+    //   title: 'Status',
+    //   dataIndex: 'status',
+    //   searchType: 'select',
+    //   valueEnum: async () =>
+    //     Promise.resolve([
+    //       { label: 'Active', value: 'Active' },
+    //       { label: 'Inactive', value: 'Inactive' },
+    //     ]),
+    //   render: (value: string) => (
+    //     <Badge
+    //       className={`${
+    //         value === 'Active'
+    //           ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+    //           : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+    //       }`}
+    //     >
+    //       {value}
+    //     </Badge>
+    //   ),
+    // },
     {
       title: 'Actions',
-      render: (_, record) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' size='icon'>
-              <MoreHorizontal className='w-4 h-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuItem onClick={() => handleViewDetails(record)}>
-              View Details
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleEditUser(record.id)}>Edit User</DropdownMenuItem>
-            <DropdownMenuItem
-              className='text-destructive'
-              onClick={() => handleDeleteUser(record.id)}
-            >
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
+      render: (_, record) => {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant='ghost' size='icon'>
+                <MoreHorizontal className='w-4 h-4' />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end'>
+              <DropdownMenuItem onClick={() => handleViewDetails(record)}>
+                View Details
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleEditUser(record.id)}>
+                Edit User
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleViewDetails(record)}>
+                Impersonate User
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleViewDetails(record)}>
+                Revoke Sessions
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleViewDetails(record)}>
+                {record.banned ? 'Unban User' : 'Ban User'}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className='text-destructive'
+                onClick={() => handleDeleteUser(record.id)}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
     },
   ];
 
   return (
     <div className='p-6 space-y-6'>
-      {/* Header */}
       <div className='flex items-center justify-between'>
         <div>
           <h1 className='text-3xl font-bold tracking-tight'>Users</h1>
@@ -180,13 +151,12 @@ const UsersPage: FC = () => {
         </Button>
       </div>
 
-      {/* Users Table */}
       <Card>
         <CardContent className='pt-6'>
-          <ProTable<User>
+          <ProTable<UserWithRole>
             rowKey='id'
             columns={columns?.map((item) => ({ ...item, align: 'center' }))}
-            dataSource={initialUsers}
+            dataSource={users}
           />
         </CardContent>
       </Card>
@@ -211,11 +181,11 @@ const UsersPage: FC = () => {
                 </div>
                 <div>
                   <p className='text-sm text-muted-foreground'>Last Login</p>
-                  <p className='font-medium'>{selectedUser.lastLogin}</p>
+                  {/* <p className='font-medium'>{selectedUser.lastLogin}</p> */}
                 </div>
                 <div>
                   <p className='text-sm text-muted-foreground'>Status</p>
-                  <p className='font-medium'>{selectedUser.status}</p>
+                  {/* <p className='font-medium'>{selectedUser.status}</p> */}
                 </div>
               </div>
               <Button className='w-full'>Send Email</Button>
