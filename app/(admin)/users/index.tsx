@@ -3,6 +3,7 @@
 import { FC, useState } from 'react';
 import { Plus, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +17,42 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { DataTable, Column } from '@/components/reusable/table';
+import { Card, CardContent } from '@/components/ui/card';
+import { ProTable, ProColumn } from '@/components/reusable/table'; // path depends on where you placed it
+
+// Sample user data
+const initialUsers = Array.from({ length: 50 }, (_, i) => {
+  const roles = ['Customer', 'Vendor', 'Admin'];
+  const statuses = ['Active', 'Inactive'];
+  const names = [
+    'John Doe',
+    'Jane Smith',
+    'Bob Johnson',
+    'Alice Williams',
+    'Charlie Brown',
+    'Eve Adams',
+    'Frank Miller',
+    'Grace Lee',
+    'Henry Clark',
+    'Ivy Nguyen',
+  ];
+
+  const name = names[i % names.length];
+  const role = roles[i % roles.length];
+  const status = statuses[i % statuses.length];
+
+  const date = new Date(2024, 0, 1 + (i % 15)); // simulate 15-day cycle
+  const formattedDate = date.toISOString().split('T')[0];
+
+  return {
+    id: `${i + 1}`,
+    name: `${name} ${i + 1}`,
+    email: `${name.split(' ')[0].toLowerCase()}${i + 1}@example.com`,
+    role,
+    lastLogin: formattedDate,
+    status,
+  };
+});
 
 interface User {
   id: string;
@@ -27,101 +63,81 @@ interface User {
   status: string;
 }
 
-const initialUsers: User[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    email: 'john@example.com',
-    role: 'Customer',
-    lastLogin: '2024-01-14',
-    status: 'Active',
-  },
-  {
-    id: '2',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    role: 'Customer',
-    lastLogin: '2024-01-12',
-    status: 'Active',
-  },
-  {
-    id: '3',
-    name: 'Bob Johnson',
-    email: 'bob@example.com',
-    role: 'Customer',
-    lastLogin: '2024-01-10',
-    status: 'Inactive',
-  },
-  {
-    id: '4',
-    name: 'Alice Williams',
-    email: 'alice@example.com',
-    role: 'Vendor',
-    lastLogin: '2024-01-15',
-    status: 'Active',
-  },
-  {
-    id: '5',
-    name: 'Charlie Brown',
-    email: 'charlie@example.com',
-    role: 'Customer',
-    lastLogin: '2024-01-13',
-    status: 'Active',
-  },
-];
-
 const UsersPage: FC = () => {
-  const [users, setUsers] = useState<User[]>(initialUsers);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
   const [toast, setToast] = useState('');
 
-  const showToast = (msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(''), 2500);
+  const showNotification = (message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(''), 3000);
   };
 
-  const handleAction = (action: string, user?: User) => {
-    if (action === 'add') return showToast('Add user dialog opened');
-    if (action === 'view' && user) setSelectedUser(user);
-    if (action === 'edit' && user) showToast(`Editing ${user.name}`);
-    if (action === 'delete' && user) {
-      setUsers((prev) => prev.filter((u) => u.id !== user.id));
-      showToast(`${user.name} deleted`);
-    }
+  const handleViewDetails = (user: User) => {
+    setSelectedUser(user);
+    setShowDetails(true);
+    showNotification(`Viewing ${user.name}`);
   };
 
-  const columns: Column<User>[] = [
+  const handleEditUser = (userId: string) => {
+    const user = initialUsers.find((u) => u.id === userId);
+    if (user) showNotification(`Editing ${user.name}`);
+  };
+
+  const handleDeleteUser = (userId: string) => {
+    const user = initialUsers.find((u) => u.id === userId);
+    if (user) showNotification(`${user.name} has been deleted`);
+  };
+
+  // Columns config for ProTable
+  const columns: ProColumn<User>[] = [
     {
       title: 'Name',
       dataIndex: 'name',
-      searchable: true,
       sorter: (a, b) => a.name.localeCompare(b.name),
+      searchType: 'text',
     },
-    { title: 'Email', dataIndex: 'email', searchable: true },
-    { title: 'Role', dataIndex: 'role', searchable: true },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      sorter: (a, b) => a.email.localeCompare(b.email),
+      searchType: 'text',
+    },
+    {
+      title: 'Role',
+      dataIndex: 'role',
+      searchType: 'select',
+      valueEnum: async () =>
+        Promise.resolve({
+          Customer: 'Customer',
+          Vendor: 'Vendor',
+        }),
+    },
     {
       title: 'Last Login',
       dataIndex: 'lastLogin',
-      sorter: (a, b) => +new Date(b.lastLogin) - +new Date(a.lastLogin),
+      sorter: (a, b) => new Date(a.lastLogin).getTime() - new Date(b.lastLogin).getTime(),
+      searchType: 'date',
     },
     {
       title: 'Status',
       dataIndex: 'status',
-      render: (value) => (
-        <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+      searchType: 'select',
+      valueEnum: async () => Promise.resolve({ Active: 'Active', Inactive: 'Inactive' }),
+      render: (value: string) => (
+        <Badge
+          className={`${
             value === 'Active'
               ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
               : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
           }`}
         >
           {value}
-        </span>
+        </Badge>
       ),
     },
     {
       title: 'Actions',
-      dataIndex: 'id',
       render: (_, record) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -130,15 +146,13 @@ const UsersPage: FC = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
-            <DropdownMenuItem onClick={() => handleAction('view', record)}>
+            <DropdownMenuItem onClick={() => handleViewDetails(record)}>
               View Details
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleAction('edit', record)}>
-              Edit User
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleEditUser(record.id)}>Edit User</DropdownMenuItem>
             <DropdownMenuItem
               className='text-destructive'
-              onClick={() => handleAction('delete', record)}
+              onClick={() => handleDeleteUser(record.id)}
             >
               Delete
             </DropdownMenuItem>
@@ -156,44 +170,60 @@ const UsersPage: FC = () => {
           <h1 className='text-3xl font-bold tracking-tight'>Users</h1>
           <p className='text-muted-foreground mt-1'>Manage your customer base</p>
         </div>
-        <Button onClick={() => handleAction('add')}>
-          <Plus className='w-4 h-4 mr-2' /> Add User
+        <Button onClick={() => showNotification('Add user dialog opened')}>
+          <Plus className='w-4 h-4 mr-2' />
+          Add User
         </Button>
       </div>
 
-      {/* Reusable Data Table */}
-      <DataTable columns={columns} data={users} />
+      {/* Users Table */}
+      <Card>
+        <CardContent className='pt-6'>
+          <ProTable<User>
+            rowKey='id'
+            columns={columns}
+            dataSource={initialUsers}
+            pagination={{ pageSize: 5 }}
+          />
+        </CardContent>
+      </Card>
 
-      {/* Details Modal */}
-      {selectedUser && (
-        <Dialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
+      {/* User Details Modal */}
+      {showDetails && selectedUser && (
+        <Dialog open={showDetails} onOpenChange={setShowDetails}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{selectedUser.name}</DialogTitle>
+              <DialogTitle>User Details</DialogTitle>
               <DialogDescription>{selectedUser.email}</DialogDescription>
             </DialogHeader>
-            <div className='grid grid-cols-2 gap-4 mt-4'>
-              <div>
-                <p className='text-sm text-muted-foreground'>Role</p>
-                <p className='font-medium'>{selectedUser.role}</p>
+            <div className='space-y-4'>
+              <div className='grid grid-cols-2 gap-4'>
+                <div>
+                  <p className='text-sm text-muted-foreground'>Name</p>
+                  <p className='font-medium'>{selectedUser.name}</p>
+                </div>
+                <div>
+                  <p className='text-sm text-muted-foreground'>Role</p>
+                  <p className='font-medium'>{selectedUser.role}</p>
+                </div>
+                <div>
+                  <p className='text-sm text-muted-foreground'>Last Login</p>
+                  <p className='font-medium'>{selectedUser.lastLogin}</p>
+                </div>
+                <div>
+                  <p className='text-sm text-muted-foreground'>Status</p>
+                  <p className='font-medium'>{selectedUser.status}</p>
+                </div>
               </div>
-              <div>
-                <p className='text-sm text-muted-foreground'>Last Login</p>
-                <p className='font-medium'>{selectedUser.lastLogin}</p>
-              </div>
-              <div>
-                <p className='text-sm text-muted-foreground'>Status</p>
-                <p className='font-medium'>{selectedUser.status}</p>
-              </div>
+              <Button className='w-full'>Send Email</Button>
             </div>
-            <Button className='w-full mt-4'>Send Email</Button>
           </DialogContent>
         </Dialog>
       )}
 
       {/* Toast */}
       {toast && (
-        <div className='fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm shadow-md'>
+        <div className='fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm shadow-lg'>
           {toast}
         </div>
       )}
