@@ -73,31 +73,22 @@ export const ProTable = <T extends Record<string, any>>({
   pagination = { current: 1, pageSize: 10, total: 0, pageSizeOptions: [10, 20, 50] },
   title,
 }: ProTableProps<T>) => {
-  // Internal pagination state derived from prop
-  const defaultPagination = useMemo<PaginationProps>(() => {
-    if (pagination === false)
-      return { current: 1, pageSize: 10, total: 0, pageSizeOptions: [10, 20, 50] };
+  const [paginationState, setPaginationState] = useState<PaginationProps>(() => {
+    if (pagination === false) {
+      return {
+        current: 1,
+        pageSize: 10,
+        total: dataSource?.length ?? 0,
+        pageSizeOptions: [10, 20, 50],
+      };
+    }
     return {
-      current: pagination.current ?? 1,
-      pageSize: pagination.pageSize ?? 10,
-      total: pagination.total ?? 0,
-      pageSizeOptions: pagination.pageSizeOptions ?? [10, 20, 50],
+      current: pagination?.current ?? 1,
+      pageSize: pagination?.pageSize ?? 10,
+      total: pagination?.total ?? dataSource?.length ?? 0,
+      pageSizeOptions: pagination?.pageSizeOptions ?? [10, 20, 50],
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // only once
-
-  const [paginationState, setPaginationState] = useState<PaginationProps>(defaultPagination);
-  // Keep paginationState in sync if parent prop changes
-  useEffect(() => {
-    if (pagination === false) return;
-    setPaginationState((prev) => ({
-      ...prev,
-      current: pagination.current ?? prev.current,
-      pageSize: pagination.pageSize ?? prev.pageSize,
-      total: pagination.total ?? prev.total,
-      pageSizeOptions: pagination.pageSizeOptions ?? prev.pageSizeOptions,
-    }));
-  }, [pagination]);
+  });
 
   const [filters, setFilters] = useState<Record<string, any>>({});
   const [sorter, setSorter] = useState<SorterInfo>({});
