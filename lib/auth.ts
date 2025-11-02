@@ -5,7 +5,7 @@ import transporter from "./nodemailer";
 import ResetPassword from "@/components/emails/reset-password";
 import { render } from "@react-email/render";
 import VerifyEmail from "@/components/emails/verify-email";
-import { admin as adminPlugin, lastLoginMethod, twoFactor, organization } from 'better-auth/plugins';
+import { admin as adminPlugin, lastLoginMethod, twoFactor } from 'better-auth/plugins';
 import { nextCookies } from "better-auth/next-js";
 import DeleteAccountEmail from "@/components/emails/delete-account-email";
 import { passkey } from "better-auth/plugins/passkey";
@@ -78,12 +78,11 @@ export const auth = betterAuth({
     passkey(),
     adminPlugin({
       defaultRole: "user",
-      ac, 
+      ac,
       roles: {
         admin,
         user
       }
     }),
-    organization()
   ]
 });
