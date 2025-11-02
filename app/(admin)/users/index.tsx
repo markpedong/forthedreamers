@@ -108,10 +108,10 @@ const UsersPage: FC = () => {
       dataIndex: 'role',
       searchType: 'select',
       valueEnum: async () =>
-        Promise.resolve({
-          Customer: 'Customer',
-          Vendor: 'Vendor',
-        }),
+        Promise.resolve([
+          { label: 'Customer', value: 'Customer' },
+          { label: 'Vendor', value: 'Vendor' },
+        ]),
     },
     {
       title: 'Last Login',
@@ -123,7 +123,11 @@ const UsersPage: FC = () => {
       title: 'Status',
       dataIndex: 'status',
       searchType: 'select',
-      valueEnum: async () => Promise.resolve({ Active: 'Active', Inactive: 'Inactive' }),
+      valueEnum: async () =>
+        Promise.resolve([
+          { label: 'Active', value: 'Active' },
+          { label: 'Inactive', value: 'Inactive' },
+        ]),
       render: (value: string) => (
         <Badge
           className={`${
