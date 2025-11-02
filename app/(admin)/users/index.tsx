@@ -1,7 +1,7 @@
 'use client';
 
 import { FC, useState } from 'react';
-import { Plus, MoreHorizontal } from 'lucide-react';
+import { Plus, MoreHorizontal, BadgeCheckIcon, BadgeAlertIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -14,8 +14,10 @@ import { UserWithRole } from 'better-auth/plugins';
 import { toast } from 'sonner';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { ProColumn } from '@/lib/types';
-import { impersonateUser, revalidatePath } from '@/lib/server-actions';
+import { banUser, impersonateUser, revalidatePath, unbanUser } from '@/lib/server-actions';
 import { useRouter } from 'next/navigation';
+import { Badge } from '@/components/ui/badge';
+import classNames from 'classnames';
 
 const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
   const router = useRouter();
@@ -37,7 +39,18 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     if (user) toast.success(`${user.name} has been deleted`);
   };
 
-  const handleBanUnbanUser = (user: UserWithRole) => {};
+  const handleBanUnbanUser = async (user: UserWithRole) => {
+    let res;
+
+    if (user.banned) {
+      res = await unbanUser(user.id);
+    } else {
+      res = await banUser(user.id);
+    }
+
+    toast.success(`User ${res.user.name} has been ${res.user.banned ? 'unbanned' : 'banned'}`);
+    router.refresh();
+  };
 
   const handleImpersonateUser = async (userId: string) => {
     try {
@@ -66,12 +79,27 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     },
     {
       title: 'Email',
-      dataIndex: 'email',
+      width: 300,
       sorter: (a, b) => a.email.localeCompare(b.email),
       search: {
         type: 'text',
         placeholder: 'eg: 4g2t0@example.com',
       },
+      render: (_, record) => (
+        <div className='flex justify-between'>
+          <span>{record.email}</span>
+          <Badge
+            variant='secondary'
+            className={classNames('text-white', {
+              'bg-green-500 dark:bg-green-600': record.emailVerified,
+              'bg-red-500 dark:bg-red-600': !record.emailVerified,
+            })}
+          >
+            {record.emailVerified ? <BadgeCheckIcon /> : <BadgeAlertIcon />}
+            {record.emailVerified ? 'Verified' : 'Unverified'}
+          </Badge>
+        </div>
+      ),
     },
     {
       title: 'Role',
@@ -127,17 +155,15 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
               <DropdownMenuItem onClick={() => handleViewDetails(record)}>
                 View Details
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleEditUser(record.id)}>
-                Edit User
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleEditUser(record.id)}>Edit</DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleImpersonateUser(record.id)}>
-                Impersonate User
+                Impersonate
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleRevokeSession(record)}>
                 Revoke Sessions
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleBanUnbanUser(record)}>
-                {record.banned ? 'Unban User' : 'Ban User'}
+                {record.banned ? 'Unban' : 'Ban'}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className='text-destructive'

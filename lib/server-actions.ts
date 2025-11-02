@@ -161,3 +161,7 @@ export const listUsers = async () => {
 export const impersonateUser = async (userId: string) => auth.api.impersonateUser({ headers: await headers(), body: { userId } });
 
 export const stopImpersonating = async () => auth.api.stopImpersonating({ headers: await headers() });
+
+export const banUser = async (userId: string) => auth.api.banUser({ headers: await headers(), body: { userId } });
+
+export const unbanUser = async (userId: string) => auth.api.unbanUser({ headers: await headers(), body: { userId } });

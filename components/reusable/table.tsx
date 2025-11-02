@@ -266,6 +266,7 @@ export const ProTable = <T extends Record<string, any>>({
                   <TableHead
                     key={i}
                     className={`${col.className ?? ''} text-${col.align ?? 'left'} cursor-pointer select-none`}
+                    style={{ width: col.width }}
                     onClick={() => col.sorter && handleSortToggle(String(col.dataIndex ?? ''))}
                   >
                     <div
@@ -312,6 +313,7 @@ export const ProTable = <T extends Record<string, any>>({
                         <TableCell
                           key={cIdx}
                           className={`py-3 px-4 align-middle text-sm text-${col.align ?? 'left'}`}
+                          style={{ width: col.width }}
                         >
                           {col.render ? col.render(val, row, rIdx) : String(val ?? '')}
                         </TableCell>

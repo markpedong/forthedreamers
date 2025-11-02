@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
+import { signOut } from '@/lib/server-actions';
 
 export default function Topbar() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,8 +36,8 @@ export default function Topbar() {
     showNotification('Opening profile settings');
   };
 
-  const handleSignOut = () => {
-    showNotification('Signed out successfully');
+  const handleSignOut = async () => {
+    await signOut();
   };
 
   const showNotification = (message: string) => {

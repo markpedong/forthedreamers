@@ -41,6 +41,7 @@ export type SearchType = 'text' | 'select' | 'number' | 'date';
 
 export interface ProColumn<T> {
   title: string;
+  width?: number
   dataIndex?: keyof T;
   sorter?: (a: T, b: T) => number;
   render?: (value: T[keyof T], record: T, index: number) => React.ReactNode;
