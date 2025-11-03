@@ -19,21 +19,26 @@ const SUGGESTIONS = [
   { type: 'shop', label: 'TechHub Store', category: 'Shop' },
   { type: 'shop', label: 'Fashion Plus', category: 'Shop' },
 ];
+
 const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const [filtered, setFiltered] = useState(SUGGESTIONS.slice(0, 4));
   const { searchSchema } = useFormSchema();
+
   const form = useForm<SchemaForm<typeof searchSchema>>({
     resolver: zodResolver(searchSchema),
     defaultValues: { search: '' },
   });
 
-  const onSubmit = ({ search }: SchemaForm<typeof searchSchema>) => {
-    setFiltered(
-      search
-        ? SUGGESTIONS.filter((i) => i.label.toLowerCase().includes(search))
-        : SUGGESTIONS.slice(0, 4),
-    );
-  };
+  const searchValue = form.watch('search');
+
+  useEffect(() => {
+    const query = searchValue.trim().toLowerCase();
+    if (query) {
+      setFiltered(SUGGESTIONS.filter((item) => item.label.toLowerCase().includes(query)));
+    } else {
+      setFiltered(SUGGESTIONS.slice(0, 4));
+    }
+  }, [searchValue]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -69,21 +74,24 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                     autoFocus
                     type='text'
                     placeholder='Search products, categories, shops...'
-                    onChange={form.handleSubmit(onSubmit)}
+                    {...form.register('search')}
                     className='w-full pl-12 pr-12 py-3 text-base border-0 bg-background focus-visible:ring-2 focus-visible:ring-primary'
                   />
                   <Button
                     type='button'
                     variant='ghost'
                     size='icon'
-                    onClick={onClose}
+                    onClick={() => {
+                      form.reset();
+                      setFiltered(SUGGESTIONS.slice(0, 4));
+                      onClose();
+                    }}
                     className='absolute right-2 top-1/2 -translate-y-1/2'
                   >
                     <X className='w-5 h-5' />
                   </Button>
                 </div>
               </Form>
-
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -115,7 +123,7 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                   </div>
                 ) : (
                   <div className='px-4 py-8 text-center text-muted-foreground'>
-                    <p>No results found for "{form.getValues('search')}"</p>
+                    <p>No results found for “{searchValue}”</p>
                   </div>
                 )}
               </motion.div>
