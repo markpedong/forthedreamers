@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
-import { SearchOverlay } from './search-overlay';
+import SearchOverlay from './search-overlay';
 import { Session } from '@/lib/types';
 import { usePathname, useRouter } from 'next/navigation';
 import classNames from 'classnames';
@@ -45,10 +45,14 @@ const Navbar: FC<{ session: Session }> = ({ session }) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-56'>
-        <DropdownMenuItem onClick={() => router.push('/profile')}>Profile</DropdownMenuItem>
+        <DropdownMenuItem className='cursor-pointer' onClick={() => router.push('/profile')}>
+          Profile
+        </DropdownMenuItem>
         <DropdownMenuItem>Orders</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={signOut}>Logout</DropdownMenuItem>
+        <DropdownMenuItem className='cursor-pointer' onClick={signOut} variant='destructive'>
+          Logout
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
