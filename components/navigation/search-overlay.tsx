@@ -27,9 +27,9 @@ const DUMMY_SUGGESTIONS = [
   { type: 'shop', label: 'Fashion Plus', category: 'Shop' },
 ];
 
-export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<typeof DUMMY_SUGGESTIONS>([]);
+const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const { searchSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof searchSchema>>({
     resolver: zodResolver(searchSchema),
@@ -171,4 +171,6 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       )}
     </AnimatePresence>
   );
-}
+};
+
+export default SearchOverlay;
