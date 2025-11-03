@@ -17,6 +17,7 @@ import ProfileHeader from './components/profile-header';
 import SessionManagement from './components/session-management';
 import TwoFactorSection from './components/2fa';
 import PasskeysSection from './components/passkey-section';
+import DeleteAccount from './components/delete-account';
 
 export const metadata = {
   title: 'Profile',
@@ -96,6 +97,7 @@ const ProfilePage = async () => {
 
           <TwoFactorSection user={session?.user} />
           <PasskeysSection passkeys={passkeys} />
+          <DeleteAccount />
         </div>
       ),
     },

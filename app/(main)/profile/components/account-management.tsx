@@ -9,7 +9,7 @@ import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { CHANGE_PASSWORD_DEFAULT, OAUTH_PROVIDERS } from '@/constants';
 import useFormSchema from '@/hooks/useFormSchema';
 import { authClient } from '@/lib/auth-client';
-import { changePassword, deleteAccount, unlinkAccount } from '@/lib/server-actions';
+import { changePassword, unlinkAccount } from '@/lib/server-actions';
 import { Account, SchemaForm, SessionUser } from '@/lib/types';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
@@ -33,7 +33,6 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
     defaultValues: CHANGE_PASSWORD_DEFAULT,
   });
 
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [isSubmitting, startSubmitting] = useTransition();
 
@@ -60,21 +59,13 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
   const handleSetPassword = () => {
     startSubmitting(async () => {
       try {
-        await authClient.requestPasswordReset({ email: `${user?.email}`, redirectTo: '/reset-password' });
+        await authClient.requestPasswordReset({
+          email: `${user?.email}`,
+          redirectTo: '/reset-password',
+        });
         toast.success('Password reset link sent successfully');
       } catch (error) {
         toast.error(error instanceof Error ? error.message : 'Failed to send reset link');
-      }
-    });
-  };
-
-  const handleDeleteAccount = () => {
-    startSubmitting(async () => {
-      try {
-        await deleteAccount();
-        toast.success('Confirmation Email sent successfully');
-      } catch {
-        toast.error('Failed to send confirmation email');
       }
     });
   };
@@ -182,19 +173,6 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
               </div>
             </div>
           </section>
-
-          <Divider />
-
-          <section>
-            <p className='mb-2 font-semibold text-destructive'>Danger Zone</p>
-            <Button
-              variant='destructive'
-              onClick={() => setShowDeleteDialog(true)}
-              disabled={isSubmitting}
-            >
-              Delete Account
-            </Button>
-          </section>
         </CardContent>
       </Card>
       <AlertDialog
@@ -234,16 +212,6 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
           />
         </Form>
       </AlertDialog>
-      <AlertDialog
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        title='Delete Account'
-        description='This action cannot be undone. This will permanently delete your account and all associated data.'
-        confirmText='Delete'
-        destructive
-        loading={isSubmitting}
-        onConfirm={handleDeleteAccount}
-      />
     </>
   );
 };
