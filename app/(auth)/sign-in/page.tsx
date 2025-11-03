@@ -1,15 +1,5 @@
 import AuthInterface from './components';
-import { getSession } from '@/lib/server-actions';
-import { redirect } from 'next/navigation';
 
-const Page = async () => {
-  const session = await getSession();
-
-  if (session) {
-    redirect('/profile');
-  }
-
-  return <AuthInterface />;
-};
+const Page = async () => <AuthInterface />;
 
 export default Page;

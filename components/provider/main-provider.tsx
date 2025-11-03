@@ -7,8 +7,6 @@ import ThemeToggleButton from './theme-toggle';
 import ToastListener from './toast-listener';
 import ImpesonationIndicator from './impersonation-indicator';
 import { Session } from '@/lib/types';
-import { Navbar } from '../navigation/navbar';
-import { BottomNav } from '../navigation/bottom-nav';
 
 const MainProvider: FC<PropsWithChildren<{ session: Session }>> = ({ children, session }) => {
   return (
@@ -16,9 +14,7 @@ const MainProvider: FC<PropsWithChildren<{ session: Session }>> = ({ children, s
       <Suspense fallback={null}>
         <ToastListener />
       </Suspense>
-      <Navbar />
       {children}
-      <BottomNav />
       <Toaster />
       <ThemeToggleButton />
       {!!session && <ImpesonationIndicator session={session} />}

@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
-import Navbar from '@/components/navigation/navbar';
-import { BottomNav } from '@/components/navigation/bottom-nav';
+import './globals.css';
+import MainProvider from '@/components/provider/main-provider';
+import { getSession } from '@/lib/server-actions';
+import { redirect } from 'next/navigation';
 
 const outfit = Outfit({
   variable: '--font-outfit',
@@ -22,11 +24,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getSession();
+
+  if (!!session) {
+    redirect('/profile');
+  }
+
   return (
-    <>
-      <Navbar />
-      {children}
-      <BottomNav />
-    </>
+    <html lang='en' suppressHydrationWarning>
+      <body className={`${outfit.className} antialiased`}>
+        <MainProvider session={session}>{children}</MainProvider>
+      </body>
+    </html>
   );
 }
