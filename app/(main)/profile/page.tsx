@@ -104,7 +104,7 @@ const ProfilePage = async () => {
   ];
 
   return (
-    <main className='min-h-screen bg-background'>
+    <main className='bg-background'>
       <div className='mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8'>
         <ProfileHeader user={session?.user} />
         <ClientOnly>

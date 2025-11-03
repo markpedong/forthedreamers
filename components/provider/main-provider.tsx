@@ -8,6 +8,7 @@ import ToastListener from './toast-listener';
 import ImpesonationIndicator from './impersonation-indicator';
 import { Session } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
+import classNames from 'classnames';
 
 const MainProvider: FC<PropsWithChildren<{ session: Session }>> = ({ children, session }) => {
   const isMobile = useIsMobile();
@@ -17,7 +18,7 @@ const MainProvider: FC<PropsWithChildren<{ session: Session }>> = ({ children, s
       <Suspense fallback={null}>
         <ToastListener />
       </Suspense>
-      {children}
+      <div className={classNames({ 'pb-20': isMobile })}>{children}</div>
       <Toaster />
       <ThemeToggleButton />
       {!!session && <ImpesonationIndicator session={session} />}
