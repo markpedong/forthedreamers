@@ -1,12 +1,6 @@
 import type { Metadata } from 'next';
-import { Outfit } from 'next/font/google';
 import { getSession } from '@/lib/server-actions';
 import { redirect } from 'next/navigation';
-
-const outfit = Outfit({
-  variable: '--font-outfit',
-  subsets: ['latin'],
-});
 
 export const metadata: Metadata = {
   title: {
