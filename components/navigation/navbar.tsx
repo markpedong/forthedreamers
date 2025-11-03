@@ -49,10 +49,14 @@ const Navbar: FC<{ session: Session }> = ({ session }) => {
           Profile
         </DropdownMenuItem>
         <DropdownMenuItem>Orders</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className='cursor-pointer' onClick={signOut} variant='destructive'>
-          Logout
-        </DropdownMenuItem>
+        {pathname !== '/profile' && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className='cursor-pointer' onClick={signOut} variant='destructive'>
+              Logout
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

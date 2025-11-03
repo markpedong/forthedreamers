@@ -7,21 +7,22 @@ import { Badge } from '@/components/ui/badge';
 import type { SessionUser } from '@/lib/types';
 import { signOut } from '@/lib/server-actions';
 import AvatarUpload from './avatar-upload';
-import { LogOut } from 'lucide-react';
+import { LayoutDashboard, LogOut } from 'lucide-react';
+import { USER_ROLE } from '@/generated/prisma';
+import { useRouter } from 'next/navigation';
 
 interface ProfileHeaderProps {
   user?: SessionUser;
 }
 
 const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
+  const router = useRouter();
   const initials =
     user?.name
       ?.split(' ')
       .map((n) => n[0])
       .join('')
       .toUpperCase() || 'U';
-
-  const userRole = (user as any)?.role || 'User';
 
   return (
     <Card>
@@ -37,7 +38,7 @@ const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
               <div className='flex flex-col sm:flex-row sm:items-center gap-2 mb-1'>
                 <CardTitle className='text-lg sm:text-2xl truncate'>{user?.name}</CardTitle>
                 <Badge variant='secondary' className='text-xs font-medium w-fit'>
-                  {userRole}
+                  {user?.role}
                 </Badge>
               </div>
               <CardDescription className='truncate text-sm'>{user?.email}</CardDescription>
@@ -45,9 +46,19 @@ const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
           </div>
 
           {/* Logout button - full width on mobile, fixed on larger screens */}
-          <CardAction className='mt-2 md:mt-0 w-full md:w-auto'>
+          <CardAction className='mt-2 md:mt-0 w-full md:w-auto flex flex-col gap-3 h-full'>
+            {user?.role === USER_ROLE.ADMIN && (
+              <Button
+                variant='outline'
+                size='sm'
+                onClick={() => router.push('/dashboard')}
+                className='w-full md:w-auto gap-2 whitespace-nowrap bg-transparent'
+              >
+                <LayoutDashboard className='h-4 w-4' /> Admin Access
+              </Button>
+            )}
             <Button
-              variant='outline'
+              variant='destructive'
               size='sm'
               onClick={() => {
                 localStorage.clear();

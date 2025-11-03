@@ -2,6 +2,7 @@ import { inferAdditionalFields, lastLoginMethodClient, passkeyClient, twoFactorC
 import { createAuthClient } from "better-auth/react"
 import { auth } from "./auth"
 import { ac, admin, user } from "./permission"
+import { USER_ROLE } from "@/generated/prisma"
 
 export const authClient = createAuthClient({
     appName: "For the Dreamers",
@@ -12,11 +13,11 @@ export const authClient = createAuthClient({
         twoFactorClient(),
         passkeyClient(),
         adminClient({
-            defaultRole: "USER",
+            defaultRole: USER_ROLE.USER,
             ac,
             roles: {
-                admin,
-                user
+                [USER_ROLE.ADMIN]: admin,
+                [USER_ROLE.USER]: user
             }
         }),
     ]

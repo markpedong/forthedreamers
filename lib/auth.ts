@@ -10,6 +10,7 @@ import { nextCookies } from "better-auth/next-js";
 import DeleteAccountEmail from "@/components/emails/delete-account-email";
 import { passkey } from "better-auth/plugins/passkey";
 import { ac, admin, user } from "./permission";
+import { USER_ROLE } from "@/generated/prisma";
 
 export const auth = betterAuth({
   appName: "For the Dreamers",
@@ -77,11 +78,11 @@ export const auth = betterAuth({
     twoFactor(),
     passkey(),
     adminPlugin({
-      defaultRole: "USER",
+      defaultRole: USER_ROLE.USER,
       ac,
       roles: {
-        admin,
-        user
+        [USER_ROLE.ADMIN]: admin,
+        [USER_ROLE.USER]: user
       }
     }),
   ]
