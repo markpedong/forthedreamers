@@ -18,6 +18,7 @@ import { Session } from '@/lib/types';
 import { usePathname, useRouter } from 'next/navigation';
 import classNames from 'classnames';
 import { signOut } from '@/lib/server-actions';
+import Link from 'next/link';
 
 const Navbar: FC<{ session: Session }> = ({ session }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -102,7 +103,9 @@ const Navbar: FC<{ session: Session }> = ({ session }) => {
             },
           )}
         >
-          <div className='font-bold text-primary'>FTD</div>
+          <Link href='/' className='font-bold text-primary'>
+            FTD
+          </Link>
           {SearchBar}
           <div className='flex items-center gap-2'>
             {!!session ? (
