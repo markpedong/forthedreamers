@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
-import './globals.css';
-import MainProvider from '@/components/provider/main-provider';
 import { getSession } from '@/lib/server-actions';
+import { redirect } from 'next/navigation';
 
 const outfit = Outfit({
   variable: '--font-outfit',
@@ -18,18 +17,17 @@ export const metadata: Metadata = {
     'Learn how to handle authentication in Next.js using Better-Auth with this tutorial by Coding in Flow',
 };
 
-export default async function RootLayout({
+export default async function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const session = await getSession();
 
-  return (
-    <html lang='en' suppressHydrationWarning>
-      <body className={`${outfit.className} antialiased`}>
-        <MainProvider session={session}>{children}</MainProvider>
-      </body>
-    </html>
-  );
+  if (!!session) {
+    redirect('/profile');
+    return;
+  }
+
+  return <>{children}</>;
 }
