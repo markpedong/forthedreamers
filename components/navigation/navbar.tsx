@@ -1,6 +1,6 @@
 'use client';
 
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { LogIn, Search, ShoppingCart, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,40 +9,19 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useTheme } from 'next-themes';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import { SearchOverlay } from './search-overlay';
 import { Session } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import classNames from 'classnames';
 
 const Navbar: FC<{ session: Session }> = ({ session }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const { theme, setTheme } = useTheme();
   const isMobile = useIsMobile();
   const router = useRouter();
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setIsSearchOpen(true);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const handleSearchClick = () => setIsSearchOpen(true);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Searching for:', searchQuery);
-  };
 
   const CartButton = (
     <Button variant='ghost' size='icon' className='relative'>
@@ -53,27 +32,16 @@ const Navbar: FC<{ session: Session }> = ({ session }) => {
     </Button>
   );
 
-  const ProfileButton = isMobile ? (
-    <Link href='/profile'>
-      <Button variant='ghost' size='icon'>
-        <User className='w-5 h-5' />
-      </Button>
-    </Link>
-  ) : (
+  const ProfileButton = isMobile ? null : (
     <DropdownMenu>
-      <Button variant='ghost' size='icon'>
-        <User className='w-5 h-5' />
-      </Button>
+      <DropdownMenuTrigger asChild>
+        <Button variant='ghost' size='icon'>
+          <User className='w-5 h-5' />
+        </Button>
+      </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-56'>
-        <DropdownMenuItem>My Account</DropdownMenuItem>
-        <DropdownMenuItem>My Purchases</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuCheckboxItem
-          checked={theme === 'dark'}
-          onCheckedChange={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        >
-          Dark Mode
-        </DropdownMenuCheckboxItem>
+        <DropdownMenuItem onClick={() => router.push('/profile')}>Profile</DropdownMenuItem>
+        <DropdownMenuItem>Orders</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>Logout</DropdownMenuItem>
       </DropdownMenuContent>
@@ -81,24 +49,22 @@ const Navbar: FC<{ session: Session }> = ({ session }) => {
   );
 
   const SearchBar = (
-    <form onSubmit={handleSearch} className={`${isMobile ? 'flex-1 mx-2' : 'flex-1 max-w-md'}`}>
-      <div className='relative cursor-pointer' onClick={handleSearchClick}>
-        <Input
-          type='text'
-          placeholder={isMobile ? 'Search...' : 'Search products, categories, shops...'}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onClick={handleSearchClick}
-          readOnly
-          className={`w-full rounded-full bg-muted border-0 focus-visible:ring-2 focus-visible:ring-primary cursor-pointer 
+    <div
+      className={`relative cursor-pointer ${isMobile ? 'flex-1 mx-2' : 'flex-1 max-w-md'}`}
+      onClick={() => setIsSearchOpen(true)}
+    >
+      <Input
+        type='text'
+        placeholder={isMobile ? 'Search...' : 'Search products, categories, shops...'}
+        readOnly
+        className={`w-full rounded-full bg-muted border-0 focus-visible:ring-2 focus-visible:ring-primary cursor-pointer 
             ${isMobile ? 'pl-8 pr-3 py-1.5 text-sm' : 'pl-10 pr-4 py-2'}`}
-        />
-        <Search
-          className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground 
+      />
+      <Search
+        className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground 
             ${isMobile ? 'left-2.5 w-4 h-4' : 'left-3 w-4 h-4'}`}
-        />
-      </div>
-    </form>
+      />
+    </div>
   );
 
   return (
@@ -112,9 +78,12 @@ const Navbar: FC<{ session: Session }> = ({ session }) => {
         }`}
       >
         <div
-          className={`w-full max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4 ${
-            isMobile ? '' : 'gap-4'
-          }`}
+          className={classNames(
+            'w-full max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4',
+            {
+              'gap-4': isMobile,
+            },
+          )}
         >
           <div className='font-bold text-primary'>FTD</div>
           {SearchBar}

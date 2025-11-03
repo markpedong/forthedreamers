@@ -13,6 +13,11 @@ const useFormSchema = () => {
     .min(2, { message: 'Name must be at least 2 characters' })
     .max(50, { message: 'Name must be less than 50 characters' })
 
+  const search = z
+    .string()
+    .min(2, { message: 'Search must be at least 2 characters' })
+    .max(50, { message: 'Search must be less than 50 characters' })
+
   const nameEmailSchema = z.object({ name: nameSchema, }).extend({ email: emailSchema });
 
   const password = z
@@ -74,6 +79,8 @@ const useFormSchema = () => {
     name: nameSchema.optional(),
   });
 
+  const searchSchema = z.object({ search })
+
   return {
     nameEmailSchema,
     password,
@@ -84,7 +91,8 @@ const useFormSchema = () => {
     loginSchema,
     changePasswordSchema,
     twoFactorSchema,
-    passkeySchema
+    passkeySchema,
+    searchSchema
   }
 }
 

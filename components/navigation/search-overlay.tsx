@@ -7,6 +7,10 @@ import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import useFormSchema from '@/hooks/useFormSchema';
+import { SchemaForm } from '@/lib/types';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -26,6 +30,15 @@ const DUMMY_SUGGESTIONS = [
 export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<typeof DUMMY_SUGGESTIONS>([]);
+  const { searchSchema } = useFormSchema();
+  const form = useForm<SchemaForm<typeof searchSchema>>({
+    resolver: zodResolver(searchSchema),
+    defaultValues: { search: '' },
+  });
+
+  const onSubmit = async ({ search }: SchemaForm<typeof searchSchema>) => {
+    console.log('Searching for:', search);
+  };
 
   useEffect(() => {
     // Handle Cmd+K / Ctrl+K

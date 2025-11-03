@@ -7,8 +7,11 @@ import ThemeToggleButton from './theme-toggle';
 import ToastListener from './toast-listener';
 import ImpesonationIndicator from './impersonation-indicator';
 import { Session } from '@/lib/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const MainProvider: FC<PropsWithChildren<{ session: Session }>> = ({ children, session }) => {
+  const isMobile = useIsMobile();
+
   return (
     <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
       <Suspense fallback={null}>

@@ -13,7 +13,7 @@ const navItems = [
   { icon: Home, label: 'Home', href: '/' },
   { icon: ShoppingBag, label: 'Categories', href: '/categories' },
   { icon: Package, label: 'Orders', href: '/orders', protected: true },
-  { icon: User, label: 'Account', href: '/account', protected: true },
+  { icon: User, label: 'Profile', href: '/profile', protected: true },
 ];
 
 const BottomNav: FC<{ session: Session }> = ({ session }) => {
