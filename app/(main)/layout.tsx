@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
-import './globals.css';
+import '../globals.css';
 import MainProvider from '@/components/provider/main-provider';
 import { getSession } from '@/lib/server-actions';
 
