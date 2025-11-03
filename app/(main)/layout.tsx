@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
 import Navbar from '@/components/navigation/navbar';
 import { BottomNav } from '@/components/navigation/bottom-nav';
+import { getSession } from '@/lib/server-actions';
 
 const outfit = Outfit({
   variable: '--font-outfit',
@@ -22,9 +23,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getSession();
+
   return (
     <>
-      <Navbar />
+      <Navbar session={session} />
       {children}
       <BottomNav />
     </>

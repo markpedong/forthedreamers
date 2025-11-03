@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Search, ShoppingCart, User } from 'lucide-react';
+import React, { FC, useEffect, useState } from 'react';
+import { LogIn, Search, ShoppingCart, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -16,12 +16,15 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { SearchOverlay } from './search-overlay';
+import { Session } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 
-const Navbar = () => {
+const Navbar: FC<{ session: Session }> = ({ session }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { theme, setTheme } = useTheme();
   const isMobile = useIsMobile();
+  const router = useRouter();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -58,11 +61,9 @@ const Navbar = () => {
     </Link>
   ) : (
     <DropdownMenu>
-      <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-        <Button variant='ghost' size='icon'>
-          <User className='w-5 h-5' />
-        </Button>
-      </motion.div>
+      <Button variant='ghost' size='icon'>
+        <User className='w-5 h-5' />
+      </Button>
       <DropdownMenuContent align='end' className='w-56'>
         <DropdownMenuItem>My Account</DropdownMenuItem>
         <DropdownMenuItem>My Purchases</DropdownMenuItem>
@@ -115,15 +116,22 @@ const Navbar = () => {
             isMobile ? '' : 'gap-4'
           }`}
         >
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-primary`}>
-              {isMobile ? 'Shopee' : 'FTD'}
-            </div>
-          </motion.div>
+          <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-primary`}>
+            {isMobile ? 'Shopee' : 'FTD'}
+          </div>
           {SearchBar}
           <div className='flex items-center gap-2'>
-            {CartButton}
-            {ProfileButton}
+            {!!session ? (
+              <>
+                {CartButton}
+                {ProfileButton}
+              </>
+            ) : (
+              <Button variant='ghost' onClick={() => router.push('/sign-in')}>
+                Sign In
+                <LogIn />
+              </Button>
+            )}
           </div>
         </div>
       </motion.nav>
