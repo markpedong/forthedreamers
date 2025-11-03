@@ -204,6 +204,8 @@ model Variant {
 
   // ✅ Optimized
   @@index([productId, isRequired])
+
+  @@map("variant")
 }
 
 model VariantOption {
@@ -229,6 +231,8 @@ model VariantOption {
   @@index([variantId])
   @@index([variantId, price])
   @@index([variantId, stock])
+
+  @@map("variantOption")
 }
 
 model Spec {
@@ -243,6 +247,8 @@ model Spec {
   updatedAt DateTime @updatedAt
 
   @@index([productId])
+
+  @@map("spec")
 }
 
 model Seller {
@@ -255,6 +261,8 @@ model Seller {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("seller")
 }
 
 model Category {
@@ -264,6 +272,8 @@ model Category {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("category")
 }
 
 model Review {
@@ -286,6 +296,8 @@ model Review {
   @@index([variantOptionId])
   @@index([userId])
   @@index([rating])
+
+  @@map("review")
 }
 
 // ======================================================
@@ -303,6 +315,8 @@ model OrderGroup {
 
   // ✅ Optimized
   @@index([userId, paymentStatus])
+
+  @@map("orderGroup")
 }
 
 model Order {
@@ -331,6 +345,8 @@ model Order {
   @@index([sellerId])
   @@index([sellerId, status])
   @@index([orderGroupId, sellerId])
+
+  @@map("order")
 }
 
 model OrderItem {
@@ -359,6 +375,8 @@ model OrderItem {
   @@index([productId])
   @@index([variantOptionId])
   @@index([productId, orderId])
+
+  @@map("orderItem")
 }
 
 model Shipment {
@@ -379,4 +397,6 @@ model Shipment {
   @@index([orderId])
   @@index([trackingCode])
   @@index([status])
+
+  @@map("shipment")
 }
