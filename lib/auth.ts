@@ -77,8 +77,8 @@ export const auth = betterAuth({
     twoFactor(),
     passkey(),
     adminPlugin({
-      defaultRole: "user",
-      ac, 
+      defaultRole: "USER",
+      ac,
       roles: {
         admin,
         user

@@ -12,7 +12,7 @@ export const authClient = createAuthClient({
         twoFactorClient(),
         passkeyClient(),
         adminClient({
-            defaultRole: "user",
+            defaultRole: "USER",
             ac,
             roles: {
                 admin,
