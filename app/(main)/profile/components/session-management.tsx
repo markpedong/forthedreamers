@@ -12,7 +12,7 @@ import SessionItem from '@/components/reusable/session-item';
 
 interface SessionsSectionProps {
   sessions: Session[];
-  currentSessionToken: string;
+  currentSessionToken?: string;
 }
 
 const SessionManagement: FC<SessionsSectionProps> = ({ sessions, currentSessionToken }) => {

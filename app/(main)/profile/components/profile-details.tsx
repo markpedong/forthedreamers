@@ -21,7 +21,7 @@ import Input from '@/components/reusable/input';
 import { AlertCircle, Badge, CheckCircle2, Clock, Users } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 
-const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
+const ProfileDetails: FC<{ user?: SessionUser }> = ({ user }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [isSubmitting, startSubmitting] = useTransition();
@@ -29,13 +29,13 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
 
   const form = useForm<SchemaForm<typeof nameEmailSchema>>({
     resolver: zodResolver(nameEmailSchema),
-    defaultValues: { name: user.name ?? '', email: user.email ?? '' },
+    defaultValues: { name: user?.name ?? '', email: user?.email ?? '' },
   });
 
   const handleResendVerification = () => {
     startTransition(async () => {
       try {
-        await sendVerificationEmailAction(user.email);
+        await sendVerificationEmailAction(`${user?.email}`);
         toast.success('Success', { description: 'Verification email sent' });
       } catch {
         toast.error('Error', { description: 'Failed to send verification email' });
@@ -77,7 +77,7 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
                   variant='outline'
                   onClick={() => {
                     setIsEditing(false);
-                    form.reset({ name: user.name });
+                    form.reset({ name: user?.name });
                   }}
                   disabled={isSubmitting}
                 >
@@ -115,12 +115,12 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
             <div className='flex items-start gap-3'>
               <div
                 className={`mt-0.5 flex h-8 w-8 items-center justify-center rounded-full ${
-                  user.emailVerified
+                  user?.emailVerified
                     ? 'bg-green-100 dark:bg-green-900/30'
                     : 'bg-amber-100 dark:bg-amber-900/30'
                 }`}
               >
-                {user.emailVerified ? (
+                {user?.emailVerified ? (
                   <CheckCircle2 className='h-5 w-5 text-green-600 dark:text-green-400' />
                 ) : (
                   <AlertCircle className='h-5 w-5 text-amber-600 dark:text-amber-400' />
@@ -129,14 +129,14 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
               <div>
                 <p className='font-semibold text-foreground'>Email Verification</p>
                 <p className='text-sm text-muted-foreground'>
-                  {user.emailVerified
+                  {user?.emailVerified
                     ? 'Your email address has been verified.'
                     : 'Your email address is not verified yet.'}
                 </p>
               </div>
             </div>
 
-            {!user.emailVerified && (
+            {!user?.emailVerified && (
               <Button
                 type='button'
                 variant='outline'
@@ -158,10 +158,14 @@ const ProfileDetails: FC<{ user: SessionUser }> = ({ user }) => {
                 { label: 'Status', value: 'Active', icon: Users },
                 {
                   label: 'Member Since',
-                  value: formatDate(user.createdAt, 'MM/DD/YYYY'),
+                  value: user?.createdAt && formatDate(user.createdAt, 'MM/DD/YYYY'),
                   icon: Clock,
                 },
-                { label: 'Last Updated', value: formatDate(user.updatedAt), icon: Clock },
+                {
+                  label: 'Last Updated',
+                  value: user?.updatedAt && formatDate(user.updatedAt),
+                  icon: Clock,
+                },
               ].map(({ label, value, icon: Icon }) => (
                 <div
                   key={label}

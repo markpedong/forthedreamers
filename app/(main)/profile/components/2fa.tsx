@@ -20,9 +20,9 @@ import { AlertCircle, CopyIcon, RefreshCw, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { BackupCodesStep } from './2fa-components';
 
-const TwoFactorSection: FC<{ user: SessionUser }> = ({ user }) => {
+const TwoFactorSection: FC<{ user?: SessionUser }> = ({ user }) => {
   const router = useRouter();
-  const is2faEnabled = user.twoFactorEnabled;
+  const is2faEnabled = user?.twoFactorEnabled;
   const { twoFactorSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof twoFactorSchema>>({
     resolver: zodResolver(twoFactorSchema),

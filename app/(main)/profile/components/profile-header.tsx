@@ -10,12 +10,12 @@ import AvatarUpload from './avatar-upload';
 import { LogOut } from 'lucide-react';
 
 interface ProfileHeaderProps {
-  user: SessionUser;
+  user?: SessionUser;
 }
 
 const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
   const initials =
-    user.name
+    user?.name
       ?.split(' ')
       .map((n) => n[0])
       .join('')
@@ -29,18 +29,18 @@ const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
         <div className='flex flex-col md:flex-row md:items-start md:justify-between gap-4'>
           {/* Avatar and user info section */}
           <div className='flex items-start gap-3 sm:gap-4 flex-1 min-w-0'>
-            <AvatarUpload src={user.image ?? ''} alt={user.name} initials={initials} />
+            <AvatarUpload src={user?.image ?? ''} alt={`${user?.name}`} initials={initials} />
             <div className='flex-1 min-w-0'>
               <p className='text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1'>
                 Signed in as
               </p>
               <div className='flex flex-col sm:flex-row sm:items-center gap-2 mb-1'>
-                <CardTitle className='text-lg sm:text-2xl truncate'>{user.name}</CardTitle>
+                <CardTitle className='text-lg sm:text-2xl truncate'>{user?.name}</CardTitle>
                 <Badge variant='secondary' className='text-xs font-medium w-fit'>
                   {userRole}
                 </Badge>
               </div>
-              <CardDescription className='truncate text-sm'>{user.email}</CardDescription>
+              <CardDescription className='truncate text-sm'>{user?.email}</CardDescription>
             </div>
           </div>
 

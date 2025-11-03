@@ -20,7 +20,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 interface AccountManagementProps {
-  user: SessionUser;
+  user?: SessionUser;
   accounts: Account[];
   hasPassword: boolean;
 }
@@ -60,7 +60,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
   const handleSetPassword = () => {
     startSubmitting(async () => {
       try {
-        await authClient.requestPasswordReset({ email: user.email, redirectTo: '/reset-password' });
+        await authClient.requestPasswordReset({ email: `${user?.email}`, redirectTo: '/reset-password' });
         toast.success('Password reset link sent successfully');
       } catch (error) {
         toast.error(error instanceof Error ? error.message : 'Failed to send reset link');

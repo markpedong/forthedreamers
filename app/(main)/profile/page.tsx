@@ -1,12 +1,12 @@
-import { redirect } from 'next/navigation';
 import {
   CreditCard,
   Heart,
   MapPin,
   Package,
   Settings,
-  Shield, Smartphone,
-  User
+  Shield,
+  Smartphone,
+  User,
 } from 'lucide-react';
 import { getSession, listAllSessions, listPasskeys, listUserAccounts } from '@/lib/server-actions';
 import ProfileDetails from './components/profile-details';
@@ -26,10 +26,6 @@ export const metadata = {
 const ProfilePage = async () => {
   const session = await getSession();
 
-  if (!session) {
-    redirect('/sign-in');
-  }
-
   const [accounts, sessions, passkeys] = await Promise.all([
     listUserAccounts(),
     listAllSessions(),
@@ -43,7 +39,7 @@ const ProfilePage = async () => {
       id: 'profile',
       label: 'Profile',
       icon: <User className='h-4 w-4' />,
-      content: <ProfileDetails user={session.user} />,
+      content: <ProfileDetails user={session?.user} />,
     },
     {
       id: 'account',
@@ -53,7 +49,7 @@ const ProfilePage = async () => {
         <AccountManagement
           accounts={nonCredentialAccounts}
           hasPassword={hasPassword}
-          user={session.user}
+          user={session?.user}
         />
       ),
     },
@@ -82,7 +78,7 @@ const ProfilePage = async () => {
       label: 'Sessions',
       icon: <Smartphone className='h-4 w-4' />,
       content: (
-        <SessionManagement currentSessionToken={session.session.token} sessions={sessions} />
+        <SessionManagement currentSessionToken={session?.session.token} sessions={sessions} />
       ),
     },
     {
@@ -98,7 +94,7 @@ const ProfilePage = async () => {
             </p>
           </div>
 
-          <TwoFactorSection user={session.user} />
+          <TwoFactorSection user={session?.user} />
           <PasskeysSection passkeys={passkeys} />
         </div>
       ),
@@ -108,7 +104,7 @@ const ProfilePage = async () => {
   return (
     <main className='min-h-screen bg-background'>
       <div className='mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8'>
-        <ProfileHeader user={session.user} />
+        <ProfileHeader user={session?.user} />
         <ClientOnly>
           <ProfileLayout sections={sections} hasPassword={hasPassword} />
         </ClientOnly>
