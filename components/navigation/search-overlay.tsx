@@ -26,10 +26,9 @@ const DUMMY_SUGGESTIONS = [
   { type: 'shop', label: 'TechHub Store', category: 'Shop' },
   { type: 'shop', label: 'Fashion Plus', category: 'Shop' },
 ];
-
+const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<typeof DUMMY_SUGGESTIONS>([]);
-const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const { searchSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof searchSchema>>({
     resolver: zodResolver(searchSchema),
