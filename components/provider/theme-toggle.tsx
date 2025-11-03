@@ -2,6 +2,8 @@ import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
+import { useIsMobile } from '@/hooks/use-mobile';
+import classNames from 'classnames';
 
 const Moon = dynamic(() => import('lucide-react').then((mod) => mod.Moon), {
   ssr: false,
@@ -12,6 +14,7 @@ const Sun = dynamic(() => import('lucide-react').then((mod) => mod.Sun), {
 
 const ThemeToggleButton = () => {
   const { theme, setTheme } = useTheme();
+  const isMobile = useIsMobile();
 
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
@@ -25,7 +28,9 @@ const ThemeToggleButton = () => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.2 }}
-        className='fixed bottom-5 right-5 z-50'
+        className={classNames('fixed bottom-5 right-5 z-50', {
+          'bottom-28 ': isMobile,
+        })}
       >
         <Button
           variant='outline'

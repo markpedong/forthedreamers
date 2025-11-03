@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
 import Navbar from '@/components/navigation/navbar';
-import { BottomNav } from '@/components/navigation/bottom-nav';
+import BottomNav from '@/components/navigation/bottom-nav';
 import { getSession } from '@/lib/server-actions';
 
 const outfit = Outfit({
@@ -29,7 +29,7 @@ export default async function RootLayout({
     <>
       <Navbar session={session} />
       {children}
-      <BottomNav />
+      <BottomNav session={session} />
     </>
   );
 }

@@ -116,9 +116,7 @@ const Navbar: FC<{ session: Session }> = ({ session }) => {
             isMobile ? '' : 'gap-4'
           }`}
         >
-          <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold text-primary`}>
-            {isMobile ? 'Shopee' : 'FTD'}
-          </div>
+          <div className='font-bold text-primary'>FTD</div>
           {SearchBar}
           <div className='flex items-center gap-2'>
             {!!session ? (
