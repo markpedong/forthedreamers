@@ -15,13 +15,17 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
 import { SearchOverlay } from './search-overlay';
 import { Session } from '@/lib/types';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import classNames from 'classnames';
+import { signOut } from '@/lib/server-actions';
 
 const Navbar: FC<{ session: Session }> = ({ session }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const isMobile = useIsMobile();
   const router = useRouter();
+  const pathname = usePathname();
+
+  if (['/sign-in', '/reset-password'].includes(pathname)) return null;
 
   const CartButton = (
     <Button variant='ghost' size='icon' className='relative'>
@@ -32,7 +36,7 @@ const Navbar: FC<{ session: Session }> = ({ session }) => {
     </Button>
   );
 
-  const ProfileButton = isMobile ? null : (
+  const ProfileButton = !isMobile && (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant='ghost' size='icon'>
@@ -43,26 +47,36 @@ const Navbar: FC<{ session: Session }> = ({ session }) => {
         <DropdownMenuItem onClick={() => router.push('/profile')}>Profile</DropdownMenuItem>
         <DropdownMenuItem>Orders</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Logout</DropdownMenuItem>
+        <DropdownMenuItem onClick={signOut}>Logout</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 
   const SearchBar = (
     <div
-      className={`relative cursor-pointer ${isMobile ? 'flex-1 mx-2' : 'flex-1 max-w-md'}`}
+      className={classNames('relative cursor-pointer flex-1 max-w-md', {
+        'flex-1 mx-2': isMobile,
+      })}
       onClick={() => setIsSearchOpen(true)}
     >
       <Input
         type='text'
-        placeholder={isMobile ? 'Search...' : 'Search products, categories, shops...'}
+        placeholder='Search products, categories, shops...'
         readOnly
-        className={`w-full rounded-full bg-muted border-0 focus-visible:ring-2 focus-visible:ring-primary cursor-pointer 
-            ${isMobile ? 'pl-8 pr-3 py-1.5 text-sm' : 'pl-10 pr-4 py-2'}`}
+        className={classNames(
+          'w-full rounded-full bg-muted border-0 focus-visible:ring-2 focus-visible:ring-primary cursor-pointer pl-10 pr-4 py-2',
+          {
+            'pl-8 pr-3 py-1.5 text-sm': isMobile,
+          },
+        )}
       />
       <Search
-        className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground 
-            ${isMobile ? 'left-2.5 w-4 h-4' : 'left-3 w-4 h-4'}`}
+        className={classNames(
+          'absolute top-1/2 -translate-y-1/2 text-muted-foreground left-3 w-4 h-4',
+          {
+            'left-2.5 w-4 h-4': isMobile,
+          },
+        )}
       />
     </div>
   );
@@ -73,9 +87,12 @@ const Navbar: FC<{ session: Session }> = ({ session }) => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.3 }}
-        className={`sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border ${
-          isMobile ? 'md:hidden' : 'hidden md:flex'
-        }`}
+        className={classNames(
+          'sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border',
+          {
+            'md:hidden': isMobile,
+          },
+        )}
       >
         <div
           className={classNames(

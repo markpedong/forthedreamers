@@ -23,5 +23,5 @@ export default async function AuthLayout({
     return;
   }
 
-  return <>{children}</>;
+  return children;
 }
