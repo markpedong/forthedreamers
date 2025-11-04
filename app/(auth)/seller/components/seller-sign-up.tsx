@@ -36,6 +36,7 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     startTransition(async () => {
       try {
         const res = await signUp(values.email, values.password, values.name);
+
       } catch {
         toast.error('Sign up failed. Please try again.');
       }
