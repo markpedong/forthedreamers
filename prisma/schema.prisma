@@ -45,7 +45,7 @@ enum USER_ROLE {
 // MODELS
 // ======================================================
 
-model User {
+model Users {
   id               String      @id
   name             String
   email            String
@@ -54,10 +54,10 @@ model User {
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @default(now()) @updatedAt
   twoFactorEnabled Boolean?    @default(false)
-  sessions         Session[]
-  accounts         Account[]
-  twofactors       TwoFactor[]
-  passkeys         Passkey[]
+  sessions         Sessions[]
+  accounts         Accounts[]
+  twofactors       TwoFactors[]
+  passkeys         Passkeys[]
 
   role       USER_ROLE @default(USER)
   banned     Boolean?  @default(false)
@@ -65,10 +65,10 @@ model User {
   banExpires DateTime?
 
   @@unique([email])
-  @@map("user")
+  @@map("users")
 }
 
-model Session {
+model Sessions {
   id        String   @id
   expiresAt DateTime
   token     String
@@ -77,20 +77,20 @@ model Session {
   ipAddress String?
   userAgent String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   impersonatedBy String?
 
   @@unique([token])
-  @@map("session")
+  @@map("sessions")
 }
 
-model Account {
+model Accounts {
   id                    String    @id
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                  Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -101,10 +101,10 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
-  @@map("account")
+  @@map("accounts")
 }
 
-model Verification {
+model Verifications {
   id         String   @id
   identifier String
   value      String
@@ -112,25 +112,25 @@ model Verification {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
 
-  @@map("verification")
+  @@map("verifications")
 }
 
-model TwoFactor {
+model TwoFactors {
   id          String @id
   secret      String
   backupCodes String
   userId      String
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        Users   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("twoFactor")
+  @@map("twoFactors")
 }
 
-model Passkey {
+model Passkeys {
   id           String    @id
   name         String?
   publicKey    String
   userId       String
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
   credentialID String
   counter      Int
   deviceType   String
@@ -139,10 +139,10 @@ model Passkey {
   createdAt    DateTime?
   aaguid       String?
 
-  @@map("passkey")
+  @@map("passkeys")
 }
 
-model Product {
+model Products {
   id          Int      @id @default(autoincrement())
   name        String
   slug        String   @unique
@@ -161,15 +161,15 @@ model Product {
   status ProductStatus @default(ACTIVE)
 
   sellerId Int
-  seller   Seller @relation(fields: [sellerId], references: [id])
+  seller   Sellers @relation(fields: [sellerId], references: [id])
 
   categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Categories @relation(fields: [categoryId], references: [id])
 
-  specs      Spec[]
-  variants   Variant[]
-  reviews    Review[]
-  orderItems OrderItem[]
+  specs      Specs[]
+  variants   Variants[]
+  reviews    Reviews[]
+  orderItems OrderItems[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -186,18 +186,18 @@ model Product {
   // ✅ Valid GIN index (only arrays/json supported)
   @@index([tags], type: Gin, map: "product_tags_gin_idx")
 
-  @@map("product")
+  @@map("products")
 }
 
-model Variant {
+model Variants {
   id         String  @id
   name       String
   isRequired Boolean @default(true)
 
   productId Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Products @relation(fields: [productId], references: [id])
 
-  options VariantOption[]
+  options VariantOptions[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -205,10 +205,10 @@ model Variant {
   // ✅ Optimized
   @@index([productId, isRequired])
 
-  @@map("variant")
+  @@map("variants")
 }
 
-model VariantOption {
+model VariantOptions {
   id                String  @id
   variantOptionName String
   price             Float
@@ -217,10 +217,10 @@ model VariantOption {
   coupon            String?
 
   variantId String
-  variant   Variant @relation(fields: [variantId], references: [id])
+  variant   Variants @relation(fields: [variantId], references: [id])
 
-  reviews    Review[]
-  orderItems OrderItem[]
+  reviews    Reviews[]
+  orderItems OrderItems[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -232,61 +232,61 @@ model VariantOption {
   @@index([variantId, price])
   @@index([variantId, stock])
 
-  @@map("variantOption")
+  @@map("variantOptions")
 }
 
-model Spec {
+model Specs {
   id    Int    @id @default(autoincrement())
   label String
   value String
 
   productId Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Products @relation(fields: [productId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([productId])
 
-  @@map("spec")
+  @@map("specs")
 }
 
-model Seller {
+model Sellers {
   id        Int     @id @default(autoincrement())
   storeName String
   contact   String?
 
-  products Product[]
-  orders   Order[]
+  products Products[]
+  orders   Orders[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("seller")
+  @@map("sellers")
 }
 
-model Category {
+model Categories {
   id       Int       @id @default(autoincrement())
   name     String    @unique
-  products Product[]
+  products Products[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("category")
+  @@map("categories")
 }
 
-model Review {
+model Reviews {
   id     Int    @id @default(autoincrement())
   title  String
   review String
   rating Float
 
   productId Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Products @relation(fields: [productId], references: [id])
 
   variantOptionId String?
-  variantOption   VariantOption? @relation(fields: [variantOptionId], references: [id])
+  variantOption   VariantOptions? @relation(fields: [variantOptionId], references: [id])
 
   userId    Int
   createdAt DateTime @default(now())
@@ -297,35 +297,35 @@ model Review {
   @@index([userId])
   @@index([rating])
 
-  @@map("review")
+  @@map("reviews")
 }
 
 // ======================================================
 // ORDER SYSTEM
 // ======================================================
 
-model OrderGroup {
+model OrderGroups {
   id            Int           @id @default(autoincrement())
   userId        Int
   totalAmount   Float
   paymentStatus PaymentStatus @default(PENDING)
 
-  orders    Order[]
+  orders    Orders[]
   createdAt DateTime @default(now())
 
   // ✅ Optimized
   @@index([userId, paymentStatus])
 
-  @@map("orderGroup")
+  @@map("orderGroups")
 }
 
-model Order {
+model Orders {
   id           Int        @id @default(autoincrement())
   orderGroupId Int
-  orderGroup   OrderGroup @relation(fields: [orderGroupId], references: [id])
+  orderGroup   OrderGroups @relation(fields: [orderGroupId], references: [id])
 
   sellerId Int
-  seller   Seller @relation(fields: [sellerId], references: [id])
+  seller   Sellers @relation(fields: [sellerId], references: [id])
 
   subtotal       Float
   shippingFee    Float @default(0)
@@ -334,8 +334,8 @@ model Order {
 
   status OrderStatus @default(PENDING)
 
-  items     OrderItem[]
-  shipments Shipment[]
+  items     OrderItems[]
+  shipments Shipments[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -346,19 +346,19 @@ model Order {
   @@index([sellerId, status])
   @@index([orderGroupId, sellerId])
 
-  @@map("order")
+  @@map("orders")
 }
 
-model OrderItem {
+model OrderItems {
   id      Int   @id @default(autoincrement())
   orderId Int
-  order   Order @relation(fields: [orderId], references: [id])
+  order   Orders @relation(fields: [orderId], references: [id])
 
   productId Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Products @relation(fields: [productId], references: [id])
 
   variantOptionId String?
-  variantOption   VariantOption? @relation(fields: [variantOptionId], references: [id])
+  variantOption   VariantOptions? @relation(fields: [variantOptionId], references: [id])
 
   quantity Int
 
@@ -376,13 +376,13 @@ model OrderItem {
   @@index([variantOptionId])
   @@index([productId, orderId])
 
-  @@map("orderItem")
+  @@map("orderItems")
 }
 
-model Shipment {
+model Shipments {
   id      Int   @id @default(autoincrement())
   orderId Int
-  order   Order @relation(fields: [orderId], references: [id])
+  order   Orders @relation(fields: [orderId], references: [id])
 
   carrier      String?
   trackingCode String?
@@ -398,5 +398,5 @@ model Shipment {
   @@index([trackingCode])
   @@index([status])
 
-  @@map("shipment")
+  @@map("shipments")
 }
