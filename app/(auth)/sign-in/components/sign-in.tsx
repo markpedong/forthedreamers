@@ -12,6 +12,7 @@ import Divider from '@/components/reusable/divider';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
+import Link from 'next/link';
 
 const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const { refetch } = authClient.useSession();
@@ -116,6 +117,13 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           <button onClick={() => onNavigate('register')} className='text-primary hover:underline'>
             Create account
           </button>
+        </p>
+        <Divider title='Or sign in as a seller' />
+        <p className='text-center text-sm text-muted-foreground mt-4'>
+          Want to sell?{' '}
+          <Link href='/seller' className='text-primary hover:underline font-medium'>
+            Click here
+          </Link>
         </p>
       </div>
     </PageWrapper>

@@ -8,9 +8,6 @@ export type Session = Awaited<ReturnType<typeof getSession>>
 
 export type SessionUser = typeof auth.$Infer.Session.user;
 
-
-
-
 export type ProfileLayoutProps = {
   sections: Array<{
     id: string;
