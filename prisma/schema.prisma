@@ -12,13 +12,13 @@ datasource db {
 // ENUMS
 // ======================================================
 
-enum ProductStatus {
+enum PRODUCT_STATUS {
   ACTIVE
   INACTIVE
   DRAFT
 }
 
-enum OrderStatus {
+enum ORDER_STATUS {
   PENDING
   PAID
   PROCESSING
@@ -28,7 +28,7 @@ enum OrderStatus {
   REFUNDED
 }
 
-enum PaymentStatus {
+enum PAYMENT_STATUS {
   PENDING
   PAID
   FAILED
@@ -46,356 +46,321 @@ enum USER_ROLE {
 // ======================================================
 
 model Users {
-  id               String      @id
-  name             String
-  email            String
-  emailVerified    Boolean     @default(false)
-  image            String?
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @default(now()) @updatedAt
-  twoFactorEnabled Boolean?    @default(false)
-  sessions         Sessions[]
-  accounts         Accounts[]
-  twofactors       TwoFactors[]
-  passkeys         Passkeys[]
+  id                 String       @id
+  name               String
+  email              String       @unique
+  email_verified     Boolean      @default(false)
+  image              String?
+  created_at         DateTime     @default(now())
+  updated_at         DateTime     @default(now()) @updatedAt
+  two_factor_enabled Boolean?     @default(false)
+  role               USER_ROLE    @default(USER)
+  banned             Boolean?     @default(false)
+  ban_reason         String?
+  ban_expires        DateTime?
 
-  role       USER_ROLE @default(USER)
-  banned     Boolean?  @default(false)
-  banReason  String?
-  banExpires DateTime?
+  sessions   Sessions[]
+  accounts   Accounts[]
+  twofactors TwoFactors[]
+  passkeys   Passkeys[]
 
-  @@unique([email])
   @@map("users")
 }
 
 model Sessions {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String   @id
+  expires_at      DateTime
+  token           String   @unique
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  ip_address      String?
+  user_agent      String?
+  user_id         String
+  impersonated_by String?
 
-  impersonatedBy String?
+  user Users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@map("sessions")
 }
 
 model Accounts {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  id                       String   @id
+  account_id               String
+  provider_id              String
+  user_id                  String
+  access_token             String?
+  refresh_token            String?
+  id_token                 String?
+  access_token_expires_at  DateTime?
+  refresh_token_expires_at DateTime?
+  scope                    String?
+  password                 String?
+  created_at               DateTime @default(now())
+  updated_at               DateTime @updatedAt
+
+  user Users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("accounts")
 }
 
 model Verifications {
-  id         String   @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  id          String   @id
+  identifier  String
+  value       String
+  expires_at  DateTime
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
 
   @@map("verifications")
 }
 
 model TwoFactors {
-  id          String @id
-  secret      String
-  backupCodes String
-  userId      String
-  user        Users   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String @id
+  secret       String
+  backup_codes String
+  user_id      String
 
-  @@map("twoFactors")
+  user Users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("two_factors")
 }
 
 model Passkeys {
-  id           String    @id
-  name         String?
-  publicKey    String
-  userId       String
-  user         Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  credentialID String
-  counter      Int
-  deviceType   String
-  backedUp     Boolean
-  transports   String?
-  createdAt    DateTime?
-  aaguid       String?
+  id            String   @id
+  name          String?
+  public_key    String
+  user_id       String
+  credential_id String
+  counter       Int
+  device_type   String
+  backed_up     Boolean
+  transports    String?
+  created_at    DateTime?
+  aaguid        String?
+
+  user Users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("passkeys")
 }
 
 model Products {
-  id          Int      @id @default(autoincrement())
-  name        String
-  slug        String   @unique
-  brand       String?
-  basePrice   Float?
-  description String
-  images      String[]
-  tags        String[] // ✅ VALID Postgres array type
+  id            Int       @id @default(autoincrement())
+  name          String
+  slug          String    @unique
+  brand         String?
+  base_price    Float?
+  description   String
+  images        String[]
+  tags          String[]
+  review_count  Int   @default(0)
+  rating        Float @default(0)
+  sold          Int   @default(0)
+  stock         Int?
+  status        PRODUCT_STATUS @default(ACTIVE)
+  seller_id     Int
+  category_id   Int
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
-  reviewCount Int   @default(0)
-  rating      Float @default(0)
-  sold        Int   @default(0)
+  seller   Sellers    @relation(fields: [seller_id], references: [id])
+  category Categories @relation(fields: [category_id], references: [id])
+  specs       Specs[]
+  variants    Variants[]
+  reviews     Reviews[]
+  order_items OrderItems[]
 
-  stock Int?
-
-  status ProductStatus @default(ACTIVE)
-
-  sellerId Int
-  seller   Sellers @relation(fields: [sellerId], references: [id])
-
-  categoryId Int
-  category   Categories @relation(fields: [categoryId], references: [id])
-
-  specs      Specs[]
-  variants   Variants[]
-  reviews    Reviews[]
-  orderItems OrderItems[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // ✅ Optimized valid indexes for PostgreSQL
-  @@index([sellerId], map: "product_seller_idx")
-  @@index([categoryId], map: "product_category_idx")
-  @@index([name], map: "product_name_idx")
-  @@index([brand], map: "product_brand_idx")
-  @@index([status], map: "product_status_idx")
-  @@index([rating], map: "product_rating_idx")
-  @@index([sold], map: "product_sold_idx")
-  @@index([basePrice], map: "product_basePrice_idx")
-  // ✅ Valid GIN index (only arrays/json supported)
-  @@index([tags], type: Gin, map: "product_tags_gin_idx")
+  @@index([seller_id], name: "products_seller_idx")
+  @@index([category_id], name: "products_category_idx")
+  @@index([name], name: "products_name_idx")
+  @@index([brand], name: "products_brand_idx")
+  @@index([status], name: "products_status_idx")
+  @@index([rating], name: "products_rating_idx")
+  @@index([sold], name: "products_sold_idx")
+  @@index([base_price], name: "products_base_price_idx")
+  @@index([tags], type: Gin, name: "products_tags_gin_idx")
 
   @@map("products")
 }
 
 model Variants {
-  id         String  @id
-  name       String
-  isRequired Boolean @default(true)
+  id          String   @id
+  name        String
+  is_required Boolean  @default(true)
+  product_id  Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
-  productId Int
-  product   Products @relation(fields: [productId], references: [id])
-
+  product Products @relation(fields: [product_id], references: [id])
   options VariantOptions[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // ✅ Optimized
-  @@index([productId, isRequired])
+  @@index([product_id, is_required], name: "variants_product_required_idx")
 
   @@map("variants")
 }
 
 model VariantOptions {
-  id                String  @id
-  variantOptionName String
-  price             Float
-  discountedPrice   Float?
-  stock             Int
-  coupon            String?
+  id                    String  @id
+  variant_option_name   String
+  price                 Float
+  discounted_price      Float?
+  stock                 Int
+  coupon                String?
+  variant_id            String
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
 
-  variantId String
-  variant   Variants @relation(fields: [variantId], references: [id])
+  variant Variants @relation(fields: [variant_id], references: [id])
 
-  reviews    Reviews[]
-  orderItems OrderItems[]
+  reviews     Reviews[]
+  order_items OrderItems[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@unique([variant_id, variant_option_name])
+  @@index([variant_id])
+  @@index([variant_id, price])
+  @@index([variant_id, stock])
 
-  // ✅ Prevent duplicate option names
-  @@unique([variantId, variantOptionName])
-  // ✅ Optimized
-  @@index([variantId])
-  @@index([variantId, price])
-  @@index([variantId, stock])
-
-  @@map("variantOptions")
+  @@map("variant_options")
 }
 
 model Specs {
-  id    Int    @id @default(autoincrement())
-  label String
-  value String
+  id          Int      @id @default(autoincrement())
+  label       String
+  value       String
+  product_id  Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
-  productId Int
-  product   Products @relation(fields: [productId], references: [id])
+  product Products @relation(fields: [product_id], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([productId])
+  @@index([product_id])
 
   @@map("specs")
 }
 
 model Sellers {
-  id        Int     @id @default(autoincrement())
-  storeName String
-  contact   String?
+  id          Int      @id @default(autoincrement())
+  store_name  String
+  contact     String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   products Products[]
   orders   Orders[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@map("sellers")
 }
 
 model Categories {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  products Products[]
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  products Products[]
 
   @@map("categories")
 }
 
 model Reviews {
-  id     Int    @id @default(autoincrement())
-  title  String
-  review String
-  rating Float
+  id                Int     @id @default(autoincrement())
+  title             String
+  review            String
+  rating            Float
+  product_id        Int
+  variant_option_id String?
+  user_id           Int
+  created_at        DateTime @default(now())
 
-  productId Int
-  product   Products @relation(fields: [productId], references: [id])
+  product        Products       @relation(fields: [product_id], references: [id])
+  variant_option VariantOptions? @relation(fields: [variant_option_id], references: [id])
 
-  variantOptionId String?
-  variantOption   VariantOptions? @relation(fields: [variantOptionId], references: [id])
-
-  userId    Int
-  createdAt DateTime @default(now())
-
-  // ✅ Optimized
-  @@index([productId])
-  @@index([variantOptionId])
-  @@index([userId])
+  @@index([product_id])
+  @@index([variant_option_id])
+  @@index([user_id])
   @@index([rating])
 
   @@map("reviews")
 }
 
-// ======================================================
-// ORDER SYSTEM
-// ======================================================
-
 model OrderGroups {
-  id            Int           @id @default(autoincrement())
-  userId        Int
-  totalAmount   Float
-  paymentStatus PaymentStatus @default(PENDING)
+  id             Int            @id @default(autoincrement())
+  user_id        Int
+  total_amount   Float
+  payment_status PAYMENT_STATUS @default(PENDING)
+  created_at     DateTime @default(now())
 
-  orders    Orders[]
-  createdAt DateTime @default(now())
+  orders Orders[]
 
-  // ✅ Optimized
-  @@index([userId, paymentStatus])
+  @@index([user_id, payment_status])
 
-  @@map("orderGroups")
+  @@map("order_groups")
 }
 
 model Orders {
-  id           Int        @id @default(autoincrement())
-  orderGroupId Int
-  orderGroup   OrderGroups @relation(fields: [orderGroupId], references: [id])
+  id              Int          @id @default(autoincrement())
+  order_group_id  Int
+  seller_id       Int
+  subtotal        Float
+  shipping_fee    Float @default(0)
+  tax_amount      Float @default(0)
+  total_for_seller Float
+  status          ORDER_STATUS @default(PENDING)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
-  sellerId Int
-  seller   Sellers @relation(fields: [sellerId], references: [id])
+  order_group OrderGroups @relation(fields: [order_group_id], references: [id])
+  seller      Sellers     @relation(fields: [seller_id], references: [id])
+  items       OrderItems[]
+  shipments   Shipments[]
 
-  subtotal       Float
-  shippingFee    Float @default(0)
-  taxAmount      Float @default(0)
-  totalForSeller Float
-
-  status OrderStatus @default(PENDING)
-
-  items     OrderItems[]
-  shipments Shipments[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // ✅ Optimized
-  @@index([orderGroupId])
-  @@index([sellerId])
-  @@index([sellerId, status])
-  @@index([orderGroupId, sellerId])
+  @@index([order_group_id])
+  @@index([seller_id])
+  @@index([seller_id, status])
+  @@index([order_group_id, seller_id])
 
   @@map("orders")
 }
 
 model OrderItems {
-  id      Int   @id @default(autoincrement())
-  orderId Int
-  order   Orders @relation(fields: [orderId], references: [id])
+  id                        Int     @id @default(autoincrement())
+  order_id                  Int
+  product_id                Int
+  variant_option_id         String?
+  quantity                  Int
+  price_at_purchase         Float
+  discounted_price_at_purchase Float?
+  coupon_used               String?
+  tax_at_purchase           Float?
+  final_price_after_discount Float
+  created_at                DateTime @default(now())
 
-  productId Int
-  product   Products @relation(fields: [productId], references: [id])
+  order          Orders         @relation(fields: [order_id], references: [id])
+  product        Products       @relation(fields: [product_id], references: [id])
+  variant_option VariantOptions? @relation(fields: [variant_option_id], references: [id])
 
-  variantOptionId String?
-  variantOption   VariantOptions? @relation(fields: [variantOptionId], references: [id])
+  @@index([order_id])
+  @@index([product_id])
+  @@index([variant_option_id])
+  @@index([product_id, order_id])
 
-  quantity Int
-
-  priceAtPurchase           Float
-  discountedPriceAtPurchase Float?
-  couponUsed                String?
-  taxAtPurchase             Float?
-  finalPriceAfterDiscount   Float
-
-  createdAt DateTime @default(now())
-
-  // ✅ Optimized
-  @@index([orderId])
-  @@index([productId])
-  @@index([variantOptionId])
-  @@index([productId, orderId])
-
-  @@map("orderItems")
+  @@map("order_items")
 }
 
 model Shipments {
-  id      Int   @id @default(autoincrement())
-  orderId Int
-  order   Orders @relation(fields: [orderId], references: [id])
+  id            Int      @id @default(autoincrement())
+  order_id      Int
+  carrier       String?
+  tracking_code String?
+  shipped_at    DateTime?
+  delivered_at  DateTime?
+  status        String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
-  carrier      String?
-  trackingCode String?
-  shippedAt    DateTime?
-  deliveredAt  DateTime?
-  status       String?
+  order Orders @relation(fields: [order_id], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // ✅ Optimized
-  @@index([orderId])
-  @@index([trackingCode])
+  @@index([order_id])
+  @@index([tracking_code])
   @@index([status])
 
   @@map("shipments")
