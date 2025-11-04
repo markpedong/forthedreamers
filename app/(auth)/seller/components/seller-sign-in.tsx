@@ -1,40 +1,39 @@
 'use client';
 
-import type { TOnNavigate } from '@/lib/types';
+import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTransition } from 'react';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import Input from '@/components/reusable/input';
-import Form from '@/components/reusable/form';
-import { z } from 'zod';
 import { ArrowRight } from 'lucide-react';
+import type { SchemaForm, TOnNavigate } from '@/lib/types';
 
-const sellerLoginSchema = z.object({
-  email: z.string().email('Please enter a valid email'),
-  password: z.string().min(1, 'Password is required'),
-});
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import useFormSchema from '@/hooks/useFormSchema';
+import { signIn } from '@/lib/server-actions';
+import Form from '@/components/reusable/form';
+import Input from '@/components/reusable/input';
 
 const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
-  const form = useForm<z.infer<typeof sellerLoginSchema>>({
-    resolver: zodResolver(sellerLoginSchema),
+  const [isSubmitting, startTransition] = useTransition();
+  const { loginSchema } = useFormSchema();
+  const form = useForm<SchemaForm<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
-  const [isSubmitting, startSubmitting] = useTransition();
 
-  const onSubmit = async (values: z.infer<typeof sellerLoginSchema>) => {
-    startSubmitting(async () => {
+  const onSubmit = (values: SchemaForm<typeof loginSchema>) => {
+    startTransition(async () => {
       try {
-        if (values.email === 'seller@example.com' && values.password === 'password') {
-          toast.success('Welcome back!', { duration: 2000 });
-          setTimeout(() => onNavigate('2fa'), 300);
-        } else {
-          toast.error('Invalid email or password');
-        }
-      } catch (error) {
-        toast.error('Sign in failed');
+        const res = await signIn(values.email, values.password, false);
+        console.log('res', res);
+
+        toast.success('Logged in successfully!', { duration: 3000 });
+        router.refresh();
+      } catch {
+        toast.error('Sign in failed. Please try again.');
       }
     });
   };
@@ -43,58 +42,69 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     <div className='space-y-8'>
       <div>
         <h1 className='text-3xl font-bold text-foreground mb-2'>Welcome Back</h1>
-        <p className='text-muted-foreground'>Sign in to manage your store and track sales</p>
+        <p className='text-muted-foreground'>Sign in to manage your store and track sales.</p>
       </div>
 
-      <div className='bg-card rounded-xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow duration-200'>
-        <Form
-          form={form}
-          onSubmit={onSubmit}
-          submitLabel={isSubmitting ? 'Signing in...' : 'Sign In'}
-        >
-          <Input
-            name='email'
-            label='Email Address'
-            placeholder='your@email.com'
-            disabled={isSubmitting}
-            preventSpaces
-          />
-          <Input
-            name='password'
-            label='Password'
-            type='password'
-            placeholder='••••••••'
-            disabled={isSubmitting}
-            preventSpaces
-          />
-        </Form>
-      </div>
+      <Card className='border-border bg-card/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200'>
+        <CardHeader>
+          <CardTitle>Sign In</CardTitle>
+          <CardDescription>Enter your credentials to access your seller account.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form
+            form={form}
+            onSubmit={onSubmit}
+            submitLabel={isSubmitting ? 'Signing in...' : 'Sign In'}
+          >
+            <Input
+              name='email'
+              placeholder='your@email.com'
+              disabled={isSubmitting}
+              autoComplete='email'
+              preventSpaces
+              label='Email'
+            />
+            <Input
+              name='password'
+              type='password'
+              placeholder='••••••••'
+              disabled={isSubmitting}
+              preventSpaces
+              label='Password'
+            />
+            <div className='flex justify-end items-center w-full text-end'>
+              <Button
+                variant='link'
+                className='text-primary text-sm font-medium'
+                onClick={() => onNavigate('forgot')}
+              >
+                Forgot password?
+              </Button>
+            </div>
+          </Form>
+        </CardContent>
+      </Card>
 
-      <button
-        onClick={() => onNavigate('forgot')}
-        className='w-full text-sm text-primary font-medium hover:text-accent transition-colors duration-200 py-2'
-      >
-        Forgot password?
-      </button>
-
-      <div className='pt-6 border-t border-border'>
-        <p className='text-center text-sm text-muted-foreground mb-4'>Don't have an account?</p>
-        <button
+      <div className='pt-6 border-t border-border text-center'>
+        <p className='text-sm text-muted-foreground mb-4'>Don’t have an account?</p>
+        <Button
           onClick={() => onNavigate('register')}
-          className='w-full bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group hover:shadow-md'
+          className='w-full flex items-center justify-center gap-2 group'
+          variant='secondary'
         >
           Create Seller Account
-          <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
-        </button>
+          <ArrowRight className='w-4 h-4 transition-transform group-hover:translate-x-1' />
+        </Button>
       </div>
 
-      <div className='pt-4'>
-        <button
-          onClick={() => (window.location.href = '/')}
-          className='w-full text-sm font-medium text-primary hover:text-accent transition-colors duration-200 py-2 underline'
+      <div className='pt-4 text-center'>
+        <Button
+          variant='link'
+          className='text-sm font-medium underline text-primary hover:text-secondary'
+          onClick={() => router.push('/sign-in')}
         >
           Want to buy things? Click here
-        </button>
+        </Button>
       </div>
     </div>
   );

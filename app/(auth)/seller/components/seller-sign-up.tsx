@@ -1,148 +1,137 @@
 'use client';
 
-import type { TOnNavigate } from '@/lib/types';
+import type { SchemaForm, TOnNavigate } from '@/lib/types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import Input from '@/components/reusable/input';
-import Form from '@/components/reusable/form';
-import { z } from 'zod';
+import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 
-const sellerRegistrationSchema = z
-  .object({
-    storeName: z.string().min(2, 'Store name must be at least 2 characters'),
-    email: z.string().email('Please enter a valid email'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import useFormSchema from '@/hooks/useFormSchema';
+import Form from '@/components/reusable/form';
+import Input from '@/components/reusable/input';
+import Divider from '@/components/reusable/divider';
+import { useRouter } from 'next/navigation';
+import { signUp } from '@/lib/server-actions';
 
 const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
-  const [isSigningUp, startSigningUp] = useTransition();
-  const form = useForm<z.infer<typeof sellerRegistrationSchema>>({
-    resolver: zodResolver(sellerRegistrationSchema),
+  const [isSubmitting, startTransition] = useTransition();
+  const { createSellerSchema } = useFormSchema();
+  const form = useForm<SchemaForm<typeof createSellerSchema>>({
+    resolver: zodResolver(createSellerSchema),
     defaultValues: {
       storeName: '',
+      name: '',
       email: '',
       password: '',
       confirmPassword: '',
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof sellerRegistrationSchema>) => {
-    startSigningUp(async () => {
+  const onSubmit = async (values: SchemaForm<typeof createSellerSchema>) => {
+    startTransition(async () => {
       try {
-        // Static data handling - in production, this would create a seller account
-        toast.success('Account created! Please sign in.', { duration: 2000 });
-        setTimeout(() => onNavigate('login'), 1000);
-      } catch (error) {
-        toast.error('Sign up failed');
+        const res = await signUp(values.email, values.password, values.name);
+      } catch {
+        toast.error('Sign up failed. Please try again.');
       }
     });
   };
 
   return (
-    <div className='space-y-8'>
-      <div>
-        <h1 className='text-3xl font-bold text-foreground mb-2'>Start Selling</h1>
-        <p className='text-muted-foreground'>Create your seller account in minutes</p>
-      </div>
+    <div className='flex items-center justify-center min-h-screen p-4'>
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className='w-full max-w-md'
+      >
+        <Card className='border-border bg-card/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200'>
+          <CardHeader>
+            <CardTitle className='text-3xl font-bold'>Start Selling</CardTitle>
+            <CardDescription>Create your seller account in minutes</CardDescription>
+          </CardHeader>
 
-      <div className='space-y-6'>
-        <div className='bg-card rounded-xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow duration-200'>
-          <Form
-            form={form}
-            onSubmit={onSubmit}
-            submitLabel={isSigningUp ? 'Creating account...' : 'Create Account'}
-          >
-            <div className='space-y-4'>
-              <div>
-                <Input
-                  control={form.control}
-                  name='storeName'
-                  label='Store Name'
-                  placeholder='My Awesome Store'
-                  disabled={isSigningUp}
-                />
-              </div>
-              <div>
-                <Input
-                  control={form.control}
-                  name='email'
-                  label='Email Address'
-                  placeholder='your@email.com'
-                  disabled={isSigningUp}
-                  preventSpaces
-                />
-              </div>
-              <div>
-                <Input
-                  control={form.control}
-                  name='password'
-                  label='Password'
-                  type='password'
-                  placeholder='••••••••'
-                  disabled={isSigningUp}
-                  preventSpaces
-                />
-              </div>
-              <div>
-                <Input
-                  control={form.control}
-                  name='confirmPassword'
-                  label='Confirm Password'
-                  type='password'
-                  placeholder='••••••••'
-                  disabled={isSigningUp}
-                  preventSpaces
-                />
-              </div>
+          <CardContent>
+            <Form
+              form={form}
+              onSubmit={onSubmit}
+              submitLabel={isSubmitting ? 'Creating account...' : 'Create Account'}
+            >
+              <Input
+                label='Store Name'
+                name='storeName'
+                placeholder='My Awesome Store'
+                disabled={isSubmitting}
+              />
+              <Input name='name' label='Name' placeholder='John Doe' disabled={isSubmitting} />
+              <Input
+                name='email'
+                label='Email'
+                type='email'
+                placeholder='your@email.com'
+                disabled={isSubmitting}
+                autoComplete='email'
+              />
+
+              <Input
+                name='password'
+                type='password'
+                placeholder='••••••••'
+                disabled={isSubmitting}
+                autoComplete='new-password'
+                label='Password'
+              />
+              <Input
+                name='confirmPassword'
+                type='password'
+                placeholder='••••••••'
+                disabled={isSubmitting}
+                autoComplete='new-password'
+                label='Confirm Password'
+              />
+            </Form>
+
+            <div className='mt-6 bg-secondary/50 rounded-lg p-4 border border-secondary-foreground/20 space-y-2'>
+              {[
+                'Free to list your products',
+                'Reach thousands of customers',
+                '24/7 seller support included',
+              ].map((benefit, i) => (
+                <div key={i} className='flex items-center gap-3'>
+                  <CheckCircle className='w-5 h-5 text-primary flex-shrink-0' />
+                  <span className='text-sm text-foreground'>{benefit}</span>
+                </div>
+              ))}
             </div>
-          </Form>
-        </div>
-
-        <div className='bg-secondary/50 rounded-lg p-4 border border-secondary-foreground/20 space-y-2'>
-          <div className='flex items-center gap-3'>
-            <CheckCircle className='w-5 h-5 text-primary flex-shrink-0' />
-            <span className='text-sm text-foreground'>Free to list your products</span>
-          </div>
-          <div className='flex items-center gap-3'>
-            <CheckCircle className='w-5 h-5 text-primary flex-shrink-0' />
-            <span className='text-sm text-foreground'>Reach thousands of customers</span>
-          </div>
-          <div className='flex items-center gap-3'>
-            <CheckCircle className='w-5 h-5 text-primary flex-shrink-0' />
-            <span className='text-sm text-foreground'>24/7 seller support included</span>
-          </div>
-        </div>
-      </div>
-
-      <div className='pt-6 border-t border-border'>
-        <p className='text-center text-sm text-muted-foreground mb-4'>Already have an account?</p>
-        <button
-          onClick={() => onNavigate('login')}
-          className='w-full bg-muted hover:bg-muted/80 text-foreground font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group hover:shadow-md'
-        >
-          <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
-          Sign In Instead
-        </button>
-      </div>
-
-      <div className='pt-4'>
-        <button
-          onClick={() => (window.location.href = '/')}
-          className='w-full text-sm font-medium text-primary hover:text-accent transition-colors duration-200 py-2 underline'
-        >
-          Want to buy things? Click here
-        </button>
-      </div>
+            <Divider />
+            <p className='text-center text-sm text-muted-foreground mb-4'>
+              Already have an account?
+            </p>
+            <Button
+              variant='secondary'
+              onClick={() => onNavigate('login')}
+              className='w-full flex items-center justify-center gap-2 group'
+            >
+              <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
+              Sign In Instead
+            </Button>
+            <div className='pt-4'>
+              <Button
+                variant='link'
+                onClick={() => router.push('/sign-in')}
+                className='w-full text-sm text-primary underline'
+              >
+                Want to buy things? Click here
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 };

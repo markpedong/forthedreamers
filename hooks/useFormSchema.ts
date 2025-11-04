@@ -13,6 +13,11 @@ const useFormSchema = () => {
     .min(2, { message: 'Name must be at least 2 characters' })
     .max(50, { message: 'Name must be less than 50 characters' })
 
+  const storeName = z
+    .string()
+    .min(2, { message: 'Store name must be at least 2 characters' })
+    .max(50, { message: 'Store name must be less than 50 characters' })
+
   const search = z
     .string()
     .min(2, { message: 'Search must be at least 2 characters' })
@@ -81,6 +86,11 @@ const useFormSchema = () => {
 
   const searchSchema = z.object({ search })
 
+  const createSellerSchema = z.object({ name: nameSchema, storeName: storeName, email: emailSchema, password, confirmPassword: z.string() }).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  })
+
   return {
     nameEmailSchema,
     password,
@@ -92,7 +102,8 @@ const useFormSchema = () => {
     changePasswordSchema,
     twoFactorSchema,
     passkeySchema,
-    searchSchema
+    searchSchema,
+    createSellerSchema
   }
 }
 
