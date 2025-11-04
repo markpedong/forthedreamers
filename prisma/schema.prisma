@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -175,6 +176,8 @@ model Product {
   updatedAt DateTime @updatedAt
 
   // ✅ Optimized valid indexes for PostgreSQL
+  // ✅ Valid GIN index (only arrays/json supported)
+
   @@index([sellerId], map: "product_seller_idx")
   @@index([categoryId], map: "product_category_idx")
   @@index([name], map: "product_name_idx")
@@ -183,9 +186,7 @@ model Product {
   @@index([rating], map: "product_rating_idx")
   @@index([sold], map: "product_sold_idx")
   @@index([basePrice], map: "product_basePrice_idx")
-  // ✅ Valid GIN index (only arrays/json supported)
   @@index([tags], type: Gin, map: "product_tags_gin_idx")
-
   @@map("product")
 }
 
@@ -203,8 +204,8 @@ model Variant {
   updatedAt DateTime @updatedAt
 
   // ✅ Optimized
-  @@index([productId, isRequired])
 
+  @@index([productId, isRequired])
   @@map("variant")
 }
 
@@ -226,12 +227,12 @@ model VariantOption {
   updatedAt DateTime @updatedAt
 
   // ✅ Prevent duplicate option names
-  @@unique([variantId, variantOptionName])
   // ✅ Optimized
+
+  @@unique([variantId, variantOptionName])
   @@index([variantId])
   @@index([variantId, price])
   @@index([variantId, stock])
-
   @@map("variantOption")
 }
 
@@ -247,7 +248,6 @@ model Spec {
   updatedAt DateTime @updatedAt
 
   @@index([productId])
-
   @@map("spec")
 }
 
@@ -292,11 +292,11 @@ model Review {
   createdAt DateTime @default(now())
 
   // ✅ Optimized
+
   @@index([productId])
   @@index([variantOptionId])
   @@index([userId])
   @@index([rating])
-
   @@map("review")
 }
 
@@ -314,8 +314,8 @@ model OrderGroup {
   createdAt DateTime @default(now())
 
   // ✅ Optimized
-  @@index([userId, paymentStatus])
 
+  @@index([userId, paymentStatus])
   @@map("orderGroup")
 }
 
@@ -341,11 +341,11 @@ model Order {
   updatedAt DateTime @updatedAt
 
   // ✅ Optimized
+
   @@index([orderGroupId])
   @@index([sellerId])
   @@index([sellerId, status])
   @@index([orderGroupId, sellerId])
-
   @@map("order")
 }
 
@@ -371,11 +371,11 @@ model OrderItem {
   createdAt DateTime @default(now())
 
   // ✅ Optimized
+
   @@index([orderId])
   @@index([productId])
   @@index([variantOptionId])
   @@index([productId, orderId])
-
   @@map("orderItem")
 }
 
@@ -394,9 +394,9 @@ model Shipment {
   updatedAt DateTime @updatedAt
 
   // ✅ Optimized
+
   @@index([orderId])
   @@index([trackingCode])
   @@index([status])
-
   @@map("shipment")
 }
