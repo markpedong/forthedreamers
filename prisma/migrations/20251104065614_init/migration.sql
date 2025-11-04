@@ -92,7 +92,6 @@ CREATE TABLE "passkey" (
     "id" TEXT NOT NULL,
     "name" TEXT,
     "publicKey" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
     "credentialID" TEXT NOT NULL,
     "counter" INTEGER NOT NULL,
     "deviceType" TEXT NOT NULL,
@@ -100,6 +99,7 @@ CREATE TABLE "passkey" (
     "transports" TEXT,
     "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "aaguid" TEXT,
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "passkey_pkey" PRIMARY KEY ("id")
 );
@@ -107,6 +107,7 @@ CREATE TABLE "passkey" (
 -- CreateTable
 CREATE TABLE "seller" (
     "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "storeName" TEXT NOT NULL,
     "contact" TEXT,
     "rating" DOUBLE PRECISION NOT NULL DEFAULT 0,
@@ -136,9 +137,9 @@ CREATE TABLE "product" (
     "rating" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "sold" INTEGER NOT NULL DEFAULT 0,
     "stock" INTEGER,
-    "status" "PRODUCT_STATUS" NOT NULL DEFAULT 'ACTIVE',
+    "status" "PRODUCT_STATUS" NOT NULL DEFAULT 'INACTIVE',
     "sellerId" TEXT NOT NULL,
-    "categoryId" INTEGER NOT NULL,
+    "categoryId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -174,7 +175,7 @@ CREATE TABLE "variant_option" (
 
 -- CreateTable
 CREATE TABLE "spec" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "label" TEXT NOT NULL,
     "value" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
@@ -186,7 +187,7 @@ CREATE TABLE "spec" (
 
 -- CreateTable
 CREATE TABLE "category" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -297,7 +298,43 @@ CREATE TABLE "order_item" (
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
 -- CreateIndex
+CREATE INDEX "user_createdAt_idx" ON "user"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "user_updatedAt_idx" ON "user"("updatedAt");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "session_token_key" ON "session"("token");
+
+-- CreateIndex
+CREATE INDEX "session_createdAt_idx" ON "session"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "session_updatedAt_idx" ON "session"("updatedAt");
+
+-- CreateIndex
+CREATE INDEX "account_createdAt_idx" ON "account"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "account_updatedAt_idx" ON "account"("updatedAt");
+
+-- CreateIndex
+CREATE INDEX "verification_createdAt_idx" ON "verification"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "verification_updatedAt_idx" ON "verification"("updatedAt");
+
+-- CreateIndex
+CREATE INDEX "passkey_createdAt_idx" ON "passkey"("createdAt");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "seller_userId_key" ON "seller"("userId");
+
+-- CreateIndex
+CREATE INDEX "seller_createdAt_idx" ON "seller"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "seller_updatedAt_idx" ON "seller"("updatedAt");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "product_slug_key" ON "product"("slug");
@@ -330,7 +367,19 @@ CREATE INDEX "product_baseprice_idx" ON "product"("basePrice");
 CREATE INDEX "product_tags_gin_idx" ON "product" USING GIN ("tags");
 
 -- CreateIndex
+CREATE INDEX "product_createdAt_idx" ON "product"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "product_updatedAt_idx" ON "product"("updatedAt");
+
+-- CreateIndex
 CREATE INDEX "variant_productId_isRequired_idx" ON "variant"("productId", "isRequired");
+
+-- CreateIndex
+CREATE INDEX "variant_createdAt_idx" ON "variant"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "variant_updatedAt_idx" ON "variant"("updatedAt");
 
 -- CreateIndex
 CREATE INDEX "variant_option_variantId_idx" ON "variant_option"("variantId");
@@ -342,16 +391,37 @@ CREATE INDEX "variant_option_variantId_price_idx" ON "variant_option"("variantId
 CREATE INDEX "variant_option_variantId_stock_idx" ON "variant_option"("variantId", "stock");
 
 -- CreateIndex
+CREATE INDEX "variant_option_createdAt_idx" ON "variant_option"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "variant_option_updatedAt_idx" ON "variant_option"("updatedAt");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "variant_option_variantId_variantOptionName_key" ON "variant_option"("variantId", "variantOptionName");
 
 -- CreateIndex
 CREATE INDEX "spec_productId_idx" ON "spec"("productId");
 
 -- CreateIndex
+CREATE INDEX "spec_createdAt_idx" ON "spec"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "spec_updatedAt_idx" ON "spec"("updatedAt");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "category_name_key" ON "category"("name");
 
 -- CreateIndex
+CREATE INDEX "category_createdAt_idx" ON "category"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "category_updatedAt_idx" ON "category"("updatedAt");
+
+-- CreateIndex
 CREATE INDEX "cart_userId_idx" ON "cart"("userId");
+
+-- CreateIndex
+CREATE INDEX "cart_addedAt_idx" ON "cart"("addedAt");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "cart_userId_productId_variantOptionId_key" ON "cart"("userId", "productId", "variantOptionId");
@@ -360,10 +430,19 @@ CREATE UNIQUE INDEX "cart_userId_productId_variantOptionId_key" ON "cart"("userI
 CREATE INDEX "wishlist_userId_idx" ON "wishlist"("userId");
 
 -- CreateIndex
+CREATE INDEX "wishlist_addedAt_idx" ON "wishlist"("addedAt");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "wishlist_userId_productId_key" ON "wishlist"("userId", "productId");
 
 -- CreateIndex
 CREATE INDEX "address_userId_isDefault_idx" ON "address"("userId", "isDefault");
+
+-- CreateIndex
+CREATE INDEX "address_createdAt_idx" ON "address"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "address_updatedAt_idx" ON "address"("updatedAt");
 
 -- CreateIndex
 CREATE INDEX "review_productId_idx" ON "review"("productId");
@@ -378,7 +457,13 @@ CREATE INDEX "review_userId_idx" ON "review"("userId");
 CREATE INDEX "review_rating_idx" ON "review"("rating");
 
 -- CreateIndex
+CREATE INDEX "review_createdAt_idx" ON "review"("createdAt");
+
+-- CreateIndex
 CREATE INDEX "order_group_userId_paymentStatus_idx" ON "order_group"("userId", "paymentStatus");
+
+-- CreateIndex
+CREATE INDEX "order_group_createdAt_idx" ON "order_group"("createdAt");
 
 -- CreateIndex
 CREATE INDEX "order_orderGroupId_idx" ON "order"("orderGroupId");
@@ -393,6 +478,12 @@ CREATE INDEX "order_sellerId_status_idx" ON "order"("sellerId", "status");
 CREATE INDEX "order_orderGroupId_sellerId_idx" ON "order"("orderGroupId", "sellerId");
 
 -- CreateIndex
+CREATE INDEX "order_createdAt_idx" ON "order"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "order_updatedAt_idx" ON "order"("updatedAt");
+
+-- CreateIndex
 CREATE INDEX "order_item_orderId_idx" ON "order_item"("orderId");
 
 -- CreateIndex
@@ -403,6 +494,9 @@ CREATE INDEX "order_item_variantOptionId_idx" ON "order_item"("variantOptionId")
 
 -- CreateIndex
 CREATE INDEX "order_item_productId_orderId_idx" ON "order_item"("productId", "orderId");
+
+-- CreateIndex
+CREATE INDEX "order_item_createdAt_idx" ON "order_item"("createdAt");
 
 -- AddForeignKey
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -415,6 +509,9 @@ ALTER TABLE "two_factor" ADD CONSTRAINT "two_factor_userId_fkey" FOREIGN KEY ("u
 
 -- AddForeignKey
 ALTER TABLE "passkey" ADD CONSTRAINT "passkey_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "seller" ADD CONSTRAINT "seller_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "product" ADD CONSTRAINT "product_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "seller"("id") ON DELETE CASCADE ON UPDATE CASCADE;

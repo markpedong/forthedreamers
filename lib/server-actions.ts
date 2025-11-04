@@ -21,17 +21,15 @@ export const signUp = async (email: string, password: string, name: string) => {
   if (!password) return { error: "Password is required" };
   if (!email) return { error: "Email is required" };
 
-  await auth.api.signUpEmail({
+  return await auth.api.signUpEmail({
     body: {
       email,
       password,
       name,
-      callbackURL: "/profile",
     },
+
     headers: await headers(),
   });
-
-  return { error: null };
 };
 
 export const signIn = async (email: string, password: string, rememberMe: boolean) => {

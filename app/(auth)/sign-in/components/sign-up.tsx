@@ -29,7 +29,9 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const onSubmit = async (values: SchemaForm<typeof registrationSchema>) => {
     startSigningUp(async () => {
       try {
-        await signUp(values.email, values.password, values.name);
+        const res = await signUp(values.email, values.password, values.name);
+        console.log('res', res);
+
         toast.success('Account created successfully!', { duration: 3000 });
         router.refresh();
       } catch (error) {
