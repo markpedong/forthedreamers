@@ -155,7 +155,7 @@ model Seller {
   id          String    @id @default(uuid())
   userId      String    @unique
   user        User      @relation("UserSeller", fields: [userId], references: [id], onDelete: Cascade)
-  storeName   String
+  storeName   String    @unique
   contact     String?
   rating      Float     @default(0)
   reviewCount Int       @default(0)

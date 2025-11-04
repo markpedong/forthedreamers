@@ -78,3 +78,5 @@ export interface ProTableProps<T> {
   title?: string;
 }
 
+
+export type TCreateSeller = { storeName: string, userID: string }

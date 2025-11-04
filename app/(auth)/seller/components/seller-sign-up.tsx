@@ -15,7 +15,9 @@ import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import Divider from '@/components/reusable/divider';
 import { useRouter } from 'next/navigation';
+import { checkStore, createSeller } from '@/lib/http';
 import { signUp } from '@/lib/server-actions';
+import { handleAction } from '@/utils/helper';
 
 const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
@@ -33,14 +35,25 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   });
 
   const onSubmit = async (values: SchemaForm<typeof createSellerSchema>) => {
-    startTransition(async () => {
-      try {
+    startTransition(() =>
+      handleAction(async () => {
+        await checkStore(values.storeName);
+
         const res = await signUp(values.email, values.password, values.name);
 
-      } catch {
-        toast.error('Sign up failed. Please try again.');
-      }
-    });
+        if ('token' in res && res.token) {
+          const seller = await createSeller({
+            storeName: values.storeName,
+            userID: res.user.id,
+          });
+
+          if (seller.success) {
+            toast.success('Account created successfully!');
+            router.refresh();
+          }
+        }
+      }),
+    );
   };
 
   return (
