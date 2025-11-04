@@ -66,6 +66,8 @@ model User {
   orderGroups      OrderGroup[]
   reviews          Review[]
 
+  @@index([createdAt])
+  @@index([updatedAt])
   @@map("user")
 }
 
@@ -81,6 +83,8 @@ model Session {
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   impersonatedBy String?
 
+  @@index([createdAt])
+  @@index([updatedAt])
   @@map("session")
 }
 
@@ -100,6 +104,8 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
+  @@index([createdAt])
+  @@index([updatedAt])
   @@map("account")
 }
 
@@ -111,6 +117,8 @@ model Verification {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  @@index([createdAt])
+  @@index([updatedAt])
   @@map("verification")
 }
 
@@ -138,6 +146,7 @@ model Passkey {
   userId       String
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([createdAt])
   @@map("passkey")
 }
 
@@ -157,6 +166,8 @@ model Seller {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  @@index([createdAt])
+  @@index([updatedAt])
   @@map("seller")
 }
 
@@ -196,6 +207,8 @@ model Product {
   @@index([sold], map: "product_sold_idx")
   @@index([basePrice], map: "product_baseprice_idx")
   @@index([tags], type: Gin, map: "product_tags_gin_idx")
+  @@index([createdAt])
+  @@index([updatedAt])
   @@map("product")
 }
 
@@ -210,6 +223,8 @@ model Variant {
   updatedAt  DateTime        @updatedAt
 
   @@index([productId, isRequired])
+  @@index([createdAt])
+  @@index([updatedAt])
   @@map("variant")
 }
 
@@ -232,6 +247,8 @@ model VariantOption {
   @@index([variantId])
   @@index([variantId, price])
   @@index([variantId, stock])
+  @@index([createdAt])
+  @@index([updatedAt])
   @@map("variant_option")
 }
 
@@ -245,6 +262,8 @@ model Spec {
   updatedAt DateTime @updatedAt
 
   @@index([productId])
+  @@index([createdAt])
+  @@index([updatedAt])
   @@map("spec")
 }
 
@@ -255,6 +274,8 @@ model Category {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
+  @@index([createdAt])
+  @@index([updatedAt])
   @@map("category")
 }
 
@@ -271,6 +292,7 @@ model Cart {
 
   @@unique([userId, productId, variantOptionId])
   @@index([userId])
+  @@index([addedAt])
   @@map("cart")
 }
 
@@ -284,6 +306,7 @@ model Wishlist {
 
   @@unique([userId, productId])
   @@index([userId])
+  @@index([addedAt])
   @@map("wishlist")
 }
 
@@ -304,6 +327,8 @@ model Address {
   updatedAt   DateTime     @updatedAt
 
   @@index([userId, isDefault])
+  @@index([createdAt])
+  @@index([updatedAt])
   @@map("address")
 }
 
@@ -324,6 +349,7 @@ model Review {
   @@index([variantOptionId])
   @@index([userId])
   @@index([rating])
+  @@index([createdAt])
   @@map("review")
 }
 
@@ -337,6 +363,7 @@ model OrderGroup {
   createdAt     DateTime       @default(now())
 
   @@index([userId, paymentStatus])
+  @@index([createdAt])
   @@map("order_group")
 }
 
@@ -359,6 +386,8 @@ model Order {
   @@index([sellerId])
   @@index([sellerId, status])
   @@index([orderGroupId, sellerId])
+  @@index([createdAt])
+  @@index([updatedAt])
   @@map("order")
 }
 
@@ -382,5 +411,6 @@ model OrderItem {
   @@index([productId])
   @@index([variantOptionId])
   @@index([productId, orderId])
+  @@index([createdAt])
   @@map("order_item")
 }
