@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -13,13 +12,13 @@ datasource db {
 // ENUMS
 // ======================================================
 
-enum ProductStatus {
+enum PRODUCT_STATUS {
   ACTIVE
   INACTIVE
   DRAFT
 }
 
-enum OrderStatus {
+enum ORDER_STATUS {
   PENDING
   PAID
   PROCESSING
@@ -29,7 +28,7 @@ enum OrderStatus {
   REFUNDED
 }
 
-enum PaymentStatus {
+enum PAYMENT_STATUS {
   PENDING
   PAID
   FAILED
@@ -42,23 +41,33 @@ enum USER_ROLE {
   SELLER
 }
 
+enum ADDRESS_TYPE {
+  HOME
+  WORK
+  OTHER
+}
+
 // ======================================================
 // MODELS
 // ======================================================
 
 model User {
-  id               String      @id
+  id               String       @id
   name             String
   email            String
-  emailVerified    Boolean     @default(false)
+  emailVerified    Boolean      @default(false)
   image            String?
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @default(now()) @updatedAt
-  twoFactorEnabled Boolean?    @default(false)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @default(now()) @updatedAt
+  twoFactorEnabled Boolean?     @default(false)
   sessions         Session[]
   accounts         Account[]
   twofactors       TwoFactor[]
   passkeys         Passkey[]
+  addresses        Address[]
+  cartItems        Cart[]
+  wishlistItems    Wishlist[]
+  orderGroups      OrderGroup[]
 
   role       USER_ROLE @default(USER)
   banned     Boolean?  @default(false)
@@ -70,16 +79,15 @@ model User {
 }
 
 model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  id             String   @id
+  expiresAt      DateTime
+  token          String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   impersonatedBy String?
 
   @@unique([token])
@@ -123,7 +131,7 @@ model TwoFactor {
   userId      String
   user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("twoFactor")
+  @@map("two_factor")
 }
 
 model Passkey {
@@ -143,23 +151,44 @@ model Passkey {
   @@map("passkey")
 }
 
+// ======================================================
+// SELLER & PRODUCT
+// ======================================================
+
+model Seller {
+  id          Int     @id @default(autoincrement())
+  storeName   String
+  contact     String?
+  rating      Float   @default(0)
+  reviewCount Int     @default(0)
+  totalSales  Float   @default(0)
+  description String?
+  address     String?
+  logo        String?
+
+  products Product[]
+  orders   Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("seller")
+}
+
 model Product {
-  id          Int      @id @default(autoincrement())
+  id          Int            @id @default(autoincrement())
   name        String
-  slug        String   @unique
+  slug        String         @unique
   brand       String?
   basePrice   Float?
   description String
   images      String[]
-  tags        String[] // ✅ VALID Postgres array type
-
-  reviewCount Int   @default(0)
-  rating      Float @default(0)
-  sold        Int   @default(0)
-
-  stock Int?
-
-  status ProductStatus @default(ACTIVE)
+  tags        String[]
+  reviewCount Int            @default(0)
+  rating      Float          @default(0)
+  sold        Int            @default(0)
+  stock       Int?
+  status      PRODUCT_STATUS @default(ACTIVE)
 
   sellerId Int
   seller   Seller @relation(fields: [sellerId], references: [id])
@@ -167,16 +196,15 @@ model Product {
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id])
 
-  specs      Spec[]
-  variants   Variant[]
-  reviews    Review[]
-  orderItems OrderItem[]
+  specs         Spec[]
+  variants      Variant[]
+  reviews       Review[]
+  orderItems    OrderItem[]
+  cartItems     Cart[]
+  wishlistItems Wishlist[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // ✅ Optimized valid indexes for PostgreSQL
-  // ✅ Valid GIN index (only arrays/json supported)
 
   @@index([sellerId], map: "product_seller_idx")
   @@index([categoryId], map: "product_category_idx")
@@ -185,25 +213,21 @@ model Product {
   @@index([status], map: "product_status_idx")
   @@index([rating], map: "product_rating_idx")
   @@index([sold], map: "product_sold_idx")
-  @@index([basePrice], map: "product_basePrice_idx")
+  @@index([basePrice], map: "product_baseprice_idx")
   @@index([tags], type: Gin, map: "product_tags_gin_idx")
   @@map("product")
 }
 
 model Variant {
-  id         String  @id
+  id         String          @id
   name       String
-  isRequired Boolean @default(true)
-
-  productId Int
-  product   Product @relation(fields: [productId], references: [id])
-
-  options VariantOption[]
+  isRequired Boolean         @default(true)
+  productId  Int
+  product    Product         @relation(fields: [productId], references: [id])
+  options    VariantOption[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // ✅ Optimized
 
   @@index([productId, isRequired])
   @@map("variant")
@@ -222,28 +246,24 @@ model VariantOption {
 
   reviews    Review[]
   orderItems OrderItem[]
+  cartItems  Cart[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // ✅ Prevent duplicate option names
-  // ✅ Optimized
 
   @@unique([variantId, variantOptionName])
   @@index([variantId])
   @@index([variantId, price])
   @@index([variantId, stock])
-  @@map("variantOption")
+  @@map("variant_option")
 }
 
 model Spec {
-  id    Int    @id @default(autoincrement())
-  label String
-  value String
-
+  id        Int      @id @default(autoincrement())
+  label     String
+  value     String
   productId Int
-  product   Product @relation(fields: [productId], references: [id])
-
+  product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -251,47 +271,88 @@ model Spec {
   @@map("spec")
 }
 
-model Seller {
-  id        Int     @id @default(autoincrement())
-  storeName String
-  contact   String?
-
-  products Product[]
-  orders   Order[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("seller")
-}
-
 model Category {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  products Product[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@map("category")
 }
 
-model Review {
-  id     Int    @id @default(autoincrement())
-  title  String
-  review String
-  rating Float
+// ======================================================
+// CART & WISHLIST
+// ======================================================
 
-  productId Int
-  product   Product @relation(fields: [productId], references: [id])
-
+model Cart {
+  id              Int            @id @default(autoincrement())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId       Int
+  product         Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
   variantOptionId String?
   variantOption   VariantOption? @relation(fields: [variantOptionId], references: [id])
+  quantity        Int            @default(1)
+  addedAt         DateTime       @default(now())
 
-  userId    Int
-  createdAt DateTime @default(now())
+  @@unique([userId, productId, variantOptionId])
+  @@index([userId])
+  @@map("cart")
+}
 
-  // ✅ Optimized
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  addedAt   DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@map("wishlist")
+}
+
+// ======================================================
+// ADDRESS
+// ======================================================
+
+model Address {
+  id          Int          @id @default(autoincrement())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        ADDRESS_TYPE @default(HOME)
+  label       String?
+  fullName    String
+  phoneNumber String
+  region      String
+  city        String
+  postalCode  String
+  street      String
+  isDefault   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([userId, isDefault])
+  @@map("address")
+}
+
+// ======================================================
+// REVIEWS & ORDERS
+// ======================================================
+
+model Review {
+  id              Int            @id @default(autoincrement())
+  title           String
+  review          String
+  rating          Float
+  productId       Int
+  product         Product        @relation(fields: [productId], references: [id])
+  variantOptionId String?
+  variantOption   VariantOption? @relation(fields: [variantOptionId], references: [id])
+  userId          Int
+  createdAt       DateTime       @default(now())
 
   @@index([productId])
   @@index([variantOptionId])
@@ -300,47 +361,33 @@ model Review {
   @@map("review")
 }
 
-// ======================================================
-// ORDER SYSTEM
-// ======================================================
-
 model OrderGroup {
-  id            Int           @id @default(autoincrement())
-  userId        Int
+  id            Int            @id @default(autoincrement())
+  userId        String
   totalAmount   Float
-  paymentStatus PaymentStatus @default(PENDING)
-
-  orders    Order[]
-  createdAt DateTime @default(now())
-
-  // ✅ Optimized
+  paymentStatus PAYMENT_STATUS @default(PENDING)
+  orders        Order[]
+  createdAt     DateTime       @default(now())
+  user          User           @relation(fields: [userId], references: [id])
 
   @@index([userId, paymentStatus])
-  @@map("orderGroup")
+  @@map("order_group")
 }
 
 model Order {
-  id           Int        @id @default(autoincrement())
-  orderGroupId Int
-  orderGroup   OrderGroup @relation(fields: [orderGroupId], references: [id])
-
-  sellerId Int
-  seller   Seller @relation(fields: [sellerId], references: [id])
-
+  id             Int          @id @default(autoincrement())
+  orderGroupId   Int
+  orderGroup     OrderGroup   @relation(fields: [orderGroupId], references: [id])
+  sellerId       Int
+  seller         Seller       @relation(fields: [sellerId], references: [id])
   subtotal       Float
-  shippingFee    Float @default(0)
-  taxAmount      Float @default(0)
+  shippingFee    Float        @default(0)
+  taxAmount      Float        @default(0)
   totalForSeller Float
-
-  status OrderStatus @default(PENDING)
-
-  items     OrderItem[]
-  shipments Shipment[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // ✅ Optimized
+  status         ORDER_STATUS @default(PENDING)
+  items          OrderItem[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   @@index([orderGroupId])
   @@index([sellerId])
@@ -350,53 +397,24 @@ model Order {
 }
 
 model OrderItem {
-  id      Int   @id @default(autoincrement())
-  orderId Int
-  order   Order @relation(fields: [orderId], references: [id])
-
-  productId Int
-  product   Product @relation(fields: [productId], references: [id])
-
-  variantOptionId String?
-  variantOption   VariantOption? @relation(fields: [variantOptionId], references: [id])
-
-  quantity Int
-
+  id                        Int            @id @default(autoincrement())
+  orderId                   Int
+  order                     Order          @relation(fields: [orderId], references: [id])
+  productId                 Int
+  product                   Product        @relation(fields: [productId], references: [id])
+  variantOptionId           String?
+  variantOption             VariantOption? @relation(fields: [variantOptionId], references: [id])
+  quantity                  Int
   priceAtPurchase           Float
   discountedPriceAtPurchase Float?
   couponUsed                String?
   taxAtPurchase             Float?
   finalPriceAfterDiscount   Float
-
-  createdAt DateTime @default(now())
-
-  // ✅ Optimized
+  createdAt                 DateTime       @default(now())
 
   @@index([orderId])
   @@index([productId])
   @@index([variantOptionId])
   @@index([productId, orderId])
-  @@map("orderItem")
-}
-
-model Shipment {
-  id      Int   @id @default(autoincrement())
-  orderId Int
-  order   Order @relation(fields: [orderId], references: [id])
-
-  carrier      String?
-  trackingCode String?
-  shippedAt    DateTime?
-  deliveredAt  DateTime?
-  status       String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // ✅ Optimized
-
-  @@index([orderId])
-  @@index([trackingCode])
-  @@index([status])
-  @@map("shipment")
+  @@map("order_item")
 }
