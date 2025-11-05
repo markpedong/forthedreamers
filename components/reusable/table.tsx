@@ -246,11 +246,7 @@ export const ProTable = <T extends Record<string, any>>({
         <div className='flex items-center justify-between gap-3'>
           <div className='flex flex-wrap gap-3 items-center h-full'>
             {columns.map((col, i) =>
-              col.title === 'Actions' ? null : (
-                <div key={i} className='min-w-[160px]'>
-                  {renderSearchInput(col)}
-                </div>
-              ),
+              col.title === 'Actions' ? null : <div key={i}>{renderSearchInput(col)}</div>,
             )}
           </div>
 

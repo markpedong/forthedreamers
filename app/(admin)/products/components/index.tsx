@@ -1,40 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { Plus, MoreVertical, Eye, Edit2, Trash2 } from 'lucide-react';
+import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Switch } from '@/components/ui/switch';
+import ProductFormModal from './product-form-modal';
+import { ProColumn } from '@/lib/types';
+import { ProTable } from '@/components/reusable/table';
+import AlertDialog from '@/components/reusable/alert-dialog';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import ProductFormModal from './product-form-modal';
-import { ProColumn } from '@/lib/types';
-import { ProTable } from '@/components/reusable/table';
+import Link from 'next/link';
+import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 
 const mockProducts = [
   {
@@ -110,36 +93,105 @@ const Products = () => {
     // TODO: API call to update
   };
 
-  const columns: ProColumn<typeof mockProducts[number]>[] = [
+  const columns: ProColumn<(typeof mockProducts)[number]>[] = [
     {
       title: 'Product',
-      dataIndex: 'name',
+      render: (_, record) => <span className='font-medium'>{record.name}</span>,
     },
     {
       title: 'Brand',
+      render: (_, record) => <span className='text-muted-foreground'>{record.brand}</span>,
     },
     {
       title: 'Price',
+      render: (_, record) => <span className='font-semibold'>${record.basePrice?.toFixed(2)}</span>,
     },
     {
       title: 'Status',
+      search: false,
+      render: (_, record) => (
+        <Badge variant={record.status === 'ACTIVE' ? 'default' : 'secondary'}>
+          {record.status}
+        </Badge>
+      ),
+    },
+    {
+      title: 'Rating',
+      search: false,
+      render: (_, record) => {
+        return record.rating ? (
+          <div className='flex justify-center items-center gap-1'>
+            <span>{record.rating}</span>
+            <span className='text-yellow-500'>★</span>
+            <span className='text-xs text-muted-foreground'>({record.reviewCount})</span>
+          </div>
+        ) : (
+          <span className='text-sm text-muted-foreground'>No reviews</span>
+        );
+      },
     },
     {
       title: 'Sales',
+      search: false,
+      render: (_, record) => record.sold?.toLocaleString(),
     },
     {
       title: 'Stock',
+      render: (_, record) => (
+        <span className={record.stock > 0 ? 'text-green-600' : 'text-destructive'}>
+          {record.stock}
+        </span>
+      ),
     },
     {
       title: 'Active',
       search: false,
+      render: (_, record) => (
+        <Switch
+          checked={record.status === 'ACTIVE'}
+          onCheckedChange={() => toggleStatus(record.id, record.status)}
+        />
+      ),
     },
     {
       title: 'Actions',
+      render: (_, record) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant='ghost' size='icon'>
+              <MoreHorizontal className='w-4 h-4' />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuItem asChild>
+              <Link href={`/products/${record.slug}`} className='flex items-center gap-2'>
+                <Eye className='h-4 w-4' /> View Details
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setEditProduct(record);
+                setEditOpen(true);
+              }}
+              className='flex items-center gap-2'
+            >
+              <Edit2 className='h-4 w-4' /> Edit
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => setDeleteDialog({ id: record.id, name: record.name })}
+              className='flex items-center gap-2 text-destructive'
+            >
+              <Trash2 className='h-4 w-4' /> Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
     },
   ];
+
   return (
-    <main className='min-h-screen bg-background'>
+    <main className='bg-background'>
       <div className='max-w-7xl mx-auto px-4 py-8 space-y-8'>
         <header className='flex items-center justify-between'>
           <div>
@@ -156,97 +208,6 @@ const Products = () => {
           columns={columns?.map((item) => ({ ...item, align: 'center' }))}
           dataSource={mockProducts}
         />
-
-        <div className='rounded-lg border bg-card shadow-sm'>
-          <Table>
-            <TableHeader>
-              <TableRow className='hover:bg-transparent'>
-                {[
-                  'Product',
-                  'Brand',
-                  'Price',
-                  'Status',
-                  'Rating',
-                  'Sales',
-                  'Stock',
-                  'Active',
-                  'Actions',
-                ].map((h) => (
-                  <TableHead key={h} className='font-semibold'>
-                    {h}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {mockProducts.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell className='font-medium'>{p.name}</TableCell>
-                  <TableCell className='text-muted-foreground'>{p.brand}</TableCell>
-                  <TableCell className='font-semibold'>${p.basePrice.toFixed(2)}</TableCell>
-                  <TableCell>
-                    <Badge variant={p.status === 'ACTIVE' ? 'default' : 'secondary'}>
-                      {p.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {p.rating ? (
-                      <div className='flex items-center gap-1'>
-                        <span>{p.rating}</span>
-                        <span className='text-yellow-500'>★</span>
-                        <span className='text-xs text-muted-foreground'>({p.reviewCount})</span>
-                      </div>
-                    ) : (
-                      <span className='text-sm text-muted-foreground'>No reviews</span>
-                    )}
-                  </TableCell>
-                  <TableCell>{p.sold.toLocaleString()}</TableCell>
-                  <TableCell className={p.stock > 0 ? 'text-green-600' : 'text-destructive'}>
-                    {p.stock}
-                  </TableCell>
-                  <TableCell>
-                    <Switch
-                      checked={p.status === 'ACTIVE'}
-                      onCheckedChange={() => toggleStatus(p.id, p.status)}
-                    />
-                  </TableCell>
-                  <TableCell className='text-right'>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant='ghost' size='icon' className='h-8 w-8'>
-                          <MoreVertical className='h-4 w-4' />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align='end'>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/products/${p.id}`} className='flex items-center gap-2'>
-                            <Eye className='h-4 w-4' /> View Details
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setEditProduct(p);
-                            setEditOpen(true);
-                          }}
-                          className='flex items-center gap-2'
-                        >
-                          <Edit2 className='h-4 w-4' /> Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => setDeleteDialog({ id: p.id, name: p.name })}
-                          className='flex items-center gap-2 text-destructive'
-                        >
-                          <Trash2 className='h-4 w-4' /> Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
       </div>
 
       <ProductFormModal open={createOpen} onOpenChange={setCreateOpen} mode='create' />
@@ -256,27 +217,15 @@ const Products = () => {
         mode='edit'
         product={editProduct}
       />
-
-      <AlertDialog open={!!deleteDialog} onOpenChange={() => setDeleteDialog(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Product</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{deleteDialog?.name}"? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
-            >
-              {isDeleting ? 'Deleting...' : 'Delete'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <AlertDialog
+        title='Delete Product'
+        open={!!deleteDialog}
+        onOpenChange={() => setDeleteDialog(null)}
+        description='Are you sure you want to delete "{deleteDialog?.name}"? This action cannot be undone.'
+        cancelText='Cancel'
+        confirmText={isDeleting ? 'Deleting...' : 'Delete'}
+        onConfirm={handleDelete}
+      />
     </main>
   );
 };

@@ -141,7 +141,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
         placeholder: 'eg: 4g2t0@example.com',
       },
       render: (_, record) => (
-        <div className='flex justify-between'>
+        <div className='flex justify-between gap-3'>
           <span>{record.email}</span>
           <Badge
             variant='secondary'
