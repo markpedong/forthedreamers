@@ -110,9 +110,10 @@ const Products = () => {
     // TODO: API call to update
   };
 
-  const columns: ProColumn<any>[] = [
+  const columns: ProColumn<typeof mockProducts[number]>[] = [
     {
       title: 'Product',
+      dataIndex: 'name',
     },
     {
       title: 'Brand',
