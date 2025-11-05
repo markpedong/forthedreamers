@@ -33,6 +33,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import ProductFormModal from './product-form-modal';
+import { ProColumn } from '@/lib/types';
+import { ProTable } from '@/components/reusable/table';
 
 const mockProducts = [
   {
@@ -79,7 +81,7 @@ const mockProducts = [
   },
 ];
 
-export default function Products() {
+const Products = () => {
   const [deleteDialog, setDeleteDialog] = useState<{ id: number; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -108,6 +110,33 @@ export default function Products() {
     // TODO: API call to update
   };
 
+  const columns: ProColumn<any>[] = [
+    {
+      title: 'Product',
+    },
+    {
+      title: 'Brand',
+    },
+    {
+      title: 'Price',
+    },
+    {
+      title: 'Status',
+    },
+    {
+      title: 'Sales',
+    },
+    {
+      title: 'Stock',
+    },
+    {
+      title: 'Active',
+      search: false,
+    },
+    {
+      title: 'Actions',
+    },
+  ];
   return (
     <main className='min-h-screen bg-background'>
       <div className='max-w-7xl mx-auto px-4 py-8 space-y-8'>
@@ -120,6 +149,12 @@ export default function Products() {
             <Plus className='h-5 w-5' /> Create Product
           </Button>
         </header>
+
+        <ProTable<any>
+          rowKey='id'
+          columns={columns?.map((item) => ({ ...item, align: 'center' }))}
+          dataSource={mockProducts}
+        />
 
         <div className='rounded-lg border bg-card shadow-sm'>
           <Table>
@@ -243,4 +278,6 @@ export default function Products() {
       </AlertDialog>
     </main>
   );
-}
+};
+
+export default Products;

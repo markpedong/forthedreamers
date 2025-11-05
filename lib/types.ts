@@ -36,18 +36,19 @@ export type ValueEnum = ValueEnumItem[] | (() => Promise<ValueEnumItem[]>);
 
 export type SearchType = 'text' | 'select' | 'number' | 'date';
 
+interface SearchConfig {
+  type: SearchType
+  placeholder?: string
+  width?: number
+  valueEnum?: ValueEnum
+}
 export interface ProColumn<T> {
   title: string;
   width?: number
   dataIndex?: keyof T;
   sorter?: (a: T, b: T) => number;
   render?: (value: T[keyof T], record: T, index: number) => React.ReactNode;
-  search?: {
-    type: SearchType,
-    placeholder?: string
-    width?: number
-    valueEnum?: ValueEnum;
-  };
+  search?: SearchConfig | false
   className?: string;
   align?: 'left' | 'center' | 'right';
 }

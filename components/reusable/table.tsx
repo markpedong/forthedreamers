@@ -173,14 +173,18 @@ export const ProTable = <T extends Record<string, any>>({
   };
 
   const renderSearchInput = (col: ProColumn<T>) => {
+    if (col.search === false) return null;
+
     const key = String(col.dataIndex ?? '');
     const val = filters[key] ?? '';
-    const type = col.search && col.search.type;
-    const valueEnum = col.search?.valueEnum;
 
-    if (!type) return null;
+    const type = typeof col.search === 'object' ? col.search.type : undefined;
+    const valueEnum = typeof col.search === 'object' ? col.search.valueEnum : undefined;
+    const placeholder = typeof col.search === 'object' ? col.search.placeholder : undefined;
+
     if (type === 'select') {
       const [options, setOptions] = useState<ValueEnumItem[]>([]);
+
       useEffect(() => {
         let active = true;
         (async () => {
@@ -213,13 +217,14 @@ export const ProTable = <T extends Record<string, any>>({
         </Select>
       );
     }
+
     return (
       <div className='flex items-center gap-2'>
         <Label htmlFor={key}>{col.title}: </Label>
         <Input
           id={key}
           value={val}
-          placeholder={col.search?.placeholder ?? `Search ${col.title}`}
+          placeholder={placeholder ?? `Search ${col.title}`}
           onChange={(e) => handleFilterChange(key, e.target.value)}
           className='w-full md:w-40'
           type={type === 'number' ? 'number' : 'text'}
