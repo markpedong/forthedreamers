@@ -72,6 +72,9 @@ export const auth = betterAuth({
       }
     }
   },
+  rateLimit: {
+    enabled: true
+  },
   plugins: [
     lastLoginMethod(),
     nextCookies(),
