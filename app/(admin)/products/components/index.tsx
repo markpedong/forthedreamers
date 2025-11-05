@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Plus, MoreVertical, Eye, Edit2, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -13,6 +14,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,12 +32,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
-import { ProductFormModal } from '@/components/product/product-form-modal';
-import { deleteProduct } from '@/app/actions/products';
-import { useToast } from '@/hooks/use-toast';
+import ProductFormModal from './product-form-modal';
 
-// Mock data based on Prisma schema
 const mockProducts = [
   {
     id: 1,
@@ -81,147 +79,99 @@ const mockProducts = [
   },
 ];
 
-const Products = () => {
-  const { toast } = useToast();
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [productToDelete, setProductToDelete] = useState<{ id: number; name: string } | null>(null);
+export default function Products() {
+  const [deleteDialog, setDeleteDialog] = useState<{ id: number; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editProduct, setEditProduct] = useState<any>(null);
 
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [productToEdit, setProductToEdit] = useState<any>(null);
-
-  const handleDeleteClick = (product: { id: number; name: string }) => {
-    setProductToDelete(product);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!productToDelete) return;
-
+  const handleDelete = async () => {
+    if (!deleteDialog) return;
     setIsDeleting(true);
     try {
-      const result = await deleteProduct(productToDelete.id);
-
-      if (result.success) {
-        toast({
-          title: 'Success',
-          description: `Product "${productToDelete.name}" deleted successfully`,
-        });
-        setDeleteDialogOpen(false);
-        setProductToDelete(null);
-        // In a real app, you would refetch the products list here
-      } else {
-        toast({
-          title: 'Error',
-          description: result.error || 'Failed to delete product',
-          variant: 'destructive',
-        });
-      }
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'An unexpected error occurred',
-        variant: 'destructive',
-      });
+      // const res = await deleteProduct(deleteDialog.id);
+      // if (res.success) {
+      //   toast.success(`Deleted "${deleteDialog.name}"`);
+      //   setDeleteDialog(null);
+      // } else toast.error(res.error || 'Failed to delete product');
+    } catch {
+      toast.error('Unexpected error occurred');
     } finally {
       setIsDeleting(false);
     }
   };
 
-  const handleEditClick = (product: any) => {
-    setProductToEdit(product);
-    setEditModalOpen(true);
-  };
-
-  const handleStatusToggle = (productId: number, currentStatus: string) => {
-    const newStatus = currentStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
-    toast({
-      title: 'Status Updated',
-      description: `Product status changed to ${newStatus}`,
-    });
-    // TODO: Call API to update status
+  const toggleStatus = (id: number, status: string) => {
+    const newStatus = status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+    toast.info(`Status changed to ${newStatus}`);
+    // TODO: API call to update
   };
 
   return (
     <main className='min-h-screen bg-background'>
-      <div className='mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8'>
-        <div className='flex items-center justify-between mb-8'>
+      <div className='max-w-7xl mx-auto px-4 py-8 space-y-8'>
+        <header className='flex items-center justify-between'>
           <div>
-            <h1 className='text-4xl font-bold tracking-tight'>Products</h1>
-            <p className='text-muted-foreground mt-2'>Manage your product catalog</p>
+            <h1 className='text-4xl font-bold'>Products</h1>
+            <p className='text-muted-foreground'>Manage your product catalog</p>
           </div>
-          <Button onClick={() => setCreateModalOpen(true)} size='lg' className='gap-2 shadow-sm'>
+          <Button onClick={() => setCreateOpen(true)} size='lg' className='gap-2 shadow-sm'>
             <Plus className='h-5 w-5' /> Create Product
           </Button>
-        </div>
+        </header>
 
-        <div className='rounded-lg border border-border bg-card shadow-sm'>
+        <div className='rounded-lg border bg-card shadow-sm'>
           <Table>
             <TableHeader>
               <TableRow className='hover:bg-transparent'>
-                <TableHead className='font-semibold'>Product</TableHead>
-                <TableHead className='font-semibold'>Brand</TableHead>
-                <TableHead className='font-semibold'>Price</TableHead>
-                <TableHead className='font-semibold'>Status</TableHead>
-                <TableHead className='font-semibold'>Rating</TableHead>
-                <TableHead className='font-semibold'>Sales</TableHead>
-                <TableHead className='font-semibold'>Stock</TableHead>
-                <TableHead className='font-semibold'>Active</TableHead>
-                <TableHead className='text-right font-semibold'>Actions</TableHead>
+                {[
+                  'Product',
+                  'Brand',
+                  'Price',
+                  'Status',
+                  'Rating',
+                  'Sales',
+                  'Stock',
+                  'Active',
+                  'Actions',
+                ].map((h) => (
+                  <TableHead key={h} className='font-semibold'>
+                    {h}
+                  </TableHead>
+                ))}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockProducts.map((product) => (
-                <TableRow key={product.id} className='group'>
-                  <TableCell className='font-medium'>{product.name}</TableCell>
-                  <TableCell className='text-muted-foreground'>{product.brand || '—'}</TableCell>
-                  <TableCell className='font-semibold'>
-                    ${product.basePrice?.toFixed(2) || 'N/A'}
-                  </TableCell>
+              {mockProducts.map((p) => (
+                <TableRow key={p.id}>
+                  <TableCell className='font-medium'>{p.name}</TableCell>
+                  <TableCell className='text-muted-foreground'>{p.brand}</TableCell>
+                  <TableCell className='font-semibold'>${p.basePrice.toFixed(2)}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant={
-                        product.status === 'ACTIVE'
-                          ? 'default'
-                          : product.status === 'INACTIVE'
-                            ? 'secondary'
-                            : 'outline'
-                      }
-                      className='font-medium'
-                    >
-                      {product.status}
+                    <Badge variant={p.status === 'ACTIVE' ? 'default' : 'secondary'}>
+                      {p.status}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {product.rating > 0 ? (
+                    {p.rating ? (
                       <div className='flex items-center gap-1'>
-                        <span className='font-medium'>{product.rating}</span>
+                        <span>{p.rating}</span>
                         <span className='text-yellow-500'>★</span>
-                        <span className='text-muted-foreground text-xs'>
-                          ({product.reviewCount})
-                        </span>
+                        <span className='text-xs text-muted-foreground'>({p.reviewCount})</span>
                       </div>
                     ) : (
-                      <span className='text-muted-foreground text-sm'>No reviews</span>
+                      <span className='text-sm text-muted-foreground'>No reviews</span>
                     )}
                   </TableCell>
-                  <TableCell className='font-medium'>{product.sold.toLocaleString()}</TableCell>
-                  <TableCell>
-                    <span
-                      className={
-                        product.stock > 0
-                          ? 'text-green-600 font-medium'
-                          : 'text-destructive font-medium'
-                      }
-                    >
-                      {product.stock}
-                    </span>
+                  <TableCell>{p.sold.toLocaleString()}</TableCell>
+                  <TableCell className={p.stock > 0 ? 'text-green-600' : 'text-destructive'}>
+                    {p.stock}
                   </TableCell>
                   <TableCell>
                     <Switch
-                      checked={product.status === 'ACTIVE'}
-                      onCheckedChange={() => handleStatusToggle(product.id, product.status)}
+                      checked={p.status === 'ACTIVE'}
+                      onCheckedChange={() => toggleStatus(p.id, p.status)}
                     />
                   </TableCell>
                   <TableCell className='text-right'>
@@ -231,31 +181,27 @@ const Products = () => {
                           <MoreVertical className='h-4 w-4' />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align='end' className='w-40'>
+                      <DropdownMenuContent align='end'>
                         <DropdownMenuItem asChild>
-                          <Link
-                            href={`/products/${product.id}`}
-                            className='flex items-center gap-2 cursor-pointer'
-                          >
-                            <Eye className='h-4 w-4' />
-                            View Details
+                          <Link href={`/products/${p.id}`} className='flex items-center gap-2'>
+                            <Eye className='h-4 w-4' /> View Details
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleEditClick(product)}
+                          onClick={() => {
+                            setEditProduct(p);
+                            setEditOpen(true);
+                          }}
                           className='flex items-center gap-2'
                         >
-                          <Edit2 className='h-4 w-4' />
-                          Edit Product
+                          <Edit2 className='h-4 w-4' /> Edit
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                          onClick={() => handleDeleteClick({ id: product.id, name: product.name })}
-                          className='flex items-center gap-2'
-                          variant='destructive'
+                          onClick={() => setDeleteDialog({ id: p.id, name: p.name })}
+                          className='flex items-center gap-2 text-destructive'
                         >
-                          <Trash2 className='h-4 w-4' />
-                          Delete
+                          <Trash2 className='h-4 w-4' /> Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -267,38 +213,26 @@ const Products = () => {
         </div>
       </div>
 
+      <ProductFormModal open={createOpen} onOpenChange={setCreateOpen} mode='create' />
       <ProductFormModal
-        open={createModalOpen}
-        onOpenChange={setCreateModalOpen}
-        mode='create'
-        onSuccess={() => {
-          // Refresh products list
-        }}
-      />
-
-      <ProductFormModal
-        open={editModalOpen}
-        onOpenChange={setEditModalOpen}
+        open={editOpen}
+        onOpenChange={setEditOpen}
         mode='edit'
-        product={productToEdit}
-        onSuccess={() => {
-          // Refresh products list
-        }}
+        product={editProduct}
       />
 
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <AlertDialog open={!!deleteDialog} onOpenChange={() => setDeleteDialog(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Product</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{productToDelete?.name}"? This action cannot be
-              undone.
+              Are you sure you want to delete "{deleteDialog?.name}"? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleConfirmDelete}
+              onClick={handleDelete}
               disabled={isDeleting}
               className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
             >
@@ -309,6 +243,4 @@ const Products = () => {
       </AlertDialog>
     </main>
   );
-};
-
-export default Products;
+}

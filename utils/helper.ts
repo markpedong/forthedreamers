@@ -47,3 +47,16 @@ export const tryWithToast = async <T>(promise: Promise<T>): Promise<T | null> =>
   if (err) return null;
   return res;
 };
+
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+}
+
+export function regenerateSlug(text: string): string {
+  return slugify(text)
+}
