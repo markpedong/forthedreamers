@@ -6,6 +6,7 @@ import { Plus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { updateUserImage } from '@/lib/server-actions';
 import { toBase64 } from '@/lib/utils';
+import { tryWithToast } from '@/utils/helper';
 
 interface AvatarUploadProps {
   src?: string;
@@ -27,13 +28,10 @@ const AvatarUpload: FC<AvatarUploadProps> = ({ src, alt, initials }) => {
     setPreview(base64 as string);
 
     startTransition(async () => {
-      try {
-        await updateUserImage({ image: base64 as string });
-        toast.success('Profile image updated');
-      } catch (err) {
-        toast.error('Failed to update image');
-        console.error(err);
-      }
+      const result = await tryWithToast(updateUserImage({ image: base64 as string }));
+      if (!result) return;
+
+      toast.success('Profile image updated');
     });
   };
 

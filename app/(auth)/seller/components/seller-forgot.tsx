@@ -23,12 +23,8 @@ const SellerForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) =
 
   const onSubmit = async (values: SchemaForm<typeof forgotPasswordSchema>) => {
     startTransition(async () => {
-      try {
-        toast.success('Check your email for reset link', { duration: 2000 });
-        setTimeout(() => onNavigate('login'), 1500);
-      } catch (error) {
-        toast.error('Failed to send reset email');
-      }
+      toast.success('Check your email for reset link', { duration: 2000 });
+      setTimeout(() => onNavigate('login'), 1500);
     });
   };
 

@@ -18,6 +18,7 @@ import AccountCard from '@/components/reusable/account-card';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { tryWithToast } from '@/utils/helper';
 
 interface AccountManagementProps {
   user?: SessionUser;
@@ -38,47 +39,44 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
 
   const onSubmit = (values: SchemaForm<typeof changePasswordSchema>) => {
     startSubmitting(async () => {
-      try {
-        await changePassword({
+      const result = await tryWithToast(
+        changePassword({
           currentPassword: values.currentPassword,
           newPassword: values.confirmPassword,
-        });
+        })
+      );
+      if (!result) return;
 
-        toast.success('Password changed successfully!', {
-          description: 'Revoking other sessions...',
-        });
+      toast.success('Password changed successfully!', {
+        description: 'Revoking other sessions...',
+      });
 
-        form.reset(CHANGE_PASSWORD_DEFAULT);
-        setShowPasswordDialog(false);
-      } catch {
-        toast.error('Failed to change password');
-      }
+      form.reset(CHANGE_PASSWORD_DEFAULT);
+      setShowPasswordDialog(false);
     });
   };
 
   const handleSetPassword = () => {
     startSubmitting(async () => {
-      try {
-        await authClient.requestPasswordReset({
+      const result = await tryWithToast(
+        authClient.requestPasswordReset({
           email: `${user?.email}`,
           redirectTo: '/reset-password',
-        });
-        toast.success('Password reset link sent successfully');
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Failed to send reset link');
-      }
+        })
+      );
+      if (!result) return;
+
+      toast.success('Password reset link sent successfully');
     });
   };
 
   const handleUnlinkAccount = (accountId: string, providerId: string) => {
     startSubmitting(async () => {
-      try {
-        await unlinkAccount({ accountId, providerId });
-        toast.success('Account unlinked successfully');
-        router.refresh();
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Failed to unlink account');
-      }
+      const result = await tryWithToast(unlinkAccount({ accountId, providerId }));
+      if (!result) return;
+
+      toast.success('Account unlinked successfully');
+      router.refresh();
     });
   };
 

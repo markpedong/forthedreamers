@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
+import { tryWithToast } from '@/utils/helper';
 
 const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const { refetch } = authClient.useSession();
@@ -29,24 +30,21 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
   const onSubmit = async (values: SchemaForm<typeof loginSchema>) => {
     startSubmitting(async () => {
-      try {
-        const res = await authClient.signIn.email({
+      const res = await tryWithToast(
+        authClient.signIn.email({
           email: values.email,
           password: values.password,
-        });
+        })
+      );
+      if (!res) return;
 
-        if ((res?.data as any).twoFactorRedirect) {
-          onNavigate('2fa');
-          return;
-        }
-
-        toast.success('Sign in successfully!', { duration: 2000 });
-        router.refresh();
-      } catch (error) {
-        if (error instanceof Error) {
-          toast.error(`Error: ${error.message}`);
-        }
+      if ((res?.data as any).twoFactorRedirect) {
+        onNavigate('2fa');
+        return;
       }
+
+      toast.success('Sign in successfully!', { duration: 2000 });
+      router.refresh();
     });
   };
 

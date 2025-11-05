@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { sendForgotPasswordEmail } from '@/lib/server-actions';
 import { toast } from 'sonner';
 import Form from '@/components/reusable/form';
+import { tryWithToast } from '@/utils/helper';
 
 const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const { forgotPasswordSchema } = useFormSchema();
@@ -21,15 +22,11 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
   const onSubmit = async (values: SchemaForm<typeof forgotPasswordSchema>) => {
     startSending(async () => {
-      try {
-        await sendForgotPasswordEmail(values.email);
-        toast.success('Reset link sent successfully!', { duration: 2000 });
-        onNavigate('login');
-      } catch (error) {
-        if (error instanceof Error) {
-          toast.error(`Error: ${error.message}`);
-        }
-      }
+      const result = await tryWithToast(sendForgotPasswordEmail(values.email));
+      if (!result) return;
+
+      toast.success('Reset link sent successfully!', { duration: 2000 });
+      onNavigate('login');
     });
   };
 

@@ -19,6 +19,7 @@ import Input from '@/components/reusable/input';
 import { AlertCircle, CopyIcon, RefreshCw, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { BackupCodesStep } from './2fa-components';
+import { tryWithToast } from '@/utils/helper';
 
 const TwoFactorSection: FC<{ user?: SessionUser }> = ({ user }) => {
   const router = useRouter();
@@ -64,57 +65,55 @@ const TwoFactorSection: FC<{ user?: SessionUser }> = ({ user }) => {
 
   const onSubmit = async ({ password, otp }: SchemaForm<typeof twoFactorSchema>) => {
     startTransition(async () => {
-      try {
-        const steps: Record<SetupStep, () => Promise<void>> = {
-          password: async () => {
-            if (is2faEnabled) {
-              const res = await authClient.twoFactor.disable({ password: password! });
-              if (handleApiError(res, 'password', 'Invalid password')) return;
-              toast.success('Two-factor authentication disabled');
-              resetSetup();
-            } else {
-              const res = await twoFactorEnable(password!);
-              if (!res.totpURI || !res.backupCodes?.length) {
-                form.setError('password', { message: 'Invalid password or server error' });
-                toast.error('Failed to enable 2FA');
-                return;
-              }
-              setQrCodeUrl(res.totpURI);
-              setBackupCodes(res.backupCodes);
-              setSetupStep('qr-code');
-            }
-          },
-          'qr-code': async () => {
-            if (!otp || otp.length < 6) {
-              form.setError('otp', { message: 'OTP must be 6 digits' });
-              form.setFocus('otp');
+      const steps: Record<SetupStep, () => Promise<void>> = {
+        password: async () => {
+          if (is2faEnabled) {
+            const res = await tryWithToast(
+              authClient.twoFactor.disable({ password: password! })
+            );
+            if (!res || handleApiError(res, 'password', 'Invalid password')) return;
+            toast.success('Two-factor authentication disabled');
+            resetSetup();
+          } else {
+            const res = await tryWithToast(twoFactorEnable(password!));
+            if (!res || !res.totpURI || !res.backupCodes?.length) {
+              form.setError('password', { message: 'Invalid password or server error' });
+              toast.error('Failed to enable 2FA');
               return;
             }
-            const res = await authClient.twoFactor.verifyTotp({ code: otp });
-            if (handleApiError(res, 'otp', 'Invalid OTP code')) return;
-            await new Promise((r) => setTimeout(r, 1500));
-            setShowVerificationSuccess(true);
-            setSetupStep('backup-codes');
-          },
-          'backup-codes': resetSetup,
-          regenerate: async () => {
-            const res = await generateBackupCodes(password!);
-            if (!res.backupCodes?.length) {
-              form.setError('password', { message: 'Invalid password' });
-              toast.error('Failed to regenerate backup codes');
-              return;
-            }
+            setQrCodeUrl(res.totpURI);
             setBackupCodes(res.backupCodes);
-            setSetupStep('backup-codes-regenerated');
-          },
-          'backup-codes-regenerated': resetSetup,
-          '': async () => {},
-        };
+            setSetupStep('qr-code');
+          }
+        },
+        'qr-code': async () => {
+          if (!otp || otp.length < 6) {
+            form.setError('otp', { message: 'OTP must be 6 digits' });
+            form.setFocus('otp');
+            return;
+          }
+          const res = await tryWithToast(authClient.twoFactor.verifyTotp({ code: otp }));
+          if (!res || handleApiError(res, 'otp', 'Invalid OTP code')) return;
+          await new Promise((r) => setTimeout(r, 1500));
+          setShowVerificationSuccess(true);
+          setSetupStep('backup-codes');
+        },
+        'backup-codes': resetSetup,
+        regenerate: async () => {
+          const res = await tryWithToast(generateBackupCodes(password!));
+          if (!res || !res.backupCodes?.length) {
+            form.setError('password', { message: 'Invalid password' });
+            toast.error('Failed to regenerate backup codes');
+            return;
+          }
+          setBackupCodes(res.backupCodes);
+          setSetupStep('backup-codes-regenerated');
+        },
+        'backup-codes-regenerated': resetSetup,
+        '': async () => {},
+      };
 
-        await steps[setupStep]();
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Operation failed');
-      }
+      await steps[setupStep]();
     });
   };
 

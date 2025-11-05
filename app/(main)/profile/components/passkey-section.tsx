@@ -16,6 +16,7 @@ import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import { Passkey } from 'better-auth/plugins/passkey';
 import { useRouter } from 'next/navigation';
+import { tryWithToast } from '@/utils/helper';
 
 const PasskeysSection: FC<{ passkeys: Passkey[] }> = ({ passkeys }) => {
   const router = useRouter();
@@ -34,26 +35,20 @@ const PasskeysSection: FC<{ passkeys: Passkey[] }> = ({ passkeys }) => {
 
   const onSubmit = async ({ name }: z.infer<typeof passkeySchema>) => {
     startSubmitting(async () => {
-      try {
-        if (isAddModal) {
-          const res = await authClient.passkey.addPasskey({ name });
+      if (isAddModal) {
+        const res = await tryWithToast(authClient.passkey.addPasskey({ name }));
+        if (!res || res?.error) return;
 
-          if (res?.error) {
-            toast.error(res.error.message);
-            return;
-          }
+        toast.success('Passkey added successfully');
+      } else if (selectedPasskey) {
+        const result = await tryWithToast(deletePasskey(selectedPasskey.id));
+        if (!result) return;
 
-          toast.success('Passkey added successfully');
-        } else if (selectedPasskey) {
-          await deletePasskey(selectedPasskey.id);
-          toast.success('Passkey deleted successfully');
-        }
-
-        setIsOpen(false);
-        router.refresh();
-      } catch (error) {
-        if (error instanceof Error) toast.error(error.message);
+        toast.success('Passkey deleted successfully');
       }
+
+      setIsOpen(false);
+      router.refresh();
     });
   };
 

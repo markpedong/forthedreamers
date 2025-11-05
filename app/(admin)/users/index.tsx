@@ -31,6 +31,7 @@ import useFormSchema from '@/hooks/useFormSchema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { authClient } from '@/lib/auth-client';
+import { tryWithToast } from '@/utils/helper';
 
 const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
   const router = useRouter();
@@ -64,52 +65,37 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
 
   const handleBanUnbanUser = (user: UserWithRole) => {
     startTransition(async () => {
-      try {
-        let res;
+      let res;
 
-        if (user.banned) {
-          res = await unbanUser(user.id);
-        } else {
-          res = await banUser(user.id);
-        }
-
-        toast.success(`User ${res.user.name} has been ${res.user.banned ? 'unbanned' : 'banned'}`);
-        router.refresh();
-      } catch (err) {
-        if (err instanceof Error) {
-          toast.error(`Error: ${err.message}`);
-        }
+      if (user.banned) {
+        res = await tryWithToast(unbanUser(user.id));
+      } else {
+        res = await tryWithToast(banUser(user.id));
       }
+      if (!res) return;
+
+      toast.success(`User ${res.user.name} has been ${res.user.banned ? 'unbanned' : 'banned'}`);
+      router.refresh();
     });
   };
 
   const handleImpersonateUser = (userId: string) => {
     startTransition(async () => {
-      try {
-        await impersonateUser(userId);
-        router.push('/');
-        await revalidatePath('/');
-      } catch (error) {
-        if (error instanceof Error) {
-          toast.error(`Error: ${error.message}`);
-        }
-      }
+      const result = await tryWithToast(impersonateUser(userId));
+      if (!result) return;
+
+      router.push('/');
+      await revalidatePath('/');
     });
   };
 
   const handleRevokeSession = async (user: UserWithRole) => {
     startTransition(async () => {
-      try {
-        const res = await revokeUserSessions(user.id);
-        if (res.success) {
-          toast.success('Sessions revoked successfully');
-          router.refresh();
-        }
-      } catch (err) {
-        if (err instanceof Error) {
-          toast.error(err.message);
-        }
-      }
+      const res = await tryWithToast(revokeUserSessions(user.id));
+      if (!res || !res.success) return;
+
+      toast.success('Sessions revoked successfully');
+      router.refresh();
     });
   };
 
@@ -121,16 +107,13 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     }
 
     startTransition(async () => {
-      let res;
+      const verifyResult = await tryWithToast(
+        authClient.twoFactor.verifyTotp({ code: `${otp}` })
+      );
+      if (!verifyResult || !!verifyResult.error) return;
 
-      res = await authClient.twoFactor.verifyTotp({ code: `${otp}` });
-
-      if (!!res.error) {
-        toast.error(`Error: ${res.error.message}`);
-        return;
-      }
-
-      res = await deleteUserByAdmin(`${selectedUser?.id}`);
+      const deleteResult = await tryWithToast(deleteUserByAdmin(`${selectedUser?.id}`));
+      if (!deleteResult) return;
 
       toast.success('User deleted successfully!', { duration: 2000 });
       setShowDeleteUser(false);

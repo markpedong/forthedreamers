@@ -8,6 +8,7 @@ import { LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { revokeSession } from '@/lib/server-actions';
+import { tryWithToast } from '@/utils/helper';
 
 type Props = {
   session: Session;
@@ -20,13 +21,11 @@ const SessionItem: FC<Props> = ({ session, isCurrent }) => {
 
   const handleAction = () => {
     startTransition(async () => {
-      try {
-        await revokeSession({ token: session.token });
-        toast.success('Success', { description: `Revoked session successfully.` });
-        router.refresh();
-      } catch {
-        toast.error('Error', { description: `Failed to revoked session.` });
-      }
+      const result = await tryWithToast(revokeSession({ token: session.token }));
+      if (!result) return;
+
+      toast.success('Success', { description: `Revoked session successfully.` });
+      router.refresh();
     });
   };
 

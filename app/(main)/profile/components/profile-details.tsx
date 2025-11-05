@@ -20,6 +20,7 @@ import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import { AlertCircle, Badge, CheckCircle2, Clock, Users } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
+import { tryWithToast } from '@/utils/helper';
 
 const ProfileDetails: FC<{ user?: SessionUser }> = ({ user }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -34,25 +35,20 @@ const ProfileDetails: FC<{ user?: SessionUser }> = ({ user }) => {
 
   const handleResendVerification = () => {
     startTransition(async () => {
-      try {
-        await sendVerificationEmailAction(`${user?.email}`);
-        toast.success('Success', { description: 'Verification email sent' });
-      } catch {
-        toast.error('Error', { description: 'Failed to send verification email' });
-      }
+      const result = await tryWithToast(sendVerificationEmailAction(`${user?.email}`));
+      if (!result) return;
+
+      toast.success('Success', { description: 'Verification email sent' });
     });
   };
 
   const onSubmit = async ({ name }: SchemaForm<typeof nameEmailSchema>) => {
     startSubmitting(async () => {
-      try {
-        await updateUser({ name });
-        toast.success('Success', { description: 'Profile updated' });
-      } catch {
-        toast.error('Error', { description: 'Failed to update profile' });
-      } finally {
-        setIsEditing(false);
-      }
+      const result = await tryWithToast(updateUser({ name }));
+      if (!result) return;
+
+      toast.success('Success', { description: 'Profile updated' });
+      setIsEditing(false);
     });
   };
 

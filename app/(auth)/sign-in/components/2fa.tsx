@@ -9,6 +9,7 @@ import Input from '@/components/reusable/input';
 import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
+import { tryWithToast } from '@/utils/helper';
 
 const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
@@ -30,8 +31,8 @@ const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     }
 
     startTransition(async () => {
-      try {
-        const res = await authClient.twoFactor.verifyTotp(
+      const res = await tryWithToast(
+        authClient.twoFactor.verifyTotp(
           { code: `${values.otp}` },
           {
             onSuccess: () => {
@@ -39,17 +40,9 @@ const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
               router.push('/profile');
             },
           },
-        );
-
-        if (!!res.error) {
-          toast.error(`Error: ${res.error.message}`);
-          return;
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          toast.error(`Error: ${error.message}`);
-        }
-      }
+        )
+      );
+      if (!res || !!res.error) return;
     });
   };
 

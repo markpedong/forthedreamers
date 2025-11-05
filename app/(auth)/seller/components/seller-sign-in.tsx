@@ -14,7 +14,7 @@ import useFormSchema from '@/hooks/useFormSchema';
 import { signIn } from '@/lib/server-actions';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
-import { catchErrorWithToast } from '@/utils/helper';
+import { tryWithToast } from '@/utils/helper';
 
 const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
@@ -27,12 +27,11 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
   const onSubmit = (values: SchemaForm<typeof loginSchema>) => {
     startTransition(async () => {
-      const [err] = await catchErrorWithToast(signIn(values.email, values.password, false));
+      const result = await tryWithToast(signIn(values.email, values.password, false));
+      if (!result) return;
 
-      if (!err) {
-        toast.success('Logged in successfully!', { duration: 3000 });
-        router.refresh();
-      }
+      toast.success('Logged in successfully!', { duration: 3000 });
+      router.refresh();
     });
   };
 

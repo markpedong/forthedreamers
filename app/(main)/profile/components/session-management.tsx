@@ -9,6 +9,7 @@ import { Session } from 'better-auth';
 import { revokeOtherSessions } from '@/lib/server-actions';
 import { useRouter } from 'next/navigation';
 import SessionItem from '@/components/reusable/session-item';
+import { tryWithToast } from '@/utils/helper';
 
 interface SessionsSectionProps {
   sessions: Session[];
@@ -23,13 +24,11 @@ const SessionManagement: FC<SessionsSectionProps> = ({ sessions, currentSessionT
 
   const handleAction = () => {
     startTransition(async () => {
-      try {
-        await revokeOtherSessions();
-        toast.success('Success', { description: `Revoked other sessions successfully.` });
-        router.refresh();
-      } catch {
-        toast.error('Error', { description: `Failed to revoked other sessions.` });
-      }
+      const result = await tryWithToast(revokeOtherSessions());
+      if (!result) return;
+
+      toast.success('Success', { description: `Revoked other sessions successfully.` });
+      router.refresh();
     });
   };
 

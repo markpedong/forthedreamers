@@ -11,6 +11,7 @@ import useFormSchema from '@/hooks/useFormSchema';
 import Input from '@/components/reusable/input';
 import { SchemaForm } from '@/lib/types';
 import { resetPassword } from '@/lib/server-actions';
+import { tryWithToast } from '@/utils/helper';
 
 const ResetPassword: FC<{ token: string }> = ({ token }) => {
   const router = useRouter();
@@ -26,15 +27,11 @@ const ResetPassword: FC<{ token: string }> = ({ token }) => {
 
   const onSubmit = async (values: SchemaForm<typeof resetPasswordSchema>) => {
     startTransition(async () => {
-      try {
-        await resetPassword(token, values.password);
-        toast.success('Password reset successfully!', { duration: 3000 });
-        router.push('/sign-in');
-      } catch (error) {
-        if (error instanceof Error) {
-          toast.error(`Error: ${error.message}`);
-        }
-      }
+      const result = await tryWithToast(resetPassword(token, values.password));
+      if (!result) return;
+
+      toast.success('Password reset successfully!', { duration: 3000 });
+      router.push('/sign-in');
     });
   };
 

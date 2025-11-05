@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { FC, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { tryWithToast } from '@/utils/helper';
 
 type Props = {};
 
@@ -35,16 +36,13 @@ const DeleteAccount: FC = (props: Props) => {
     }
 
     startSubmitting(async () => {
-      let res;
+      const verifyResult = await tryWithToast(
+        authClient.twoFactor.verifyTotp({ code: `${otp}` })
+      );
+      if (!verifyResult || !!verifyResult.error) return;
 
-      res = await authClient.twoFactor.verifyTotp({ code: `${otp}` });
-
-      if (!!res.error) {
-        toast.error(`Error: ${res.error.message}`);
-        return;
-      }
-
-      res = await deleteAccount();
+      const deleteResult = await tryWithToast(deleteAccount());
+      if (!deleteResult) return;
 
       toast.success('Delete request sent successfully');
       setShowDeleteDialog(false);

@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { signUp } from '@/lib/server-actions';
 import Divider from '@/components/reusable/divider';
 import { useRouter } from 'next/navigation';
+import { tryWithToast } from '@/utils/helper';
 
 const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
@@ -28,17 +29,12 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
   const onSubmit = async (values: SchemaForm<typeof registrationSchema>) => {
     startSigningUp(async () => {
-      try {
-        const res = await signUp(values.email, values.password, values.name);
-        console.log('res', res);
+      const res = await tryWithToast(signUp(values.email, values.password, values.name));
+      if (!res) return;
 
-        toast.success('Account created successfully!', { duration: 3000 });
-        router.refresh();
-      } catch (error) {
-        if (error instanceof Error) {
-          toast.error(`Error: ${error.message}`);
-        }
-      }
+      console.log('res', res);
+      toast.success('Account created successfully!', { duration: 3000 });
+      router.refresh();
     });
   };
 

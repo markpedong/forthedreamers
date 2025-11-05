@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { FC, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { tryWithToast } from '@/utils/helper';
 
 const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
   const router = useRouter();
@@ -30,16 +31,20 @@ const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
     }
 
     startTransition(async () => {
-      try {
-        if (values.otp === '123456') {
-          toast.success('Verified!', { duration: 2000 });
-          router.push('/seller-dashboard');
-        } else {
-          toast.error('Invalid code. Try again.');
-        }
-      } catch (error) {
-        toast.error('Verification failed');
-      }
+      // Mock implementation - wrap in promise for tryWithToast
+      const result = await tryWithToast(
+        Promise.resolve().then(() => {
+          if (values.otp === '123456') {
+            return { success: true };
+          } else {
+            throw new Error('Invalid code. Try again.');
+          }
+        })
+      );
+      if (!result) return;
+
+      toast.success('Verified!', { duration: 2000 });
+      router.push('/seller-dashboard');
     });
   };
 
