@@ -4,7 +4,6 @@ import type { SchemaForm, TOnNavigate } from '@/lib/types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition } from 'react';
-import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 
@@ -16,8 +15,9 @@ import Input from '@/components/reusable/input';
 import Divider from '@/components/reusable/divider';
 import { useRouter } from 'next/navigation';
 import { checkStore, createSeller } from '@/lib/http';
+import { tryWithToast } from '@/utils/helper';
 import { signUp } from '@/lib/server-actions';
-import { handleAction } from '@/utils/helper';
+import { toast } from 'sonner';
 
 const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
@@ -34,26 +34,25 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     },
   });
 
-  const onSubmit = async (values: SchemaForm<typeof createSellerSchema>) => {
-    startTransition(() =>
-      handleAction(async () => {
-        await checkStore(values.storeName);
+  const onSubmit = (values: SchemaForm<typeof createSellerSchema>) => {
+    startTransition(async () => {
+      const storeErr = await tryWithToast(checkStore(values.storeName));
+      if (!storeErr) return;
 
-        const res = await signUp(values.email, values.password, values.name);
+      const res = await tryWithToast(signUp(values.email, values.password, values.name));
+      if (!res || !('token' in res && res.token)) return;
 
-        if ('token' in res && res.token) {
-          const seller = await createSeller({
-            storeName: values.storeName,
-            userID: res.user.id,
-          });
+      const seller = await tryWithToast(
+        createSeller({
+          storeName: values.storeName,
+          userID: res.user.id,
+        }),
+      );
+      if (!seller?.success) return;
 
-          if (seller.success) {
-            toast.success('Account created successfully!');
-            router.refresh();
-          }
-        }
-      }),
-    );
+      toast.success('Account created successfully!');
+      router.refresh();
+    });
   };
 
   return (

@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { Prisma } from '@prisma/client';
+import { Prisma } from "@/generated/prisma";
+import { NextResponse } from "next/server";
 
 export const successResponse = (data: any = null, message = "OK", status = 200) => {
   return NextResponse.json(
@@ -30,8 +30,14 @@ export const errorResponse = (err: unknown) => {
     status = 400;
   }
 
-  // Prisma errors
+  // Prisma known request error
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    const prismaErrorMap: Record<string, { message: string; status: number }> = {
+      P2002: { message: "Unique constraint failed", status: 400 },
+      P2025: { message: "Record not found", status: 404 },
+      P2003: { message: "Foreign key constraint failed", status: 400 },
+    };
+
     const mapped = prismaErrorMap[err.code];
     if (mapped) {
       message = mapped.message;
@@ -41,6 +47,7 @@ export const errorResponse = (err: unknown) => {
     }
   }
 
+  // Prisma validation error
   if (err instanceof Prisma.PrismaClientValidationError) {
     message = "Invalid data passed to the database";
     status = 400;

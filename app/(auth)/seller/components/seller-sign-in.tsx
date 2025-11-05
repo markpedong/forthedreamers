@@ -14,6 +14,7 @@ import useFormSchema from '@/hooks/useFormSchema';
 import { signIn } from '@/lib/server-actions';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
+import { catchErrorWithToast } from '@/utils/helper';
 
 const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
@@ -26,14 +27,11 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
   const onSubmit = (values: SchemaForm<typeof loginSchema>) => {
     startTransition(async () => {
-      try {
-        const res = await signIn(values.email, values.password, false);
-        console.log('res', res);
+      const [err] = await catchErrorWithToast(signIn(values.email, values.password, false));
 
+      if (!err) {
         toast.success('Logged in successfully!', { duration: 3000 });
         router.refresh();
-      } catch {
-        toast.error('Sign in failed. Please try again.');
       }
     });
   };
@@ -77,6 +75,7 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
                 variant='link'
                 className='text-primary text-sm font-medium'
                 onClick={() => onNavigate('forgot')}
+                type='button'
               >
                 Forgot password?
               </Button>

@@ -1,27 +1,31 @@
 import prisma from "@/lib/prisma";
-import { errorResponse, successResponse } from "@/lib/server-helper";
+import { successResponse, errorResponse } from "@/lib/server-helper";
+import { catchRouteErrors } from "@/utils/helper";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
-  try {
-    const { storeName } = await req.json();
+  const body = await req.json();
+  const storeName = body.storeName?.trim();
 
-    if (!storeName?.trim()) {
-      return errorResponse("storeName is required");
-    }
+  if (!storeName) {
+    return errorResponse("storeName is required");
+  }
 
-    const store = await prisma.seller.findUnique({
+  // Wrap the Prisma query in catchError
+  const [err, store] = await catchRouteErrors(
+    prisma.seller.findUnique({
       where: { storeName },
       select: { storeName: true },
-    });
+    })
+  );
 
-    if (store) {
-      return errorResponse("Store name already exists");
-    }
-
-    return successResponse({ exists: false });
-
-  } catch (err: unknown) {
-    return errorResponse(err);
+  if (err) {
+    return errorResponse(err); // Automatically handled by your helper
   }
+
+  if (store) {
+    return errorResponse("Store name already exists");
+  }
+
+  return successResponse({ exists: false });
 }
