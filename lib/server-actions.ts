@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { revalidatePath as revalidatePathNext } from "next/cache";
+import prisma from "./prisma";
 
 export type TChangePass = { currentPassword: string, newPassword: string }
 
@@ -167,3 +168,5 @@ export const unbanUser = async (userId: string) => auth.api.unbanUser({ headers:
 export const revokeUserSessions = async (userId: string) => auth.api.revokeUserSessions({ headers: await headers(), body: { userId } });
 
 export const deleteUserByAdmin = async (userId: string) => auth.api.removeUser({ headers: await headers(), body: { userId } });
+
+export const getUserDB = async (userID: string) => await prisma.user.findUnique({ where: { id: userID }, select: { role: true } });

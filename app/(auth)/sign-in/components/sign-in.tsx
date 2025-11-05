@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
 import { tryWithToast } from '@/utils/helper';
+import { getUserDB, signOut } from '@/lib/server-actions';
+import { USER_ROLE } from '@/generated/prisma';
 
 const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const { refetch } = authClient.useSession();
@@ -34,9 +36,19 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         authClient.signIn.email({
           email: values.email,
           password: values.password,
-        })
+        }),
       );
       if (!res) return;
+
+      const user = await getUserDB(`${res.data?.user.id}`);
+      if (user?.role === USER_ROLE.SELLER) {
+        await signOut();
+        router.refresh();
+        toast.error('You are not authorized to access this page, please use the seller panel.', {
+          duration: 5000,
+        });
+        return;
+      }
 
       if ((res?.data as any).twoFactorRedirect) {
         onNavigate('2fa');

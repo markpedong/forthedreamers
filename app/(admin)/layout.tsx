@@ -1,9 +1,8 @@
-import { getSession, permissionListUsers } from '@/lib/server-actions';
+import { getSession } from '@/lib/server-actions';
 import { redirect } from 'next/navigation';
 import AdminSidebar from './components/admin-sidebar';
 import AdminHeader from './components/admin-header';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { USER_ROLE } from '@/generated/prisma';
 
 export default async function AdminLayout({
   children,
@@ -12,13 +11,13 @@ export default async function AdminLayout({
 }>) {
   const session = await getSession();
 
-  if (session?.user.role !== USER_ROLE.ADMIN) {
+  if (!['ADMIN', 'SELLER'].includes(session?.user.role ?? '')) {
     redirect('/');
   }
 
-  if (!(await permissionListUsers()).success) {
-    redirect('/');
-  }
+  // if (!(await permissionListUsers()).success) {
+  //   redirect('/');
+  // }
 
   return (
     <SidebarProvider>

@@ -11,9 +11,10 @@ import type { SchemaForm, TOnNavigate } from '@/lib/types';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import useFormSchema from '@/hooks/useFormSchema';
-import { signIn } from '@/lib/server-actions';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
+import { getUserDB, signIn, signOut } from '@/lib/server-actions';
+import { USER_ROLE } from '@/generated/prisma';
 import { tryWithToast } from '@/utils/helper';
 
 const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
@@ -30,8 +31,21 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       const result = await tryWithToast(signIn(values.email, values.password, false));
       if (!result) return;
 
+      const user = await getUserDB(`${result?.user.id}`);
+      if (user?.role === USER_ROLE.USER) {
+        await signOut();
+        router.refresh();
+        toast.error('You are not authorized to access this page, please use the user panel.', {
+          duration: 5000,
+        });
+        return;
+      }
+
+      if (result.redirect) {
+        router.push('/dashboard');
+      }
+
       toast.success('Logged in successfully!', { duration: 3000 });
-      router.refresh();
     });
   };
 
