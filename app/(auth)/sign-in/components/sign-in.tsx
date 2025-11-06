@@ -41,7 +41,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       if (!res) return;
 
       const user = await getUserDB(`${res.data?.user.id}`);
-      if (user?.role === USER_ROLE.SELLER) {
+      if (user?.role !== USER_ROLE.USER) {
         await signOut();
         router.refresh();
         toast.error('You are not authorized to access this page, please use the seller panel.', {
@@ -50,7 +50,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         return;
       }
 
-      if ((res?.data as any).twoFactorRedirect) {
+      if ((res?.data as any)?.twoFactorRedirect) {
         onNavigate('2fa');
         return;
       }

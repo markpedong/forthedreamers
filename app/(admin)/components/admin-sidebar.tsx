@@ -13,20 +13,30 @@ import {
   Settings,
   LogOut as Logo,
 } from 'lucide-react';
+import { FC } from 'react';
+import { Session } from '@/lib/types';
+import { USER_ROLE } from '@/generated/prisma';
 
-const navItems = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Users', href: '/users', icon: Users },
-  { label: 'Orders', href: '/orders', icon: ShoppingCart },
-  { label: 'Products', href: '/products', icon: Package },
-  { label: 'Payments', href: '/payments', icon: CreditCard },
-  { label: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { label: 'Security', href: '/security', icon: Lock },
-  { label: 'Settings', href: '/settings', icon: Settings },
-];
-
-export default function Sidebar() {
+const Sidebar: FC<{ session: Session }> = ({ session }) => {
   const pathname = usePathname();
+  const navItems = [
+    { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    {
+      label: 'Users',
+      href: '/users',
+      icon: Users,
+      allowed: session?.user.role === USER_ROLE.ADMIN,
+    },
+    { label: 'Orders', href: '/orders', icon: ShoppingCart },
+    { label: 'Products', href: '/products', icon: Package },
+    { label: 'Payments', href: '/payments', icon: CreditCard },
+    { label: 'Analytics', href: '/analytics', icon: BarChart3 },
+    { label: 'Security', href: '/security', icon: Lock },
+    { label: 'Settings', href: '/settings', icon: Settings },
+  ];
+  const visibleNavItems = navItems.filter(
+    (item) => item.allowed === undefined || item.allowed === true,
+  );
 
   return (
     <aside className='w-64 bg-sidebar border-r border-sidebar-border flex flex-col'>
@@ -39,7 +49,7 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className='flex-1 overflow-y-auto py-6'>
         <ul className='space-y-2 px-3'>
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const isActive =
               pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
@@ -72,4 +82,6 @@ export default function Sidebar() {
       </div>
     </aside>
   );
-}
+};
+
+export default Sidebar;
