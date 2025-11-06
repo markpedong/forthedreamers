@@ -23,7 +23,7 @@ interface ReusableDialogProps<T extends FieldValues> {
   onCancel?: () => void;
   children?: ReactNode;
   // form: UseFormReturn<T>;
-  triggerText: string;
+  triggerText: string | false;
   onTriggerClick?: () => void;
   disableRefreshUponSubmit?: boolean;
   open?: boolean;
@@ -41,7 +41,7 @@ const Dialog = <T extends FieldValues>({
   destructive = false,
   loading = false,
   onCancel,
-  triggerText,
+  triggerText = 'Open',
   onTriggerClick,
   open,
   onOpenChange,
@@ -50,11 +50,13 @@ const Dialog = <T extends FieldValues>({
 }: ReusableDialogProps<T>) => {
   return (
     <DialogUI open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button variant={destructive ? 'destructive' : 'outline'} onClick={onTriggerClick}>
-          {triggerText}
-        </Button>
-      </DialogTrigger>
+      {triggerText && (
+        <DialogTrigger asChild>
+          <Button variant={destructive ? 'destructive' : 'outline'} onClick={onTriggerClick}>
+            {triggerText}
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className={contentClassname}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

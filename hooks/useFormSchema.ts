@@ -16,7 +16,7 @@ const useFormSchema = () => {
   // Now you can reuse it
   const nameSchema = createStringSchema("Name");
   const storeNameSchema = createStringSchema("Store name");
-  const searchSchema = createStringSchema("Search");
+  const searchSchema = z.object({ search: createStringSchema("Search") });
 
 
   const nameEmailSchema = z.object({ name: nameSchema, }).extend({ email: emailSchema });
@@ -106,6 +106,11 @@ const useFormSchema = () => {
     stock: z.number(),
   })
 
+  const specsEditorSchema = z.object({
+    label: createStringSchema("Label"),
+    value: createStringSchema("Value"),
+  })
+
   return {
     nameEmailSchema,
     password,
@@ -119,7 +124,8 @@ const useFormSchema = () => {
     passkeySchema,
     searchSchema,
     createSellerSchema,
-    productSchema
+    productSchema,
+    specsEditorSchema
   }
 }
 

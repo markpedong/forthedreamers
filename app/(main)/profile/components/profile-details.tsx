@@ -89,22 +89,20 @@ const ProfileDetails: FC<{ user?: SessionUser }> = ({ user }) => {
         <Form form={form} customSubmitButton>
           <div className='grid gap-4 sm:grid-cols-2'>
             <Input
-              control={form.control}
               name='name'
               label='Name'
               description='Your name as displayed on your profile page'
               disabled={!isEditing || isSubmitting}
             />
             <Input
-              control={form.control}
               name='email'
               label='Email'
               disabled
               description='For security purposes, email editing is disabled'
             />
-            <Input name='phone' type='tel' label='Phone' placeholder='+1 (555) 000-0000' />
-            <Input name='dateOfBirth' type='date' label='Date of Birth' />
-            <Input name='gender' label='Gender' placeholder='Male / Female / Other' />
+            {/* <Input name='phone' label='Phone' placeholder='+1 (555) 000-0000' />
+            <Input name='dateOfBirth' label='Date of Birth' />
+            <Input name='gender' label='Gender' placeholder='Male / Female / Other' /> */}
           </div>
 
           <div className='flex items-start justify-between rounded-lg border border-border bg-card p-4 mt-6'>

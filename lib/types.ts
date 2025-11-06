@@ -107,7 +107,7 @@ export type SharedProps<T extends FieldValues> = {
 
 export type InputProps<T extends FieldValues> = SharedProps<T> &
   Omit<ComponentPropsWithoutRef<'input'>, 'name' | 'type'> & {
-    type?: 'text' | 'password' | 'number';
+    type?: 'text' | 'password' | 'number' | 'email';
     textarea?: false;
   };
 
@@ -134,3 +134,15 @@ export type ReusableSelectProps<T extends FieldValues> = {
   options: Option[];
   disabled?: boolean;
 };
+
+
+export type Spec = {
+  id?: string;
+  label: string;
+  value: string;
+}
+
+export type SpecsEditorProps = {
+  specs: Spec[];
+  onSpecsChange: (specs: Spec[]) => void;
+}

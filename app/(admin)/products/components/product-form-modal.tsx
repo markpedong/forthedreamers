@@ -207,12 +207,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode,
               />
             </TabsContent>
             <TabsContent value='details' className='space-y-6'>
-              <div>
-                <Label>Specifications</Label>
-                <div className='mt-1.5'>
-                  <SpecsEditor specs={form1.specs} onSpecsChange={(v) => updateField('specs', v)} />
-                </div>
-              </div>
+              <SpecsEditor specs={form1.specs} onSpecsChange={(v) => updateField('specs', v)} />
               <div>
                 <Label>Tags</Label>
                 <div className='mt-1.5'>

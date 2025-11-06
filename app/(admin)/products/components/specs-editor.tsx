@@ -1,57 +1,44 @@
 'use client';
 
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import { Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
+import Input from '@/components/reusable/input';
+import Dialog from '@/components/reusable/dialog';
+import { SpecsEditorProps } from '@/lib/types';
 
-interface Spec {
-  id?: string;
-  label: string;
-  value: string;
-}
-
-interface SpecsEditorProps {
-  specs: Spec[];
-  onSpecsChange: (specs: Spec[]) => void;
-}
-
-const SpecsEditor = ({ specs, onSpecsChange }: SpecsEditorProps) => {
+const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
   const [open, setOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [form, setForm] = useState({ label: '', value: '' });
+  // const { specsEditorSchema } = useFormSchema();
+  // const form = useForm<SchemaForm<typeof specsEditorSchema>>({
+  //   resolver: zodResolver(specsEditorSchema),
+  //   defaultValues: {
+  //     label: '',
+  //     value: '',
+  //   },
+  // });
 
   const resetForm = () => {
-    setForm({ label: '', value: '' });
     setEditingIndex(null);
   };
 
-  const handleSave = () => {
-    const { label, value } = form;
-    if (!label.trim() || !value.trim()) return;
+  // const onSubmit = ({ label, value }: SchemaForm<typeof specsEditorSchema>) => {
+  //   if (!label.trim() || !value.trim()) return;
 
-    const updated = [...specs];
-    if (editingIndex !== null) {
-      updated[editingIndex] = { ...updated[editingIndex], label, value };
-    } else {
-      updated.push({ label, value });
-    }
+  //   const updated = [...specs];
+  //   if (editingIndex !== null) {
+  //     updated[editingIndex] = { ...updated[editingIndex], label, value };
+  //   } else {
+  //     updated.push({ label, value });
+  //   }
 
-    onSpecsChange(updated);
-    resetForm();
-    setOpen(false);
-  };
+  //   onSpecsChange(updated);
+  //   resetForm();
+  //   setOpen(false);
+  // };
 
   const handleEdit = (index: number) => {
-    const { label, value } = specs[index];
-    setForm({ label, value });
     setEditingIndex(index);
     setOpen(true);
   };
@@ -93,49 +80,19 @@ const SpecsEditor = ({ specs, onSpecsChange }: SpecsEditorProps) => {
           </div>
         ))}
       </div>
-
       <Dialog
+        title={editingIndex !== null ? 'Edit Specification' : 'Add Specification'}
         open={open}
         onOpenChange={(state) => {
           setOpen(state);
           if (!state) resetForm();
         }}
+        triggerText={false}
+        onCancel={() => setOpen(false)}
+        // onConfirm={form.handleSubmit(onSubmit)}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {editingIndex !== null ? 'Edit Specification' : 'Add Specification'}
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className='space-y-4'>
-            <div>
-              <label className='text-sm font-medium'>Label</label>
-              <Input
-                placeholder='e.g., Driver Size'
-                value={form.label}
-                onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
-                className='mt-1'
-              />
-            </div>
-            <div>
-              <label className='text-sm font-medium'>Value</label>
-              <Input
-                placeholder='e.g., 40mm'
-                value={form.value}
-                onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
-                className='mt-1'
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant='outline' onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave}>Save</Button>
-          </DialogFooter>
-        </DialogContent>
+        <Input label='Label' name='label' placeholder='e.g., Driver Size' />
+        <Input label='Value' name='value' placeholder='e.g., 40mm' />
       </Dialog>
     </div>
   );
