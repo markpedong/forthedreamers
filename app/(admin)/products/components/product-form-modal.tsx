@@ -2,10 +2,6 @@
 
 import { useState, useEffect, FC, useTransition } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Label } from '@/components/ui/label';
-import SpecsEditor from './specs-editor';
-import VariantEditor from './variant-editor';
-import TagsInput from './tags-input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Form from '@/components/reusable/form';
 import { useForm } from 'react-hook-form';
@@ -25,57 +21,20 @@ const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode,
   });
   const [isSubmitting, startSubmitting] = useTransition();
   const [tab, setTab] = useState('basic');
-  const [form1, setForm] = useState({
-    name: '',
-    brand: '',
-    basePrice: '',
-    description: '',
-    category: '',
-    status: 'ACTIVE',
-    stock: '',
-    images: [] as string[],
-    tags: [] as string[],
-    specs: [] as any[],
-    variants: [] as any[],
-  });
 
   useEffect(() => {
     if (mode === 'edit' && product) {
-      setForm({
-        name: product.name || '',
-        brand: product.brand || '',
-        basePrice: product.basePrice?.toString() || '',
-        description: product.description || '',
-        category: product.categoryId?.toString() || '',
-        status: product.status || 'ACTIVE',
-        stock: product.stock?.toString() || '',
-        images: product.images || [],
-        tags: product.tags || [],
-        specs: product.specs || [],
-        variants: product.variants || [],
+      form.reset({
+        ...PRODUCT_DEFAULT,
+        ...product,
       });
+    } else if (mode === 'create') {
+      form.reset(PRODUCT_DEFAULT);
     }
-  }, [mode, product]);
+  }, [mode, product, form]);
 
-  useEffect(() => {
-    if (!open)
-      setForm({
-        name: '',
-        brand: '',
-        basePrice: '',
-        description: '',
-        category: '',
-        status: 'ACTIVE',
-        stock: '',
-        images: [],
-        tags: [],
-        specs: [],
-        variants: [],
-      });
-  }, [open]);
-
-  const hasVariants = form1.variants.some((v: any) => v.options?.length);
-  const updateField = (field: string, value: any) => setForm((f) => ({ ...f, [field]: value }));
+  // const hasVariants = form1.variants.some((v: any) => v.options?.length);
+  // const updateField = (field: string, value: any) => setForm((f) => ({ ...f, [field]: value }));
 
   const onSubmit = (values: SchemaForm<typeof productSchema>) => {
     startSubmitting(async () => {
@@ -169,21 +128,21 @@ const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode,
             </TabsContent>
             <TabsContent value='inventory' className='space-y-6'>
               <div>
-                <div className='flex justify-between items-center mb-2'>
+                {/* <div className='flex justify-between items-center mb-2'>
                   <Label>Variants</Label>
                   {hasVariants && (
                     <span className='text-xs text-muted-foreground'>
                       Base price & stock disabled when variants exist
                     </span>
                   )}
-                </div>
-                <VariantEditor
-                  variants={form1.variants}
+                </div> */}
+                {/* <VariantEditor
+                  variants={form.getFieldState('variants')}
                   onVariantsChange={(v) => updateField('variants', v)}
-                />
+                /> */}
               </div>
               <div className='grid grid-cols-2 gap-4'>
-                <Input
+                {/* <Input
                   label={`Base Price ${hasVariants && '(Disabled)'}`}
                   type='number'
                   name='basePrice'
@@ -197,9 +156,9 @@ const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode,
                   name='stock'
                   placeholder='0'
                   disabled={hasVariants}
-                />
+                /> */}
               </div>
-              <Select
+              {/* <Select
                 label='Status'
                 name='status'
                 options={[
@@ -207,16 +166,16 @@ const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode,
                   { label: 'Inactive', value: 'INACTIVE' },
                   { label: 'Draft', value: 'DRAFT' },
                 ]}
-              />
+              /> */}
             </TabsContent>
             <TabsContent value='details' className='space-y-6'>
-              <SpecsEditor specs={form1.specs} onSpecsChange={(v) => updateField('specs', v)} />
+              {/* <SpecsEditor specs={form1.specs} onSpecsChange={(v) => updateField('specs', v)} />
               <div>
                 <Label>Tags</Label>
                 <div className='mt-1.5'>
                   <TagsInput tags={form1.tags} onTagsChange={(v) => updateField('tags', v)} />
                 </div>
-              </div>
+              </div> */}
             </TabsContent>
           </Form>
         </Tabs>
