@@ -1,10 +1,10 @@
-import { getProducts } from '@/lib/http';
+import { getCategories, getProducts } from '@/lib/http';
 import Products from './components';
 
 const Page = async () => {
-  const products = await getProducts();
+  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
 
-  return <Products products={products.data ?? []} />;
+  return <Products products={products.data ?? []} categories={categories.data ?? []} />;
 };
 
 export default Page;

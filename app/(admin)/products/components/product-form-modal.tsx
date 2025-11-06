@@ -13,7 +13,9 @@ import Input from '@/components/reusable/input';
 import Select from '@/components/reusable/select';
 import AlertDialog from '@/components/reusable/alert-dialog';
 
-const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode, product }) => {
+const ProductFormModal: FC<ProductFormModalProps> = (props) => {
+  const { open, onOpenChange, mode, product, categories } = props;
+
   const { productSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof productSchema>>({
     resolver: zodResolver(productSchema),
@@ -23,11 +25,12 @@ const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode,
   const [tab, setTab] = useState('basic');
 
   useEffect(() => {
+    console.log('product', product);
     if (mode === 'edit' && product) {
-      console.log('product', product);
       form.reset({
         ...PRODUCT_DEFAULT,
         ...product,
+        category: product.category?.name,
       });
     } else if (mode === 'create') {
       form.reset(PRODUCT_DEFAULT);
@@ -102,8 +105,8 @@ const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode,
       }
     >
       <ScrollArea className='max-h-[calc(90vh-180px)] mt-8'>
-        <Tabs value={tab} onValueChange={setTab} className='space-y-6'>
-          <TabsList className='grid grid-cols-3'>
+        <Tabs value={tab} onValueChange={setTab} className='space-y-6 '>
+          <TabsList className='grid grid-cols-3 !w-[unset]'>
             <TabsTrigger value='basic'>Basic Info</TabsTrigger>
             <TabsTrigger value='inventory'>Variants & Stock</TabsTrigger>
             <TabsTrigger value='details'>Details</TabsTrigger>
@@ -118,13 +121,15 @@ const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode,
               />
               <Input label='Brand' name='brand' placeholder='e.g., AudioTech' />
               <Select
+                containerClassName='w-[unset]'
                 label='Category *'
                 name='category'
-                options={[
-                  { label: 'Electronics', value: 'Electronics' },
-                  { label: 'Accessories', value: 'Accessories' },
-                  { label: 'Software', value: 'Software' },
-                ]}
+                options={
+                  categories.map((c) => ({
+                    value: c.name,
+                    label: c.name,
+                  })) || []
+                }
               />
             </TabsContent>
             <TabsContent value='inventory' className='space-y-6'>

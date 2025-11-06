@@ -5,7 +5,7 @@ import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import ProductFormModal from './product-form-modal';
-import { ProColumn } from '@/lib/types';
+import { ProColumn, TProductsList } from '@/lib/types';
 import { ProTable } from '@/components/reusable/table';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { Badge } from '@/components/ui/badge';
@@ -65,7 +65,7 @@ const mockProducts = [
   },
 ];
 
-const Products: FC<{ products: Product[] }> = ({ products }) => {
+const Products: FC<TProductsList> = ({ products, categories }) => {
   console.log('products', products);
   const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -73,6 +73,7 @@ const Products: FC<{ products: Product[] }> = ({ products }) => {
   const [editOpen, setEditOpen] = useState(false);
   const [editProduct, setEditProduct] = useState<any>(null);
 
+  console.log('categories', categories);
   const handleDelete = async () => {
     if (!deleteDialog) return;
     setIsDeleting(true);
@@ -212,12 +213,18 @@ const Products: FC<{ products: Product[] }> = ({ products }) => {
         />
       </div>
 
-      <ProductFormModal open={createOpen} onOpenChange={setCreateOpen} mode='create' />
+      <ProductFormModal
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        mode='create'
+        categories={categories}
+      />
       <ProductFormModal
         open={editOpen}
         onOpenChange={setEditOpen}
         mode='edit'
         product={editProduct}
+        categories={categories}
       />
       <AlertDialog
         title='Delete Product'

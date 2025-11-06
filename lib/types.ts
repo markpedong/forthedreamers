@@ -3,6 +3,7 @@ import type { z, ZodTypeAny } from 'zod';
 import { getSession, listUserAccounts } from "./server-actions";
 import type { Control, Path, FieldValues } from 'react-hook-form';
 import { ComponentPropsWithoutRef } from "react";
+import { Category, Product } from "@/generated/prisma";
 
 export type TOnNavigate = (page: string) => void;
 
@@ -90,6 +91,7 @@ export type ProductFormModalProps = {
   mode: 'create' | 'edit';
   product?: any;
   onSuccess?: () => void;
+  categories: Category[]
 }
 
 
@@ -147,3 +149,5 @@ export type SpecsEditorProps = {
   specs: Spec[];
   onSpecsChange: (specs: Spec[]) => void;
 }
+
+export type TProductsList = { products: Product[]; categories: Category[] }

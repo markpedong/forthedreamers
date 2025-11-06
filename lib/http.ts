@@ -55,3 +55,5 @@ export const createSeller = async ({ storeName, userID }: TCreateSeller) => awai
 });
 
 export const getProducts = async () => await apiFetch<Product[]>('/api/products');
+
+export const getCategories = async () => await apiFetch('/api/category');
