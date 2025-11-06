@@ -191,8 +191,8 @@ const Products = () => {
   ];
 
   return (
-    <main className='bg-background'>
-      <div className='max-w-7xl mx-auto px-4 py-8 space-y-8'>
+    <>
+      <div className='px-4 py-8 space-y-8'>
         <header className='flex items-center justify-between'>
           <div>
             <h1 className='text-4xl font-bold'>Products</h1>
@@ -226,7 +226,7 @@ const Products = () => {
         confirmText={isDeleting ? 'Deleting...' : 'Delete'}
         onConfirm={handleDelete}
       />
-    </main>
+    </>
   );
 };
 

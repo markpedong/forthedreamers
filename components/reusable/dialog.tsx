@@ -6,6 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
+  DialogClose,
 } from '@/components/ui/dialog';
 import { ReactNode } from 'react';
 import { FieldValues } from 'react-hook-form';
@@ -24,6 +26,9 @@ interface ReusableDialogProps<T extends FieldValues> {
   triggerText: string;
   onTriggerClick?: () => void;
   disableRefreshUponSubmit?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  contentClassname?: string;
 }
 
 const Dialog = <T extends FieldValues>({
@@ -38,21 +43,24 @@ const Dialog = <T extends FieldValues>({
   onCancel,
   triggerText,
   onTriggerClick,
+  open,
+  onOpenChange,
+  contentClassname,
 }: ReusableDialogProps<T>) => {
   return (
-    <DialogUI>
+    <DialogUI open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button variant={destructive ? 'destructive' : 'outline'} onClick={onTriggerClick}>
           {triggerText}
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className={contentClassname}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         {children}
-        {/* <DialogFooter>
+        <DialogFooter>
           <DialogClose asChild>
             <Button
               variant={destructive ? 'destructive' : 'outline'}
@@ -64,7 +72,7 @@ const Dialog = <T extends FieldValues>({
             </Button>
           </DialogClose>
           <Button disabled={loading}>{loading ? 'Please wait...' : confirmText}</Button>
-        </DialogFooter> */}
+        </DialogFooter>
       </DialogContent>
     </DialogUI>
   );
