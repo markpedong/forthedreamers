@@ -8,20 +8,16 @@ const useFormSchema = () => {
     .max(50, { message: 'Email must be less than 50 characters' })
     .transform((password) => password.trim());
 
-  const nameSchema = z
-    .string()
-    .min(2, { message: 'Name must be at least 2 characters' })
-    .max(50, { message: 'Name must be less than 50 characters' })
+  const createStringSchema = (fieldName: string, min = 2, max = 50) =>
+    z.string()
+      .min(min, { message: `${fieldName} must be at least ${min} characters` })
+      .max(max, { message: `${fieldName} must be less than ${max} characters` });
 
-  const storeName = z
-    .string()
-    .min(2, { message: 'Store name must be at least 2 characters' })
-    .max(50, { message: 'Store name must be less than 50 characters' })
+  // Now you can reuse it
+  const nameSchema = createStringSchema("Name");
+  const storeNameSchema = createStringSchema("Store name");
+  const searchSchema = createStringSchema("Search");
 
-  const search = z
-    .string()
-    .min(2, { message: 'Search must be at least 2 characters' })
-    .max(50, { message: 'Search must be less than 50 characters' })
 
   const nameEmailSchema = z.object({ name: nameSchema, }).extend({ email: emailSchema });
 
@@ -84,11 +80,30 @@ const useFormSchema = () => {
     name: nameSchema.optional(),
   });
 
-  const searchSchema = z.object({ search })
-
-  const createSellerSchema = z.object({ name: nameSchema, storeName: storeName, email: emailSchema, password, confirmPassword: z.string() }).refine((data) => data.password === data.confirmPassword, {
+  const createSellerSchema = z.object({ name: nameSchema, storeName: storeNameSchema, email: emailSchema, password, confirmPassword: z.string() }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
+  })
+
+  // name: '',
+  //   brand: '',
+  //     basePrice: '',
+  //       description: '',
+  //         category: '',
+  //           status: 'ACTIVE',
+  //             stock: '',
+  //               images: [] as string[],
+  //                 tags: [] as string[],
+  //                   specs: [] as any[],
+  //                     variants: [] as any[],
+
+  const productSchema = z.object({
+    name: nameSchema,
+    brand: createStringSchema("Brand"),
+    description: createStringSchema("Description"),
+    category: createStringSchema("Category"),
+    basePrice: z.number(),
+    stock: z.number(),
   })
 
   return {
@@ -103,7 +118,8 @@ const useFormSchema = () => {
     twoFactorSchema,
     passkeySchema,
     searchSchema,
-    createSellerSchema
+    createSellerSchema,
+    productSchema
   }
 }
 

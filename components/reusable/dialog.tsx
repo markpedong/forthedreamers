@@ -46,6 +46,7 @@ const Dialog = <T extends FieldValues>({
   open,
   onOpenChange,
   contentClassname,
+  onConfirm,
 }: ReusableDialogProps<T>) => {
   return (
     <DialogUI open={open} onOpenChange={onOpenChange}>
@@ -71,7 +72,9 @@ const Dialog = <T extends FieldValues>({
               {cancelText}
             </Button>
           </DialogClose>
-          <Button disabled={loading}>{loading ? 'Please wait...' : confirmText}</Button>
+          <Button onClick={onConfirm} type='submit' disabled={loading}>
+            {loading ? 'Please wait...' : confirmText}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </DialogUI>

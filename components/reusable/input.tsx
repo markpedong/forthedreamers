@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ComponentPropsWithoutRef } from 'react';
+import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Input as InputUI } from '../ui/input';
 import {
@@ -11,32 +11,25 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form';
-import type { Control, Path, FieldValues } from 'react-hook-form';
+import type { FieldValues } from 'react-hook-form';
+import { Textarea } from '../ui/textarea';
+import { ReusableInputProps } from '@/lib/types';
 
-type InputProps<T extends FieldValues> = ComponentPropsWithoutRef<'input'> & {
-  label?: string;
-  type?: string;
-  disabled?: boolean;
-  prefixIconSrc?: string;
-  description?: string;
-  control?: Control<T>;
-  name: Path<T>;
-  eyeIcon?: boolean;
-  preventSpaces?: boolean;
-};
+const Input = <T extends FieldValues>(props: ReusableInputProps<T>) => {
+  const {
+    type = 'text',
+    textarea = false,
+    disabled,
+    prefixIconSrc,
+    description,
+    control,
+    name,
+    label,
+    eyeIcon = true,
+    preventSpaces = false,
+    ...rest
+  } = props as any; // TypeScript union workaround
 
-const Input = <T extends FieldValues>({
-  type = 'text',
-  disabled,
-  prefixIconSrc,
-  description,
-  control,
-  name,
-  label,
-  eyeIcon = true,
-  preventSpaces = false,
-  ...rest
-}: InputProps<T>) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === 'password';
   const isNumber = type === 'number';
@@ -60,34 +53,49 @@ const Input = <T extends FieldValues>({
                 />
               )}
 
-              <InputUI
-                {...field}
-                {...rest}
-                type={computedType}
-                inputMode={isNumber ? 'numeric' : undefined}
-                disabled={disabled}
-                id={String(name)}
-                className={`${prefixIconSrc ? 'pl-10' : ''} ${
-                  eyeIcon && isPassword ? 'pr-10' : ''
-                }`}
-                onChange={(e) => {
-                  let value = e.target.value;
-
-                  if (preventSpaces) value = value.replace(/\s+/g, '');
-
-                  if (isNumber) value = value.replace(/\D+/g, '');
-
-                  field.onChange(value);
-                }}
-                onKeyDown={(e) => {
-                  if (preventSpaces && e.key === ' ') e.preventDefault();
-
-                  if (isNumber && ['e', 'E', '+', '-', '.', ','].includes(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                value={field.value ?? ''}
-              />
+              {textarea ? (
+                <Textarea
+                  {...field}
+                  {...rest}
+                  disabled={disabled}
+                  id={String(name)}
+                  className='mt-1.5 min-h-24'
+                  onChange={(e) => {
+                    let value = e.target.value;
+                    if (preventSpaces) value = value.replace(/\s+/g, '');
+                    field.onChange(value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (preventSpaces && e.key === ' ') e.preventDefault();
+                  }}
+                  value={field.value ?? ''}
+                />
+              ) : (
+                <InputUI
+                  {...field}
+                  {...rest}
+                  type={computedType}
+                  inputMode={isNumber ? 'numeric' : undefined}
+                  disabled={disabled}
+                  id={String(name)}
+                  className={`${prefixIconSrc ? 'pl-10' : ''} ${
+                    eyeIcon && isPassword ? 'pr-10' : ''
+                  }`}
+                  onChange={(e) => {
+                    let value = e.target.value;
+                    if (preventSpaces) value = value.replace(/\s+/g, '');
+                    if (isNumber) value = value.replace(/\D+/g, '');
+                    field.onChange(value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (preventSpaces && e.key === ' ') e.preventDefault();
+                    if (isNumber && ['e', 'E', '+', '-', '.', ','].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  value={field.value ?? ''}
+                />
+              )}
 
               {eyeIcon && isPassword && (
                 <button

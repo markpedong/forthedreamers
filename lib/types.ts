@@ -1,6 +1,8 @@
 import { auth } from "./auth";
 import type { z, ZodTypeAny } from 'zod';
 import { getSession, listUserAccounts } from "./server-actions";
+import type { Control, Path, FieldValues } from 'react-hook-form';
+import { ComponentPropsWithoutRef } from "react";
 
 export type TOnNavigate = (page: string) => void;
 
@@ -81,3 +83,54 @@ export interface ProTableProps<T> {
 
 
 export type TCreateSeller = { storeName: string, userID: string }
+
+export type ProductFormModalProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  mode: 'create' | 'edit';
+  product?: any;
+  onSuccess?: () => void;
+}
+
+
+
+export type SharedProps<T extends FieldValues> = {
+  label?: string;
+  description?: string;
+  control?: Control<T>;
+  name: Path<T>;
+  prefixIconSrc?: string;
+  eyeIcon?: boolean;
+  preventSpaces?: boolean;
+  disabled?: boolean;
+};
+
+export type InputProps<T extends FieldValues> = SharedProps<T> &
+  Omit<ComponentPropsWithoutRef<'input'>, 'name' | 'type'> & {
+    type?: 'text' | 'password' | 'number';
+    textarea?: false;
+  };
+
+export type TextareaProps<T extends FieldValues> = SharedProps<T> &
+  Omit<ComponentPropsWithoutRef<'textarea'>, 'name'> & {
+    type: 'textarea';
+    textarea: true;
+  };
+
+export type ReusableInputProps<T extends FieldValues> = InputProps<T> | TextareaProps<T>;
+
+
+export type Option = {
+  value: string | number;
+  label: string;
+};
+
+export type ReusableSelectProps<T extends FieldValues> = {
+  name: Path<T>;
+  control?: Control<T>;
+  label?: string;
+  description?: string;
+  placeholder?: string;
+  options: Option[];
+  disabled?: boolean;
+};

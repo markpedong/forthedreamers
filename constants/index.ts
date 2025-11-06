@@ -17,3 +17,12 @@ export const CHANGE_PASSWORD_DEFAULT = { currentPassword: '', confirmPassword: '
 export const TWOFACTOR_DEFAULT = { password: '', otp: '' }
 
 export const ALLOWED_KEYS = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete']
+
+export const PRODUCT_DEFAULT = {
+  name: '',
+  brand: '',
+  category: '',
+  description: '',
+  basePrice: 0,
+  stock: 0,
+}
