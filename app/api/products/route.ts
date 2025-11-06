@@ -1,0 +1,8 @@
+import prisma from "@/lib/prisma";
+import { successResponse } from "@/lib/server-helper";
+
+export async function GET() {
+  const products = await prisma.product.findMany({})
+
+  return successResponse(products);
+}

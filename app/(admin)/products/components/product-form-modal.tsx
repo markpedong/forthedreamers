@@ -24,6 +24,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode,
 
   useEffect(() => {
     if (mode === 'edit' && product) {
+      console.log('product', product);
       form.reset({
         ...PRODUCT_DEFAULT,
         ...product,
@@ -120,9 +121,9 @@ const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode,
                 label='Category *'
                 name='category'
                 options={[
-                  { label: 'Electronics', value: '1' },
-                  { label: 'Accessories', value: '2' },
-                  { label: 'Software', value: '3' },
+                  { label: 'Electronics', value: 'Electronics' },
+                  { label: 'Accessories', value: 'Accessories' },
+                  { label: 'Software', value: 'Software' },
                 ]}
               />
             </TabsContent>

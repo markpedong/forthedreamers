@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
+import { Product } from '@/generated/prisma';
 
 const mockProducts = [
   {
@@ -64,8 +65,9 @@ const mockProducts = [
   },
 ];
 
-const Products = () => {
-  const [deleteDialog, setDeleteDialog] = useState<{ id: number; name: string } | null>(null);
+const Products: FC<{ products: Product[] }> = ({ products }) => {
+  console.log('products', products);
+  const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -87,13 +89,13 @@ const Products = () => {
     }
   };
 
-  const toggleStatus = (id: number, status: string) => {
+  const toggleStatus = (id: string, status: string) => {
     const newStatus = status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     toast.info(`Status changed to ${newStatus}`);
     // TODO: API call to update
   };
 
-  const columns: ProColumn<(typeof mockProducts)[number]>[] = [
+  const columns: ProColumn<Product>[] = [
     {
       title: 'Product',
       render: (_, record) => <span className='font-medium'>{record.name}</span>,
@@ -138,7 +140,7 @@ const Products = () => {
     {
       title: 'Stock',
       render: (_, record) => (
-        <span className={record.stock > 0 ? 'text-green-600' : 'text-destructive'}>
+        <span className={Number(record.stock) > 0 ? 'text-green-600' : 'text-destructive'}>
           {record.stock}
         </span>
       ),
@@ -203,10 +205,10 @@ const Products = () => {
           </Button>
         </header>
 
-        <ProTable<any>
+        <ProTable<Product>
           rowKey='id'
           columns={columns?.map((item) => ({ ...item, align: 'center' }))}
-          dataSource={mockProducts}
+          dataSource={products}
         />
       </div>
 
