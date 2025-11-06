@@ -1,4 +1,4 @@
-import { getSession } from '@/lib/server-actions';
+import { getSession, permissionListUsers } from '@/lib/server-actions';
 import { redirect } from 'next/navigation';
 import AdminSidebar from './components/admin-sidebar';
 import AdminHeader from './components/admin-header';
@@ -15,14 +15,14 @@ export default async function AdminLayout({
     redirect('/');
   }
 
-  // if (!(await permissionListUsers()).success) {
-  //   redirect('/');
-  // }
+  if (!(await permissionListUsers()).success) {
+    redirect('/');
+  }
 
   return (
     <SidebarProvider>
       <div className='flex h-screen bg-background w-full'>
-        <AdminSidebar />
+        <AdminSidebar session={session} />
         <div className='flex-1 flex flex-col'>
           <AdminHeader />
           <main className='flex-1 overflow-auto p-6'>{children}</main>
