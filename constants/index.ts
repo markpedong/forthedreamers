@@ -26,3 +26,8 @@ export const PRODUCT_DEFAULT = {
   basePrice: 0,
   stock: 0,
 }
+
+export const LABEL_VALUE_DEFAULT = {
+  label: '',
+  value: '',
+}

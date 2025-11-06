@@ -10,6 +10,7 @@ import {
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import type { FieldValues } from 'react-hook-form';
 import { ReusableSelectProps } from '@/lib/types';
+import classNames from 'classnames';
 
 const Select = <T extends FieldValues>({
   name,
@@ -19,6 +20,7 @@ const Select = <T extends FieldValues>({
   placeholder = 'Select...',
   options,
   disabled = false,
+  containerClassName,
 }: ReusableSelectProps<T>) => {
   return (
     <FormField
@@ -29,7 +31,7 @@ const Select = <T extends FieldValues>({
           {label && <FormLabel>{label}</FormLabel>}
           <FormControl>
             <SelectUI value={field.value} onValueChange={field.onChange} disabled={disabled}>
-              <SelectTrigger className='mt-1.5'>
+              <SelectTrigger className={classNames('mt-1.5', containerClassName)}>
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
               <SelectContent>

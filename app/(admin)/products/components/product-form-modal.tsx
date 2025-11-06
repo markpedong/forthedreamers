@@ -7,7 +7,6 @@ import SpecsEditor from './specs-editor';
 import VariantEditor from './variant-editor';
 import TagsInput from './tags-input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import Dialog from '@/components/reusable/dialog';
 import Form from '@/components/reusable/form';
 import { useForm } from 'react-hook-form';
 import useFormSchema from '@/hooks/useFormSchema';
@@ -16,6 +15,7 @@ import { PRODUCT_DEFAULT } from '@/constants';
 import { ProductFormModalProps, SchemaForm } from '@/lib/types';
 import Input from '@/components/reusable/input';
 import Select from '@/components/reusable/select';
+import AlertDialog from '@/components/reusable/alert-dialog';
 
 const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode, product }) => {
   const { productSchema } = useFormSchema();
@@ -119,16 +119,19 @@ const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode,
   };
 
   return (
-    <Dialog
+    <AlertDialog
       open={open}
-      contentClassname='sm:max-w-4xl'
+      // contentClassname='sm:max-w-4xl'
+      wrapperClassName='sm:max-w-4xl !p-4'
+      containerClassName='!pb-0'
       title={mode === 'create' ? 'Create Product' : 'Edit Product'}
       onOpenChange={onOpenChange}
       onConfirm={form.handleSubmit(onSubmit)}
+      loading={isSubmitting}
       description={
         mode === 'create' ? 'Add a new product to your catalog' : 'Update product information'
       }
-      triggerText={
+      confirmText={
         isSubmitting
           ? mode === 'create'
             ? 'Creating...'
@@ -138,7 +141,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode,
             : 'Update Product'
       }
     >
-      <ScrollArea className='max-h-[calc(90vh-180px)] px-6 py-4'>
+      <ScrollArea className='max-h-[calc(90vh-180px)] mt-8'>
         <Tabs value={tab} onValueChange={setTab} className='space-y-6'>
           <TabsList className='grid grid-cols-3'>
             <TabsTrigger value='basic'>Basic Info</TabsTrigger>
@@ -218,7 +221,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({ open, onOpenChange, mode,
           </Form>
         </Tabs>
       </ScrollArea>
-    </Dialog>
+    </AlertDialog>
   );
 };
 

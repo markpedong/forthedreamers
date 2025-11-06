@@ -276,7 +276,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
       />
 
       <AlertDialog
-        headerClassname='gap-0 mb-4'
+        headerClassName='gap-0 mb-4'
         open={showDetails}
         onOpenChange={setShowDetails}
         title='User Details'
@@ -305,7 +305,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
         </div>
       </AlertDialog>
       <AlertDialog
-        headerClassname='gap-0 mb-6'
+        headerClassName='gap-0 mb-6'
         title={`Delete ${selectedUser?.name}?`}
         description='Please enter your 2FA code from your authenticator app'
         open={showDeleteUser}

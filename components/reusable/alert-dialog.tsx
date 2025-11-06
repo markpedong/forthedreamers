@@ -10,6 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import classNames from 'classnames';
 import { FC, ReactNode } from 'react';
 
 interface ReusableAlertProps {
@@ -24,8 +25,9 @@ interface ReusableAlertProps {
   onConfirm?: () => void;
   onCancel?: () => void;
   children?: ReactNode;
+  wrapperClassName?: string;
+  headerClassName?: string;
   containerClassName?: string;
-  headerClassname?: string;
 }
 
 const AlertDialog: FC<ReusableAlertProps> = ({
@@ -40,13 +42,14 @@ const AlertDialog: FC<ReusableAlertProps> = ({
   onConfirm,
   children,
   onCancel,
+  wrapperClassName,
+  headerClassName,
   containerClassName,
-  headerClassname,
 }) => {
   return (
     <AlertDialogUI open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent
-        className={`${containerClassName} flex flex-col max-h-[90vh] p-0 gap-0`}
+        className={classNames('flex flex-col max-h-[90vh] p-0 gap-0', wrapperClassName)}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             e.preventDefault();
@@ -58,8 +61,8 @@ const AlertDialog: FC<ReusableAlertProps> = ({
         }}
       >
         {/* Scrollable content with padding */}
-        <div className='flex-1 overflow-auto p-4 pt-0 mt-4'>
-          <AlertDialogHeader className={headerClassname}>
+        <div className={classNames('flex-1 overflow-auto p-4 pt-0 mt-4', containerClassName)}>
+          <AlertDialogHeader className={headerClassName}>
             <AlertDialogTitle>{title}</AlertDialogTitle>
             {description && <AlertDialogDescription>{description}</AlertDialogDescription>}
           </AlertDialogHeader>

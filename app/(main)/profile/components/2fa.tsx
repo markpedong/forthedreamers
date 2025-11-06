@@ -68,9 +68,7 @@ const TwoFactorSection: FC<{ user?: SessionUser }> = ({ user }) => {
       const steps: Record<SetupStep, () => Promise<void>> = {
         password: async () => {
           if (is2faEnabled) {
-            const res = await tryWithToast(
-              authClient.twoFactor.disable({ password: password! })
-            );
+            const res = await tryWithToast(authClient.twoFactor.disable({ password: password! }));
             if (!res || handleApiError(res, 'password', 'Invalid password')) return;
             toast.success('Two-factor authentication disabled');
             resetSetup();
@@ -226,7 +224,7 @@ const TwoFactorSection: FC<{ user?: SessionUser }> = ({ user }) => {
         </CardContent>
       </Card>
       <AlertDialog
-        containerClassName='max-h-[80vh] overflow-y-auto'
+        wrapperClassName='max-h-[80vh] overflow-y-auto'
         open={!!setupStep}
         onOpenChange={(open) => {
           if (!open) resetSetup();
@@ -244,7 +242,7 @@ const TwoFactorSection: FC<{ user?: SessionUser }> = ({ user }) => {
         confirmText={submitTitle[setupStep]}
         loading={isPending}
         onConfirm={form.handleSubmit(onSubmit)}
-        headerClassname='mb-6 gap-0'
+        headerClassName='mb-6 gap-0'
       >
         <Form form={form} customSubmitButton>
           {['password', 'regenerate'].includes(setupStep) && (

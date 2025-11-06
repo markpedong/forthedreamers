@@ -101,7 +101,7 @@ const useFormSchema = () => {
     name: nameSchema,
     brand: createStringSchema("Brand"),
     description: createStringSchema("Description"),
-    category: createStringSchema("Category"),
+    category: createStringSchema("Category", 1),
     basePrice: z.number(),
     stock: z.number(),
   })

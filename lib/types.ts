@@ -133,6 +133,7 @@ export type ReusableSelectProps<T extends FieldValues> = {
   placeholder?: string;
   options: Option[];
   disabled?: boolean;
+  containerClassName?: string
 };
 
 
