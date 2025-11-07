@@ -3,7 +3,7 @@ import type { z, ZodTypeAny } from 'zod';
 import { getSession, listUserAccounts } from "./server-actions";
 import type { Control, Path, FieldValues } from 'react-hook-form';
 import { ComponentPropsWithoutRef } from "react";
-import { Category, Product } from "@/generated/prisma";
+import { Category, Product, Variant, VariantOption } from "@/generated/prisma";
 
 export type TOnNavigate = (page: string) => void;
 
@@ -89,7 +89,7 @@ export type ProductFormModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: 'create' | 'edit';
-  product?: any;
+  product?: TProduct;
   onSuccess?: () => void;
   categories: Category[]
 }
@@ -151,3 +151,17 @@ export type SpecsEditorProps = {
 }
 
 export type TProductsList = { products: Product[]; categories: Category[] }
+
+export type TVariantOption = Omit<
+  VariantOption,
+  "createdAt" | "updatedAt"
+>;
+
+export type TVariant = Variant & {
+  options: TVariantOption[]
+};
+
+export type TProduct = Product & {
+  category: Category;
+  variants: TVariant[];
+}

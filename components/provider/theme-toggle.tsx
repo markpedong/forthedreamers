@@ -1,16 +1,9 @@
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import dynamic from 'next/dynamic';
 import { useIsMobile } from '@/hooks/use-mobile';
 import classNames from 'classnames';
-
-const Moon = dynamic(() => import('lucide-react').then((mod) => mod.Moon), {
-  ssr: false,
-});
-const Sun = dynamic(() => import('lucide-react').then((mod) => mod.Sun), {
-  ssr: false,
-});
+import { Moon, Sun } from '../dynamic';
 
 const ThemeToggleButton = () => {
   const { theme, setTheme } = useTheme();

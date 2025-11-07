@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -11,20 +10,13 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-
-interface VariantOption {
-  id?: string;
-  variantOptionName: string;
-  price: number;
-  discountedPrice?: number;
-  stock: number;
-  coupon?: string;
-}
+import { TVariantOption } from '@/lib/types';
+import Input from '@/components/reusable/input';
 
 interface VariantOptionEditorProps {
   variantName: string;
-  options: VariantOption[];
-  onOptionsChange: (options: VariantOption[]) => void;
+  options: TVariantOption[];
+  onOptionsChange: (options: TVariantOption[]) => void;
 }
 
 const VariantOptionEditor = ({
@@ -33,69 +25,82 @@ const VariantOptionEditor = ({
   onOptionsChange,
 }: VariantOptionEditorProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [discountedPrice, setDiscountedPrice] = useState('');
-  const [stock, setStock] = useState('');
-  const [coupon, setCoupon] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
+  const [form, setForm] = useState({
+    variantOptionName: '',
+    price: '',
+    discountedPrice: '',
+    stock: '',
+    coupon: '',
+  });
+
+  const updateForm = (key: keyof typeof form, value: string) =>
+    setForm((prev) => ({ ...prev, [key]: value }));
+
   const resetForm = () => {
-    setName('');
-    setPrice('');
-    setDiscountedPrice('');
-    setStock('');
-    setCoupon('');
+    setForm({
+      variantOptionName: '',
+      price: '',
+      discountedPrice: '',
+      stock: '',
+      coupon: '',
+    });
     setEditingIndex(null);
   };
 
-  const handleSave = () => {
-    if (!name.trim() || !price || !stock) return;
+  const openForAdd = () => {
+    resetForm();
+    setIsOpen(true);
+  };
 
-    const newOption: VariantOption = {
-      variantOptionName: name,
-      price: parseFloat(price),
-      discountedPrice: discountedPrice ? parseFloat(discountedPrice) : undefined,
-      stock: parseInt(stock),
-      coupon: coupon || undefined,
+  const openForEdit = (index: number) => {
+    const option = options[index];
+    setEditingIndex(index);
+    setForm({
+      variantOptionName: option.variantOptionName,
+      price: option.price.toString(),
+      discountedPrice: option.discountedPrice?.toString() || '',
+      stock: option.stock.toString(),
+      coupon: option.coupon || '',
+    });
+    setIsOpen(true);
+  };
+
+  const handleSave = () => {
+    if (!form.variantOptionName.trim() || !form.price || !form.stock) return;
+
+    //@ts-ignore
+    const newOption: TVariantOption = {
+      variantOptionName: form.variantOptionName.trim(),
+      price: parseFloat(form.price),
+      discountedPrice: form.discountedPrice ? parseFloat(form.discountedPrice) : null,
+      stock: parseInt(form.stock),
+      coupon: `${form.coupon}`,
     };
 
     const updated = [...options];
-    if (editingIndex !== null) {
-      updated[editingIndex] = { ...updated[editingIndex], ...newOption };
-    } else {
-      updated.push(newOption);
-    }
+    if (editingIndex !== null) updated[editingIndex] = { ...updated[editingIndex], ...newOption };
+    else updated.push(newOption);
 
     onOptionsChange(updated);
     resetForm();
     setIsOpen(false);
   };
 
-  const handleEdit = (index: number) => {
-    const option = options[index];
-    setName(option.variantOptionName);
-    setPrice(option.price.toString());
-    setDiscountedPrice(option.discountedPrice?.toString() || '');
-    setStock(option.stock.toString());
-    setCoupon(option.coupon || '');
-    setEditingIndex(index);
-    setIsOpen(true);
-  };
-
-  const handleDelete = (index: number) => {
-    onOptionsChange(options.filter((_, i) => i !== index));
-  };
+  const handleDelete = (index: number) => onOptionsChange(options.filter((_, i) => i !== index));
 
   return (
     <div className='space-y-3'>
+      {/* Header */}
       <div className='flex items-center justify-between'>
         <label className='text-sm font-medium'>{variantName} Options</label>
-        <Button size='sm' onClick={() => setIsOpen(true)} className='gap-1'>
+        <Button size='sm' onClick={openForAdd} className='gap-1'>
           <Plus size={16} /> Add Option
         </Button>
       </div>
 
+      {/* Options List */}
       <div className='space-y-2 bg-muted/30 rounded-lg p-3 min-h-16'>
         {options.length === 0 ? (
           <p className='text-sm text-muted-foreground'>No options added yet</p>
@@ -106,7 +111,7 @@ const VariantOptionEditor = ({
               className='flex items-center justify-between gap-2 p-2 bg-background rounded border border-border'
             >
               <div className='flex-1 text-sm'>
-                <p className='font-medium text-foreground'>{option.variantOptionName}</p>
+                <p className='font-medium'>{option.variantOptionName}</p>
                 <p className='text-xs text-muted-foreground'>
                   ${option.price.toFixed(2)}{' '}
                   {option.discountedPrice && `→ $${option.discountedPrice.toFixed(2)}`} • Stock:{' '}
@@ -114,7 +119,7 @@ const VariantOptionEditor = ({
                 </p>
               </div>
               <div className='flex gap-1'>
-                <Button variant='outline' size='sm' onClick={() => handleEdit(index)}>
+                <Button variant='outline' size='sm' onClick={() => openForEdit(index)}>
                   Edit
                 </Button>
                 <Button
@@ -131,6 +136,7 @@ const VariantOptionEditor = ({
         )}
       </div>
 
+      {/* Dialog */}
       <Dialog
         open={isOpen}
         onOpenChange={(open) => {
@@ -146,61 +152,23 @@ const VariantOptionEditor = ({
           </DialogHeader>
 
           <div className='space-y-3'>
-            <div>
-              <label className='text-sm font-medium'>Option Name</label>
-              <Input
-                placeholder={`e.g., ${variantName}`}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className='mt-1'
-              />
-            </div>
+            {/* Name */}
+            <Input label='Option Name' placeholder={`e.g., ${variantName}`} name='name' />
 
+            {/* Prices */}
             <div className='grid grid-cols-2 gap-3'>
-              <div>
-                <label className='text-sm font-medium'>Price</label>
-                <Input
-                  type='number'
-                  step='0.01'
-                  placeholder='0.00'
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className='mt-1'
-                />
-              </div>
-              <div>
-                <label className='text-sm font-medium'>Discounted Price</label>
-                <Input
-                  type='number'
-                  step='0.01'
-                  placeholder='Optional'
-                  value={discountedPrice}
-                  onChange={(e) => setDiscountedPrice(e.target.value)}
-                  className='mt-1'
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className='text-sm font-medium'>Stock</label>
+              <Input label='Price' name='price' type='number' step='0.01' placeholder='0.00' />
               <Input
+                label='Discounted Price'
+                name='discountedPrice'
                 type='number'
-                placeholder='0'
-                value={stock}
-                onChange={(e) => setStock(e.target.value)}
-                className='mt-1'
+                step='0.01'
+                placeholder='Optional'
               />
             </div>
+            <Input label='Stock' name='stock' type='number' placeholder='0' />
 
-            <div>
-              <label className='text-sm font-medium'>Coupon Code (Optional)</label>
-              <Input
-                placeholder='e.g., SAVE10'
-                value={coupon}
-                onChange={(e) => setCoupon(e.target.value)}
-                className='mt-1'
-              />
-            </div>
+            <Input label='Coupon Code (Optional)' name='coupon' placeholder='e.g., SAVE10' />
           </div>
 
           <DialogFooter>

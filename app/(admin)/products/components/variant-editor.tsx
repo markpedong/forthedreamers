@@ -13,25 +13,11 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import VariantOptionEditor from './variant-option-editor';
-
-interface VariantOption {
-  id?: string;
-  variantOptionName: string;
-  price: number;
-  discountedPrice?: number;
-  stock: number;
-  coupon?: string;
-}
-
-interface Variant {
-  id?: string;
-  name: string;
-  isRequired: boolean;
-  options: VariantOption[];
-}
+import { Variant } from '@/generated/prisma';
+import { TVariant, TVariantOption } from '@/lib/types';
 
 interface VariantEditorProps {
-  variants: Variant[];
+  variants: TVariant[];
   onVariantsChange: (variants: Variant[]) => void;
 }
 
@@ -55,7 +41,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
     if (editingIndex !== null) {
       updated[editingIndex] = { ...updated[editingIndex], name, isRequired };
     } else {
-      updated.push({ name, isRequired, options: [] });
+      // updated.push({ name, isRequired, options: [] });
     }
 
     onVariantsChange(updated);
@@ -75,9 +61,9 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
     onVariantsChange(variants.filter((_, i) => i !== index));
   };
 
-  const handleOptionsChange = (index: number, options: VariantOption[]) => {
+  const handleOptionsChange = (index: number, options: TVariantOption[]) => {
     const updated = [...variants];
-    updated[index].options = options;
+    // updated[index].options = options;
     onVariantsChange(updated);
   };
 
@@ -107,8 +93,8 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
                 <div>
                   <p className='font-medium text-foreground'>{variant.name}</p>
                   <p className='text-xs text-muted-foreground'>
-                    {variant.options.length} option
-                    {variant.options.length !== 1 ? 's' : ''} •{' '}
+                    {/* {variant.options.length} option
+                    {variant.options.length !== 1 ? 's' : ''} •{' '} */}
                     {variant.isRequired ? 'Required' : 'Optional'}
                   </p>
                 </div>

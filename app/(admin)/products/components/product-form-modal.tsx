@@ -12,6 +12,8 @@ import { ProductFormModalProps, SchemaForm } from '@/lib/types';
 import Input from '@/components/reusable/input';
 import Select from '@/components/reusable/select';
 import AlertDialog from '@/components/reusable/alert-dialog';
+import { Label } from '@/components/ui/label';
+import VariantEditor from './variant-editor';
 
 const ProductFormModal: FC<ProductFormModalProps> = (props) => {
   const { open, onOpenChange, mode, product, categories } = props;
@@ -27,6 +29,7 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
   useEffect(() => {
     console.log('product', product);
     if (mode === 'edit' && product) {
+      //@ts-ignore
       form.reset({
         ...PRODUCT_DEFAULT,
         ...product,
@@ -134,18 +137,19 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
             </TabsContent>
             <TabsContent value='inventory' className='space-y-6'>
               <div>
-                {/* <div className='flex justify-between items-center mb-2'>
+                <div className='flex justify-between items-center mb-2'>
                   <Label>Variants</Label>
-                  {hasVariants && (
+                  {product?.variants.length && (
                     <span className='text-xs text-muted-foreground'>
                       Base price & stock disabled when variants exist
                     </span>
                   )}
-                </div> */}
-                {/* <VariantEditor
-                  variants={form.getFieldState('variants')}
-                  onVariantsChange={(v) => updateField('variants', v)}
-                /> */}
+                </div>
+                <VariantEditor
+                  variants={product?.variants || []}
+                  onVariantsChange={() => {}}
+                  // onVariantsChange={(v) => updateField('variants', v)}
+                />
               </div>
               <div className='grid grid-cols-2 gap-4'>
                 {/* <Input
