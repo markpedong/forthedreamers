@@ -5,7 +5,7 @@ import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import ProductFormModal from './product-form-modal';
-import { ProColumn, TProductsList } from '@/lib/types';
+import { ProColumn, TProduct, TProductsList } from '@/lib/types';
 import { ProTable } from '@/components/reusable/table';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { Badge } from '@/components/ui/badge';
@@ -18,52 +18,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
-import { Product } from '@/generated/prisma';
-
-const mockProducts = [
-  {
-    id: 1,
-    name: 'Premium Wireless Headphones',
-    slug: 'premium-wireless-headphones',
-    brand: 'AudioTech',
-    basePrice: 299.99,
-    rating: 4.5,
-    reviewCount: 328,
-    sold: 1200,
-    stock: 45,
-    status: 'ACTIVE',
-    category: 'Electronics',
-    createdAt: new Date('2024-01-15'),
-  },
-  {
-    id: 2,
-    name: 'Portable Bluetooth Speaker',
-    slug: 'portable-bluetooth-speaker',
-    brand: 'SoundMax',
-    basePrice: 149.99,
-    rating: 4.3,
-    reviewCount: 156,
-    sold: 890,
-    stock: 32,
-    status: 'ACTIVE',
-    category: 'Electronics',
-    createdAt: new Date('2024-01-10'),
-  },
-  {
-    id: 3,
-    name: 'Wireless Charging Case',
-    slug: 'wireless-charging-case',
-    brand: 'TechGear',
-    basePrice: 79.99,
-    rating: 4.6,
-    reviewCount: 423,
-    sold: 2100,
-    stock: 0,
-    status: 'ACTIVE',
-    category: 'Accessories',
-    createdAt: new Date('2024-01-05'),
-  },
-];
 
 const Products: FC<TProductsList> = ({ products, categories }) => {
   console.log('products', products);
@@ -71,7 +25,7 @@ const Products: FC<TProductsList> = ({ products, categories }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [editProduct, setEditProduct] = useState<any>(null);
+  const [editProduct, setEditProduct] = useState<TProduct>();
 
   console.log('categories', categories);
   const handleDelete = async () => {
@@ -96,7 +50,7 @@ const Products: FC<TProductsList> = ({ products, categories }) => {
     // TODO: API call to update
   };
 
-  const columns: ProColumn<Product>[] = [
+  const columns: ProColumn<TProduct>[] = [
     {
       title: 'Product',
       render: (_, record) => <span className='font-medium'>{record.name}</span>,
@@ -206,7 +160,7 @@ const Products: FC<TProductsList> = ({ products, categories }) => {
           </Button>
         </header>
 
-        <ProTable<Product>
+        <ProTable<TProduct>
           rowKey='id'
           columns={columns?.map((item) => ({ ...item, align: 'center' }))}
           dataSource={products}

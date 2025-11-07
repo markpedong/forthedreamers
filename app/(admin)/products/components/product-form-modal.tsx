@@ -12,8 +12,10 @@ import { ProductFormModalProps, SchemaForm } from '@/lib/types';
 import Input from '@/components/reusable/input';
 import Select from '@/components/reusable/select';
 import AlertDialog from '@/components/reusable/alert-dialog';
-import { Label } from '@/components/ui/label';
 import VariantEditor from './variant-editor';
+import SpecsEditor from './specs-editor';
+import { Label } from '@/components/ui/label';
+import TagsInput from './tags-input';
 
 const ProductFormModal: FC<ProductFormModalProps> = (props) => {
   const { open, onOpenChange, mode, product, categories } = props;
@@ -40,7 +42,6 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
     }
   }, [mode, product, form]);
 
-  // const hasVariants = form1.variants.some((v: any) => v.options?.length);
   // const updateField = (field: string, value: any) => setForm((f) => ({ ...f, [field]: value }));
 
   const onSubmit = (values: SchemaForm<typeof productSchema>) => {
@@ -136,39 +137,37 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
               />
             </TabsContent>
             <TabsContent value='inventory' className='space-y-6'>
-              <div>
-                <div className='flex justify-between items-center mb-2'>
+              {/* <div className='flex justify-between items-center mb-2'>
                   <Label>Variants</Label>
                   {product?.variants.length && (
                     <span className='text-xs text-muted-foreground'>
                       Base price & stock disabled when variants exist
                     </span>
                   )}
-                </div>
-                <VariantEditor
-                  variants={product?.variants || []}
-                  onVariantsChange={() => {}}
-                  // onVariantsChange={(v) => updateField('variants', v)}
-                />
-              </div>
+                </div> */}
+              <VariantEditor
+                variants={product?.variants || []}
+                onVariantsChange={() => {}}
+                // onVariantsChange={(v) => updateField('variants', v)}
+              />
               <div className='grid grid-cols-2 gap-4'>
-                {/* <Input
-                  label={`Base Price ${hasVariants && '(Disabled)'}`}
+                <Input
+                  label={`Base Price ${!!product?.variants && '(Disabled)'}`}
                   type='number'
                   name='basePrice'
                   placeholder='0.00'
-                  disabled={hasVariants}
+                  disabled={!!product?.variants}
                   step='0.01'
                 />
                 <Input
-                  label={`Stock ${hasVariants && '(Disabled)'}`}
+                  label={`Stock ${!!product?.variants && '(Disabled)'}`}
                   type='number'
                   name='stock'
                   placeholder='0'
-                  disabled={hasVariants}
-                /> */}
+                  disabled={!!product?.variants}
+                />
               </div>
-              {/* <Select
+              <Select
                 label='Status'
                 name='status'
                 options={[
@@ -176,16 +175,20 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
                   { label: 'Inactive', value: 'INACTIVE' },
                   { label: 'Draft', value: 'DRAFT' },
                 ]}
-              /> */}
+              />
             </TabsContent>
             <TabsContent value='details' className='space-y-6'>
-              {/* <SpecsEditor specs={form1.specs} onSpecsChange={(v) => updateField('specs', v)} />
+              <SpecsEditor
+                specs={product?.specs || []}
+                // onSpecsChange={(v) => updateField('specs', v)}
+                onSpecsChange={() => {}}
+              />
               <div>
                 <Label>Tags</Label>
                 <div className='mt-1.5'>
-                  <TagsInput tags={form1.tags} onTagsChange={(v) => updateField('tags', v)} />
+                  <TagsInput tags={product?.tags || []} onTagsChange={() => {}} />
                 </div>
-              </div> */}
+              </div>
             </TabsContent>
           </Form>
         </Tabs>

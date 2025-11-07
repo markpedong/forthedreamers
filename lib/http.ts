@@ -1,7 +1,6 @@
 'use server';
 
-import { Product } from "@/generated/prisma";
-import { TCreateSeller } from "./types";
+import { TCreateSeller, TProduct } from "./types";
 
 type ApiResponse<T> = {
   success: boolean;
@@ -54,6 +53,6 @@ export const createSeller = async ({ storeName, userID }: TCreateSeller) => awai
   body: { storeName, userID },
 });
 
-export const getProducts = async () => await apiFetch<Product[]>('/api/products');
+export const getProducts = async () => await apiFetch<TProduct[]>('/api/products');
 
 export const getCategories = async () => await apiFetch('/api/category');

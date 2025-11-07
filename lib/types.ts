@@ -3,7 +3,7 @@ import type { z, ZodTypeAny } from 'zod';
 import { getSession, listUserAccounts } from "./server-actions";
 import type { Control, Path, FieldValues } from 'react-hook-form';
 import { ComponentPropsWithoutRef } from "react";
-import { Category, Product, Variant, VariantOption } from "@/generated/prisma";
+import { Category, Product, Spec, Variant, VariantOption } from "@/generated/prisma";
 
 export type TOnNavigate = (page: string) => void;
 
@@ -139,18 +139,12 @@ export type ReusableSelectProps<T extends FieldValues> = {
 };
 
 
-export type Spec = {
-  id?: string;
-  label: string;
-  value: string;
-}
-
 export type SpecsEditorProps = {
   specs: Spec[];
   onSpecsChange: (specs: Spec[]) => void;
 }
 
-export type TProductsList = { products: Product[]; categories: Category[] }
+export type TProductsList = { products: TProduct[]; categories: Category[] }
 
 export type TVariantOption = Omit<
   VariantOption,
@@ -162,6 +156,7 @@ export type TVariant = Variant & {
 };
 
 export type TProduct = Product & {
+  specs: Spec[];
   category: Category;
   variants: TVariant[];
 }
