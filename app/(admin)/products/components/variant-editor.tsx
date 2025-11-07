@@ -13,13 +13,13 @@ import {
 } from '@/components/ui/dialog';
 
 import VariantOptionEditor from './variant-option-editor';
-import { Variant } from '@/generated/prisma';
 import { TVariant, TVariantOption } from '@/lib/types';
-import Input from '@/components/reusable/input';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface VariantEditorProps {
   variants: TVariant[];
-  onVariantsChange: (variants: Variant[]) => void;
+  onVariantsChange: (variants: TVariant[]) => void;
 }
 
 const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
@@ -162,7 +162,13 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
           </DialogHeader>
 
           <div className='space-y-4'>
-            <Input label='Name' name='name' placeholder='e.g., Color, Size' />
+            <Label htmlFor='variantName'>Variant Name</Label>
+            <Input
+              name='name'
+              placeholder='e.g., Color, Size'
+              value={form.name}
+              onChange={(e) => updateForm('name', e.target.value)}
+            />
 
             <div className='flex items-center gap-2'>
               <Checkbox

@@ -89,9 +89,10 @@ export type ProductFormModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: 'create' | 'edit';
-  product?: TProduct;
+  product: TProduct;
   onSuccess?: () => void;
   categories: Category[]
+  setEditProduct: (product: TProduct) => void
 }
 
 

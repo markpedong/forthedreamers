@@ -8,17 +8,17 @@ import { useForm } from 'react-hook-form';
 import useFormSchema from '@/hooks/useFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PRODUCT_DEFAULT } from '@/constants';
-import { ProductFormModalProps, SchemaForm } from '@/lib/types';
-import Input from '@/components/reusable/input';
+import { ProductFormModalProps, SchemaForm, TVariant } from '@/lib/types';
 import Select from '@/components/reusable/select';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import VariantEditor from './variant-editor';
 import SpecsEditor from './specs-editor';
 import { Label } from '@/components/ui/label';
 import TagsInput from './tags-input';
+import Input from '@/components/reusable/input';
 
 const ProductFormModal: FC<ProductFormModalProps> = (props) => {
-  const { open, onOpenChange, mode, product, categories } = props;
+  const { open, onOpenChange, mode, product, categories, setEditProduct } = props;
 
   const { productSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof productSchema>>({
@@ -42,7 +42,10 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
     }
   }, [mode, product, form]);
 
-  // const updateField = (field: string, value: any) => setForm((f) => ({ ...f, [field]: value }));
+  const updateField = (variants: TVariant[]) => {
+    //@ts-ignore
+    setEditProduct({ ...product, variants });
+  };
 
   const onSubmit = (values: SchemaForm<typeof productSchema>) => {
     startSubmitting(async () => {
@@ -122,8 +125,16 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
                 label='Product Name *'
                 name='name'
                 placeholder='e.g., Premium Wireless Headphones'
+                value={product?.name || ''}
+                onChange={(e) => setEditProduct({ ...product, name: e.target.value })}
               />
-              <Input label='Brand' name='brand' placeholder='e.g., AudioTech' />
+              <Input
+                label='Brand'
+                name='brand'
+                placeholder='e.g., AudioTech'
+                value={product?.brand || ''}
+                onChange={(e) => setEditProduct({ ...product, brand: e.target.value })}
+              />
               <Select
                 containerClassName='w-[unset]'
                 label='Category *'
@@ -137,37 +148,37 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
               />
             </TabsContent>
             <TabsContent value='inventory' className='space-y-6'>
-              {/* <div className='flex justify-between items-center mb-2'>
-                  <Label>Variants</Label>
-                  {product?.variants.length && (
-                    <span className='text-xs text-muted-foreground'>
-                      Base price & stock disabled when variants exist
-                    </span>
-                  )}
-                </div> */}
+              <div className='flex justify-between items-center mb-2'>
+                <Label>Variants</Label>
+                {product?.variants.length && (
+                  <span className='text-xs text-muted-foreground'>
+                    Base price & stock disabled when variants exist
+                  </span>
+                )}
+              </div>
               <VariantEditor
                 variants={product?.variants || []}
-                onVariantsChange={() => {}}
-                // onVariantsChange={(v) => updateField('variants', v)}
+                onVariantsChange={(v) => updateField(v)}
               />
               <div className='grid grid-cols-2 gap-4'>
                 <Input
-                  label={`Base Price ${!!product?.variants && '(Disabled)'}`}
+                  label={`Base Price ${!!product?.variants.length ? '(Disabled)' : ''}`}
                   type='number'
                   name='basePrice'
                   placeholder='0.00'
-                  disabled={!!product?.variants}
+                  disabled={!!product?.variants.length}
                   step='0.01'
                 />
                 <Input
-                  label={`Stock ${!!product?.variants && '(Disabled)'}`}
+                  label={`Stock ${!!product?.variants.length ? '(Disabled)' : ''}`}
                   type='number'
                   name='stock'
                   placeholder='0'
-                  disabled={!!product?.variants}
+                  disabled={!!product?.variants.length}
                 />
               </div>
               <Select
+                containerClassName='w-[unset]'
                 label='Status'
                 name='status'
                 options={[

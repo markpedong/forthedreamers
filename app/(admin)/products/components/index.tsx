@@ -25,9 +25,8 @@ const Products: FC<TProductsList> = ({ products, categories }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [editProduct, setEditProduct] = useState<TProduct>();
+  const [product, setProduct] = useState<TProduct>();
 
-  console.log('categories', categories);
   const handleDelete = async () => {
     if (!deleteDialog) return;
     setIsDeleting(true);
@@ -127,7 +126,7 @@ const Products: FC<TProductsList> = ({ products, categories }) => {
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                setEditProduct(record);
+                setProduct(record);
                 setEditOpen(true);
               }}
               className='flex items-center gap-2'
@@ -172,13 +171,15 @@ const Products: FC<TProductsList> = ({ products, categories }) => {
         onOpenChange={setCreateOpen}
         mode='create'
         categories={categories}
+        setEditProduct={setProduct}
       />
       <ProductFormModal
         open={editOpen}
         onOpenChange={setEditOpen}
         mode='edit'
-        product={editProduct}
+        product={product}
         categories={categories}
+        setEditProduct={setProduct}
       />
       <AlertDialog
         title='Delete Product'
