@@ -1,4 +1,4 @@
-import { getSession, listUsers } from '@/lib/server-actions';
+import { getSession, listUsers, permissionListUsers } from '@/lib/server-actions';
 import Users from './index';
 import { APIError } from 'better-auth';
 import { redirect } from 'next/navigation';
@@ -7,6 +7,10 @@ type Props = {};
 
 const Page = async () => {
   const session = await getSession();
+
+  if (!(await permissionListUsers()).success) {
+    redirect('/');
+  }
 
   try {
     const users = await listUsers();

@@ -1,4 +1,4 @@
-import { getSession, permissionListUsers } from '@/lib/server-actions';
+import { getSession } from '@/lib/server-actions';
 import { redirect } from 'next/navigation';
 import AdminSidebar from './components/admin-sidebar';
 import AdminHeader from './components/admin-header';
@@ -12,10 +12,6 @@ export default async function AdminLayout({
   const session = await getSession();
 
   if (!['ADMIN', 'SELLER'].includes(session?.user.role ?? '')) {
-    redirect('/');
-  }
-
-  if (!(await permissionListUsers()).success) {
     redirect('/');
   }
 

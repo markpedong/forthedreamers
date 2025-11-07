@@ -85,7 +85,8 @@ export const auth = betterAuth({
       ac,
       roles: {
         [USER_ROLE.ADMIN]: admin,
-        [USER_ROLE.USER]: user
+        [USER_ROLE.USER]: user,
+        [USER_ROLE.SELLER]: admin
       }
     }),
   ]

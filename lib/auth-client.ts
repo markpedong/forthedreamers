@@ -17,7 +17,8 @@ export const authClient = createAuthClient({
             ac,
             roles: {
                 [USER_ROLE.ADMIN]: admin,
-                [USER_ROLE.USER]: user
+                [USER_ROLE.USER]: user,
+                 [USER_ROLE.SELLER]: admin
             }
         }),
     ]

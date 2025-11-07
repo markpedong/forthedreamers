@@ -26,7 +26,8 @@ const Navbar: FC<{ session: Session }> = ({ session }) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  if (['/sign-in', '/reset-password', '/seller'].includes(pathname)) return null;
+  if (['/sign-in', '/reset-password', '/seller', '/products', '/users'].includes(pathname))
+    return null;
 
   const CartButton = (
     <Button variant='ghost' size='icon' className='relative'>
