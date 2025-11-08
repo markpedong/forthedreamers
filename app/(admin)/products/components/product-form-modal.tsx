@@ -27,12 +27,11 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
   categories,
   onSubmit,
 }) => {
-  const { productSchema } = useFormSchema();
+  const { productSchema, extendedSchema } = useFormSchema();
   const [tab, setTab] = useState('basic');
   const [isSubmitting, startSubmitting] = useTransition();
-
   const form = useForm<SchemaForm<typeof productSchema>>({
-    resolver: zodResolver(productSchema),
+    resolver: zodResolver(extendedSchema),
     defaultValues: PRODUCT_DEFAULT,
   });
 
@@ -42,6 +41,8 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
       form.reset({
         ...PRODUCT_DEFAULT,
         ...initialProduct,
+        basePrice: initialProduct.basePrice || 0,
+        stock: initialProduct.stock || 0,
         category: initialProduct.category?.name,
       });
     } else {
@@ -54,7 +55,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
     form.setValue('variants', variants, { shouldValidate: true });
   };
 
-  const handleFormSubmit = (values: SchemaForm<typeof productSchema>) => {
+  const handleFormSubmit = (values: SchemaForm<any>) => {
     startSubmitting(async () => {
       try {
         await onSubmit(values, mode); // Send final data to parent
@@ -109,8 +110,6 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
                 containerClassName='w-[unset]'
                 label='Category *'
                 name='category'
-                value={form.watch('category')}
-                onValueChange={(v) => form.setValue('category', v)}
                 options={categories.map((c) => ({ value: c.name, label: c.name }))}
               />
             </TabsContent>

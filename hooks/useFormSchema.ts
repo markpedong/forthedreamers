@@ -1,3 +1,4 @@
+import { PRODUCT_STATUS } from "@/generated/prisma";
 import { z } from "zod";
 
 const useFormSchema = () => {
@@ -85,32 +86,57 @@ const useFormSchema = () => {
     path: ["confirmPassword"],
   })
 
-  const productSchema = z.object({
-    name: createStringSchema('Product Name'),                       // required string
-    brand: createStringSchema('Brand').optional().nullable(),       // optional + nullable
-    description: createStringSchema('Description').optional(),      // optional
-    category: createStringSchema('Category', 1),                    // required
-    basePrice: z.number().min(0).optional().nullable(),             // optional + nullable
-    stock: z.number().min(0).optional().nullable(),                 // optional + nullable
-    status: z.enum(['ACTIVE', 'INACTIVE', 'DRAFT']).default('INACTIVE'), // required with default
-    variants: z.array(z.object({
-      name: z.string(),
-      price: z.number().min(0),
-      stock: z.number().min(0),
-    })).optional(),
-    specs: z.array(z.object({
-      key: z.string(),
-      value: z.string(),
-    })).optional(),
-    tags: z.array(z.string()).optional(),
+  const variantOptionSchema = z.object({
+    id: z.string(),
+    variantOptionName: createStringSchema("Option Name"),
+    price: z.number().min(0),
+    discountedPrice: z.number().nullable().optional(),
+    stock: z.number().min(0),
+    coupon: z.string().nullable().optional(),
   });
 
+  const variantSchema = z.object({
+    id: z.string(),
+    name: createStringSchema("Variant Name"),
+    isRequired: z.boolean(),
+    options: z.array(variantOptionSchema),
+  });
 
+  const specSchema = z.object({
+    id: z.string(),
+    label: createStringSchema("Spec Label"),
+    value: createStringSchema("Spec Value"),
+  });
 
-  const specsEditorSchema = z.object({
-    label: createStringSchema("Label"),
-    value: createStringSchema("Value"),
-  })
+  const PRODUCT_STATUS_VALUES = ["ACTIVE", "INACTIVE", "DRAFT"] as const;
+
+  const productSchema = z.object({
+    id: z.string(),
+    name: createStringSchema("Product Name"),
+    slug: createStringSchema("Slug"),
+    brand: createStringSchema("Brand").nullable().optional(),
+    basePrice: z.number().min(0),
+    description: createStringSchema("Description").optional(),
+    images: z.array(z.string()).optional(),
+    tags: z.array(z.string()).optional(),
+    reviewCount: z.number().optional(),
+    rating: z.number().optional(),
+    sold: z.number().optional(),
+    stock: z.number().min(0),
+    // status: z.enum(['ACTIVE','INACTIVE','DRAFT']).default('INACTIVE'),
+    sellerId: z.string(),
+    categoryId: z.string(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    specs: z.array(specSchema).optional(),
+    category: createStringSchema("Category Name"),
+    variants: z.array(variantSchema).optional(),
+  });
+
+  const extendedSchema = productSchema.extend({
+    status: z.enum(PRODUCT_STATUS).default('INACTIVE'),
+  });
+
 
   return {
     nameEmailSchema,
@@ -126,7 +152,8 @@ const useFormSchema = () => {
     searchSchema,
     createSellerSchema,
     productSchema,
-    specsEditorSchema
+    specSchema,
+    extendedSchema
   }
 }
 

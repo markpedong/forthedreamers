@@ -20,7 +20,7 @@ import Link from 'next/link';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 
 const Products: FC<TProductsList> = ({ products, categories }) => {
-  console.log('products', products);
+  console.log('products', JSON.stringify(products[0]));
   const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);

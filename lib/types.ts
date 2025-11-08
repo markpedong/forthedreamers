@@ -155,7 +155,9 @@ export type TVariant = Variant & {
 
 export type TSpec = Omit<Spec, "createdAt" | "updatedAt">;
 
-export type TProduct = Product & {
+export type OmittedProductFields = Omit<Product, "createdAt" | "updatedAt">
+
+export type TProduct = OmittedProductFields & {
   specs: Spec[];
   category: Category;
   variants: TVariant[];

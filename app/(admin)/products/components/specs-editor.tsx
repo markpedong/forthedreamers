@@ -15,11 +15,11 @@ import { SpecsEditorProps, TSpec } from '@/lib/types';
 
 const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
   const [isPending, startTransition] = useTransition();
-  const { specsEditorSchema } = useFormSchema();
-  type SpecsFormData = z.infer<typeof specsEditorSchema>;
+  const { specSchema } = useFormSchema();
+  type SpecsFormData = z.infer<typeof specSchema>;
 
   const form = useForm<SpecsFormData>({
-    resolver: zodResolver(specsEditorSchema),
+    resolver: zodResolver(specSchema),
     defaultValues: LABEL_VALUE_DEFAULT,
   });
 
