@@ -6,7 +6,7 @@ import { persistReducer } from 'redux-persist';
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 
 export type RootState = {
-  app: ReturnType<typeof appReducer>;
+  appData: ReturnType<typeof appReducer>;
 };
 
 const createNoopStorage = () => {
@@ -38,7 +38,7 @@ const persistConfig = {
 };
 
 const reducer = combineReducers({
-  app: appReducer,
+  appData: appReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);

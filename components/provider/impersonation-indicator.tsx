@@ -1,12 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { revalidatePath, stopImpersonating } from '@/lib/server-actions';
-import { Session } from '@/lib/types';
+import { useAppSelector } from '@/redux/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HatGlasses } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 
-const ImpersonationIndicator: FC<{ session: Session }> = ({ session }) => {
+const ImpersonationIndicator: FC = () => {
+  const session = useAppSelector((state) => state.appData?.session);
   const router = useRouter();
 
   if (session?.session.impersonatedBy === null) return null;

@@ -14,13 +14,15 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
 import SearchOverlay from './search-overlay';
-import { Session } from '@/lib/types';
 import { usePathname, useRouter } from 'next/navigation';
 import classNames from 'classnames';
 import { signOut } from '@/lib/server-actions';
 import Link from 'next/link';
+import { useAppSelector } from '@/redux/store';
 
-const Navbar: FC<{ session: Session }> = ({ session }) => {
+const Navbar: FC = () => {
+  const session = useAppSelector((state) => state.appData?.session);
+  console.log("session in navbar:", session);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const isMobile = useIsMobile();
   const router = useRouter();

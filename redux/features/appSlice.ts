@@ -2,10 +2,10 @@ import { Session } from '@/lib/types';
 import { createSlice } from '@reduxjs/toolkit';
 
 type InitialSlice = {
-  userData: Session | null;
+  session: Session | null;
 };
 const initialState: InitialSlice = {
-  userData: null,
+  session: null,
 };
 
 export const AppSlice = createSlice({
@@ -13,7 +13,7 @@ export const AppSlice = createSlice({
   initialState,
   reducers: {
     setSessionData: (state, { payload }) => {
-      state.userData = payload;
+      state.session = payload;
     },
   },
 });

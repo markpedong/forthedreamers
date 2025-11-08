@@ -7,8 +7,15 @@ import TwoFactorPage from './2fa';
 import ForgotPasswordPage from './forgot-password';
 import SignIn from './sign-in';
 import SignUp from './sign-up';
+import { useSearchParams } from 'next/navigation';
 
 export default function AuthInterface() {
+  const params = useSearchParams();
+  const social = params.get('social');
+
+  if (social === 'true') {
+    console.log('Social sign-in successful. Please check your email for further instructions.');
+  }
   const [currentPage, setCurrentPage] = useState('login');
   const pages = {
     login: <SignIn onNavigate={setCurrentPage} />,

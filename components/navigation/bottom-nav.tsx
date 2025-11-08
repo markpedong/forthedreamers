@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Session } from '@/lib/types';
+import { useAppSelector } from '@/redux/store';
 
 const navItems = [
   { icon: Home, label: 'Home', href: '/' },
@@ -16,7 +16,8 @@ const navItems = [
   { icon: User, label: 'Profile', href: '/profile', protected: true },
 ];
 
-const BottomNav: FC<{ session: Session }> = ({ session }) => {
+const BottomNav: FC = () => {
+  const session = useAppSelector((state) => state.appData?.session);
   const pathname = usePathname();
   const isMobile = useIsMobile();
   if (!isMobile) return null;

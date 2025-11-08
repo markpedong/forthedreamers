@@ -6,19 +6,18 @@ import { Toaster } from '../ui/sonner';
 import ThemeToggleButton from './theme-toggle';
 import ToastListener from './toast-listener';
 import ImpesonationIndicator from './impersonation-indicator';
-import { Session } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import classNames from 'classnames';
 import ReduxProvider from './redux-provider';
 import Navbar from '../navigation/navbar';
 import BottomNav from '../navigation/bottom-nav';
 
-const MainProvider: FC<PropsWithChildren<{ session: Session }>> = ({ children, session }) => {
+const MainProvider: FC<PropsWithChildren> = ({ children }) => {
   const isMobile = useIsMobile();
 
   return (
     <ReduxProvider>
-      <Navbar session={session} />
+      <Navbar />
       <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
         <Suspense fallback={null}>
           <ToastListener />
@@ -26,9 +25,9 @@ const MainProvider: FC<PropsWithChildren<{ session: Session }>> = ({ children, s
         <div className={classNames({ 'pb-20': isMobile })}>{children}</div>
         <Toaster />
         <ThemeToggleButton />
-        {!!session && <ImpesonationIndicator session={session} />}
+        <ImpesonationIndicator />
       </ThemeProvider>
-      <BottomNav session={session} />
+      <BottomNav />
     </ReduxProvider>
   );
 };

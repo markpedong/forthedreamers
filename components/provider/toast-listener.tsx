@@ -1,5 +1,6 @@
 'use client';
 
+import useWithDispatch from '@/hooks/useWithDispatch';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
@@ -8,10 +9,12 @@ const ToastListener = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const { updateSession } = useWithDispatch();
 
   const error = searchParams.get('error');
   const emailVerified = searchParams.get('emailVerified');
   const accountLinked = searchParams.get('accountLinked');
+  const isFromSocial = searchParams.get('social');
 
   const deleteParameters = (keys: string[]) => {
     const nextSearchParams = new URLSearchParams(searchParams.toString());
@@ -22,6 +25,13 @@ const ToastListener = () => {
 
     setTimeout(() => router.replace(newUrl, { scroll: false }), 100);
   };
+
+  useEffect(() => {
+    if (isFromSocial) {
+      updateSession();
+      deleteParameters(['social']);
+    }
+  }, [pathname, isFromSocial]);
 
   useEffect(() => {
     if (emailVerified) {

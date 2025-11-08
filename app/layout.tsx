@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
 import './globals.css';
 import MainProvider from '@/components/provider/main-provider';
-import { getSession } from '@/lib/server-actions';
 
 const outfit = Outfit({
   variable: '--font-outfit',
@@ -23,12 +22,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getSession();
-
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={`${outfit.className} antialiased`}>
-        <MainProvider session={session}>{children}</MainProvider>
+        <MainProvider>{children}</MainProvider>
       </body>
     </html>
   );

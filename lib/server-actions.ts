@@ -50,7 +50,7 @@ export const signInSocial = async (provider: "github" | "google") => {
   const { url } = await auth.api.signInSocial({
     body: {
       provider,
-      callbackURL: "/profile",
+      callbackURL: "/profile?social=true",
     },
   });
 

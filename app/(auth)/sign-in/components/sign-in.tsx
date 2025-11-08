@@ -21,7 +21,6 @@ import { setSessionData } from '@/redux/features/appSlice';
 
 const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const dispatch = useAppDispatch();
-  const { refetch } = authClient.useSession();
   const router = useRouter();
   const { loginSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof loginSchema>>({
@@ -66,9 +65,8 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   };
 
   const handlePasskeySignin = () => {
-    const res = authClient.signIn.passkey(undefined, {
+    authClient.signIn.passkey(undefined, {
       onSuccess: () => {
-        refetch();
         router.push('/profile');
       },
     });
