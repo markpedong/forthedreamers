@@ -85,26 +85,27 @@ const useFormSchema = () => {
     path: ["confirmPassword"],
   })
 
-  // name: '',
-  //   brand: '',
-  //     basePrice: '',
-  //       description: '',
-  //         category: '',
-  //           status: 'ACTIVE',
-  //             stock: '',
-  //               images: [] as string[],
-  //                 tags: [] as string[],
-  //                   specs: [] as any[],
-  //                     variants: [] as any[],
-
   const productSchema = z.object({
-    name: nameSchema,
-    brand: createStringSchema("Brand").nullable(),
-    description: createStringSchema("Description"),
-    category: createStringSchema("Category", 1),
-    basePrice: z.number().nullable(),
-    stock: z.number().nullable(),
-  })
+    name: createStringSchema('Product Name'),                       // required string
+    brand: createStringSchema('Brand').optional().nullable(),       // optional + nullable
+    description: createStringSchema('Description').optional(),      // optional
+    category: createStringSchema('Category', 1),                    // required
+    basePrice: z.number().min(0).optional().nullable(),             // optional + nullable
+    stock: z.number().min(0).optional().nullable(),                 // optional + nullable
+    status: z.enum(['ACTIVE', 'INACTIVE', 'DRAFT']).default('INACTIVE'), // required with default
+    variants: z.array(z.object({
+      name: z.string(),
+      price: z.number().min(0),
+      stock: z.number().min(0),
+    })).optional(),
+    specs: z.array(z.object({
+      key: z.string(),
+      value: z.string(),
+    })).optional(),
+    tags: z.array(z.string()).optional(),
+  });
+
+
 
   const specsEditorSchema = z.object({
     label: createStringSchema("Label"),

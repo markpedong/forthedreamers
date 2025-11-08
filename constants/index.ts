@@ -1,4 +1,5 @@
 import { AppleIcon, FacebookIcon, GoogleIcon, TikTokIcon } from "@/components/icons/oauth";
+import { PRODUCT_STATUS } from "@/generated/prisma";
 import { ComponentProps, ElementType } from "react";
 
 export const OAUTH_PROVIDERS = ["google", "github", "facebook", "tiktok"] as const
@@ -20,12 +21,17 @@ export const ALLOWED_KEYS = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Del
 
 export const PRODUCT_DEFAULT = {
   name: '',
-  brand: '',
+  brand: undefined,
   category: '',
   description: '',
-  basePrice: 0,
-  stock: 0,
-}
+  basePrice: undefined,
+  stock: undefined,
+  status: PRODUCT_STATUS.DRAFT,
+  variants: [],
+  specs: [],
+  tags: [],
+};
+
 
 export const LABEL_VALUE_DEFAULT = {
   label: '',

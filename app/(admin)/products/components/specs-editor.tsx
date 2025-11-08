@@ -23,53 +23,45 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
     defaultValues: LABEL_VALUE_DEFAULT,
   });
 
-  const [open, setOpen] = useState(false);
-  const [editingSpec, setEditingSpec] = useState<{
-    index: number;
-    label: string;
-    value: string;
-  } | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
-  const handleSubmit = ({ label, value }: SpecsFormData) => {
-    if (!label.trim() || !value.trim()) return;
-
-    startTransition(async () => {
-      const updated =
-        editingSpec !== null
-          ? specs.map((s, i) => (i === editingSpec.index ? { label, value } : s))
-          : [...specs, { label, value }];
-
-      onSpecsChange(updated as TSpec[]);
-      setOpen(false);
-      setEditingSpec(null);
-      form.reset(LABEL_VALUE_DEFAULT);
-    });
+  const openDialogForEdit = (index: number) => {
+    const spec = specs[index];
+    form.reset(spec);
+    setEditingIndex(index);
+    setDialogOpen(true);
   };
 
-  const handleEdit = (index: number) => {
-    const { label, value } = specs[index];
-    setEditingSpec({ index, label, value });
-    form.reset({ label, value });
-    setOpen(true);
+  const openDialogForAdd = () => {
+    form.reset(LABEL_VALUE_DEFAULT);
+    setEditingIndex(null);
+    setDialogOpen(true);
   };
 
   const handleDelete = (index: number) => {
     onSpecsChange(specs.filter((_, i) => i !== index));
   };
 
+  const handleSubmit = ({ label, value }: SpecsFormData) => {
+    if (!label.trim() || !value.trim()) return;
+
+    startTransition(() => {
+      const updated =
+        editingIndex !== null
+          ? specs.map((s, i) => (i === editingIndex ? { label, value } : s))
+          : [...specs, { label, value }];
+
+      onSpecsChange(updated as TSpec[]);
+      setDialogOpen(false);
+    });
+  };
+
   return (
     <div className='space-y-4'>
       <div className='flex items-center justify-between'>
         <h3 className='font-semibold'>Specifications</h3>
-        <Button
-          size='sm'
-          onClick={() => {
-            setEditingSpec(null);
-            form.reset(LABEL_VALUE_DEFAULT);
-            setOpen(true);
-          }}
-          className='gap-1'
-        >
+        <Button size='sm' onClick={openDialogForAdd} className='gap-1'>
           <Plus size={16} /> Add Spec
         </Button>
       </div>
@@ -88,7 +80,7 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
                 <p className='text-sm font-medium text-foreground'>{spec.value}</p>
               </div>
               <div className='flex gap-1'>
-                <Button variant='outline' size='sm' onClick={() => handleEdit(i)}>
+                <Button variant='outline' size='sm' onClick={() => openDialogForEdit(i)}>
                   Edit
                 </Button>
                 <Button
@@ -106,19 +98,13 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
       </div>
 
       <Dialog
-        title={editingSpec ? 'Edit Specification' : 'Add Specification'}
-        open={open}
-        onOpenChange={(state) => {
-          setOpen(state);
-          if (!state) {
-            setEditingSpec(null);
-            form.reset(LABEL_VALUE_DEFAULT);
-          }
-        }}
+        title={editingIndex !== null ? 'Edit Specification' : 'Add Specification'}
+        open={dialogOpen}
+        onOpenChange={(state) => setDialogOpen(state)}
         triggerText={false}
-        onCancel={() => setOpen(false)}
+        onCancel={() => setDialogOpen(false)}
         onConfirm={form.handleSubmit(handleSubmit)}
-        confirmText={editingSpec ? 'Save' : 'Add'}
+        confirmText={editingIndex !== null ? 'Save' : 'Add'}
         loading={isPending}
       >
         <Form form={form} customSubmitButton>
