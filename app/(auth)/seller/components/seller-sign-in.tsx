@@ -118,11 +118,12 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         </Button>
       </div>
 
-      <div className='w-full text-center'>
-        <Link href={'/sign-in'} className='text-sm font-medium underline text-primary'>
-          Want to buy things? Click here
+      <p className='w-full  text-center text-sm text-muted-foreground mt-4'>
+        Want to buy things?{' '}
+        <Link href='/sign-in' className='text-primary hover:underline font-medium'>
+          Click here
         </Link>
-      </div>
+      </p>
     </div>
   );
 };

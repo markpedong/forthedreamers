@@ -1,9 +1,12 @@
-import { getSession, signOut as sessionSignOut } from "@/lib/server-actions";
+import { getSession, revalidatePath, signOut as sessionSignOut } from "@/lib/server-actions";
 import { setSessionData } from "@/redux/features/appSlice";
 import { useAppDispatch } from "@/redux/store";
+import { deleteAllCookies } from "@/utils/cookies";
+import { usePathname } from "next/navigation";
 
 const useWithDispatch = () => {
   const dispatch = useAppDispatch()
+  const pathname = usePathname();
 
   const updateSession = async () => {
     const session = await getSession();
@@ -12,8 +15,14 @@ const useWithDispatch = () => {
   }
 
   const signOut = async () => {
+    dispatch(setSessionData(null));
+    localStorage.clear()
+    sessionStorage.clear()
+
     await sessionSignOut();
-    await dispatch(setSessionData(null));
+    await deleteAllCookies();
+    await revalidatePath(pathname);
+
   }
 
   return { updateSession, signOut };

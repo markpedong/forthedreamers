@@ -16,13 +16,13 @@ import { motion } from 'framer-motion';
 import SearchOverlay from './search-overlay';
 import { usePathname, useRouter } from 'next/navigation';
 import classNames from 'classnames';
-import { signOut } from '@/lib/server-actions';
 import Link from 'next/link';
 import { useAppSelector } from '@/redux/store';
+import useWithDispatch from '@/hooks/useWithDispatch';
 
 const Navbar: FC = () => {
   const session = useAppSelector((state) => state.appData?.session);
-  console.log("session in navbar:", session);
+  const { signOut } = useWithDispatch();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const isMobile = useIsMobile();
   const router = useRouter();
