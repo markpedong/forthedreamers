@@ -150,11 +150,11 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
             <TabsContent value='inventory' className='space-y-6'>
               <div className='flex justify-between items-center mb-2'>
                 <Label>Variants</Label>
-                {product?.variants.length && (
+                {product?.variants.length ? (
                   <span className='text-xs text-muted-foreground'>
                     Base price & stock disabled when variants exist
                   </span>
-                )}
+                ): null}
               </div>
               <VariantEditor
                 variants={product?.variants || []}
@@ -168,6 +168,7 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
                   placeholder='0.00'
                   disabled={!!product?.variants.length}
                   step='0.01'
+                  maxLength={6}
                 />
                 <Input
                   label={`Stock ${!!product?.variants.length ? '(Disabled)' : ''}`}
