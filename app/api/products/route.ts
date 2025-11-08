@@ -71,6 +71,14 @@ export async function POST(req: NextRequest) {
       return errorResponse("A product with this slug already exists");
     }
 
+    const seller = await prisma.seller.findUnique({
+      where: { userId: sellerId },
+    });
+
+    if (!seller) {
+      return errorResponse("Seller not found for the given userId");
+    }
+
     // Create product with nested data
     const product = await prisma.product.create({
       data: {
@@ -83,7 +91,7 @@ export async function POST(req: NextRequest) {
         tags: tags || [],
         stock: stock ?? null,
         status: status || "DRAFT",
-        sellerId,
+        sellerId: seller.id,
         categoryId,
         specs: {
           create: specs.map((spec: any) => ({

@@ -19,6 +19,7 @@ import {
 import Link from 'next/link';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import { createProduct, updateProduct } from '@/lib/api-client';
+import { revalidatePath } from '@/lib/server-actions';
 
 const Products: FC<TProductsList> = ({ products = [], categories = [], session }) => {
   // const session = useAppSelector((state) => state.appData?.session);
@@ -175,7 +176,7 @@ const Products: FC<TProductsList> = ({ products = [], categories = [], session }
         if (response.success) {
           toast.success('Product updated successfully');
           // Refresh the page to show the updated product
-          window.location.reload();
+          revalidatePath('/products');
         } else {
           toast.error(response.message || 'Failed to update product');
         }
