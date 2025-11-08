@@ -76,7 +76,7 @@ export default function Topbar() {
             <DropdownMenuTrigger asChild>
               <Button variant='ghost' className='flex items-center gap-2'>
                 <Avatar className='h-8 w-8'>
-                  <AvatarImage src='https://api.dicebear.com/7.x/avataaars/svg?seed=admin' />
+                  <AvatarImage src={session?.user.image || ''} />
                   <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
                 <div className='hidden sm:block text-left'>
@@ -88,7 +88,7 @@ export default function Topbar() {
             <DropdownMenuContent align='end' className='w-56'>
               <div className='flex items-center gap-3 p-3'>
                 <Avatar className='h-10 w-10'>
-                  <AvatarImage src='https://api.dicebear.com/7.x/avataaars/svg?seed=admin' />
+                  <AvatarImage src={session?.user.image || ''} />
                   <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
                 <div>
