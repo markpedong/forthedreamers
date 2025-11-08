@@ -32,7 +32,6 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       const res = await tryWithToast(signUp(values.email, values.password, values.name));
       if (!res) return;
 
-      console.log('res', res);
       toast.success('Account created successfully!', { duration: 3000 });
       router.refresh();
     });

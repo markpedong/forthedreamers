@@ -66,10 +66,20 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
         ? initialProduct.category 
         : initialProduct.category?.name || '';
       
+      // Find category to get categoryId - prioritize categoryId from product, then from category object, then from categories list
+      let categoryId: string | undefined = initialProduct.categoryId;
+      if (!categoryId && typeof initialProduct.category === 'object' && initialProduct.category) {
+        categoryId = initialProduct.category.id;
+      }
+      if (!categoryId && categoryName) {
+        const category = categories.find((c) => c.name === categoryName);
+        categoryId = category?.id;
+      }
+      
       const formData = {
         id: initialProduct.id,
         name: initialProduct.name || '',
-        slug: initialProduct.slug || '',
+        slug: initialProduct.slug || generateSlug(initialProduct.name || ''),
         brand: initialProduct.brand || null,
         basePrice: initialProduct.basePrice ?? null,
         description: initialProduct.description || '',
@@ -78,9 +88,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
         stock: initialProduct.stock ?? null,
         status: initialProduct.status || 'DRAFT',
         category: categoryName,
-        categoryId: typeof initialProduct.category === 'object' 
-          ? initialProduct.category?.id 
-          : undefined,
+        categoryId: categoryId || undefined,
         specs: (initialProduct.specs || []).map((spec) => ({
           id: spec.id,
           label: spec.label,
@@ -136,8 +144,19 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
   const handleFormSubmit = async (values: FormData) => {
     startSubmitting(async () => {
       try {
+        // Validate required fields
+        if (!values.name || !values.name.trim()) {
+          toast.error('Product name is required');
+          return;
+        }
+
         // Resolve categoryId if not already set
         const categoryName = values.category;
+        if (!categoryName || !categoryName.trim()) {
+          toast.error('Please select a category');
+          return;
+        }
+
         const category = categories.find((c) => c.name === categoryName);
         
         if (!category) {
@@ -145,20 +164,64 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           return;
         }
 
-        // Prepare data for submission
-        const submitData = {
+        // Ensure categoryId is set - it must be a string, not undefined
+        let finalCategoryId = values.categoryId || category.id;
+        if (!finalCategoryId) {
+          toast.error('Unable to resolve category ID. Please select a category.');
+          return;
+        }
+
+        // Handle slug - in edit mode, preserve existing slug; in create mode, generate from name
+        let finalSlug = values.slug;
+        if (mode === 'create') {
+          finalSlug = finalSlug || generateSlug(values.name);
+        } else {
+          // In edit mode, use existing slug or generate from name if somehow missing
+          finalSlug = finalSlug || (initialProduct?.slug) || generateSlug(values.name);
+        }
+
+        if (!finalSlug || !finalSlug.trim()) {
+          toast.error('Slug is required');
+          return;
+        }
+
+        // Prepare data for submission - ensure all required fields are present and non-empty
+        const submitData: ProductFormData & { id?: string; sellerId?: string } = {
           ...values,
-          categoryId: category.id,
-          // Ensure arrays are not undefined
-          variants: values.variants || [],
+          name: values.name.trim(),
+          slug: finalSlug.trim(),
+          categoryId: finalCategoryId, // Ensure categoryId is always a string
+          basePrice: values.basePrice ?? null, // Convert undefined to null
+          stock: values.stock ?? null, // Convert undefined to null
+          description: values.description ?? null, // Convert undefined to null
+          // Ensure arrays are not undefined and normalize data
+          variants: (values.variants || []).map(variant => ({
+            ...variant,
+            options: (variant.options || []).map(option => ({
+              ...option,
+              discountedPrice: option.discountedPrice ?? null, // Convert undefined to null
+              coupon: option.coupon ?? null, // Convert undefined to null
+            })),
+          })),
           specs: values.specs || [],
           tags: values.tags || [],
           images: values.images || [],
           // Handle brand - convert empty string to null
-          brand: values.brand === '' ? null : values.brand,
-          // Generate slug if not provided
-          slug: values.slug || generateSlug(values.name),
+          brand: values.brand === '' ? null : (values.brand?.trim() || null),
         };
+
+        // Final validation before submission
+        if (!submitData.name || !submitData.slug || !submitData.categoryId) {
+          console.error('Missing required fields:', {
+            name: submitData.name,
+            slug: submitData.slug,
+            categoryId: submitData.categoryId,
+            mode,
+            initialProductId: initialProduct?.id,
+          });
+          toast.error('Missing required fields: name, slug, or categoryId');
+          return;
+        }
 
         await onSubmit(submitData as ProductFormData, mode);
         onOpenChange(false);
