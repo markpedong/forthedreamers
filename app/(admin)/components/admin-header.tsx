@@ -13,11 +13,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import useWithDispatch from '@/hooks/useWithDispatch';
+import { useAppSelector } from '@/redux/store';
 
 export default function Topbar() {
+  const session = useAppSelector((state) => state.appData.session);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const [toast, setToast] = useState('');
   const { signOut } = useWithDispatch();
 
@@ -80,8 +80,8 @@ export default function Topbar() {
                   <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
                 <div className='hidden sm:block text-left'>
-                  <p className='text-sm font-medium'>Admin User</p>
-                  <p className='text-xs text-muted-foreground'>Super Admin</p>
+                  <p className='text-sm font-medium'>{session?.user.name}</p>
+                  <p className='text-xs text-muted-foreground'>{session?.user.role}</p>
                 </div>
               </Button>
             </DropdownMenuTrigger>
@@ -92,8 +92,8 @@ export default function Topbar() {
                   <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className='text-sm font-medium'>Admin User</p>
-                  <p className='text-xs text-muted-foreground'>admin@example.com</p>
+                  <p className='text-sm font-medium'>{session?.user.name}</p>
+                  <p className='text-xs text-muted-foreground'>{session?.user.email}</p>
                 </div>
               </div>
               <DropdownMenuSeparator />
