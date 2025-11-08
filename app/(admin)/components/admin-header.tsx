@@ -3,18 +3,12 @@
 import { useState } from 'react';
 import { Search, Bell, Settings, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import useWithDispatch from '@/hooks/useWithDispatch';
 import { useAppSelector } from '@/redux/store';
 import { toast } from 'sonner';
+import DropDown from '@/components/reusable/dropdown';
 
 const Topbar = () => {
   const session = useAppSelector((state) => state.appData.session);
@@ -28,6 +22,44 @@ const Topbar = () => {
       console.log('[v0] Searching for:', query);
     }
   };
+
+  const dropdownMenu = [
+    {
+      label: (
+        <div className='flex items-center gap-3 p-3'>
+          <Avatar className='h-10 w-10'>
+            <AvatarImage src={session?.user.image || ''} />
+            <AvatarFallback>{session?.user.name?.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div>
+            <p className='text-sm font-medium'>{session?.user.name}</p>
+            <p className='text-xs text-muted-foreground'>{session?.user.email}</p>
+          </div>
+        </div>
+      ),
+      className: 'w-56',
+      hasSeparatorBelow: true,
+    },
+    {
+      label: (
+        <div>
+          <Settings className='w-4 h-4 mr-2' />
+          Profile Settings
+        </div>
+      ),
+      onClick: () => toast.info('Profile Settings clicked', { duration: 2000 }),
+      hasSeparatorBelow: true,
+    },
+    {
+      label: (
+        <div>
+          <LogOut className='w-4 h-4 mr-2' />
+          Sign Out
+        </div>
+      ),
+      onClick: async () => await signOut(),
+    },
+  ];
 
   return (
     <header className='h-16 border-b border-border bg-card flex items-center justify-between px-6'>
@@ -53,9 +85,8 @@ const Topbar = () => {
           <Bell className='w-5 h-5' />
           <span className='absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full' />
         </Button>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        <DropDown
+          trigger={
             <Button variant='ghost' className='flex items-center gap-2'>
               <Avatar className='h-8 w-8'>
                 <AvatarImage src={session?.user.image || ''} />
@@ -66,32 +97,9 @@ const Topbar = () => {
                 <p className='text-xs text-muted-foreground'>{session?.user.role}</p>
               </div>
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end' className='w-56'>
-            <div className='flex items-center gap-3 p-3'>
-              <Avatar className='h-10 w-10'>
-                <AvatarImage src={session?.user.image || ''} />
-                <AvatarFallback>AD</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className='text-sm font-medium'>{session?.user.name}</p>
-                <p className='text-xs text-muted-foreground'>{session?.user.email}</p>
-              </div>
-            </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => toast.info('Profile Settings clicked', { duration: 2000 })}
-            >
-              <Settings className='w-4 h-4 mr-2' />
-              Profile Settings
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className='text-destructive' onClick={async () => await signOut()}>
-              <LogOut className='w-4 h-4 mr-2' />
-              Sign Out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          }
+          menus={dropdownMenu}
+        />
       </div>
     </header>
   );

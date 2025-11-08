@@ -234,4 +234,5 @@ export type DropdownProps = {
   trigger: React.ReactElement; // MUST be a single DOM element
   align?: 'start' | 'center' | 'end';
   menus: DropdownMenuItemType[];
+  beforeMenus?: React.ReactNode;
 };
