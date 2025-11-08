@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import useFormSchema from '@/hooks/useFormSchema';
-import { SchemaForm, SessionUser } from '@/lib/types';
+import { SchemaForm } from '@/lib/types';
 import { sendVerificationEmailAction, updateUser } from '@/lib/server-actions';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,8 +21,11 @@ import Input from '@/components/reusable/input';
 import { AlertCircle, Badge, CheckCircle2, Clock, Users } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { tryWithToast } from '@/utils/helper';
+import { useAppSelector } from '@/redux/store';
 
-const ProfileDetails: FC<{ user?: SessionUser }> = ({ user }) => {
+const ProfileDetails: FC = () => {
+  const session = useAppSelector((state) => state.appData.session);
+  const user = session?.user;
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [isSubmitting, startSubmitting] = useTransition();

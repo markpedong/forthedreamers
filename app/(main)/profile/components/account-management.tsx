@@ -10,7 +10,7 @@ import { CHANGE_PASSWORD_DEFAULT, OAUTH_PROVIDERS } from '@/constants';
 import useFormSchema from '@/hooks/useFormSchema';
 import { authClient } from '@/lib/auth-client';
 import { changePassword, unlinkAccount } from '@/lib/server-actions';
-import { Account, SchemaForm, SessionUser } from '@/lib/types';
+import { Account, SchemaForm } from '@/lib/types';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import Divider from '@/components/reusable/divider';
@@ -19,14 +19,16 @@ import AlertDialog from '@/components/reusable/alert-dialog';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { tryWithToast } from '@/utils/helper';
+import { useAppSelector } from '@/redux/store';
 
 interface AccountManagementProps {
-  user?: SessionUser;
   accounts: Account[];
   hasPassword: boolean;
 }
 
-const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, user }) => {
+const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }) => {
+  const session = useAppSelector((state) => state.appData.session);
+  const user = session?.user;
   const router = useRouter();
   const { changePasswordSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof changePasswordSchema>>({
@@ -43,7 +45,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
         changePassword({
           currentPassword: values.currentPassword,
           newPassword: values.confirmPassword,
-        })
+        }),
       );
       if (!result) return;
 
@@ -62,7 +64,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts, 
         authClient.requestPasswordReset({
           email: `${user?.email}`,
           redirectTo: '/reset-password',
-        })
+        }),
       );
       if (!result) return;
 

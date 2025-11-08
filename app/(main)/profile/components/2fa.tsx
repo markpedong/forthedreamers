@@ -4,7 +4,7 @@ import { FC, useState, useTransition } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { SchemaForm, SessionUser, SetupStep } from '@/lib/types';
+import { SchemaForm, SetupStep } from '@/lib/types';
 import { useForm } from 'react-hook-form';
 import useFormSchema from '@/hooks/useFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,8 +20,11 @@ import { AlertCircle, CopyIcon, RefreshCw, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { BackupCodesStep } from './2fa-components';
 import { tryWithToast } from '@/utils/helper';
+import { useAppSelector } from '@/redux/store';
 
-const TwoFactorSection: FC<{ user?: SessionUser }> = ({ user }) => {
+const TwoFactorSection: FC = () => {
+  const session = useAppSelector((state) => state.appData.session);
+  const user = session?.user;
   const router = useRouter();
   const is2faEnabled = user?.twoFactorEnabled;
   const { twoFactorSchema } = useFormSchema();

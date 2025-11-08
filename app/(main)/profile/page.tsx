@@ -40,19 +40,13 @@ const ProfilePage = async () => {
       id: 'profile',
       label: 'Profile',
       icon: <User className='h-4 w-4' />,
-      content: <ProfileDetails user={session?.user} />,
+      content: <ProfileDetails />,
     },
     {
       id: 'account',
       label: 'Account',
       icon: <Settings className='h-4 w-4' />,
-      content: (
-        <AccountManagement
-          accounts={nonCredentialAccounts}
-          hasPassword={hasPassword}
-          user={session?.user}
-        />
-      ),
+      content: <AccountManagement accounts={nonCredentialAccounts} hasPassword={hasPassword} />,
     },
     {
       id: 'orders',
@@ -95,7 +89,7 @@ const ProfilePage = async () => {
             </p>
           </div>
 
-          <TwoFactorSection user={session?.user} />
+          <TwoFactorSection />
           <PasskeysSection passkeys={passkeys} />
           <DeleteAccount />
         </div>
@@ -106,7 +100,7 @@ const ProfilePage = async () => {
   return (
     <main className='bg-background'>
       <div className='mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8'>
-        <ProfileHeader user={session?.user} />
+        <ProfileHeader />
         <ClientOnly>
           <ProfileLayout sections={sections} hasPassword={hasPassword} />
         </ClientOnly>

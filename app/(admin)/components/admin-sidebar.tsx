@@ -14,10 +14,11 @@ import {
   LogOut as Logo,
 } from 'lucide-react';
 import { FC } from 'react';
-import { Session } from '@/lib/types';
 import { USER_ROLE } from '@/generated/prisma';
+import { useAppSelector } from '@/redux/store';
 
-const Sidebar: FC<{ session: Session }> = ({ session }) => {
+const Sidebar: FC = () => {
+  const session = useAppSelector((state) => state.appData.session);
   const pathname = usePathname();
   const navItems = [
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },

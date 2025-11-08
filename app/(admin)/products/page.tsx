@@ -1,17 +1,10 @@
 import { getCategories, getProducts } from '@/lib/http';
 import Products from './components';
-import { getSession } from '@/lib/server-actions';
 
 const Page = async () => {
-  const [products, categories, session] = await Promise.all([
-    getProducts(),
-    getCategories(),
-    getSession(),
-  ]);
+  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
 
-  return (
-    <Products products={products.data ?? []} categories={categories.data ?? []} session={session?.user} />
-  );
+  return <Products products={products.data ?? []} categories={categories.data ?? []} />;
 };
 
 export default Page;

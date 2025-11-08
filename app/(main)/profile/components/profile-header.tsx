@@ -4,18 +4,16 @@ import type { FC } from 'react';
 import { Card, CardAction, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import type { SessionUser } from '@/lib/types';
 import { signOut } from '@/lib/server-actions';
 import AvatarUpload from './avatar-upload';
 import { LayoutDashboard, LogOut } from 'lucide-react';
 import { USER_ROLE } from '@/generated/prisma';
 import { useRouter } from 'next/navigation';
+import { useAppSelector } from '@/redux/store';
 
-interface ProfileHeaderProps {
-  user?: SessionUser;
-}
-
-const ProfileHeader: FC<ProfileHeaderProps> = ({ user }) => {
+const ProfileHeader: FC = () => {
+  const session = useAppSelector((state) => state.appData.session);
+  const user = session?.user;
   const router = useRouter();
   const initials =
     user?.name
