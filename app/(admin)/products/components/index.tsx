@@ -19,10 +19,9 @@ import {
 import Link from 'next/link';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import { createProduct, updateProduct } from '@/lib/api-client';
-import { useAppSelector } from '@/redux/store';
 
-const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
-  const session = useAppSelector((state) => state.appData?.session);
+const Products: FC<TProductsList> = ({ products = [], categories = [], session }) => {
+  // const session = useAppSelector((state) => state.appData?.session);
   const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);

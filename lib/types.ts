@@ -183,7 +183,7 @@ export type SpecsEditorProps = {
   onSpecsChange: (specs: FormSpec[]) => void;
 }
 
-export type TProductsList = { products: TProduct[]; categories: Category[] };
+export type TProductsList = { products: TProduct[]; categories: Category[], session: Session };
 
 export type TVariantOption = Omit<
   VariantOption,
