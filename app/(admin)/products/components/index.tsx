@@ -5,22 +5,23 @@ import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import ProductFormModal from './product-form-modal';
-import { ProColumn, TProduct, TProductsList, ProductFormData, ProTableRef } from '@/lib/types';
+import {
+  ProColumn,
+  TProduct,
+  TProductsList,
+  ProductFormData,
+  ProTableRef,
+  DropdownMenuItemType,
+} from '@/lib/types';
 import { ProTable } from '@/components/reusable/table';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
-import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import { createProduct, updateProduct } from '@/lib/api-client';
 import { revalidatePath } from '@/lib/server-actions';
 import { tryWithToast } from '@/utils/helper';
+import DropDown from '@/components/reusable/dropdown';
 
 const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
   const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
@@ -51,6 +52,37 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
     toast.info(`Status changed to ${newStatus}`);
     // TODO: API call to update
   };
+
+  const dropdownMenus = (record: TProduct): DropdownMenuItemType[] => [
+    {
+      label: (
+        <Link href={`/products/${record.slug}`} className='flex items-center gap-2'>
+          <Eye className='h-4 w-4' /> View Details
+        </Link>
+      ),
+    },
+    {
+      label: (
+        <span className='flex items-center gap-2'>
+          <Edit2 className='h-4 w-4' /> Edit
+        </span>
+      ),
+      onClick: () => {
+        setProduct(record);
+        setEditOpen(true);
+      },
+      hasSeparatorBelow: true,
+    },
+    {
+      label: (
+        <span className='flex items-center gap-2'>
+          <Trash2 className='h-4 w-4' /> Delete
+        </span>
+      ),
+      isDestructive: true,
+      onClick: () => setDeleteDialog({ id: record.id, name: record.name }),
+    },
+  ];
 
   const columns: ProColumn<TProduct>[] = [
     {
@@ -115,36 +147,14 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
     {
       title: 'Actions',
       render: (_, record) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        <DropDown
+          trigger={
             <Button variant='ghost' size='icon'>
               <MoreHorizontal className='w-4 h-4' />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuItem asChild>
-              <Link href={`/products/${record.slug}`} className='flex items-center gap-2'>
-                <Eye className='h-4 w-4' /> View Details
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                setProduct(record);
-                setEditOpen(true);
-              }}
-              className='flex items-center gap-2'
-            >
-              <Edit2 className='h-4 w-4' /> Edit
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => setDeleteDialog({ id: record.id, name: record.name })}
-              className='flex items-center gap-2 text-destructive'
-            >
-              <Trash2 className='h-4 w-4' /> Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          }
+          menus={dropdownMenus(record)}
+        />
       ),
     },
   ];
@@ -204,7 +214,7 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
         open={createOpen}
         onOpenChange={setCreateOpen}
         mode='create'
-        categories={categories} // ✅ no initialProduct here
+        categories={categories}
         onSubmit={handleSubmitProduct}
       />
       <AlertDialog

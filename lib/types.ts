@@ -221,3 +221,17 @@ export type ProTableRef = {
   setPage: (page: number) => void;
   setFilters: (filters: Record<string, any>) => void;
 };
+
+export type DropdownMenuItemType = {
+  label: React.ReactElement; // MUST be a single DOM element
+  onClick?: () => void;
+  isDestructive?: boolean;
+  hasSeparatorBelow?: boolean;
+  className?: string;
+};
+
+export type DropdownProps = {
+  trigger: React.ReactElement; // MUST be a single DOM element
+  align?: 'start' | 'center' | 'end';
+  menus: DropdownMenuItemType[];
+};
