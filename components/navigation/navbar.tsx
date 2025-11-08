@@ -19,6 +19,7 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import { useAppSelector } from '@/redux/store';
 import useWithDispatch from '@/hooks/useWithDispatch';
+import { DISABLED_NAVBAR } from '@/constants';
 
 const Navbar: FC = () => {
   const session = useAppSelector((state) => state.appData?.session);
@@ -28,8 +29,7 @@ const Navbar: FC = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  if (['/sign-in', '/reset-password', '/seller', '/products', '/users'].includes(pathname))
-    return null;
+  if (DISABLED_NAVBAR.includes(pathname)) return null;
 
   const CartButton = (
     <Button variant='ghost' size='icon' className='relative'>

@@ -28,7 +28,7 @@ const Topbar = () => {
       label: (
         <div className='flex items-center gap-3 p-3'>
           <Avatar className='h-10 w-10'>
-            <AvatarImage src={session?.user.image || ''} />
+            {session?.user.image && <AvatarImage src={session?.user.image || ''} />}
             <AvatarFallback>{session?.user.name?.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
@@ -89,7 +89,7 @@ const Topbar = () => {
           trigger={
             <Button variant='ghost' className='flex items-center gap-2'>
               <Avatar className='h-8 w-8'>
-                <AvatarImage src={session?.user.image || ''} />
+                {session?.user.image && <AvatarImage src={session?.user.image || ''} />}
                 <AvatarFallback>AD</AvatarFallback>
               </Avatar>
               <div className='hidden sm:block text-left'>

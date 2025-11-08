@@ -20,6 +20,7 @@ const DropDown: FC<DropdownProps> = ({ trigger, menus, align = 'end' }) => {
         {menus.map((menu, index) => (
           <div key={index}>
             <DropdownMenuItem
+              disabled={menu.isDisabled}
               onClick={menu.onClick}
               className={classNames(
                 'flex items-center gap-2',

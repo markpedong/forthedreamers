@@ -228,11 +228,11 @@ export type DropdownMenuItemType = {
   isDestructive?: boolean;
   hasSeparatorBelow?: boolean;
   className?: string;
+  isDisabled?: boolean;
 };
 
 export type DropdownProps = {
   trigger: React.ReactElement; // MUST be a single DOM element
   align?: 'start' | 'center' | 'end';
   menus: DropdownMenuItemType[];
-  beforeMenus?: React.ReactNode;
 };

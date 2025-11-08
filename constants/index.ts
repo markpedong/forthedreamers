@@ -39,3 +39,5 @@ export const LABEL_VALUE_DEFAULT = {
   label: '',
   value: '',
 }
+
+export const DISABLED_NAVBAR = ['/sign-in', '/reset-password', '/seller', '/products', '/users', '/dashboard']

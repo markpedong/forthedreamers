@@ -3,17 +3,11 @@
 import { FC, useState, useTransition } from 'react';
 import { Plus, MoreHorizontal, BadgeCheckIcon, BadgeAlertIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { ProTable } from '@/components/reusable/table'; // path depends on where you placed it
 import { UserWithRole } from 'better-auth/plugins';
 import { toast } from 'sonner';
 import AlertDialog from '@/components/reusable/alert-dialog';
-import { ProColumn, SchemaForm } from '@/lib/types';
+import { DropdownMenuItemType, ProColumn, SchemaForm } from '@/lib/types';
 import {
   banUser,
   deleteUserByAdmin,
@@ -32,6 +26,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { authClient } from '@/lib/auth-client';
 import { tryWithToast } from '@/utils/helper';
+import DropDown from '@/components/reusable/dropdown';
 
 const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
   const router = useRouter();
@@ -107,9 +102,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     }
 
     startTransition(async () => {
-      const verifyResult = await tryWithToast(
-        authClient.twoFactor.verifyTotp({ code: `${otp}` })
-      );
+      const verifyResult = await tryWithToast(authClient.twoFactor.verifyTotp({ code: `${otp}` }));
       if (!verifyResult || !!verifyResult.error) return;
 
       const deleteResult = await tryWithToast(deleteUserByAdmin(`${selectedUser?.id}`));
@@ -121,6 +114,34 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
       router.refresh();
     });
   };
+
+  const dropdownMenus = (record: UserWithRole): DropdownMenuItemType[] => [
+    {
+      label: <div>View Details</div>,
+      onClick: () => handleViewDetails(record),
+    },
+    {
+      label: <div>Edit</div>,
+      onClick: () => handleEditUser(record.id),
+    },
+    {
+      label: <div>Impersonate</div>,
+      onClick: () => handleImpersonateUser(record.id),
+    },
+    {
+      label: <div>Revoke Sessions</div>,
+      onClick: () => handleRevokeSession(record),
+    },
+    {
+      label: <div>{record.banned ? 'Unban' : 'Ban'}</div>,
+      onClick: () => handleBanUnbanUser(record),
+    },
+    {
+      label: <div>Delete</div>,
+      onClick: () => handleDeleteUser(record.id),
+      isDestructive: true,
+    },
+  ];
 
   const columns: ProColumn<UserWithRole>[] = [
     {
@@ -200,57 +221,18 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
       title: 'Actions',
       render: (_, record) => {
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <DropDown
+            trigger={
               <Button variant='ghost' size='icon'>
                 <MoreHorizontal className='w-4 h-4' />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
-              <DropdownMenuItem
-                className='cursor-pointer'
-                onClick={() => handleViewDetails(record)}
-                disabled={isPending}
-              >
-                View Details
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className='cursor-pointer'
-                onClick={() => handleEditUser(record.id)}
-                disabled={isPending}
-              >
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className='cursor-pointer'
-                onClick={() => handleImpersonateUser(record.id)}
-                disabled={isPending}
-              >
-                Impersonate
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className='cursor-pointer'
-                onClick={() => handleRevokeSession(record)}
-                disabled={isPending}
-              >
-                Revoke Sessions
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className='cursor-pointer'
-                onClick={() => handleBanUnbanUser(record)}
-                disabled={isPending}
-              >
-                {record.banned ? 'Unban' : 'Ban'}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className='text-destructive cursor-pointer'
-                onClick={() => handleDeleteUser(record.id)}
-                disabled={isPending}
-              >
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            }
+            menus={dropdownMenus(record).map((item) => ({
+              ...item,
+              disabled: isPending,
+              className: 'cursor-pointer',
+            }))}
+          />
         );
       },
     },
