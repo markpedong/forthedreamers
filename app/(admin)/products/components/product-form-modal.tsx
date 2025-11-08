@@ -47,7 +47,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
   const session = useAppSelector((state) => state.appData.session);
 
   type FormData = z.infer<typeof extendedSchema>;
-  
+
   const form = useForm<FormData>({
     resolver: zodResolver(extendedSchema) as any, // Type assertion needed due to complex schema inference
     defaultValues: PRODUCT_DEFAULT as FormData,
@@ -64,10 +64,11 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
 
     if (mode === 'edit' && initialProduct) {
       // Prefill form with existing product data
-      const categoryName = typeof initialProduct.category === 'string' 
-        ? initialProduct.category 
-        : initialProduct.category?.name || '';
-      
+      const categoryName =
+        typeof initialProduct.category === 'string'
+          ? initialProduct.category
+          : initialProduct.category?.name || '';
+
       // Find category to get categoryId - prioritize categoryId from product, then from category object, then from categories list
       let categoryId: string | undefined = initialProduct.categoryId;
       if (!categoryId && typeof initialProduct.category === 'object' && initialProduct.category) {
@@ -77,7 +78,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
         const category = categories.find((c) => c.name === categoryName);
         categoryId = category?.id;
       }
-      
+
       const formData = {
         id: initialProduct.id,
         name: initialProduct.name || '',
@@ -160,7 +161,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
         }
 
         const category = categories.find((c) => c.name === categoryName);
-        
+
         if (!category) {
           toast.error('Please select a valid category');
           return;
@@ -178,7 +179,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           finalSlug = finalSlug || generateSlug(values.name);
         } else {
           // In edit mode, use existing slug or generate from name if somehow missing
-          finalSlug = finalSlug || (initialProduct?.slug) || generateSlug(values.name);
+          finalSlug = finalSlug || initialProduct?.slug || generateSlug(values.name);
         }
 
         if (!finalSlug || !finalSlug.trim()) {
@@ -189,7 +190,6 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
         // Prepare data for submission - ensure all required fields are present and non-empty
         const submitData: ProductFormData & { id?: string; sellerId?: string } = {
           ...values,
-          sellerId: initialProduct?.sellerId || `${session?.user.id}`, // Replace with actual sellerId from session
           name: values.name.trim(),
           slug: finalSlug.trim(),
           categoryId: finalCategoryId, // Ensure categoryId is always a string
@@ -197,9 +197,9 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           stock: values.stock ?? null, // Convert undefined to null
           description: values.description ?? null, // Convert undefined to null
           // Ensure arrays are not undefined and normalize data
-          variants: (values.variants || []).map(variant => ({
+          variants: (values.variants || []).map((variant) => ({
             ...variant,
-            options: (variant.options || []).map(option => ({
+            options: (variant.options || []).map((option) => ({
               ...option,
               discountedPrice: option.discountedPrice ?? null, // Convert undefined to null
               coupon: option.coupon ?? null, // Convert undefined to null
@@ -209,7 +209,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           tags: values.tags || [],
           images: values.images || [],
           // Handle brand - convert empty string to null
-          brand: values.brand === '' ? null : (values.brand?.trim() || null),
+          brand: values.brand === '' ? null : values.brand?.trim() || null,
         };
 
         // Final validation before submission
@@ -276,14 +276,14 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
                 control={form.control}
                 placeholder='e.g., Premium Wireless Headphones'
               />
-              
-              <Input 
-                label='Brand' 
+
+              <Input
+                label='Brand'
                 name='brand'
                 control={form.control}
                 placeholder='e.g., AudioTech (optional)'
               />
-              
+
               <Select
                 containerClassName='w-[unset]'
                 label='Category *'
@@ -306,7 +306,9 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
                 <div className='mt-1.5'>
                   <ImageUploader
                     images={form.watch('images') || []}
-                    onImagesChange={(images) => form.setValue('images', images, { shouldValidate: true })}
+                    onImagesChange={(images) =>
+                      form.setValue('images', images, { shouldValidate: true })
+                    }
                     maxImages={5}
                   />
                 </div>
@@ -323,7 +325,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
                   </span>
                 )}
               </div>
-              
+
               <VariantEditor
                 variants={(form.watch('variants') || []) as FormVariant[]}
                 onVariantsChange={updateVariants as (variants: FormVariant[]) => void}
@@ -366,11 +368,15 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
               <SpecsEditor
                 specs={form.watch('specs') || []}
                 onSpecsChange={(specs) => {
-                  form.setValue('specs', specs as Array<{
-                    id?: string;
-                    label: string;
-                    value: string;
-                  }>, { shouldValidate: true });
+                  form.setValue(
+                    'specs',
+                    specs as Array<{
+                      id?: string;
+                      label: string;
+                      value: string;
+                    }>,
+                    { shouldValidate: true },
+                  );
                 }}
               />
 

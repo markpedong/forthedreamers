@@ -57,7 +57,7 @@ export const getProducts = async () => await apiFetch<TProduct[]>('/api/products
 
 export const getCategories = async () => await apiFetch('/api/category');
 
-export const createProduct = async (productData: Partial<TProduct> & { sellerId: string }) => 
+export const createProduct = async (productData: Partial<TProduct>) => 
   await apiFetch<TProduct>('/api/products', {
     method: 'POST',
     body: productData,

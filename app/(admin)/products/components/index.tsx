@@ -147,19 +147,11 @@ const Products: FC<TProductsList> = ({ products = [], categories = [], session }
     },
   ];
 
-  const handleSubmitProduct = async (
-    data: ProductFormData & { sellerId?: string },
-    mode: 'create' | 'edit',
-  ) => {
+  const handleSubmitProduct = async (data: ProductFormData, mode: 'create' | 'edit') => {
     try {
-      // TODO: Get sellerId from session - for now using a placeholder
-      // In a real app, you'd get this from the authenticated session
-      const sellerId = data.sellerId || `${session?.user.id}`; // Replace with actual sellerId from session
-
       if (mode === 'create') {
         const response = await createProduct({
           ...data,
-          sellerId,
         });
 
         if (response.success) {

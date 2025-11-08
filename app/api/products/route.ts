@@ -58,8 +58,8 @@ export async function POST(req: NextRequest) {
     } = body;
 
     // Validation
-    if (!name || !slug || !categoryId || !sellerId) {
-      return errorResponse("Name, slug, categoryId, and sellerId are required");
+    if (!name || !slug || !categoryId) {
+      return errorResponse("Name, slug, categoryId are required");
     }
 
     // Check if slug already exists

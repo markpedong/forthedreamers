@@ -185,7 +185,6 @@ const useFormSchema = () => {
     rating: z.number().optional(),
     sold: z.number().optional(),
     stock: z.number().min(0).optional().nullable(),
-    sellerId: z.string(),
     categoryId: z.string(),
     createdAt: z.string(),
     updatedAt: z.string(),

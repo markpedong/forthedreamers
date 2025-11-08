@@ -38,7 +38,7 @@ async function apiClient<T = any>(
   return data;
 }
 
-export const createProduct = async (productData: ProductFormData & { sellerId: string }): Promise<ApiResponse<TProduct>> =>
+export const createProduct = async (productData: ProductFormData): Promise<ApiResponse<TProduct>> =>
   apiClient<TProduct>('/api/products', {
     method: 'POST',
     body: productData as any,

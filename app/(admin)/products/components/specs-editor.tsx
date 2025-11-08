@@ -14,8 +14,6 @@ import { LABEL_VALUE_DEFAULT } from '@/constants';
 import { SpecsEditorProps } from '@/lib/types';
 
 // Helper to generate temporary ID for new items
-const generateTempId = () => `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
 const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
   const [isPending, startTransition] = useTransition();
   const { specFormSchema } = useFormSchema();
@@ -33,7 +31,6 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
     const spec = specs[index];
     // Preserve ID when editing
     form.reset({
-      id: spec.id || generateTempId(),
       label: spec.label,
       value: spec.value,
     });
@@ -56,7 +53,6 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
 
     startTransition(() => {
       const specData = {
-        id: data.id || generateTempId(),
         label: data.label.trim(),
         value: data.value.trim(),
       };

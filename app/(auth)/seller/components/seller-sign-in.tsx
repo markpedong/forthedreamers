@@ -20,6 +20,7 @@ import { useAppDispatch } from '@/redux/store';
 import { setSessionData } from '@/redux/features/appSlice';
 import { authClient } from '@/lib/auth-client';
 import useWithDispatch from '@/hooks/useWithDispatch';
+import Link from 'next/link';
 
 const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const dispatch = useAppDispatch();
@@ -117,14 +118,10 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         </Button>
       </div>
 
-      <div className='pt-4 text-center'>
-        <Button
-          variant='link'
-          className='text-sm font-medium underline text-primary hover:text-secondary'
-          onClick={() => router.push('/sign-in')}
-        >
+      <div className='w-full text-center'>
+        <Link href={'/sign-in'} className='text-sm font-medium underline text-primary'>
           Want to buy things? Click here
-        </Button>
+        </Link>
       </div>
     </div>
   );

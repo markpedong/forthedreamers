@@ -16,7 +16,7 @@ const ReduxProvider = ({ children }: { children: React.ReactNode }) => {
       <PersistGate persistor={persistor}>
         <ProgressProvider
           height='0.2rem'
-          color='#30af5b'
+          color='white'
           options={{ showSpinner: false, easing: 'linear', speed: 200 }}
           shallowRouting
         >

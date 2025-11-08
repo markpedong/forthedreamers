@@ -18,11 +18,14 @@ import { checkStore, createSeller } from '@/lib/http';
 import { tryWithToast } from '@/utils/helper';
 import { signUp } from '@/lib/server-actions';
 import { toast } from 'sonner';
+import Link from 'next/link';
+import useWithDispatch from '@/hooks/useWithDispatch';
 
 const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
   const [isSubmitting, startTransition] = useTransition();
   const { createSellerSchema } = useFormSchema();
+  const { updateSession } = useWithDispatch();
   const form = useForm<SchemaForm<typeof createSellerSchema>>({
     resolver: zodResolver(createSellerSchema),
     defaultValues: {
@@ -50,6 +53,7 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       );
       if (!seller?.success) return;
 
+      updateSession();
       toast.success('Account created successfully!');
       router.refresh();
     });
@@ -133,14 +137,10 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
               <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform' />
               Sign In Instead
             </Button>
-            <div className='pt-4'>
-              <Button
-                variant='link'
-                onClick={() => router.push('/sign-in')}
-                className='w-full text-sm text-primary underline'
-              >
+            <div className='w-full text-center mt-4'>
+              <Link href={'/sign-in'} className='text-sm font-medium underline text-primary'>
                 Want to buy things? Click here
-              </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
