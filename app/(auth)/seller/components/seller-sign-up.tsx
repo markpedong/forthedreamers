@@ -42,7 +42,7 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       const storeErr = await tryWithToast(checkStore(values.storeName));
       if (!storeErr) return;
 
-      const res = await tryWithToast(signUp(values.email, values.password, values.name, '/dashboard'));
+      const res = await tryWithToast(signUp(values.email, values.password, values.name));
       if (!res || !('token' in res && res.token)) return;
 
       const seller = await tryWithToast(

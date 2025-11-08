@@ -157,8 +157,7 @@ const Products: FC<TProductsList> = ({ products = [], categories = [], session }
 
         if (response.success) {
           toast.success('Product created successfully');
-          // Refresh the page to show the new product
-          window.location.reload();
+          await revalidatePath('/products');
         } else {
           toast.error(response.message || 'Failed to create product');
         }

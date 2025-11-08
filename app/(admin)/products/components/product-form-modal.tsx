@@ -210,6 +210,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           images: values.images || [],
           // Handle brand - convert empty string to null
           brand: values.brand === '' ? null : values.brand?.trim() || null,
+          sellerId: session?.user.id
         };
 
         // Final validation before submission
