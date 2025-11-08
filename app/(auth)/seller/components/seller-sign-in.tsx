@@ -13,12 +13,13 @@ import { Button } from '@/components/ui/button';
 import useFormSchema from '@/hooks/useFormSchema';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
-import { getUserDB, signIn, signOut } from '@/lib/server-actions';
+import { getUserDB, signIn } from '@/lib/server-actions';
 import { USER_ROLE } from '@/generated/prisma';
 import { tryWithToast } from '@/utils/helper';
 import { useAppDispatch } from '@/redux/store';
 import { setSessionData } from '@/redux/features/appSlice';
 import { authClient } from '@/lib/auth-client';
+import useWithDispatch from '@/hooks/useWithDispatch';
 
 const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const dispatch = useAppDispatch();
@@ -29,6 +30,7 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
+  const { signOut } = useWithDispatch();
 
   const onSubmit = (values: SchemaForm<typeof loginSchema>) => {
     startTransition(async () => {

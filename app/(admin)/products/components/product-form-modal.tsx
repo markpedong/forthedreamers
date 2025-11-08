@@ -21,6 +21,7 @@ import { PRODUCT_DEFAULT } from '@/constants';
 import { ProductFormModalProps, ProductFormData, FormVariant } from '@/lib/types';
 import useFormSchema from '@/hooks/useFormSchema';
 import type { z } from 'zod';
+import { useAppSelector } from '@/redux/store';
 
 // Helper function to generate slug from name
 const generateSlug = (name: string): string => {
@@ -43,7 +44,8 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
   const { productFormSchema, extendedSchema } = useFormSchema();
   const [tab, setTab] = useState('basic');
   const [isSubmitting, startSubmitting] = useTransition();
-  
+  const session = useAppSelector((state) => state.appData.session);
+
   type FormData = z.infer<typeof extendedSchema>;
   
   const form = useForm<FormData>({
@@ -187,7 +189,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
         // Prepare data for submission - ensure all required fields are present and non-empty
         const submitData: ProductFormData & { id?: string; sellerId?: string } = {
           ...values,
-          sellerId: initialProduct?.sellerId || 'placeholder-seller-id', // Replace with actual sellerId from session
+          sellerId: initialProduct?.sellerId || `${session?.user.id}`, // Replace with actual sellerId from session
           name: values.name.trim(),
           slug: finalSlug.trim(),
           categoryId: finalCategoryId, // Ensure categoryId is always a string

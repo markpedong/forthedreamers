@@ -4,12 +4,12 @@ import type { FC } from 'react';
 import { Card, CardAction, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { signOut } from '@/lib/server-actions';
 import AvatarUpload from './avatar-upload';
 import { LayoutDashboard, LogOut } from 'lucide-react';
 import { USER_ROLE } from '@/generated/prisma';
 import { useRouter } from 'next/navigation';
 import { useAppSelector } from '@/redux/store';
+import useWithDispatch from '@/hooks/useWithDispatch';
 
 const ProfileHeader: FC = () => {
   const session = useAppSelector((state) => state.appData.session);
@@ -21,6 +21,7 @@ const ProfileHeader: FC = () => {
       .map((n) => n[0])
       .join('')
       .toUpperCase() || 'U';
+  const { signOut } = useWithDispatch();
 
   return (
     <Card>

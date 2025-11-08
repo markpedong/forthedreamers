@@ -14,10 +14,11 @@ import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
 import { tryWithToast } from '@/utils/helper';
-import { getUserDB, signOut } from '@/lib/server-actions';
+import { getUserDB } from '@/lib/server-actions';
 import { USER_ROLE } from '@/generated/prisma';
 import { useAppDispatch } from '@/redux/store';
 import { setSessionData } from '@/redux/features/appSlice';
+import useWithDispatch from '@/hooks/useWithDispatch';
 
 const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const dispatch = useAppDispatch();
@@ -31,6 +32,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     },
   });
   const [isSubmit, startSubmitting] = useTransition();
+  const { signOut } = useWithDispatch();
 
   const onSubmit = async (values: SchemaForm<typeof loginSchema>) => {
     startSubmitting(async () => {

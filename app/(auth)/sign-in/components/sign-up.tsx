@@ -12,6 +12,7 @@ import { signUp } from '@/lib/server-actions';
 import Divider from '@/components/reusable/divider';
 import { useRouter } from 'next/navigation';
 import { tryWithToast } from '@/utils/helper';
+import useWithDispatch from '@/hooks/useWithDispatch';
 
 const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
@@ -26,12 +27,14 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       confirmPassword: '',
     },
   });
+  const { updateSession } = useWithDispatch();
 
   const onSubmit = async (values: SchemaForm<typeof registrationSchema>) => {
     startSigningUp(async () => {
       const res = await tryWithToast(signUp(values.email, values.password, values.name));
       if (!res) return;
 
+      updateSession();
       toast.success('Account created successfully!', { duration: 3000 });
       router.refresh();
     });

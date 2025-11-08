@@ -9,7 +9,7 @@ import { FC } from 'react';
 const ImpersonationIndicator: FC = () => {
   const session = useAppSelector((state) => state.appData?.session);
   const router = useRouter();
-
+  
   if (session?.session.impersonatedBy === null) return null;
 
   const handleStopImpersonating = async () => {

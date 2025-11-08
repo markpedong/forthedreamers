@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/server-actions";
+import { getSession, signOut as sessionSignOut } from "@/lib/server-actions";
 import { setSessionData } from "@/redux/features/appSlice";
 import { useAppDispatch } from "@/redux/store";
 
@@ -11,7 +11,12 @@ const useWithDispatch = () => {
     dispatch(setSessionData(session));
   }
 
-  return { updateSession };
+  const signOut = async () => {
+    await sessionSignOut();
+    await dispatch(setSessionData(null));
+  }
+
+  return { updateSession, signOut };
 }
 
 
