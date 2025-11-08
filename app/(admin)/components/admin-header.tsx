@@ -37,10 +37,6 @@ export default function Topbar() {
     showNotification('Opening profile settings');
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-  };
-
   const showNotification = (message: string) => {
     setToast(message);
     setTimeout(() => setToast(''), 3000);
@@ -106,7 +102,7 @@ export default function Topbar() {
                 Profile Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className='text-destructive' onClick={handleSignOut}>
+              <DropdownMenuItem className='text-destructive' onClick={async () => await signOut()}>
                 <LogOut className='w-4 h-4 mr-2' />
                 Sign Out
               </DropdownMenuItem>

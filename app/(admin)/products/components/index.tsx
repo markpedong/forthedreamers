@@ -1,11 +1,11 @@
 'use client';
 
-import { FC, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import ProductFormModal from './product-form-modal';
-import { ProColumn, TProduct, TProductsList, ProductFormData } from '@/lib/types';
+import { ProColumn, TProduct, TProductsList, ProductFormData, ProTableRef } from '@/lib/types';
 import { ProTable } from '@/components/reusable/table';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { Badge } from '@/components/ui/badge';
@@ -28,6 +28,7 @@ const Products: FC<TProductsList> = ({ products = [], categories = [], session }
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [product, setProduct] = useState<TProduct>();
+  const tableRef = useRef<ProTableRef>(null);
 
   const handleDelete = async () => {
     if (!deleteDialog) return;
@@ -150,6 +151,8 @@ const Products: FC<TProductsList> = ({ products = [], categories = [], session }
 
   const handleSubmitProduct = async (data: ProductFormData, mode: 'create' | 'edit') => {
     try {
+      tableRef.current?.reset();
+
       if (mode === 'create') {
         const response = await createProduct({
           ...data,
@@ -200,6 +203,7 @@ const Products: FC<TProductsList> = ({ products = [], categories = [], session }
         </header>
 
         <ProTable<TProduct>
+          ref={tableRef}
           rowKey='id'
           columns={columns?.map((item) => ({ ...item, align: 'center' }))}
           dataSource={products}

@@ -118,11 +118,11 @@ const useFormSchema = () => {
       name: createStringSchema("Product Name", 1, 200),
       slug: z.string().optional(), // Will be auto-generated from name if not provided
       brand: z.string().max(100).nullable().optional(),
-      basePrice: z.number().min(0, { message: "Base price must be at least 0" }).optional().nullable(),
+      basePrice: z.string().min(0, { message: "Base price must be at least 0" }).optional().nullable(),
       description: z.string().max(5000).optional().nullable(),
       images: z.array(z.string()).default([]),
       tags: z.array(z.string()).default([]),
-      stock: z.number().min(0, { message: "Stock must be at least 0" }).optional().nullable(),
+      stock: z.string().min(0, { message: "Stock must be at least 0" }).optional().nullable(),
       status: z.enum(PRODUCT_STATUS).default('DRAFT'),
       category: z.string().min(1, { message: "Category is required" }), // Category name
       categoryId: z.string().optional(), // Will be resolved from category name

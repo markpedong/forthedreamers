@@ -84,11 +84,11 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
         name: initialProduct.name || '',
         slug: initialProduct.slug || generateSlug(initialProduct.name || ''),
         brand: initialProduct.brand || null,
-        basePrice: initialProduct.basePrice ?? null,
+        basePrice: String(initialProduct.basePrice) ?? null,
         description: initialProduct.description || '',
         images: initialProduct.images || [],
         tags: initialProduct.tags || [],
-        stock: initialProduct.stock ?? null,
+        stock: String(initialProduct.stock) ?? null,
         status: initialProduct.status || 'DRAFT',
         category: categoryName,
         categoryId: categoryId || undefined,
@@ -193,8 +193,8 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           name: values.name.trim(),
           slug: finalSlug.trim(),
           categoryId: finalCategoryId, // Ensure categoryId is always a string
-          basePrice: values.basePrice ?? null, // Convert undefined to null
-          stock: values.stock ?? null, // Convert undefined to null
+          basePrice: String(values.basePrice) ?? null, // Convert undefined to null
+          stock: String(values.stock) ?? null, // Convert undefined to null
           description: values.description ?? null, // Convert undefined to null
           // Ensure arrays are not undefined and normalize data
           variants: (values.variants || []).map((variant) => ({
@@ -210,7 +210,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           images: values.images || [],
           // Handle brand - convert empty string to null
           brand: values.brand === '' ? null : values.brand?.trim() || null,
-          sellerId: session?.user.id
+          sellerId: session?.user.id,
         };
 
         // Final validation before submission
@@ -336,16 +336,15 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
                 <Input
                   label={`Base Price ${hasVariants ? '(Disabled)' : '*'}`}
                   name='basePrice'
-                  type='number'
-                  control={form.control}
+                  type='text'
                   placeholder='0.00'
                   disabled={hasVariants}
+                  preventSpaces
                 />
                 <Input
                   label={`Stock ${hasVariants ? '(Disabled)' : '*'}`}
                   name='stock'
-                  type='number'
-                  control={form.control}
+                  type='text'
                   placeholder='0'
                   disabled={hasVariants}
                 />

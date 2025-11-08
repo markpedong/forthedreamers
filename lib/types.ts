@@ -91,11 +91,11 @@ export type ProductFormData = {
   name: string;
   slug?: string;
   brand: string | null;
-  basePrice: number | null;
+  basePrice: string | null;
   description: string | null;
   images: string[];
   tags: string[];
-  stock: number | null;
+  stock: string | null;
   status: 'ACTIVE' | 'INACTIVE' | 'DRAFT';
   category: string; // Category name
   categoryId?: string;
@@ -214,3 +214,10 @@ export type TProduct = OmittedProductFields & {
   category: Category;
   variants: TVariant[];
 }
+
+export type ProTableRef = {
+  reset: () => void;
+  reload: () => void;
+  setPage: (page: number) => void;
+  setFilters: (filters: Record<string, any>) => void;
+};

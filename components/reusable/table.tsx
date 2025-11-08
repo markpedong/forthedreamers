@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -20,20 +20,28 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
-import { PaginationProps, ProColumn, ProTableProps, SorterInfo, ValueEnumItem } from '@/lib/types';
+import {
+  PaginationProps,
+  ProColumn,
+  ProTableProps,
+  ProTableRef,
+  SorterInfo,
+  ValueEnumItem,
+} from '@/lib/types';
 import { Label } from '../ui/label';
 
-export const ProTable = <T extends Record<string, any>>({
-  rowKey,
-  columns,
-  dataSource,
-  request,
-  pagination = { pageSize: 10 },
-  title,
-}: ProTableProps<T>) => {
+function ProTableInner<T extends Record<string, any>>(
+  { rowKey, columns, dataSource, request, pagination = { pageSize: 10 }, title }: ProTableProps<T>,
+  ref: React.Ref<ProTableRef>,
+) {
   const [paginationState, setPaginationState] = useState<PaginationProps>(() =>
     pagination === false
-      ? { current: 1, pageSize: 10, total: dataSource?.length ?? 0, pageSizeOptions: [10, 20, 50] }
+      ? {
+          current: 1,
+          pageSize: 10,
+          total: dataSource?.length ?? 0,
+          pageSizeOptions: [10, 20, 50],
+        }
       : {
           current: pagination.current ?? 1,
           pageSize: pagination.pageSize ?? 10,
@@ -53,6 +61,22 @@ export const ProTable = <T extends Record<string, any>>({
 
   const start = totalCount === 0 ? 0 : (current - 1) * pageSize + 1;
   const end = Math.min(current * pageSize, totalCount);
+
+  useImperativeHandle(ref, () => ({
+    reset: () => {
+      handleResetFilters(); // your existing function
+      fetchRemote?.(); // if request mode
+    },
+    reload: () => {
+      fetchRemote?.();
+    },
+    setPage: (page: number) => {
+      handlePageChange(page);
+    },
+    setFilters: (newFilters: Record<string, any>) => {
+      Object.entries(newFilters).forEach(([k, v]) => handleFilterChange(k, v));
+    },
+  }));
 
   useEffect(() => {
     if (!request && dataSource) {
@@ -383,4 +407,8 @@ export const ProTable = <T extends Record<string, any>>({
       </CardContent>
     </Card>
   );
-};
+}
+
+export const ProTable = forwardRef(ProTableInner) as <T extends Record<string, any>>(
+  props: ProTableProps<T> & { ref?: React.Ref<ProTableRef> },
+) => React.ReactNode;
