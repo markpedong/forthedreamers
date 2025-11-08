@@ -56,3 +56,15 @@ export const createSeller = async ({ storeName, userID }: TCreateSeller) => awai
 export const getProducts = async () => await apiFetch<TProduct[]>('/api/products');
 
 export const getCategories = async () => await apiFetch('/api/category');
+
+export const createProduct = async (productData: Partial<TProduct> & { sellerId: string }) => 
+  await apiFetch<TProduct>('/api/products', {
+    method: 'POST',
+    body: productData,
+  });
+
+export const updateProduct = async (productData: Partial<TProduct> & { id: string }) => 
+  await apiFetch<TProduct>('/api/products', {
+    method: 'PUT',
+    body: productData,
+  });

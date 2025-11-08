@@ -86,6 +86,70 @@ const useFormSchema = () => {
     path: ["confirmPassword"],
   })
 
+  // Form schemas (for create/edit) - IDs are optional for new items
+  const variantOptionFormSchema = z.object({
+    id: z.string().optional(), // Optional for new options
+    variantOptionName: createStringSchema("Option Name", 1, 100),
+    price: z.number().min(0, { message: "Price must be at least 0" }),
+    discountedPrice: z.number().nullable().optional(),
+    stock: z.number().min(0, { message: "Stock must be at least 0" }),
+    coupon: z.string().nullable().optional(),
+  });
+
+  const variantFormSchema = z.object({
+    id: z.string().optional(), // Optional for new variants
+    name: createStringSchema("Variant Name", 1, 100),
+    isRequired: z.boolean().default(true),
+    options: z.array(variantOptionFormSchema).default([]),
+  });
+
+  const specFormSchema = z.object({
+    id: z.string().optional(), // Optional for new specs
+    label: createStringSchema("Spec Label", 1, 100),
+    value: createStringSchema("Spec Value", 1, 500),
+  });
+
+  const PRODUCT_STATUS_VALUES = ["ACTIVE", "INACTIVE", "DRAFT"] as const;
+
+  // Product form schema (for both create and edit)
+  const productFormSchema = z
+    .object({
+      id: z.string().optional(), // Optional for create mode
+      name: createStringSchema("Product Name", 1, 200),
+      slug: z.string().optional(), // Will be auto-generated from name if not provided
+      brand: z.string().max(100).nullable().optional(),
+      basePrice: z.number().min(0, { message: "Base price must be at least 0" }).optional().nullable(),
+      description: z.string().max(5000).optional().nullable(),
+      images: z.array(z.string()).default([]),
+      tags: z.array(z.string()).default([]),
+      stock: z.number().min(0, { message: "Stock must be at least 0" }).optional().nullable(),
+      status: z.enum(PRODUCT_STATUS).default('DRAFT'),
+      category: z.string().min(1, { message: "Category is required" }), // Category name
+      categoryId: z.string().optional(), // Will be resolved from category name
+      specs: z.array(specFormSchema).default([]),
+      variants: z.array(variantFormSchema).default([]),
+    })
+    .refine(
+      (data) => {
+        // If variants exist, basePrice and stock are not required
+        // If no variants, basePrice and stock are required
+        if (data.variants && data.variants.length > 0) {
+          return true; // Variants handle pricing/stock
+        }
+        return (
+          data.basePrice !== null &&
+          data.basePrice !== undefined &&
+          data.stock !== null &&
+          data.stock !== undefined
+        );
+      },
+      {
+        message: "Base price and stock are required when no variants are present",
+        path: ["basePrice"],
+      }
+    );
+
+  // Full product schema (for database/API response)
   const variantOptionSchema = z.object({
     id: z.string(),
     variantOptionName: createStringSchema("Option Name"),
@@ -108,34 +172,30 @@ const useFormSchema = () => {
     value: createStringSchema("Spec Value"),
   });
 
-  const PRODUCT_STATUS_VALUES = ["ACTIVE", "INACTIVE", "DRAFT"] as const;
-
   const productSchema = z.object({
     id: z.string(),
     name: createStringSchema("Product Name"),
     slug: createStringSchema("Slug"),
     brand: createStringSchema("Brand").nullable().optional(),
-    basePrice: z.number().min(0),
-    description: createStringSchema("Description").optional(),
+    basePrice: z.number().min(0).optional().nullable(),
+    description: z.string().optional().nullable(),
     images: z.array(z.string()).optional(),
     tags: z.array(z.string()).optional(),
     reviewCount: z.number().optional(),
     rating: z.number().optional(),
     sold: z.number().optional(),
-    stock: z.number().min(0),
-    // status: z.enum(['ACTIVE','INACTIVE','DRAFT']).default('INACTIVE'),
+    stock: z.number().min(0).optional().nullable(),
     sellerId: z.string(),
     categoryId: z.string(),
     createdAt: z.string(),
     updatedAt: z.string(),
     specs: z.array(specSchema).optional(),
-    category: createStringSchema("Category Name"),
+    category: z.any(), // Category object
     variants: z.array(variantSchema).optional(),
+    status: z.enum(PRODUCT_STATUS),
   });
 
-  const extendedSchema = productSchema.extend({
-    status: z.enum(PRODUCT_STATUS).default('INACTIVE'),
-  });
+  const extendedSchema = productFormSchema;
 
 
   return {
@@ -152,7 +212,13 @@ const useFormSchema = () => {
     searchSchema,
     createSellerSchema,
     productSchema,
+    productFormSchema,
     specSchema,
+    specFormSchema,
+    variantSchema,
+    variantFormSchema,
+    variantOptionSchema,
+    variantOptionFormSchema,
     extendedSchema
   }
 }

@@ -85,13 +85,47 @@ export interface ProTableProps<T> {
 
 export type TCreateSeller = { storeName: string, userID: string }
 
+// Product form data type (what the form expects/submits)
+export type ProductFormData = {
+  id?: string;
+  name: string;
+  slug?: string;
+  brand: string | null;
+  basePrice: number | null;
+  description: string | null;
+  images: string[];
+  tags: string[];
+  stock: number | null;
+  status: 'ACTIVE' | 'INACTIVE' | 'DRAFT';
+  category: string; // Category name
+  categoryId?: string;
+  specs: Array<{
+    id?: string;
+    label: string;
+    value: string;
+  }>;
+  variants: Array<{
+    id?: string;
+    name: string;
+    isRequired: boolean;
+    options: Array<{
+      id?: string;
+      variantOptionName: string;
+      price: number;
+      discountedPrice: number | null;
+      stock: number;
+      coupon: string | null;
+    }>;
+  }>;
+};
+
 export type ProductFormModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: 'create' | 'edit';
   initialProduct?: TProduct;
   categories: Category[]
-  onSubmit: (data: TProduct, mode: 'create' | 'edit') => void
+  onSubmit: (data: ProductFormData & { sellerId?: string }, mode: 'create' | 'edit') => Promise<void> | void
 }
 
 export type SharedProps<T extends FieldValues> = {
@@ -137,9 +171,16 @@ export type ReusableSelectProps<T extends FieldValues> = {
 };
 
 
+// Form spec type (without database fields)
+export type FormSpec = {
+  id?: string;
+  label: string;
+  value: string;
+};
+
 export type SpecsEditorProps = {
-  specs: TSpec[];
-  onSpecsChange: (specs: TSpec[]) => void;
+  specs: FormSpec[];
+  onSpecsChange: (specs: FormSpec[]) => void;
 }
 
 export type TProductsList = { products: TProduct[]; categories: Category[] }
@@ -148,6 +189,17 @@ export type TVariantOption = Omit<
   VariantOption,
   "createdAt" | "updatedAt"
 >;
+
+// Form variant option type (without database fields)
+export type FormVariantOption = Omit<TVariantOption, "variantId">;
+
+// Form variant type (without database fields)
+export type FormVariant = {
+  id?: string;
+  name: string;
+  isRequired: boolean;
+  options: FormVariantOption[];
+};
 
 export type TVariant = Variant & {
   options: TVariantOption[]

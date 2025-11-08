@@ -13,13 +13,16 @@ import {
 } from '@/components/ui/dialog';
 
 import VariantOptionEditor from './variant-option-editor';
-import { TVariant, TVariantOption } from '@/lib/types';
+import { FormVariant, FormVariantOption, TVariantOption } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+// Helper to generate temporary ID for new items
+const generateTempId = () => `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
 interface VariantEditorProps {
-  variants: TVariant[];
-  onVariantsChange: (variants: TVariant[]) => void;
+  variants: FormVariant[];
+  onVariantsChange: (variants: FormVariant[]) => void;
 }
 
 const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
@@ -28,6 +31,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const [form, setForm] = useState({
+    id: undefined as string | undefined,
     name: '',
     isRequired: true,
   });
@@ -36,7 +40,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const resetForm = () => {
-    setForm({ name: '', isRequired: true });
+    setForm({ id: undefined, name: '', isRequired: true });
     setEditingIndex(null);
   };
 
@@ -47,7 +51,11 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
 
   const openForEdit = (index: number) => {
     const v = variants[index];
-    setForm({ name: v.name, isRequired: v.isRequired });
+    setForm({ 
+      id: v.id,
+      name: v.name, 
+      isRequired: v.isRequired 
+    });
     setEditingIndex(index);
     setIsOpen(true);
   };
@@ -58,17 +66,21 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
     const updated = [...variants];
 
     if (editingIndex !== null) {
+      // Update existing variant - preserve ID and options
       updated[editingIndex] = {
         ...updated[editingIndex],
-        name: form.name,
+        id: form.id || updated[editingIndex].id,
+        name: form.name.trim(),
         isRequired: form.isRequired,
       };
     } else {
+      // Add new variant
       updated.push({
-        name: form.name,
+        id: form.id || generateTempId(),
+        name: form.name.trim(),
         isRequired: form.isRequired,
-        options: [],
-      } as any);
+        options: [] as FormVariantOption[],
+      });
     }
 
     onVariantsChange(updated);
@@ -80,9 +92,9 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
     onVariantsChange(variants.filter((_, i) => i !== index));
   };
 
-  const handleOptionsChange = (index: number, options: TVariantOption[]) => {
+  const handleOptionsChange = (index: number, options: FormVariantOption[]) => {
     const updated = [...variants];
-    updated[index].options = options as any;
+    updated[index].options = options;
     onVariantsChange(updated);
   };
 
@@ -139,7 +151,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
                 <div className='border-t border-border p-4 bg-muted/20'>
                   <VariantOptionEditor
                     variantName={variant.name}
-                    options={variant.options}
+                    options={variant.options as TVariantOption[]}
                     onOptionsChange={(opt) => handleOptionsChange(index, opt)}
                   />
                 </div>
@@ -162,13 +174,16 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
           </DialogHeader>
 
           <div className='space-y-4'>
-            <Label htmlFor='variantName'>Variant Name</Label>
-            <Input
-              name='name'
-              placeholder='e.g., Color, Size'
-              value={form.name}
-              onChange={(e) => updateForm('name', e.target.value)}
-            />
+            <div>
+              <Label htmlFor='variantName'>Variant Name *</Label>
+              <Input
+                id='variantName'
+                name='name'
+                placeholder='e.g., Color, Size'
+                value={form.name}
+                onChange={(e) => updateForm('name', e.target.value)}
+              />
+            </div>
 
             <div className='flex items-center gap-2'>
               <Checkbox

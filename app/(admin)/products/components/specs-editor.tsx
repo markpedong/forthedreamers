@@ -11,15 +11,18 @@ import useFormSchema from '@/hooks/useFormSchema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LABEL_VALUE_DEFAULT } from '@/constants';
-import { SpecsEditorProps, TSpec } from '@/lib/types';
+import { SpecsEditorProps } from '@/lib/types';
+
+// Helper to generate temporary ID for new items
+const generateTempId = () => `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
   const [isPending, startTransition] = useTransition();
-  const { specSchema } = useFormSchema();
-  type SpecsFormData = z.infer<typeof specSchema>;
+  const { specFormSchema } = useFormSchema();
+  type SpecsFormData = z.infer<typeof specFormSchema>;
 
   const form = useForm<SpecsFormData>({
-    resolver: zodResolver(specSchema),
+    resolver: zodResolver(specFormSchema),
     defaultValues: LABEL_VALUE_DEFAULT,
   });
 
@@ -28,7 +31,12 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
 
   const openDialogForEdit = (index: number) => {
     const spec = specs[index];
-    form.reset(spec);
+    // Preserve ID when editing
+    form.reset({
+      id: spec.id || generateTempId(),
+      label: spec.label,
+      value: spec.value,
+    });
     setEditingIndex(index);
     setDialogOpen(true);
   };
@@ -43,17 +51,24 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
     onSpecsChange(specs.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = ({ label, value }: SpecsFormData) => {
-    if (!label.trim() || !value.trim()) return;
+  const handleSubmit = (data: SpecsFormData) => {
+    if (!data.label?.trim() || !data.value?.trim()) return;
 
     startTransition(() => {
+      const specData = {
+        id: data.id || generateTempId(),
+        label: data.label.trim(),
+        value: data.value.trim(),
+      };
+
       const updated =
         editingIndex !== null
-          ? specs.map((s, i) => (i === editingIndex ? { label, value } : s))
-          : [...specs, { label, value }];
+          ? specs.map((s, i) => (i === editingIndex ? specData : s))
+          : [...specs, specData];
 
-      onSpecsChange(updated as TSpec[]);
+      onSpecsChange(updated);
       setDialogOpen(false);
+      form.reset(LABEL_VALUE_DEFAULT);
     });
   };
 
@@ -108,8 +123,8 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
         loading={isPending}
       >
         <Form form={form} customSubmitButton>
-          <Input label='Label' name='label' placeholder='e.g., Driver Size' preventSpaces />
-          <Input label='Value' name='value' placeholder='e.g., 40mm' preventSpaces />
+          <Input label='Label *' name='label' placeholder='e.g., Driver Size' preventSpaces />
+          <Input label='Value *' name='value' placeholder='e.g., 40mm' preventSpaces />
         </Form>
       </Dialog>
     </div>

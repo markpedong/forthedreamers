@@ -21,19 +21,21 @@ export const ALLOWED_KEYS = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Del
 
 export const PRODUCT_DEFAULT = {
   name: '',
-  brand: undefined,
+  brand: null as string | null | undefined,
   category: '',
   description: '',
-  basePrice: undefined,
-  stock: undefined,
+  basePrice: null as number | null | undefined,
+  stock: null as number | null | undefined,
   status: PRODUCT_STATUS.DRAFT,
-  variants: [],
-  specs: [],
-  tags: [],
+  variants: [] as any[],
+  specs: [] as any[],
+  tags: [] as string[],
+  images: [] as string[],
 };
 
 
 export const LABEL_VALUE_DEFAULT = {
+  id: undefined as string | undefined,
   label: '',
   value: '',
 }

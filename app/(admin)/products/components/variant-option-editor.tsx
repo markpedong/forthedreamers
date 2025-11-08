@@ -10,8 +10,10 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { TVariantOption } from '@/lib/types';
-import Input from '@/components/reusable/input';
+import { FormVariantOption, TVariantOption } from '@/lib/types';
+
+// Helper to generate temporary ID for new items
+const generateTempId = () => `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 interface VariantOptionEditorProps {
   variantName: string;
@@ -28,6 +30,7 @@ const VariantOptionEditor = ({
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const [form, setForm] = useState({
+    id: undefined as string | undefined,
     variantOptionName: '',
     price: '',
     discountedPrice: '',
@@ -35,11 +38,12 @@ const VariantOptionEditor = ({
     coupon: '',
   });
 
-  const updateForm = (key: keyof typeof form, value: string) =>
+  const updateForm = (key: keyof typeof form, value: string | undefined) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const resetForm = () => {
     setForm({
+      id: undefined,
       variantOptionName: '',
       price: '',
       discountedPrice: '',
@@ -58,6 +62,7 @@ const VariantOptionEditor = ({
     const option = options[index];
     setEditingIndex(index);
     setForm({
+      id: option.id,
       variantOptionName: option.variantOptionName,
       price: option.price.toString(),
       discountedPrice: option.discountedPrice?.toString() || '',
@@ -70,18 +75,28 @@ const VariantOptionEditor = ({
   const handleSave = () => {
     if (!form.variantOptionName.trim() || !form.price || !form.stock) return;
 
-    //@ts-ignore
-    const newOption: TVariantOption = {
+    const priceNum = parseFloat(form.price);
+    const stockNum = parseInt(form.stock);
+
+    if (isNaN(priceNum) || isNaN(stockNum) || priceNum < 0 || stockNum < 0) {
+      return;
+    }
+
+    const newOption: FormVariantOption = {
+      id: form.id || generateTempId(),
       variantOptionName: form.variantOptionName.trim(),
-      price: parseFloat(form.price),
+      price: priceNum,
       discountedPrice: form.discountedPrice ? parseFloat(form.discountedPrice) : null,
-      stock: parseInt(form.stock),
-      coupon: `${form.coupon}`,
+      stock: stockNum,
+      coupon: form.coupon?.trim() || null,
     };
 
     const updated = [...options];
-    if (editingIndex !== null) updated[editingIndex] = { ...updated[editingIndex], ...newOption };
-    else updated.push(newOption);
+    if (editingIndex !== null) {
+      updated[editingIndex] = { ...updated[editingIndex], ...newOption };
+    } else {
+      updated.push(newOption as TVariantOption);
+    }
 
     onOptionsChange(updated);
     resetForm();
@@ -153,22 +168,78 @@ const VariantOptionEditor = ({
 
           <div className='space-y-3'>
             {/* Name */}
-            <Input label='Option Name' placeholder={`e.g., ${variantName}`} name='name' />
+            <div>
+              <label htmlFor='variantOptionName' className='text-sm font-medium mb-1.5 block'>
+                Option Name *
+              </label>
+              <input
+                id='variantOptionName'
+                type='text'
+                placeholder={`e.g., Red, Small`}
+                value={form.variantOptionName}
+                onChange={(e) => updateForm('variantOptionName', e.target.value)}
+                className='w-full px-3 py-2 border border-border rounded-md'
+              />
+            </div>
 
             {/* Prices */}
             <div className='grid grid-cols-2 gap-3'>
-              <Input label='Price' name='price' type='number' step='0.01' placeholder='0.00' />
-              <Input
-                label='Discounted Price'
-                name='discountedPrice'
+              <div>
+                <label htmlFor='price' className='text-sm font-medium mb-1.5 block'>
+                  Price *
+                </label>
+                <input
+                  id='price'
+                  type='number'
+                  step='0.01'
+                  placeholder='0.00'
+                  value={form.price}
+                  onChange={(e) => updateForm('price', e.target.value)}
+                  className='w-full px-3 py-2 border border-border rounded-md'
+                />
+              </div>
+              <div>
+                <label htmlFor='discountedPrice' className='text-sm font-medium mb-1.5 block'>
+                  Discounted Price
+                </label>
+                <input
+                  id='discountedPrice'
+                  type='number'
+                  step='0.01'
+                  placeholder='Optional'
+                  value={form.discountedPrice}
+                  onChange={(e) => updateForm('discountedPrice', e.target.value)}
+                  className='w-full px-3 py-2 border border-border rounded-md'
+                />
+              </div>
+            </div>
+            <div>
+              <label htmlFor='stock' className='text-sm font-medium mb-1.5 block'>
+                Stock *
+              </label>
+              <input
+                id='stock'
                 type='number'
-                step='0.01'
-                placeholder='Optional'
+                placeholder='0'
+                value={form.stock}
+                onChange={(e) => updateForm('stock', e.target.value)}
+                className='w-full px-3 py-2 border border-border rounded-md'
               />
             </div>
-            <Input label='Stock' name='stock' type='number' placeholder='0' />
 
-            <Input label='Coupon Code (Optional)' name='coupon' placeholder='e.g., SAVE10' />
+            <div>
+              <label htmlFor='coupon' className='text-sm font-medium mb-1.5 block'>
+                Coupon Code (Optional)
+              </label>
+              <input
+                id='coupon'
+                type='text'
+                placeholder='e.g., SAVE10'
+                value={form.coupon}
+                onChange={(e) => updateForm('coupon', e.target.value)}
+                className='w-full px-3 py-2 border border-border rounded-md'
+              />
+            </div>
           </div>
 
           <DialogFooter>

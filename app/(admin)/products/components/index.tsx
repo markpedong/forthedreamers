@@ -5,7 +5,7 @@ import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import ProductFormModal from './product-form-modal';
-import { ProColumn, TProduct, TProductsList } from '@/lib/types';
+import { ProColumn, TProduct, TProductsList, ProductFormData } from '@/lib/types';
 import { ProTable } from '@/components/reusable/table';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
+import { createProduct, updateProduct } from '@/lib/api-client';
 
 const Products: FC<TProductsList> = ({ products, categories }) => {
   console.log('products', JSON.stringify(products[0]));
@@ -146,7 +147,49 @@ const Products: FC<TProductsList> = ({ products, categories }) => {
     },
   ];
 
-  const handleSubmitProduct = async (data: TProduct, mode: 'create' | 'edit') => {};
+  const handleSubmitProduct = async (data: ProductFormData & { sellerId?: string }, mode: 'create' | 'edit') => {
+    try {
+      // TODO: Get sellerId from session - for now using a placeholder
+      // In a real app, you'd get this from the authenticated session
+      const sellerId = data.sellerId || 'placeholder-seller-id'; // Replace with actual sellerId from session
+      
+      if (mode === 'create') {
+        const response = await createProduct({
+          ...data,
+          sellerId,
+        });
+        
+        if (response.success) {
+          toast.success('Product created successfully');
+          // Refresh the page to show the new product
+          window.location.reload();
+        } else {
+          toast.error(response.message || 'Failed to create product');
+        }
+      } else {
+        if (!data.id) {
+          toast.error('Product ID is required for update');
+          return;
+        }
+        
+        const response = await updateProduct({
+          ...data,
+          id: data.id,
+        });
+        
+        if (response.success) {
+          toast.success('Product updated successfully');
+          // Refresh the page to show the updated product
+          window.location.reload();
+        } else {
+          toast.error(response.message || 'Failed to update product');
+        }
+      }
+    } catch (error) {
+      console.error('Error saving product:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to save product');
+    }
+  };
 
   return (
     <>
