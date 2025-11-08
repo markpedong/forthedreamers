@@ -16,8 +16,12 @@ import Input from '@/components/reusable/input';
 import { getUserDB, signIn, signOut } from '@/lib/server-actions';
 import { USER_ROLE } from '@/generated/prisma';
 import { tryWithToast } from '@/utils/helper';
+import { useAppDispatch } from '@/redux/store';
+import { setSessionData } from '@/redux/features/appSlice';
+import { authClient } from '@/lib/auth-client';
 
 const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const [isSubmitting, startTransition] = useTransition();
   const { loginSchema } = useFormSchema();
@@ -43,6 +47,8 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
       if (result.redirect) {
         router.push('/dashboard');
+        const session = await authClient.getSession();
+        dispatch(setSessionData(session));
       }
 
       toast.success('Logged in successfully!', { duration: 3000 });

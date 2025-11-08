@@ -20,8 +20,7 @@ import Link from 'next/link';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import { createProduct, updateProduct } from '@/lib/api-client';
 
-const Products: FC<TProductsList> = ({ products, categories }) => {
-  console.log('products', JSON.stringify(products[0]));
+const Products: FC<TProductsList> = ({ products, categories, session }) => {
   const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -147,18 +146,21 @@ const Products: FC<TProductsList> = ({ products, categories }) => {
     },
   ];
 
-  const handleSubmitProduct = async (data: ProductFormData & { sellerId?: string }, mode: 'create' | 'edit') => {
+  const handleSubmitProduct = async (
+    data: ProductFormData & { sellerId?: string },
+    mode: 'create' | 'edit',
+  ) => {
     try {
       // TODO: Get sellerId from session - for now using a placeholder
       // In a real app, you'd get this from the authenticated session
-      const sellerId = data.sellerId || 'placeholder-seller-id'; // Replace with actual sellerId from session
-      
+      const sellerId = data.sellerId || `${session?.id}`; // Replace with actual sellerId from session
+
       if (mode === 'create') {
         const response = await createProduct({
           ...data,
           sellerId,
         });
-        
+
         if (response.success) {
           toast.success('Product created successfully');
           // Refresh the page to show the new product
@@ -171,12 +173,12 @@ const Products: FC<TProductsList> = ({ products, categories }) => {
           toast.error('Product ID is required for update');
           return;
         }
-        
+
         const response = await updateProduct({
           ...data,
           id: data.id,
         });
-        
+
         if (response.success) {
           toast.success('Product updated successfully');
           // Refresh the page to show the updated product

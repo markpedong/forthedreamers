@@ -16,8 +16,11 @@ import Link from 'next/link';
 import { tryWithToast } from '@/utils/helper';
 import { getUserDB, signOut } from '@/lib/server-actions';
 import { USER_ROLE } from '@/generated/prisma';
+import { useAppDispatch } from '@/redux/store';
+import { setSessionData } from '@/redux/features/appSlice';
 
 const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
+  const dispatch = useAppDispatch();
   const { refetch } = authClient.useSession();
   const router = useRouter();
   const { loginSchema } = useFormSchema();
@@ -56,6 +59,8 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       }
 
       toast.success('Sign in successfully!', { duration: 2000 });
+      const session = await authClient.getSession();
+      dispatch(setSessionData(session));
       router.refresh();
     });
   };

@@ -3,8 +3,6 @@ import { Outfit } from 'next/font/google';
 import './globals.css';
 import MainProvider from '@/components/provider/main-provider';
 import { getSession } from '@/lib/server-actions';
-import Navbar from '@/components/navigation/navbar';
-import BottomNav from '@/components/navigation/bottom-nav';
 
 const outfit = Outfit({
   variable: '--font-outfit',
@@ -30,11 +28,7 @@ export default async function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={`${outfit.className} antialiased`}>
-        <MainProvider session={session}>
-          <Navbar session={session} />
-          {children}
-          <BottomNav session={session} />
-        </MainProvider>
+        <MainProvider session={session}>{children}</MainProvider>
       </body>
     </html>
   );

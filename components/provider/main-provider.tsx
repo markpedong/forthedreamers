@@ -9,20 +9,27 @@ import ImpesonationIndicator from './impersonation-indicator';
 import { Session } from '@/lib/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import classNames from 'classnames';
+import ReduxProvider from './redux-provider';
+import Navbar from '../navigation/navbar';
+import BottomNav from '../navigation/bottom-nav';
 
 const MainProvider: FC<PropsWithChildren<{ session: Session }>> = ({ children, session }) => {
   const isMobile = useIsMobile();
 
   return (
-    <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-      <Suspense fallback={null}>
-        <ToastListener />
-      </Suspense>
-      <div className={classNames({ 'pb-20': isMobile })}>{children}</div>
-      <Toaster />
-      <ThemeToggleButton />
-      {!!session && <ImpesonationIndicator session={session} />}
-    </ThemeProvider>
+    <ReduxProvider>
+      <Navbar session={session} />
+      <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+        <Suspense fallback={null}>
+          <ToastListener />
+        </Suspense>
+        <div className={classNames({ 'pb-20': isMobile })}>{children}</div>
+        <Toaster />
+        <ThemeToggleButton />
+        {!!session && <ImpesonationIndicator session={session} />}
+      </ThemeProvider>
+      <BottomNav session={session} />
+    </ReduxProvider>
   );
 };
 

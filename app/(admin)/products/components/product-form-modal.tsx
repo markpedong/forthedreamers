@@ -164,8 +164,6 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           return;
         }
 
-        // Ensure categoryId is set - it must be a string, not undefined
-        console.log(categoryName, categories)
         let finalCategoryId = categories.find((c) => c.name === categoryName)?.id;
         if (!finalCategoryId) {
           toast.error('Unable to resolve category ID. Please select a category.');
@@ -189,6 +187,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
         // Prepare data for submission - ensure all required fields are present and non-empty
         const submitData: ProductFormData & { id?: string; sellerId?: string } = {
           ...values,
+          sellerId: initialProduct?.sellerId || 'placeholder-seller-id', // Replace with actual sellerId from session
           name: values.name.trim(),
           slug: finalSlug.trim(),
           categoryId: finalCategoryId, // Ensure categoryId is always a string
