@@ -165,7 +165,8 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
         }
 
         // Ensure categoryId is set - it must be a string, not undefined
-        let finalCategoryId = values.categoryId || category.id;
+        console.log(categoryName, categories)
+        let finalCategoryId = categories.find((c) => c.name === categoryName)?.id;
         if (!finalCategoryId) {
           toast.error('Unable to resolve category ID. Please select a category.');
           return;
