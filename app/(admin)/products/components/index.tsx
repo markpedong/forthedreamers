@@ -146,6 +146,8 @@ const Products: FC<TProductsList> = ({ products, categories }) => {
     },
   ];
 
+  const handleSubmitProduct = async (data: TProduct, mode: 'create' | 'edit') => {};
+
   return (
     <>
       <div className='px-4 py-8 space-y-8'>
@@ -167,19 +169,20 @@ const Products: FC<TProductsList> = ({ products, categories }) => {
       </div>
 
       <ProductFormModal
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        mode='create'
-        categories={categories}
-        setEditProduct={setProduct}
-      />
-      <ProductFormModal
         open={editOpen}
         onOpenChange={setEditOpen}
         mode='edit'
-        product={product}
+        initialProduct={product}
         categories={categories}
-        setEditProduct={setProduct}
+        onSubmit={handleSubmitProduct}
+      />
+
+      <ProductFormModal
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        mode='create'
+        categories={categories} // ✅ no initialProduct here
+        onSubmit={handleSubmitProduct}
       />
       <AlertDialog
         title='Delete Product'

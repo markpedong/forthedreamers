@@ -11,7 +11,7 @@ import useFormSchema from '@/hooks/useFormSchema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LABEL_VALUE_DEFAULT } from '@/constants';
-import { SpecsEditorProps } from '@/lib/types';
+import { SpecsEditorProps, TSpec } from '@/lib/types';
 
 const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
   const [isPending, startTransition] = useTransition();
@@ -39,7 +39,7 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
           ? specs.map((s, i) => (i === editingSpec.index ? { label, value } : s))
           : [...specs, { label, value }];
 
-      onSpecsChange(updated);
+      onSpecsChange(updated as TSpec[]);
       setOpen(false);
       setEditingSpec(null);
       form.reset(LABEL_VALUE_DEFAULT);

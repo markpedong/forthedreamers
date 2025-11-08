@@ -18,7 +18,7 @@ import TagsInput from './tags-input';
 import Input from '@/components/reusable/input';
 
 const ProductFormModal: FC<ProductFormModalProps> = (props) => {
-  const { open, onOpenChange, mode, product, categories, setEditProduct } = props;
+  const { open, onOpenChange, mode, initialProduct, categories } = props;
 
   const { productSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof productSchema>>({
@@ -29,18 +29,16 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
   const [tab, setTab] = useState('basic');
 
   useEffect(() => {
-    console.log('product', product);
-    if (mode === 'edit' && product) {
-      //@ts-ignore
+    if (mode === 'edit' && initialProduct) {
       form.reset({
         ...PRODUCT_DEFAULT,
-        ...product,
-        category: product.category?.name,
+        ...initialProduct,
+        category: initialProduct.category?.name,
       });
-    } else if (mode === 'create') {
+    } else {
       form.reset(PRODUCT_DEFAULT);
     }
-  }, [mode, product, form]);
+  }, [mode, initialProduct, form]);
 
   const updateField = (variants: TVariant[]) => {
     //@ts-ignore
@@ -125,16 +123,8 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
                 label='Product Name *'
                 name='name'
                 placeholder='e.g., Premium Wireless Headphones'
-                value={product?.name || ''}
-                onChange={(e) => setEditProduct({ ...product, name: e.target.value })}
               />
-              <Input
-                label='Brand'
-                name='brand'
-                placeholder='e.g., AudioTech'
-                value={product?.brand || ''}
-                onChange={(e) => setEditProduct({ ...product, brand: e.target.value })}
-              />
+              <Input label='Brand' name='brand' placeholder='e.g., AudioTech' />
               <Select
                 containerClassName='w-[unset]'
                 label='Category *'
@@ -150,32 +140,32 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
             <TabsContent value='inventory' className='space-y-6'>
               <div className='flex justify-between items-center mb-2'>
                 <Label>Variants</Label>
-                {product?.variants.length ? (
+                {initialProduct?.variants.length ? (
                   <span className='text-xs text-muted-foreground'>
                     Base price & stock disabled when variants exist
                   </span>
-                ): null}
+                ) : null}
               </div>
               <VariantEditor
-                variants={product?.variants || []}
+                variants={initialProduct?.variants || []}
                 onVariantsChange={(v) => updateField(v)}
               />
               <div className='grid grid-cols-2 gap-4'>
                 <Input
-                  label={`Base Price ${!!product?.variants.length ? '(Disabled)' : ''}`}
+                  label={`Base Price ${!!initialProduct?.variants.length ? '(Disabled)' : ''}`}
                   type='number'
                   name='basePrice'
                   placeholder='0.00'
-                  disabled={!!product?.variants.length}
+                  disabled={!!initialProduct?.variants.length}
                   step='0.01'
                   maxLength={6}
                 />
                 <Input
-                  label={`Stock ${!!product?.variants.length ? '(Disabled)' : ''}`}
+                  label={`Stock ${!!initialProduct?.variants.length ? '(Disabled)' : ''}`}
                   type='number'
                   name='stock'
                   placeholder='0'
-                  disabled={!!product?.variants.length}
+                  disabled={!!initialProduct?.variants.length}
                 />
               </div>
               <Select
@@ -191,14 +181,14 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
             </TabsContent>
             <TabsContent value='details' className='space-y-6'>
               <SpecsEditor
-                specs={product?.specs || []}
+                specs={initialProduct?.specs || []}
                 // onSpecsChange={(v) => updateField('specs', v)}
                 onSpecsChange={() => {}}
               />
               <div>
                 <Label>Tags</Label>
                 <div className='mt-1.5'>
-                  <TagsInput tags={product?.tags || []} onTagsChange={() => {}} />
+                  <TagsInput tags={initialProduct?.tags || []} onTagsChange={() => {}} />
                 </div>
               </div>
             </TabsContent>

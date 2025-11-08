@@ -89,13 +89,10 @@ export type ProductFormModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: 'create' | 'edit';
-  product: TProduct;
-  onSuccess?: () => void;
+  initialProduct?: TProduct;
   categories: Category[]
-  setEditProduct: (product: TProduct) => void
+  onSubmit: (data: TProduct, mode: 'create' | 'edit') => void
 }
-
-
 
 export type SharedProps<T extends FieldValues> = {
   label?: string;
@@ -141,8 +138,8 @@ export type ReusableSelectProps<T extends FieldValues> = {
 
 
 export type SpecsEditorProps = {
-  specs: Spec[];
-  onSpecsChange: (specs: Spec[]) => void;
+  specs: TSpec[];
+  onSpecsChange: (specs: TSpec[]) => void;
 }
 
 export type TProductsList = { products: TProduct[]; categories: Category[] }
@@ -155,6 +152,8 @@ export type TVariantOption = Omit<
 export type TVariant = Variant & {
   options: TVariantOption[]
 };
+
+export type TSpec = Omit<Spec, "createdAt" | "updatedAt">;
 
 export type TProduct = Product & {
   specs: Spec[];

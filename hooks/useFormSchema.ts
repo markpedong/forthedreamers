@@ -99,11 +99,11 @@ const useFormSchema = () => {
 
   const productSchema = z.object({
     name: nameSchema,
-    brand: createStringSchema("Brand"),
+    brand: createStringSchema("Brand").nullable(),
     description: createStringSchema("Description"),
     category: createStringSchema("Category", 1),
-    basePrice: z.number(),
-    stock: z.number(),
+    basePrice: z.number().nullable(),
+    stock: z.number().nullable(),
   })
 
   const specsEditorSchema = z.object({
