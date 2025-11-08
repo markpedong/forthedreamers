@@ -23,7 +23,6 @@ import useFormSchema from '@/hooks/useFormSchema';
 import type { z } from 'zod';
 import { useAppSelector } from '@/redux/store';
 
-// Helper function to generate slug from name
 const generateSlug = (name: string): string => {
   return name
     .toLowerCase()
@@ -49,27 +48,23 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
   type FormData = z.infer<typeof extendedSchema>;
 
   const form = useForm<FormData>({
-    resolver: zodResolver(extendedSchema) as any, // Type assertion needed due to complex schema inference
+    resolver: zodResolver(extendedSchema) as any,
     defaultValues: PRODUCT_DEFAULT as FormData,
   });
 
-  // Reset form when modal opens/closes or mode changes
   useEffect(() => {
     if (!open) {
-      // Reset when modal closes
       form.reset(PRODUCT_DEFAULT);
       setTab('basic');
       return;
     }
 
     if (mode === 'edit' && initialProduct) {
-      // Prefill form with existing product data
       const categoryName =
         typeof initialProduct.category === 'string'
           ? initialProduct.category
           : initialProduct.category?.name || '';
 
-      // Find category to get categoryId - prioritize categoryId from product, then from category object, then from categories list
       let categoryId: string | undefined = initialProduct.categoryId;
       if (!categoryId && typeof initialProduct.category === 'object' && initialProduct.category) {
         categoryId = initialProduct.category.id;
@@ -84,11 +79,11 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
         name: initialProduct.name || '',
         slug: initialProduct.slug || generateSlug(initialProduct.name || ''),
         brand: initialProduct.brand || null,
-        basePrice: String(initialProduct.basePrice) ?? null,
+        basePrice: initialProduct.basePrice ?? undefined,
         description: initialProduct.description || '',
         images: initialProduct.images || [],
         tags: initialProduct.tags || [],
-        stock: String(initialProduct.stock) ?? null,
+        stock: initialProduct.stock ?? undefined,
         status: initialProduct.status || 'DRAFT',
         category: categoryName,
         categoryId: categoryId || undefined,
@@ -114,12 +109,10 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
 
       form.reset(formData);
     } else {
-      // Reset to defaults for create mode
       form.reset(PRODUCT_DEFAULT);
     }
   }, [open, mode, initialProduct, form]);
 
-  // Generate slug from product name (only in create mode or if slug is empty)
   const productName = form.watch('name');
   useEffect(() => {
     if (mode === 'create' && productName) {
@@ -128,12 +121,10 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
     }
   }, [productName, mode, form]);
 
-  // Update variants inside the form
   const updateVariants = (variants: FormData['variants']) => {
     form.setValue('variants', variants || [], { shouldValidate: true });
   };
 
-  // Watch category changes to set categoryId
   const selectedCategory = form.watch('category');
   useEffect(() => {
     if (selectedCategory) {
@@ -147,13 +138,11 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
   const handleFormSubmit = async (values: FormData) => {
     startSubmitting(async () => {
       try {
-        // Validate required fields
         if (!values.name || !values.name.trim()) {
           toast.error('Product name is required');
           return;
         }
 
-        // Resolve categoryId if not already set
         const categoryName = values.category;
         if (!categoryName || !categoryName.trim()) {
           toast.error('Please select a category');
@@ -173,12 +162,10 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           return;
         }
 
-        // Handle slug - in edit mode, preserve existing slug; in create mode, generate from name
         let finalSlug = values.slug;
         if (mode === 'create') {
           finalSlug = finalSlug || generateSlug(values.name);
         } else {
-          // In edit mode, use existing slug or generate from name if somehow missing
           finalSlug = finalSlug || initialProduct?.slug || generateSlug(values.name);
         }
 
@@ -187,33 +174,31 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           return;
         }
 
-        // Prepare data for submission - ensure all required fields are present and non-empty
         const submitData: ProductFormData & { id?: string; sellerId?: string } = {
           ...values,
           name: values.name.trim(),
           slug: finalSlug.trim(),
-          categoryId: finalCategoryId, // Ensure categoryId is always a string
-          basePrice: String(values.basePrice) ?? null, // Convert undefined to null
-          stock: String(values.stock) ?? null, // Convert undefined to null
-          description: values.description ?? null, // Convert undefined to null
-          // Ensure arrays are not undefined and normalize data
+          categoryId: finalCategoryId,
+          basePrice: values.basePrice ?? null,
+          stock: values.stock ?? null,
+          description: values.description ?? null,
+
           variants: (values.variants || []).map((variant) => ({
             ...variant,
             options: (variant.options || []).map((option) => ({
               ...option,
-              discountedPrice: option.discountedPrice ?? null, // Convert undefined to null
-              coupon: option.coupon ?? null, // Convert undefined to null
+              discountedPrice: option.discountedPrice ?? null,
+              coupon: option.coupon ?? null,
             })),
           })),
           specs: values.specs || [],
           tags: values.tags || [],
           images: values.images || [],
-          // Handle brand - convert empty string to null
+
           brand: values.brand === '' ? null : values.brand?.trim() || null,
           sellerId: session?.user.id,
         };
 
-        // Final validation before submission
         if (!submitData.name || !submitData.slug || !submitData.categoryId) {
           console.error('Missing required fields:', {
             name: submitData.name,
@@ -235,7 +220,6 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
     });
   };
 
-  // Watch form values for conditional rendering
   const hasVariants = (form.watch('variants')?.length || 0) > 0;
 
   return (

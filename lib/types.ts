@@ -91,11 +91,11 @@ export type ProductFormData = {
   name: string;
   slug?: string;
   brand: string | null;
-  basePrice: string | null;
+  basePrice: number | null;
   description: string | null;
   images: string[];
   tags: string[];
-  stock: string | null;
+  stock: number | null;
   status: 'ACTIVE' | 'INACTIVE' | 'DRAFT';
   category: string; // Category name
   categoryId?: string;
