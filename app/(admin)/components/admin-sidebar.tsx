@@ -41,13 +41,11 @@ const Sidebar: FC = () => {
 
   return (
     <aside className='w-64 bg-sidebar border-r border-sidebar-border flex flex-col'>
-      {/* Logo Section */}
       <div className='h-16 flex items-center px-6 border-b border-sidebar-border'>
         <Logo className='w-6 h-6 text-sidebar-primary mr-2' />
         <span className='font-bold text-lg text-sidebar-foreground'>Admin</span>
       </div>
 
-      {/* Navigation */}
       <nav className='flex-1 overflow-y-auto py-6'>
         <ul className='space-y-2 px-3'>
           {visibleNavItems.map((item) => {
@@ -77,7 +75,6 @@ const Sidebar: FC = () => {
         </ul>
       </nav>
 
-      {/* Footer */}
       <div className='p-4 border-t border-sidebar-border'>
         <div className='text-xs text-sidebar-foreground/60'>© 2025 Admin</div>
       </div>

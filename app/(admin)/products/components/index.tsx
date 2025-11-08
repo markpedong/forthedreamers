@@ -20,9 +20,9 @@ import Link from 'next/link';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import { createProduct, updateProduct } from '@/lib/api-client';
 import { revalidatePath } from '@/lib/server-actions';
+import { tryWithToast } from '@/utils/helper';
 
-const Products: FC<TProductsList> = ({ products = [], categories = [], session }) => {
-  // const session = useAppSelector((state) => state.appData?.session);
+const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
   const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -150,43 +150,24 @@ const Products: FC<TProductsList> = ({ products = [], categories = [], session }
   ];
 
   const handleSubmitProduct = async (data: ProductFormData, mode: 'create' | 'edit') => {
-    try {
-      tableRef.current?.reset();
+    tableRef.current?.reset();
 
-      if (mode === 'create') {
-        const response = await createProduct({
+    let res;
+    const isEdit = mode === 'edit';
+
+    if (isEdit) {
+      res = await tryWithToast(
+        updateProduct({
           ...data,
-        });
-
-        if (response.success) {
-          toast.success('Product created successfully');
-          await revalidatePath('/products');
-        } else {
-          toast.error(response.message || 'Failed to create product');
-        }
-      } else {
-        if (!data.id) {
-          toast.error('Product ID is required for update');
-          return;
-        }
-
-        const response = await updateProduct({
-          ...data,
-          id: data.id,
-        });
-
-        if (response.success) {
-          toast.success('Product updated successfully');
-          // Refresh the page to show the updated product
-          revalidatePath('/products');
-        } else {
-          toast.error(response.message || 'Failed to update product');
-        }
-      }
-    } catch (error) {
-      console.error('Error saving product:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to save product');
+          id: String(data.id),
+        }),
+      );
+    } else {
+      res = await tryWithToast(createProduct(data));
     }
+
+    toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`);
+    await revalidatePath('/products');
   };
 
   return (
