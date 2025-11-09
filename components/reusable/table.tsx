@@ -37,6 +37,7 @@ import {
   ValueEnumItem,
 } from '@/lib/types';
 import { Label } from '@/components/ui/label';
+import classNames from 'classnames';
 
 const ProTableInner = <T extends Record<string, any>>(
   { rowKey, columns, dataSource, request, pagination = { pageSize: 10 }, title }: ProTableProps<T>,
@@ -230,10 +231,8 @@ const ProTableInner = <T extends Record<string, any>>(
       );
     }
 
-    console.log("Rendering input for", key, val, type);
-
     return (
-      <div key={key} className='flex items-center gap-2'>
+      <>
         <Label htmlFor={key}>{col.title}:</Label>
         <Input
           id={key}
@@ -247,7 +246,7 @@ const ProTableInner = <T extends Record<string, any>>(
           className='w-full md:w-40'
           type={type === 'number' ? 'number' : 'text'}
         />
-      </div>
+      </>
     );
   };
 
@@ -259,15 +258,19 @@ const ProTableInner = <T extends Record<string, any>>(
       <CardContent className='p-4 space-y-4'>
         {title && <h3 className='text-lg font-medium'>{title}</h3>}
         <div className='flex flex-wrap items-end gap-3'>
-          {columns.map(
-            (col, i) =>
-              col.title !== 'Actions' && (
-                <div key={col.dataIndex ? String(col.dataIndex) : `col-wrapper-${i}`}>
-                  {renderSearchInput(col, i)}
-                </div>
-              ),
-          )}
-          <div className='flex gap-2 mt-2'>
+          {columns
+            .filter((col) => col.title !== 'Actions' && col.search !== false)
+            .map((col, i, filteredCols) => (
+              <div
+                key={col.dataIndex ? String(col.dataIndex) : `col-wrapper-${i}`}
+                className={classNames('flex items-center gap-2', {
+                  'flex-1': i === filteredCols.length - 1,
+                })}
+              >
+                {renderSearchInput(col, i)}
+              </div>
+            ))}
+          <div className='flex gap-2'>
             <Button variant='outline' onClick={handleResetFilters} disabled={isPending}>
               Reset
             </Button>
