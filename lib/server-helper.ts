@@ -1,12 +1,14 @@
-import { Prisma } from "@/generated/prisma";
+import { Prisma, PrismaClient } from "@/generated/prisma";
 import { NextResponse } from "next/server";
+import { ApiResponse } from "./types";
+import prisma from "./prisma";
 
 export const successResponse = (data: any = null, message = "OK", status = 200) => {
   return NextResponse.json(
     {
       success: true,
       message,
-      data,
+      ...data,
     },
     {
       status,
@@ -24,13 +26,13 @@ export const errorResponse = (err: unknown) => {
   let message = "Unknown server error";
   let status = 500;
 
-  // String error (manual)
+
   if (typeof err === "string") {
     message = err;
     status = 400;
   }
 
-  // Prisma known request error
+
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     const prismaErrorMap: Record<string, { message: string; status: number }> = {
       P2002: { message: "Unique constraint failed", status: 400 },
@@ -47,7 +49,7 @@ export const errorResponse = (err: unknown) => {
     }
   }
 
-  // Prisma validation error
+
   if (err instanceof Prisma.PrismaClientValidationError) {
     message = "Invalid data passed to the database";
     status = 400;
@@ -66,4 +68,47 @@ export const errorResponse = (err: unknown) => {
   );
 };
 
+export async function getPaginatedData<T extends object>({
+  model,
+  where,
+  include,
+  orderBy = { createdAt: "desc" },
+}: {
+  model: keyof PrismaClient;
+  where: Record<string, any>;
+  include?: any;
+  orderBy?: any;
+}): Promise<ApiResponse<T>> {
+  const page = Number(where.page) || 1;
+  const pageSize = Number(where.pageSize) || 10;
+  const prismaModel = prisma[model] as any;
+  delete where.page;
+  delete where.pageSize;
 
+  const [total, data] = await Promise.all([
+    prismaModel.count({ where }),
+    prismaModel.findMany({ where, include, orderBy, skip: (page - 1) * pageSize, take: pageSize }),
+  ]);
+
+  return { data, total, page, pageSize, success: true };
+}
+
+export const buildServerQuery = (url: URL) => {
+  const params = Object.fromEntries(url.searchParams.entries());
+  const where: Record<string, any> = {};
+
+  if (params.dateRange) {
+    const [start, end] = params.dateRange.split(",").map((d) => new Date(d.replace(" ", "T")));
+    if (!isNaN(+start) && !isNaN(+end)) where.createdAt = { gte: start, lte: end };
+  }
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (!value || key === "dateRange") return;
+    where[key] = key === "status" ? value : { contains: value, mode: "insensitive" };
+  });
+
+  if (params.page) where.page = params.page;
+  if (params.pageSize) where.pageSize = params.pageSize;
+
+  return where;
+};

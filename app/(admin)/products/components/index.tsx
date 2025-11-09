@@ -17,8 +17,9 @@ import DropDown from '@/components/reusable/dropdown';
 import { Card, CardContent } from '@/components/ui/card';
 import ProTable from '@/components/pro-table';
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
+import { getProducts } from '@/lib/http';
 
-const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
+const Products: FC<TProductsList> = ({ categories = [] }) => {
   const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -82,11 +83,13 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
   const columns: ProColumns<TProduct>[] = [
     {
       title: 'Product',
+      dataIndex: 'name',
       search: true,
       render: (_, record) => <span className='font-medium'>{record.name}</span>,
     },
     {
       title: 'Brand',
+      dataIndex: 'brand',
       search: true,
       render: (_, record) => <span className='text-muted-foreground'>{record.brand}</span>,
     },
@@ -96,12 +99,14 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
     },
     {
       title: 'Status',
+      dataIndex: 'status',
       search: true,
       renderFormItem: () => (
         <ProFormSelect
           options={[
             { label: 'Active', value: 'ACTIVE' },
             { label: 'Inactive', value: 'INACTIVE' },
+            { label: 'Draft', value: 'DRAFT' },
           ]}
         />
       ),
@@ -183,6 +188,15 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
     await revalidatePath('/products');
   };
 
+  const fetchData = async (params: any) => {
+    const res = await tryWithToast(getProducts(params));
+
+    return {
+      data: res?.data ?? [],
+      total: res?.total ?? 0,
+    };
+  };
+
   return (
     <>
       <div className='px-4 py-8 space-y-8'>
@@ -202,8 +216,9 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
               actionRef={actionRef}
               rowKey='id'
               columns={columns?.map((item) => ({ ...item, align: 'center' }))}
-              dataSource={products}
+              request={fetchData}
               toolBarRender={false}
+              search={{ defaultCollapsed: false }}
             />
           </CardContent>
         </Card>

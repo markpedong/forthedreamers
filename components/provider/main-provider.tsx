@@ -10,7 +10,10 @@ import ReduxProvider from './redux-provider';
 import Navbar from '../navigation/navbar';
 import BottomNav from '../navigation/bottom-nav';
 import AntdWrapper from './antd-wrapper';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const MainProvider: FC<PropsWithChildren> = ({ children }) => {
+  const queryClient = new QueryClient();
+
   return (
     <ReduxProvider>
       <Navbar />
@@ -18,7 +21,9 @@ const MainProvider: FC<PropsWithChildren> = ({ children }) => {
         <Suspense fallback={null}>
           <ToastListener />
         </Suspense>
-        <AntdWrapper>{children}</AntdWrapper>
+        <QueryClientProvider client={queryClient}>
+          <AntdWrapper>{children}</AntdWrapper>
+        </QueryClientProvider>
         <Toaster />
         <ThemeToggleButton />
         <ImpesonationIndicator />

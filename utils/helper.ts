@@ -1,3 +1,4 @@
+import { BaseQueryParams } from "@/lib/types";
 import chroma from "chroma-js";
 
 const handleError = (err: unknown) => {
@@ -87,3 +88,37 @@ export const getCssVarHex = (variableName: string) => {
     return;
   }
 }
+
+export const buildQueryParams = (params?: BaseQueryParams) => {
+  const { current = 1, dateRange, ...rest } = params || {};
+  const sp = new URLSearchParams(rest as Record<string, string>);
+
+  if (dateRange?.length === 2) sp.set('dateRange', `${dateRange[0]},${dateRange[1]}`);
+
+  sp.set('page', String(current));
+
+  return sp.toString();
+};
+
+
+export const buildDateParams = (where: Record<string, any>): Record<string, any> => {
+  const newWhere = { ...where }; // clone to avoid mutation
+
+  if (newWhere.dateRange && typeof newWhere.dateRange === "string") {
+    const [startRaw, endRaw] = newWhere.dateRange.split(",");
+
+    const start = startRaw.includes("T") ? startRaw : startRaw.replace(" ", "T");
+    const end = endRaw.includes("T") ? endRaw : endRaw.replace(" ", "T");
+
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
+      newWhere.createdAt = { gte: startDate, lte: endDate };
+    }
+
+    delete newWhere.dateRange; // remove original
+  }
+
+  return newWhere;
+};

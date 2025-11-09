@@ -175,7 +175,7 @@ export type SpecsEditorProps = {
   onSpecsChange: (specs: FormSpec[]) => void;
 }
 
-export type TProductsList = { products: TProduct[]; categories: Category[] };
+export type TProductsList = { categories: Category[] };
 
 export type TVariantOption = Omit<
   VariantOption,
@@ -235,4 +235,20 @@ export type ProTableProps<T> = AntProTableProps<T, any, any> & {
   disableTimeFilter?: boolean;
   actionRef?: Ref<ActionType | undefined>;
   isLoading?: boolean;
+};
+
+export type BaseQueryParams = {
+  current?: number
+  pageSize?: number
+  dateRange?: [string, string] | string[]
+  [key: string]: any
+}
+
+export type ApiResponse<T> = {
+  success: boolean;
+  message?: string;
+  data?: T;
+  page: number;
+  pageSize: number;
+  total: number;
 };

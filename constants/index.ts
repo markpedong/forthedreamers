@@ -46,7 +46,7 @@ export const DISABLED_NAVBAR = ['/sign-in', '/reset-password', '/seller', '/prod
 export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 
 export const TABLE_PROPS: ProTableProps<any, any> = {
-  scroll: { x: 1200 },
+  // scroll: { x: 1200 },
   search: {
     labelWidth: 'auto',
     collapsed: false,
@@ -65,3 +65,5 @@ export const TABLE_PROPS: ProTableProps<any, any> = {
     showSizeChanger: true
   }
 }
+
+export const STALE_TIME = 1000 * 60 * 10 // 10 minutes

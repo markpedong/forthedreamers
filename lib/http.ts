@@ -1,12 +1,7 @@
 'use server';
 
-import { TCreateSeller, TProduct } from "./types";
-
-type ApiResponse<T> = {
-  success: boolean;
-  message: string;
-  data?: T;
-};
+import { buildQueryParams } from "@/utils/helper";
+import { ApiResponse, TCreateSeller, TProduct } from "./types";
 
 type FetchOptions = Omit<RequestInit, "body"> & {
   body?: any;
@@ -53,17 +48,17 @@ export const createSeller = async ({ storeName, userID }: TCreateSeller) => awai
   body: { storeName, userID },
 });
 
-export const getProducts = async () => await apiFetch<TProduct[]>('/api/products');
+export const getProducts = async (params: any) => apiFetch<TProduct[]>(`/api/products?${buildQueryParams(params)}`);
 
 export const getCategories = async () => await apiFetch('/api/category');
 
-export const createProduct = async (productData: Partial<TProduct>) => 
+export const createProduct = async (productData: Partial<TProduct>) =>
   await apiFetch<TProduct>('/api/products', {
     method: 'POST',
     body: productData,
   });
 
-export const updateProduct = async (productData: Partial<TProduct> & { id: string }) => 
+export const updateProduct = async (productData: Partial<TProduct> & { id: string }) =>
   await apiFetch<TProduct>('/api/products', {
     method: 'PUT',
     body: productData,

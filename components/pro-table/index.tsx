@@ -78,7 +78,7 @@ const ProTable = <T extends Record<string, any>>({
       search={{ collapseRender: false, defaultCollapsed: false }}
       form={{
         initialValues: {
-          dateRange: [dayjs().subtract(1, 'day').startOf('day'), dayjs().endOf('day')],
+          dateRange: [dayjs().subtract(30, 'day').startOf('day'), dayjs().endOf('day')],
           ...(rest.form?.initialValues ?? {}),
         },
       }}

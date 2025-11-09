@@ -1,41 +1,33 @@
 import prisma from "@/lib/prisma";
-import { successResponse, errorResponse } from "@/lib/server-helper";
+import { successResponse, errorResponse, getPaginatedData, buildServerQuery } from "@/lib/server-helper";
 import { regenerateSlug } from "@/utils/helper";
 import { NextRequest } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const products = await prisma.product.findMany({
+    const url = new URL(req.url);
+    const where = buildServerQuery(url);
+
+    const res = await getPaginatedData({
+      model: "product",
+      where,
       include: {
         specs: {
-          omit: {
-            createdAt: true,
-            updatedAt: true,
-            productId: true,
-          },
+          omit: { createdAt: true, updatedAt: true, productId: true },
         },
         category: true,
         variants: {
-          omit: {
-            createdAt: true,
-            updatedAt: true,
-            productId: true,
-          },
+          omit: { createdAt: true, updatedAt: true, productId: true },
           include: {
             options: {
-              omit: {
-                createdAt: true,
-                updatedAt: true,
-                variantId: true,
-              },
+              omit: { createdAt: true, updatedAt: true, variantId: true },
             },
           },
         },
       },
-      orderBy: { createdAt: "desc" },
     });
 
-    return successResponse(products);
+    return successResponse(res);
   } catch (err: unknown) {
     return errorResponse(err);
   }
