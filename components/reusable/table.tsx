@@ -1,6 +1,14 @@
 'use client';
 
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+  useTransition,
+} from 'react';
 import {
   Table,
   TableBody,
@@ -28,20 +36,15 @@ import {
   SorterInfo,
   ValueEnumItem,
 } from '@/lib/types';
-import { Label } from '../ui/label';
+import { Label } from '@/components/ui/label';
 
-function ProTableInner<T extends Record<string, any>>(
+const ProTableInner = <T extends Record<string, any>>(
   { rowKey, columns, dataSource, request, pagination = { pageSize: 10 }, title }: ProTableProps<T>,
   ref: React.Ref<ProTableRef>,
-) {
+) => {
   const [paginationState, setPaginationState] = useState<PaginationProps>(() =>
     pagination === false
-      ? {
-          current: 1,
-          pageSize: 10,
-          total: dataSource?.length ?? 0,
-          pageSizeOptions: [10, 20, 50],
-        }
+      ? { current: 1, pageSize: 10, total: dataSource?.length ?? 0, pageSizeOptions: [10, 20, 50] }
       : {
           current: pagination.current ?? 1,
           pageSize: pagination.pageSize ?? 10,
@@ -51,6 +54,7 @@ function ProTableInner<T extends Record<string, any>>(
   );
 
   const [filters, setFilters] = useState<Record<string, any>>({});
+  const [searchInputs, setSearchInputs] = useState<Record<string, any>>({});
   const [sorter, setSorter] = useState<SorterInfo>({});
   const [tableData, setTableData] = useState<T[]>(dataSource ?? []);
   const [loading, setLoading] = useState(false);
@@ -58,24 +62,19 @@ function ProTableInner<T extends Record<string, any>>(
   const current = paginationState.current ?? 1;
   const pageSize = paginationState.pageSize ?? 10;
   const totalCount = paginationState.total ?? total;
-
   const start = totalCount === 0 ? 0 : (current - 1) * pageSize + 1;
   const end = Math.min(current * pageSize, totalCount);
+  const [isPending, startTransition] = useTransition();
 
   useImperativeHandle(ref, () => ({
     reset: () => {
-      handleResetFilters(); // your existing function
-      fetchRemote?.(); // if request mode
-    },
-    reload: () => {
+      handleResetFilters();
       fetchRemote?.();
     },
-    setPage: (page: number) => {
-      handlePageChange(page);
-    },
-    setFilters: (newFilters: Record<string, any>) => {
-      Object.entries(newFilters).forEach(([k, v]) => handleFilterChange(k, v));
-    },
+    reload: () => fetchRemote?.(),
+    setPage: handlePageChange,
+    setFilters: (newFilters: Record<string, any>) =>
+      Object.entries(newFilters).forEach(([k, v]) => setFilters((prev) => ({ ...prev, [k]: v }))),
   }));
 
   useEffect(() => {
@@ -87,12 +86,8 @@ function ProTableInner<T extends Record<string, any>>(
   }, [dataSource, request]);
 
   const paramsForRequest = useMemo(
-    () => ({
-      page: paginationState.current ?? 1,
-      pageSize: paginationState.pageSize ?? 10,
-      filters,
-    }),
-    [paginationState.current, paginationState.pageSize, filters],
+    () => ({ page: current, pageSize, filters }),
+    [current, pageSize, filters],
   );
 
   const fetchRemote = useCallback(async () => {
@@ -113,21 +108,27 @@ function ProTableInner<T extends Record<string, any>>(
 
   useEffect(() => {
     if (request) fetchRemote();
-  }, [fetchRemote, request, paginationState.current, paginationState.pageSize, filters, sorter]);
+  }, [fetchRemote]);
 
   const processedClientData = useMemo(() => {
     if (request) return tableData;
     let d = dataSource ? [...dataSource] : [...tableData];
-    Object.entries(filters).forEach(([k, v]) => {
-      if (v)
-        d = d.filter((r) =>
-          String(r[k as keyof T] ?? '')
-            .toLowerCase()
-            .includes(String(v).toLowerCase()),
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (!value) return;
+      d = d.filter((row) => {
+        // If column has dataIndex, use it; otherwise try to infer from render
+        const val = row[key as keyof T];
+        return (
+          val !== null &&
+          val !== undefined &&
+          String(val).toLowerCase().includes(String(value).toLowerCase())
         );
+      });
     });
+
     if (sorter.field) {
-      const col = columns.find((c) => String(c.dataIndex) === sorter.field);
+      const col = columns.find((c) => c.dataIndex === sorter.field);
       const sortFn =
         col?.sorter ??
         ((a, b) =>
@@ -137,12 +138,13 @@ function ProTableInner<T extends Record<string, any>>(
       d.sort(sortFn);
       if (sorter.order === 'desc') d.reverse();
     }
+
     if (pagination !== false) {
-      const start = ((paginationState.current ?? 1) - 1) * (paginationState.pageSize ?? 10);
-      return d.slice(start, start + (paginationState.pageSize ?? 10));
+      const startIdx = (current - 1) * pageSize;
+      return d.slice(startIdx, startIdx + pageSize);
     }
     return d;
-  }, [dataSource, tableData, filters, sorter, paginationState, columns, request, pagination]);
+  }, [dataSource, tableData, filters, sorter, columns, pagination, current, pageSize, request]);
 
   useEffect(() => {
     if (!request) {
@@ -154,78 +156,64 @@ function ProTableInner<T extends Record<string, any>>(
     }
   }, [processedClientData.length, dataSource?.length, request]);
 
-  function isPaginationEnabled(
+  const isPaginationEnabled = (
     pagination: false | PaginationProps | undefined,
-  ): pagination is PaginationProps {
-    return pagination !== false && pagination !== undefined;
-  }
-
-  const handleFilterChange = (k: string, v: any) => {
-    setFilters((prev) => ({ ...prev, [k]: v }));
-    setPaginationState((p) => ({ ...p, current: 1 }));
-    if (isPaginationEnabled(pagination)) pagination.onChange?.(1, paginationState.pageSize ?? 10);
-  };
-
+  ): pagination is PaginationProps => pagination !== false && pagination !== undefined;
   const handleSortToggle = (field: string) =>
     setSorter((prev) =>
       prev.field === field
         ? { field, order: prev.order === 'asc' ? 'desc' : 'asc' }
         : { field, order: 'asc' },
     );
-
   const handlePageChange = (n: number) => {
     const safe = Math.max(1, n);
     setPaginationState((p) => ({ ...p, current: safe }));
-    if (isPaginationEnabled(pagination))
-      pagination.onChange?.(safe, paginationState.pageSize ?? 10);
+    if (isPaginationEnabled(pagination)) pagination.onChange?.(safe, pageSize);
   };
-
   const handlePageSizeChange = (ps: 10 | 20 | 50) => {
     setPaginationState((p) => ({ ...p, pageSize: ps, current: 1 }));
     if (isPaginationEnabled(pagination)) pagination.onChange?.(1, ps);
   };
-
   const handleResetFilters = () => {
+    setSearchInputs({});
     setFilters({});
     setSorter({});
     setPaginationState((p) => ({ ...p, current: 1 }));
-
-    // Trigger optional external pagination onChange
-    if (isPaginationEnabled(pagination)) {
-      pagination.onChange?.(1, paginationState.pageSize ?? 10);
-    }
+    if (isPaginationEnabled(pagination)) pagination.onChange?.(1, pageSize);
+  };
+  const handleApplySearch = () => {
+    setFilters(searchInputs);
+    setPaginationState((p) => ({ ...p, current: 1 }));
   };
 
-  const renderSearchInput = (col: ProColumn<T>) => {
+  const renderSearchInput = (col: ProColumn<T>, idx: number) => {
     if (col.search === false) return null;
-
-    const key = String(col.dataIndex ?? '');
-    const val = filters[key] ?? '';
-
+    const key = col.dataIndex ? String(col.dataIndex) : `__rendered_${idx}`;
+    const val = searchInputs[key] ?? '';
     const type = typeof col.search === 'object' ? col.search.type : undefined;
-    const valueEnum = typeof col.search === 'object' ? col.search.valueEnum : undefined;
-    const placeholder = typeof col.search === 'object' ? col.search.placeholder : undefined;
 
     if (type === 'select') {
       const [options, setOptions] = useState<ValueEnumItem[]>([]);
-
+      const valueEnum = typeof col.search === 'object' ? col.search.valueEnum : undefined;
       useEffect(() => {
         let active = true;
         (async () => {
           if (valueEnum) {
-            const res = typeof valueEnum === 'function' ? await valueEnum() : valueEnum;
-            if (active) setOptions(res);
+            const resolved = typeof valueEnum === 'function' ? await valueEnum() : valueEnum;
+            if (active) setOptions(resolved);
           }
         })();
         return () => {
           active = false;
         };
       }, [valueEnum]);
-
       return (
         <Select
+          key={key}
           value={val || '__all__'}
-          onValueChange={(v) => handleFilterChange(key, v === '__all__' ? '' : v)}
+          onValueChange={(v) =>
+            setSearchInputs((prev) => ({ ...prev, [key]: v === '__all__' ? '' : v }))
+          }
         >
           <SelectTrigger className='w-full md:w-40'>
             <SelectValue placeholder={`All ${col.title}`} />
@@ -242,14 +230,20 @@ function ProTableInner<T extends Record<string, any>>(
       );
     }
 
+    console.log("Rendering input for", key, val, type);
+
     return (
-      <div className='flex items-center gap-2'>
-        <Label htmlFor={key}>{col.title}: </Label>
+      <div key={key} className='flex items-center gap-2'>
+        <Label htmlFor={key}>{col.title}:</Label>
         <Input
           id={key}
           value={val}
-          placeholder={placeholder ?? `Search ${col.title}`}
-          onChange={(e) => handleFilterChange(key, e.target.value)}
+          placeholder={
+            typeof col.search === 'object'
+              ? (col.search.placeholder ?? `Search ${col.title}`)
+              : `Search ${col.title}`
+          }
+          onChange={(e) => setSearchInputs((prev) => ({ ...prev, [key]: e.target.value }))}
           className='w-full md:w-40'
           type={type === 'number' ? 'number' : 'text'}
         />
@@ -258,30 +252,29 @@ function ProTableInner<T extends Record<string, any>>(
   };
 
   const visibleRows = request ? tableData : processedClientData;
-  const totalPages = Math.max(
-    1,
-    Math.ceil((paginationState.total ?? total) / (paginationState.pageSize ?? 10)),
-  );
+  const totalPages = Math.max(1, Math.ceil((paginationState.total ?? total) / pageSize));
 
   return (
     <Card>
       <CardContent className='p-4 space-y-4'>
         {title && <h3 className='text-lg font-medium'>{title}</h3>}
-        <div className='flex items-center justify-between gap-3'>
-          <div className='flex flex-wrap gap-3 items-center h-full'>
-            {columns.map((col, i) =>
-              col.title === 'Actions' ? null : <div key={i}>{renderSearchInput(col)}</div>,
-            )}
+        <div className='flex flex-wrap items-end gap-3'>
+          {columns.map(
+            (col, i) =>
+              col.title !== 'Actions' && (
+                <div key={col.dataIndex ? String(col.dataIndex) : `col-wrapper-${i}`}>
+                  {renderSearchInput(col, i)}
+                </div>
+              ),
+          )}
+          <div className='flex gap-2 mt-2'>
+            <Button variant='outline' onClick={handleResetFilters} disabled={isPending}>
+              Reset
+            </Button>
+            <Button onClick={handleApplySearch} disabled={isPending}>
+              Search
+            </Button>
           </div>
-
-          <Button
-            variant='default'
-            size='sm'
-            onClick={handleResetFilters}
-            disabled={Object.keys(filters).length === 0 && !sorter.field}
-          >
-            Reset
-          </Button>
         </div>
         <div className='overflow-x-auto'>
           <Table>
@@ -289,19 +282,13 @@ function ProTableInner<T extends Record<string, any>>(
               <TableRow>
                 {columns.map((col, i) => (
                   <TableHead
-                    key={i}
+                    key={col.dataIndex ? String(col.dataIndex) : `col-head-${i}`}
                     className={`${col.className ?? ''} text-${col.align ?? 'left'} cursor-pointer select-none`}
                     style={{ width: col.width }}
                     onClick={() => col.sorter && handleSortToggle(String(col.dataIndex ?? ''))}
                   >
                     <div
-                      className={`flex items-center gap-2 ${
-                        col.align === 'right'
-                          ? 'justify-end'
-                          : col.align === 'center'
-                            ? 'justify-center'
-                            : 'justify-start'
-                      }`}
+                      className={`flex items-center gap-2 ${col.align === 'right' ? 'justify-end' : col.align === 'center' ? 'justify-center' : 'justify-start'}`}
                     >
                       <span>{col.title}</span>
                       {col.sorter && (
@@ -328,22 +315,20 @@ function ProTableInner<T extends Record<string, any>>(
               ) : visibleRows.length ? (
                 visibleRows.map((row, rIdx) => (
                   <TableRow
-                    key={String(row[rowKey] ?? rIdx)}
+                    key={`${row[rowKey] ?? ''}-${rIdx}`}
                     className='h-14 border-b last:border-0 hover:bg-muted/50 transition-colors'
                   >
-                    {columns.map((col, cIdx) => {
-                      const key = col.dataIndex as keyof T;
-                      const val = row[key];
-                      return (
-                        <TableCell
-                          key={cIdx}
-                          className={`py-3 px-4 align-middle text-sm text-${col.align ?? 'left'}`}
-                          style={{ width: col.width }}
-                        >
-                          {col.render ? col.render(val, row, rIdx) : String(val ?? '')}
-                        </TableCell>
-                      );
-                    })}
+                    {columns.map((col, cIdx) => (
+                      <TableCell
+                        key={cIdx}
+                        className={`py-3 px-4 align-middle text-sm text-${col.align ?? 'left'}`}
+                        style={{ width: col.width }}
+                      >
+                        {col.render
+                          ? col.render(row[col.dataIndex as keyof T], row, rIdx)
+                          : String(row[col.dataIndex as keyof T] ?? '')}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 ))
               ) : (
@@ -366,7 +351,7 @@ function ProTableInner<T extends Record<string, any>>(
             </div>
             <div className='flex items-center gap-3'>
               <Select
-                value={String(paginationState.pageSize)}
+                value={String(pageSize)}
                 onValueChange={(v) => handlePageSizeChange(Number(v) as 10 | 20 | 50)}
               >
                 <SelectTrigger className='w-28'>
@@ -384,19 +369,19 @@ function ProTableInner<T extends Record<string, any>>(
                 <Button
                   variant='ghost'
                   size='sm'
-                  disabled={(paginationState.current ?? 1) <= 1}
-                  onClick={() => handlePageChange((paginationState.current ?? 1) - 1)}
+                  disabled={current <= 1}
+                  onClick={() => handlePageChange(current - 1)}
                 >
                   Prev
                 </Button>
                 <div className='text-sm'>
-                  Page <strong>{paginationState.current}</strong> / <strong>{totalPages}</strong>
+                  Page <strong>{current}</strong> / <strong>{totalPages}</strong>
                 </div>
                 <Button
                   variant='ghost'
                   size='sm'
-                  disabled={(paginationState.current ?? 1) >= totalPages}
-                  onClick={() => handlePageChange((paginationState.current ?? 1) + 1)}
+                  disabled={current >= totalPages}
+                  onClick={() => handlePageChange(current + 1)}
                 >
                   Next
                 </Button>
@@ -407,7 +392,7 @@ function ProTableInner<T extends Record<string, any>>(
       </CardContent>
     </Card>
   );
-}
+};
 
 export const ProTable = forwardRef(ProTableInner) as <T extends Record<string, any>>(
   props: ProTableProps<T> & { ref?: React.Ref<ProTableRef> },
