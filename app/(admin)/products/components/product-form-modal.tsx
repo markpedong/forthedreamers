@@ -31,15 +31,15 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
   categories,
   onSubmit,
 }) => {
-  const { extendedSchema } = useFormSchema();
+  const { productFormSchema } = useFormSchema();
   const [tab, setTab] = useState('basic');
   const [isSubmitting, startSubmitting] = useTransition();
   const session = useAppSelector((state) => state.appData.session);
 
-  type FormData = z.infer<typeof extendedSchema>;
+  type FormData = z.infer<typeof productFormSchema>;
 
   const form = useForm<FormData>({
-    resolver: zodResolver(extendedSchema) as any,
+    resolver: zodResolver(productFormSchema) as any,
     defaultValues: PRODUCT_DEFAULT as FormData,
   });
 
@@ -51,53 +51,19 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
     }
 
     if (mode === 'edit' && initialProduct) {
-      const categoryName =
-        typeof initialProduct.category === 'string'
-          ? initialProduct.category
-          : initialProduct.category?.name || '';
-
-      let categoryId: string | undefined = initialProduct.categoryId;
-      if (!categoryId && typeof initialProduct.category === 'object' && initialProduct.category) {
-        categoryId = initialProduct.category.id;
-      }
-      if (!categoryId && categoryName) {
-        const category = categories.find((c) => c.name === categoryName);
-        categoryId = category?.id;
-      }
-
+      console.log('initialProduct', initialProduct);
+      const currCategory = categories.find((c) => c.name === initialProduct.category.name);
       const formData = {
-        id: initialProduct.id,
-        name: initialProduct.name || '',
-        brand: initialProduct.brand || null,
-        basePrice: initialProduct.basePrice ?? undefined,
-        description: initialProduct.description || '',
-        images: initialProduct.images || [],
-        tags: initialProduct.tags || [],
-        stock: initialProduct.stock ?? undefined,
-        status: initialProduct.status || 'DRAFT',
-        category: categoryName,
-        categoryId: categoryId || undefined,
-        specs: (initialProduct.specs || []).map((spec) => ({
-          id: spec.id,
-          label: spec.label,
-          value: spec.value,
-        })),
+        ...initialProduct,
+        category: currCategory?.name,
+        specs: (initialProduct.specs || []).map((spec) => ({ ...spec })),
         variants: (initialProduct.variants || []).map((variant) => ({
-          id: variant.id,
-          name: variant.name,
-          isRequired: variant.isRequired,
-          options: (variant.options || []).map((option) => ({
-            id: option.id,
-            variantOptionName: option.variantOptionName,
-            price: option.price,
-            discountedPrice: option.discountedPrice ?? null,
-            stock: option.stock,
-            coupon: option.coupon ?? null,
-          })),
+          ...variant,
+          options: (variant.options || []).map((option) => ({ ...option })),
         })),
       };
 
-      form.reset(formData);
+      form.reset(formData as FormData);
     } else {
       form.reset(PRODUCT_DEFAULT);
     }
@@ -107,47 +73,13 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
     form.setValue('variants', variants || [], { shouldValidate: true });
   };
 
-  const selectedCategory = form.watch('category');
-  useEffect(() => {
-    if (selectedCategory) {
-      const category = categories.find((c) => c.name === selectedCategory);
-      if (category) {
-        form.setValue('categoryId', category.id, { shouldValidate: false });
-      }
-    }
-  }, [selectedCategory, categories, form]);
-
   const handleFormSubmit = async (values: FormData) => {
     startSubmitting(async () => {
       try {
-        if (!values.name || !values.name.trim()) {
-          toast.error('Product name is required');
-          return;
-        }
-
-        const categoryName = values.category;
-        if (!categoryName || !categoryName.trim()) {
-          toast.error('Please select a category');
-          return;
-        }
-
-        const category = categories.find((c) => c.name === categoryName);
-
-        if (!category) {
-          toast.error('Please select a valid category');
-          return;
-        }
-
-        let finalCategoryId = categories.find((c) => c.name === categoryName)?.id;
-        if (!finalCategoryId) {
-          toast.error('Unable to resolve category ID. Please select a category.');
-          return;
-        }
-
         const submitData: ProductFormData & { id?: string; sellerId?: string } = {
           ...values,
           name: values.name.trim(),
-          categoryId: finalCategoryId,
+          categoryId: categories.find((c) => c.name === values.category)?.id,
           basePrice: values.basePrice ?? null,
           stock: values.stock ?? null,
           description: values.description ?? null,

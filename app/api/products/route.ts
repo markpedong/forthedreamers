@@ -3,24 +3,6 @@ import { successResponse, errorResponse, getPaginatedData, buildServerQuery } fr
 import { regenerateSlug } from "@/utils/helper";
 import { NextRequest } from "next/server";
 
-const mapSpecs = (specs: any[]) =>
-  specs.map((s) => ({ label: s.label, value: s.value }));
-
-const mapVariants = (variants: any[]) =>
-  variants.map((v) => ({
-    name: v.name,
-    isRequired: v.isRequired ?? true,
-    options: {
-      create: (v.options || []).map((o: any) => ({
-        variantOptionName: o.variantOptionName,
-        price: o.price,
-        discountedPrice: o.discountedPrice ?? null,
-        stock: o.stock,
-        coupon: o.coupon ?? null,
-      })),
-    },
-  }));
-
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
@@ -33,7 +15,6 @@ export async function GET(req: NextRequest) {
         specs: {
           omit: { createdAt: true, updatedAt: true, productId: true },
         },
-        category: true,
         variants: {
           omit: { createdAt: true, updatedAt: true, productId: true },
           include: {
@@ -74,8 +55,8 @@ export async function POST(req: NextRequest) {
         tags: rest.tags || [],
         stock: rest.stock,
         status: rest.status,
-        category: { connect: { id: categoryId } }, // connect category
-        seller: { connect: { id: seller.id } },    // connect seller
+        category: { connect: { id: categoryId } },
+        seller: { connect: { id: seller.id } },
         specs: {
           create: specs.map((s: any) => ({ label: s.label, value: s.value })),
         },
