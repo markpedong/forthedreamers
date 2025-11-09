@@ -46,17 +46,6 @@ interface SearchConfig {
   width?: number
   valueEnum?: ValueEnum
 }
-export interface ProColumn<T> {
-  title: string;
-  width?: number
-  dataIndex?: keyof T;
-  sorter?: (a: T, b: T) => number;
-  render?: (value: T[keyof T], record: T, index: number) => React.ReactNode;
-  search?: SearchConfig | false
-  className?: string;
-  align?: 'left' | 'center' | 'right';
-  searchKey?: keyof T | string
-}
 
 export type RequestParams = { page: number; pageSize: number; filters?: Record<string, any> };
 

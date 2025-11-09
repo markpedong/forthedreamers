@@ -3,11 +3,10 @@
 import { FC, useState, useTransition } from 'react';
 import { Plus, MoreHorizontal, BadgeCheckIcon, BadgeAlertIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ProTable } from '@/components/reusable/table'; // path depends on where you placed it
 import { UserWithRole } from 'better-auth/plugins';
 import { toast } from 'sonner';
 import AlertDialog from '@/components/reusable/alert-dialog';
-import { DropdownMenuItemType, ProColumn, SchemaForm } from '@/lib/types';
+import { DropdownMenuItemType, SchemaForm } from '@/lib/types';
 import {
   banUser,
   deleteUserByAdmin,
@@ -27,6 +26,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { authClient } from '@/lib/auth-client';
 import { tryWithToast } from '@/utils/helper';
 import DropDown from '@/components/reusable/dropdown';
+import ProTable from '@/components/pro-table';
+import { ProColumns, ProFormSelect } from '@ant-design/pro-components';
 
 const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
   const router = useRouter();
@@ -143,13 +144,12 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     },
   ];
 
-  const columns: ProColumn<UserWithRole>[] = [
+  const columns: ProColumns<UserWithRole>[] = [
     {
       title: 'Name',
       dataIndex: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
-      search: {
-        type: 'text',
+      fieldProps: {
         placeholder: 'eg: John Doe',
       },
     },
@@ -157,8 +157,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
       title: 'Email',
       width: 300,
       sorter: (a, b) => a.email.localeCompare(b.email),
-      search: {
-        type: 'text',
+      fieldProps: {
         placeholder: 'eg: 4g2t0@example.com',
       },
       render: (_, record) => (
@@ -179,15 +178,15 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     },
     {
       title: 'Role',
-      search: {
-        type: 'select',
-        placeholder: 'eg: Customer',
-        valueEnum: async () =>
-          Promise.resolve([
+      renderFormItem: () => (
+        <ProFormSelect
+          placeholder='eg: Customer'
+          options={[
             { label: 'Customer', value: 'Customer' },
             { label: 'Vendor', value: 'Vendor' },
-          ]),
-      },
+          ]}
+        />
+      ),
       render: (_, record) => <Badge>{record.role}</Badge>,
     },
     // {

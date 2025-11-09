@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import { useMemo, useRef } from 'react';
 import { SpinnerCustom } from '../reusable/spinner';
 import { ProTableProps } from '@/lib/types';
+import { Card, CardContent } from '../ui/card';
 
 const ProTable = <T extends Record<string, any>>({
   columns = [],
@@ -66,23 +67,29 @@ const ProTable = <T extends Record<string, any>>({
   if (isLoading) return <SpinnerCustom />;
 
   return (
-    //@ts-ignore
-    <AntProTable<T>
-      {...TABLE_PROPS}
-      {...rest}
-      rowKey={rowKey}
-      actionRef={actionRef}
-      //@ts-expect-error
-      formRef={formRef}
-      columns={transformedColumns}
-      search={{ collapseRender: false, defaultCollapsed: false }}
-      form={{
-        initialValues: {
-          dateRange: [dayjs().subtract(30, 'day').startOf('day'), dayjs().endOf('day')],
-          ...(rest.form?.initialValues ?? {}),
-        },
-      }}
-    />
+    <Card>
+      <CardContent>
+        {
+          //@ts-ignore
+          <AntProTable<T>
+            {...TABLE_PROPS}
+            {...rest}
+            rowKey={rowKey}
+            actionRef={actionRef}
+            //@ts-expect-error
+            formRef={formRef}
+            columns={transformedColumns}
+            search={{ collapseRender: false, defaultCollapsed: false }}
+            form={{
+              initialValues: {
+                dateRange: [dayjs().subtract(30, 'day').startOf('day'), dayjs().endOf('day')],
+                ...(rest.form?.initialValues ?? {}),
+              },
+            }}
+          />
+        }
+      </CardContent>
+    </Card>
   );
 };
 

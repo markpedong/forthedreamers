@@ -14,7 +14,6 @@ import { createProduct, updateProduct } from '@/lib/api-client';
 import { revalidatePath } from '@/lib/server-actions';
 import { tryWithToast } from '@/utils/helper';
 import DropDown from '@/components/reusable/dropdown';
-import { Card, CardContent } from '@/components/ui/card';
 import ProTable from '@/components/pro-table';
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
 import { getProducts } from '@/lib/http';
@@ -210,18 +209,14 @@ const Products: FC<TProductsList> = ({ categories = [] }) => {
           </Button>
         </header>
 
-        <Card>
-          <CardContent>
-            <ProTable<TProduct>
-              actionRef={actionRef}
-              rowKey='id'
-              columns={columns?.map((item) => ({ ...item, align: 'center' }))}
-              request={fetchData}
-              toolBarRender={false}
-              search={{ defaultCollapsed: false }}
-            />
-          </CardContent>
-        </Card>
+        <ProTable<TProduct>
+          actionRef={actionRef}
+          rowKey='id'
+          columns={columns?.map((item) => ({ ...item, align: 'center' }))}
+          request={fetchData}
+          toolBarRender={false}
+          search={{ defaultCollapsed: false }}
+        />
       </div>
 
       <ProductFormModal
