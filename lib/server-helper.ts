@@ -68,7 +68,7 @@ export const errorResponse = (err: unknown) => {
   );
 };
 
-export const getPaginatedData = async <T extends object>({ model, where, include, orderBy = { createdAt: "desc" } }: TGetPaginatedData): Promise<ApiResponse<T>> => {
+export const getPaginatedData = async <T extends object>({ model, where, include, orderBy = [{ createdAt: "desc" }, { id: "asc" }] }: TGetPaginatedData): Promise<ApiResponse<T>> => {
   const page = Number(where.page) || 1;
   const pageSize = Number(where.pageSize) || 10;
   const prismaModel = prisma[model] as any;

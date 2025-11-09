@@ -6,5 +6,5 @@ export async function GET() {
     select: { name: true, id: true }
   })
 
-  return successResponse(categories);
+  return successResponse({ data: categories });
 }

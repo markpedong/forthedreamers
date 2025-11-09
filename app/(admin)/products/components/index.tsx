@@ -184,6 +184,7 @@ const Products: FC<TProductsList> = ({ categories = [] }) => {
     }
 
     toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`);
+    actionRef.current?.reload();
     await revalidatePath('/products');
   };
 
