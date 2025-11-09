@@ -17,17 +17,16 @@ import DropDown from '@/components/reusable/dropdown';
 import ProTable from '@/components/pro-table';
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
 import { useQueryCategories } from '@/hooks/useQuery';
+import { getProducts } from '@/lib/http';
 
 const Products: FC = () => {
   const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [editOpen, setEditOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [type, setType] = useState<'EDIT' | 'CREATE'>('CREATE');
   const [product, setProduct] = useState<TProduct>();
   const actionRef = useRef<ActionType>(null);
   const { data: categories } = useQueryCategories();
-
-  console.log('categories', categories);
 
   const handleDelete = async () => {
     if (!deleteDialog) return;
@@ -66,8 +65,8 @@ const Products: FC = () => {
         </span>
       ),
       onClick: () => {
+        setType('EDIT');
         setProduct(record);
-        setEditOpen(true);
       },
       hasSeparatorBelow: true,
     },
@@ -171,9 +170,9 @@ const Products: FC = () => {
     },
   ];
 
-  const handleSubmitProduct = async (data: ProductFormData, mode: 'create' | 'edit') => {
+  const handleSubmitProduct = async (data: ProductFormData, type: 'CREATE' | 'EDIT') => {
     let res;
-    const isEdit = mode === 'edit';
+    const isEdit = type === 'EDIT';
 
     try {
       if (isEdit) {
@@ -195,16 +194,11 @@ const Products: FC = () => {
   };
 
   const fetchData = async (params: any) => {
-    // const res = await tryWithToast(getProducts(params));
-
-    // return {
-    //   data: res?.data ?? [],
-    //   total: res?.total ?? 0,
-    // };
+    const res = await tryWithToast(getProducts(params));
 
     return {
-      data: [],
-      total: 0,
+      data: res?.data ?? [],
+      total: res?.total ?? 0,
     };
   };
 
@@ -216,7 +210,7 @@ const Products: FC = () => {
             <h1 className='text-4xl font-bold'>Products</h1>
             <p className='text-muted-foreground'>Manage your product catalog</p>
           </div>
-          <Button onClick={() => setCreateOpen(true)} size='lg' className='gap-2 shadow-sm'>
+          <Button onClick={() => setOpen(true)} size='lg' className='gap-2 shadow-sm'>
             <Plus className='h-5 w-5' /> Create Product
           </Button>
         </header>
@@ -230,22 +224,13 @@ const Products: FC = () => {
           search={{ defaultCollapsed: false }}
         />
       </div>
-
       <ProductFormModal
-        open={editOpen}
-        onOpenChange={setEditOpen}
-        mode='edit'
-        initialProduct={product}
+        open={open}
+        setOpen={setOpen}
+        type={type}
         categories={categories?.data ?? []}
         onSubmit={handleSubmitProduct}
-      />
-
-      <ProductFormModal
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        mode='create'
-        categories={categories?.data ?? []}
-        onSubmit={handleSubmitProduct}
+        initialProduct={type === 'EDIT' ? product : undefined}
       />
       <AlertDialog
         title='Delete Product'

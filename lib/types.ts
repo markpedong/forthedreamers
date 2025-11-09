@@ -102,11 +102,11 @@ export type ProductFormData = {
 
 export type ProductFormModalProps = {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
-  mode: 'create' | 'edit';
+  setOpen: (open: boolean) => void;
+  type: 'CREATE' | 'EDIT';
   initialProduct?: TProduct;
   categories: Category[]
-  onSubmit: (data: ProductFormData & { sellerId?: string }, mode: 'create' | 'edit') => Promise<void> | void
+  onSubmit: (data: ProductFormData & { sellerId?: string }, type: 'CREATE' | 'EDIT') => Promise<void> | void
 }
 
 export type SharedProps<T extends FieldValues> = {

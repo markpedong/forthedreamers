@@ -25,8 +25,8 @@ import { useAppSelector } from '@/redux/store';
 
 const ProductFormModal: FC<ProductFormModalProps> = ({
   open,
-  onOpenChange,
-  mode,
+  setOpen,
+  type,
   initialProduct,
   categories,
   onSubmit,
@@ -35,6 +35,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
   const [tab, setTab] = useState('basic');
   const [isSubmitting, startSubmitting] = useTransition();
   const session = useAppSelector((state) => state.appData.session);
+  const isEdit = type === 'EDIT';
 
   type FormData = z.infer<typeof productFormSchema>;
 
@@ -50,7 +51,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
       return;
     }
 
-    if (mode === 'edit' && initialProduct) {
+    if (isEdit && initialProduct) {
       console.log('initialProduct', initialProduct);
       const currCategory = categories.find((c) => c.name === initialProduct.category.name);
       const formData = {
@@ -67,7 +68,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
     } else {
       form.reset(PRODUCT_DEFAULT);
     }
-  }, [open, mode, initialProduct, form]);
+  }, [open, type, initialProduct, form]);
 
   const updateVariants = (variants: FormData['variants']) => {
     form.setValue('variants', variants || [], { shouldValidate: true });
@@ -104,15 +105,15 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           console.error('Missing required fields:', {
             name: submitData.name,
             categoryId: submitData.categoryId,
-            mode,
+            type,
             initialProductId: initialProduct?.id,
           });
           toast.error('Missing required fields: name or categoryId');
           return;
         }
 
-        await onSubmit(submitData as ProductFormData, mode);
-        onOpenChange(false);
+        await onSubmit(submitData as ProductFormData, type);
+        setOpen(false);
       } catch (err) {
         console.error('Form submission error:', err);
         toast.error(err instanceof Error ? err.message : 'Failed to save product');
@@ -127,20 +128,18 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
       open={open}
       wrapperClassName='sm:max-w-4xl !p-4'
       containerClassName='!pb-0'
-      title={mode === 'create' ? 'Create Product' : 'Edit Product'}
-      description={
-        mode === 'create' ? 'Add a new product to your catalog' : 'Update product information'
-      }
+      title={!isEdit ? 'Create Product' : 'Edit Product'}
+      description={!isEdit ? 'Add a new product to your catalog' : 'Update product information'}
       confirmText={
         isSubmitting
-          ? mode === 'create'
+          ? !isEdit
             ? 'Creating...'
             : 'Updating...'
-          : mode === 'create'
+          : !isEdit
             ? 'Create Product'
             : 'Update Product'
       }
-      onOpenChange={onOpenChange}
+      onOpenChange={setOpen}
       onConfirm={form.handleSubmit(handleFormSubmit)}
       loading={isSubmitting}
     >
