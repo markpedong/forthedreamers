@@ -23,15 +23,6 @@ import useFormSchema from '@/hooks/useFormSchema';
 import type { z } from 'zod';
 import { useAppSelector } from '@/redux/store';
 
-const generateSlug = (name: string): string => {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-};
-
 const ProductFormModal: FC<ProductFormModalProps> = ({
   open,
   onOpenChange,
@@ -40,7 +31,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
   categories,
   onSubmit,
 }) => {
-  const { productFormSchema, extendedSchema } = useFormSchema();
+  const { extendedSchema } = useFormSchema();
   const [tab, setTab] = useState('basic');
   const [isSubmitting, startSubmitting] = useTransition();
   const session = useAppSelector((state) => state.appData.session);
@@ -77,7 +68,6 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
       const formData = {
         id: initialProduct.id,
         name: initialProduct.name || '',
-        slug: initialProduct.slug || generateSlug(initialProduct.name || ''),
         brand: initialProduct.brand || null,
         basePrice: initialProduct.basePrice ?? undefined,
         description: initialProduct.description || '',
@@ -112,14 +102,6 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
       form.reset(PRODUCT_DEFAULT);
     }
   }, [open, mode, initialProduct, form]);
-
-  const productName = form.watch('name');
-  useEffect(() => {
-    if (mode === 'create' && productName) {
-      const slug = generateSlug(productName);
-      form.setValue('slug', slug, { shouldValidate: false });
-    }
-  }, [productName, mode, form]);
 
   const updateVariants = (variants: FormData['variants']) => {
     form.setValue('variants', variants || [], { shouldValidate: true });
@@ -162,22 +144,9 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           return;
         }
 
-        let finalSlug = values.slug;
-        if (mode === 'create') {
-          finalSlug = finalSlug || generateSlug(values.name);
-        } else {
-          finalSlug = finalSlug || initialProduct?.slug || generateSlug(values.name);
-        }
-
-        if (!finalSlug || !finalSlug.trim()) {
-          toast.error('Slug is required');
-          return;
-        }
-
         const submitData: ProductFormData & { id?: string; sellerId?: string } = {
           ...values,
           name: values.name.trim(),
-          slug: finalSlug.trim(),
           categoryId: finalCategoryId,
           basePrice: values.basePrice ?? null,
           stock: values.stock ?? null,
@@ -199,15 +168,14 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           sellerId: session?.user.id,
         };
 
-        if (!submitData.name || !submitData.slug || !submitData.categoryId) {
+        if (!submitData.name || !submitData.categoryId) {
           console.error('Missing required fields:', {
             name: submitData.name,
-            slug: submitData.slug,
             categoryId: submitData.categoryId,
             mode,
             initialProductId: initialProduct?.id,
           });
-          toast.error('Missing required fields: name, slug, or categoryId');
+          toast.error('Missing required fields: name or categoryId');
           return;
         }
 
@@ -253,7 +221,6 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
           </TabsList>
 
           <Form form={form} customSubmitButton>
-            {/* Basic Info */}
             <TabsContent value='basic' className='space-y-6'>
               <Input
                 label='Product Name *'
@@ -300,7 +267,6 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
               </div>
             </TabsContent>
 
-            {/* Inventory */}
             <TabsContent value='inventory' className='space-y-6'>
               <div className='flex justify-between items-center mb-2'>
                 <Label>Variants</Label>
@@ -347,7 +313,6 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
               />
             </TabsContent>
 
-            {/* Details */}
             <TabsContent value='details' className='space-y-6'>
               <SpecsEditor
                 specs={form.watch('specs') || []}

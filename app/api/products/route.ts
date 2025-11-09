@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { successResponse, errorResponse } from "@/lib/server-helper";
+import { regenerateSlug } from "@/utils/helper";
 import { NextRequest } from "next/server";
 
 export async function GET() {
@@ -43,7 +44,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const {
       name,
-      slug,
       brand,
       basePrice,
       description,
@@ -58,17 +58,8 @@ export async function POST(req: NextRequest) {
     } = body;
 
     // Validation
-    if (!name || !slug || !categoryId) {
+    if (!name || !categoryId) {
       return errorResponse("Name, slug, categoryId are required");
-    }
-
-    // Check if slug already exists
-    const existingProduct = await prisma.product.findUnique({
-      where: { slug },
-    });
-
-    if (existingProduct) {
-      return errorResponse("A product with this slug already exists");
     }
 
     const seller = await prisma.seller.findUnique({
@@ -83,7 +74,7 @@ export async function POST(req: NextRequest) {
     const product = await prisma.product.create({
       data: {
         name,
-        slug,
+        slug: regenerateSlug(name),
         brand: brand || null,
         basePrice: basePrice ?? null,
         description: description || "",
@@ -155,7 +146,6 @@ export async function PUT(req: NextRequest) {
     const {
       id,
       name,
-      slug,
       brand,
       basePrice,
       description,
@@ -168,16 +158,14 @@ export async function PUT(req: NextRequest) {
       variants = [],
     } = body;
 
-    // Validation
     if (!id) {
       return errorResponse("Product ID is required");
     }
 
-    if (!name || !slug || !categoryId) {
+    if (!name || !categoryId) {
       return errorResponse("Name, slug, and categoryId are required");
     }
 
-    // Check if product exists
     const existingProduct = await prisma.product.findUnique({
       where: { id },
     });
@@ -186,18 +174,6 @@ export async function PUT(req: NextRequest) {
       return errorResponse("Product not found");
     }
 
-    // Check if slug is being changed and if it already exists
-    if (slug !== existingProduct.slug) {
-      const slugExists = await prisma.product.findUnique({
-        where: { slug },
-      });
-
-      if (slugExists) {
-        return errorResponse("A product with this slug already exists");
-      }
-    }
-
-    // Get existing variants first to delete their options
     const existingVariants = await prisma.variant.findMany({
       where: { productId: id },
       select: { id: true },
@@ -205,7 +181,6 @@ export async function PUT(req: NextRequest) {
 
     const variantIds = existingVariants.map((v) => v.id);
 
-    // Delete existing specs, variant options, and variants (we'll recreate them)
     await prisma.spec.deleteMany({
       where: { productId: id },
     });
@@ -225,14 +200,14 @@ export async function PUT(req: NextRequest) {
       where: { id },
       data: {
         name,
-        slug,
+        slug: regenerateSlug(name),
         brand: brand || null,
         basePrice: basePrice ?? null,
         description: description || "",
         images: images || [],
         tags: tags || [],
         stock: stock ?? null,
-        status: status || "DRAFT",
+        status,
         categoryId,
         specs: {
           create: specs.map((spec: any) => ({
