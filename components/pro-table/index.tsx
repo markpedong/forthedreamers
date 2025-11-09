@@ -1,10 +1,10 @@
 import { DATE_FORMAT, TABLE_PROPS } from '@/constants';
 import {
-	ProColumns,
-	ProTable as AntProTable,
-	ProFormDateRangePicker,
-	ActionType,
-	ProFormInstance,
+  ProColumns,
+  ProTable as AntProTable,
+  ProFormDateRangePicker,
+  ActionType,
+  ProFormInstance,
 } from '@ant-design/pro-components';
 import dayjs from 'dayjs';
 import { useMemo, useRef } from 'react';
@@ -34,6 +34,7 @@ const ProTable = <T extends Record<string, any>>({
         dataIndex: 'dateRange',
         order: -1,
         hideInTable: true,
+        colSize: 2,
         search: !disableTimeFilter,
         renderFormItem: () => (
           <ProFormDateRangePicker

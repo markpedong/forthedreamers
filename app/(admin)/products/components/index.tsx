@@ -16,7 +16,7 @@ import { tryWithToast } from '@/utils/helper';
 import DropDown from '@/components/reusable/dropdown';
 import { Card, CardContent } from '@/components/ui/card';
 import ProTable from '@/components/pro-table';
-import { ActionType, ProColumns } from '@ant-design/pro-components';
+import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
 
 const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
   const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
@@ -97,6 +97,14 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
     {
       title: 'Status',
       search: true,
+      renderFormItem: () => (
+        <ProFormSelect
+          options={[
+            { label: 'Active', value: 'ACTIVE' },
+            { label: 'Inactive', value: 'INACTIVE' },
+          ]}
+        />
+      ),
       render: (_, record) => (
         <Badge variant={record.status === 'ACTIVE' ? 'default' : 'secondary'}>
           {record.status}
