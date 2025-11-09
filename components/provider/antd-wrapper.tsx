@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { FC, PropsWithChildren } from 'react';
-import { ConfigProvider, theme } from 'antd';
+import { FC, PropsWithChildren, useEffect, useState } from 'react';
+import { ConfigProvider, theme as antdTheme } from 'antd';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useIsClient } from '@uidotdev/usehooks';
@@ -28,13 +28,35 @@ dayjs.locale('en');
 
 const AntdWrapper: FC<PropsWithChildren> = ({ children }) => {
   const isMobile = useIsMobile();
-  const isCLient = useIsClient();
-  const isDark = useTheme().resolvedTheme === 'dark';
+  const isClient = useIsClient();
+  const { resolvedTheme: themeMode } = useTheme();
+  const isDark = themeMode === 'dark';
 
-  if (!isCLient) return null;
+  const [colors, setColors] = useState({
+    primary: '#000',
+    primaryForeground: '#fff',
+    secondary: '#000',
+    secondaryForeground: '#fff',
+  });
 
-  const primaryHex = getCssVarHex('--primary');
-  const primaryForeground = getCssVarHex('--primary-foreground');
+  useEffect(() => {
+    if (!isClient) return;
+
+    const updateColors = () => {
+      setColors({
+        primary: getCssVarHex('--primary') || '#000',
+        primaryForeground: getCssVarHex('--primary-foreground') || '#fff',
+        secondary: getCssVarHex('--secondary') || '#000',
+        secondaryForeground: getCssVarHex('--secondary-foreground') || '#fff',
+      });
+    };
+
+    const raf = requestAnimationFrame(updateColors);
+
+    return () => cancelAnimationFrame(raf);
+  }, [themeMode, isClient]);
+
+  if (!isClient) return null;
 
   return (
     <div className={classNames({ 'pb-20': isMobile })}>
@@ -44,12 +66,13 @@ const AntdWrapper: FC<PropsWithChildren> = ({ children }) => {
           theme={{
             token: {
               fontFamily: 'Outfit',
-              colorTextLightSolid: primaryForeground,
-              colorPrimaryTextHover: primaryForeground,
-              colorPrimaryHover: primaryHex,
-              colorPrimary: primaryHex,
+              colorPrimary: colors.primary,
+              colorPrimaryHover: colors.primary,
+              colorPrimaryTextHover: colors.primaryForeground,
+              colorTextLightSolid: colors.primaryForeground,
+              colorTextSecondary: colors.secondary,
             },
-            algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
+            algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
           }}
         >
           {children}

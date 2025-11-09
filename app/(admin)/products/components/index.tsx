@@ -82,10 +82,12 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
   const columns: ProColumns<TProduct>[] = [
     {
       title: 'Product',
+      search: true,
       render: (_, record) => <span className='font-medium'>{record.name}</span>,
     },
     {
       title: 'Brand',
+      search: true,
       render: (_, record) => <span className='text-muted-foreground'>{record.brand}</span>,
     },
     {
@@ -94,7 +96,7 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
     },
     {
       title: 'Status',
-      search: false,
+      search: true,
       render: (_, record) => (
         <Badge variant={record.status === 'ACTIVE' ? 'default' : 'secondary'}>
           {record.status}
@@ -193,6 +195,7 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
               rowKey='id'
               columns={columns?.map((item) => ({ ...item, align: 'center' }))}
               dataSource={products}
+              toolBarRender={false}
             />
           </CardContent>
         </Card>
