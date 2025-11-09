@@ -166,15 +166,18 @@ const ProTableInner = <T extends Record<string, any>>(
         ? { field, order: prev.order === 'asc' ? 'desc' : 'asc' }
         : { field, order: 'asc' },
     );
+
   const handlePageChange = (n: number) => {
     const safe = Math.max(1, n);
     setPaginationState((p) => ({ ...p, current: safe }));
     if (isPaginationEnabled(pagination)) pagination.onChange?.(safe, pageSize);
   };
+
   const handlePageSizeChange = (ps: 10 | 20 | 50) => {
     setPaginationState((p) => ({ ...p, pageSize: ps, current: 1 }));
     if (isPaginationEnabled(pagination)) pagination.onChange?.(1, ps);
   };
+
   const handleResetFilters = () => {
     setSearchInputs({});
     setFilters({});
@@ -196,6 +199,7 @@ const ProTableInner = <T extends Record<string, any>>(
     if (type === 'select') {
       const [options, setOptions] = useState<ValueEnumItem[]>([]);
       const valueEnum = typeof col.search === 'object' ? col.search.valueEnum : undefined;
+
       useEffect(() => {
         let active = true;
         (async () => {
@@ -208,6 +212,7 @@ const ProTableInner = <T extends Record<string, any>>(
           active = false;
         };
       }, [valueEnum]);
+
       return (
         <Select
           key={key}

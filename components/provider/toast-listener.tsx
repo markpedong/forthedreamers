@@ -1,11 +1,14 @@
 'use client';
 
 import useWithDispatch from '@/hooks/useWithDispatch';
+import { setSessionData } from '@/redux/features/appSlice';
+import { useAppDispatch } from '@/redux/store';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 const ToastListener = () => {
+  const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -15,6 +18,7 @@ const ToastListener = () => {
   const emailVerified = searchParams.get('emailVerified');
   const accountLinked = searchParams.get('accountLinked');
   const isFromSocial = searchParams.get('social');
+  const isSignedIn = searchParams.get('isSignedIn');
 
   const deleteParameters = (keys: string[]) => {
     const nextSearchParams = new URLSearchParams(searchParams.toString());
@@ -25,6 +29,13 @@ const ToastListener = () => {
 
     setTimeout(() => router.replace(newUrl, { scroll: false }), 100);
   };
+
+  useEffect(() => {
+    if (isSignedIn === 'false') {
+      dispatch(setSessionData(null));
+      deleteParameters(['isSignedIn']);
+    }
+  }, [pathname, isSignedIn]);
 
   useEffect(() => {
     if (isFromSocial) {

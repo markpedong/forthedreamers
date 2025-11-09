@@ -9,7 +9,7 @@ export default async function RootLayout({
   const session = await getSession();
 
   if (!session) {
-    redirect('/sign-in');
+    redirect('/sign-in?isSignedIn=false');
     return;
   }
 
