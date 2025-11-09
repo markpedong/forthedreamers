@@ -1,3 +1,5 @@
+import chroma from "chroma-js";
+
 const handleError = (err: unknown) => {
   const message = err instanceof Error ? err.message : "Something went wrong";
 
@@ -59,4 +61,29 @@ export function slugify(text: string): string {
 
 export function regenerateSlug(text: string): string {
   return slugify(text)
+}
+
+export const getCssVarHex = (variableName: string) => {
+  if (typeof window === 'undefined') return;
+
+  const rootStyles = getComputedStyle(document.documentElement);
+  let value = rootStyles.getPropertyValue(variableName).trim();
+
+  if (!value) return;
+
+  if (value.startsWith('lab(')) {
+    // @ts-ignore
+    const [l, a, b] = value
+      .match(/-?[\d.]+%?/g)
+      .map((v) => (v.includes('%') ? parseFloat(v) : parseFloat(v)));
+
+    return chroma.lab(l, a, b).hex();
+  }
+
+  try {
+    return chroma(value).hex();
+  } catch (e) {
+    console.warn('Unable to parse color:', value, e);
+    return;
+  }
 }

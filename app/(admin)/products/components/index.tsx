@@ -5,15 +5,7 @@ import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import ProductFormModal from './product-form-modal';
-import {
-  ProColumn,
-  TProduct,
-  TProductsList,
-  ProductFormData,
-  ProTableRef,
-  DropdownMenuItemType,
-} from '@/lib/types';
-import { ProTable } from '@/components/reusable/table';
+import { TProduct, TProductsList, ProductFormData, DropdownMenuItemType } from '@/lib/types';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
@@ -22,6 +14,9 @@ import { createProduct, updateProduct } from '@/lib/api-client';
 import { revalidatePath } from '@/lib/server-actions';
 import { tryWithToast } from '@/utils/helper';
 import DropDown from '@/components/reusable/dropdown';
+import { Card, CardContent } from '@/components/ui/card';
+import ProTable from '@/components/pro-table';
+import { ActionType, ProColumns } from '@ant-design/pro-components';
 
 const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
   const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
@@ -29,7 +24,7 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [product, setProduct] = useState<TProduct>();
-  const tableRef = useRef<ProTableRef>(null);
+  const actionRef = useRef<ActionType>(null);
 
   const handleDelete = async () => {
     if (!deleteDialog) return;
@@ -84,7 +79,7 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
     },
   ];
 
-  const columns: ProColumn<TProduct>[] = [
+  const columns: ProColumns<TProduct>[] = [
     {
       title: 'Product',
       render: (_, record) => <span className='font-medium'>{record.name}</span>,
@@ -160,8 +155,6 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
   ];
 
   const handleSubmitProduct = async (data: ProductFormData, mode: 'create' | 'edit') => {
-    tableRef.current?.reset();
-
     let res;
     const isEdit = mode === 'edit';
 
@@ -193,12 +186,16 @@ const Products: FC<TProductsList> = ({ products = [], categories = [] }) => {
           </Button>
         </header>
 
-        <ProTable<TProduct>
-          ref={tableRef}
-          rowKey='id'
-          columns={columns?.map((item) => ({ ...item, align: 'center' }))}
-          dataSource={products}
-        />
+        <Card>
+          <CardContent>
+            <ProTable<TProduct>
+              actionRef={actionRef}
+              rowKey='id'
+              columns={columns?.map((item) => ({ ...item, align: 'center' }))}
+              dataSource={products}
+            />
+          </CardContent>
+        </Card>
       </div>
 
       <ProductFormModal

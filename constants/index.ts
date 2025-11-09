@@ -1,5 +1,6 @@
 import { AppleIcon, FacebookIcon, GoogleIcon, TikTokIcon } from "@/components/icons/oauth";
 import { PRODUCT_STATUS } from "@/generated/prisma";
+import { ProTableProps } from "@ant-design/pro-components";
 import { ComponentProps, ElementType } from "react";
 
 export const OAUTH_PROVIDERS = ["google", "github", "facebook", "tiktok"] as const
@@ -41,3 +42,26 @@ export const LABEL_VALUE_DEFAULT = {
 }
 
 export const DISABLED_NAVBAR = ['/sign-in', '/reset-password', '/seller', '/products', '/users', '/dashboard']
+
+export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss'
+
+export const TABLE_PROPS: ProTableProps<any, any> = {
+  scroll: { x: 1200 },
+  search: {
+    labelWidth: 'auto',
+    collapsed: false,
+    collapseRender: false,
+    span: {
+      xs: 24,
+      sm: 12,
+      md: 8,
+      lg: 6,
+      xl: 6,
+      xxl: 4
+    }
+  },
+  pagination: {
+    defaultPageSize: 20,
+    showSizeChanger: true
+  }
+}

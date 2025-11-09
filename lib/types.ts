@@ -2,8 +2,9 @@ import { auth } from "./auth";
 import type { z, ZodTypeAny } from 'zod';
 import { getSession, listUserAccounts } from "./server-actions";
 import type { Control, Path, FieldValues } from 'react-hook-form';
-import { ComponentPropsWithoutRef } from "react";
+import { ComponentPropsWithoutRef, Ref } from "react";
 import { Category, Product, Spec, Variant, VariantOption } from "@/generated/prisma";
+import type { ActionType, ProTableProps as AntProTableProps } from '@ant-design/pro-components';
 
 export type TOnNavigate = (page: string) => void;
 
@@ -54,6 +55,7 @@ export interface ProColumn<T> {
   search?: SearchConfig | false
   className?: string;
   align?: 'left' | 'center' | 'right';
+  searchKey?: keyof T | string
 }
 
 export type RequestParams = { page: number; pageSize: number; filters?: Record<string, any> };
@@ -72,16 +74,6 @@ export type PaginationProps = {
   pageSizeOptions?: (10 | 20 | 50)[];
   onChange?: (page: number, pageSize: 10 | 20 | 50) => void;
 };
-
-export interface ProTableProps<T> {
-  rowKey: keyof T;
-  columns: ProColumn<T>[];
-  dataSource?: T[];
-  request?: RequestFn<T>;
-  pagination?: false | PaginationProps;
-  title?: string;
-}
-
 
 export type TCreateSeller = { storeName: string, userID: string }
 
@@ -183,7 +175,7 @@ export type SpecsEditorProps = {
   onSpecsChange: (specs: FormSpec[]) => void;
 }
 
-export type TProductsList = { products: TProduct[]; categories: Category[], session: Session };
+export type TProductsList = { products: TProduct[]; categories: Category[] };
 
 export type TVariantOption = Omit<
   VariantOption,
@@ -235,4 +227,12 @@ export type DropdownProps = {
   trigger: React.ReactElement; // MUST be a single DOM element
   align?: 'start' | 'center' | 'end';
   menus: DropdownMenuItemType[];
+};
+
+export type ProTableProps<T> = AntProTableProps<T, any, any> & {
+  exportDataFn?: () => Promise<void>;
+  timeLabel?: string;
+  disableTimeFilter?: boolean;
+  actionRef?: Ref<ActionType | undefined>;
+  isLoading?: boolean;
 };
