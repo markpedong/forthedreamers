@@ -57,7 +57,6 @@ export async function POST(req: NextRequest) {
       variants = [],
     } = body;
 
-    // Validation
     if (!name || !categoryId) {
       return errorResponse("Name, slug, categoryId are required");
     }
@@ -70,18 +69,17 @@ export async function POST(req: NextRequest) {
       return errorResponse("Seller not found for the given userId");
     }
 
-    // Create product with nested data
     const product = await prisma.product.create({
       data: {
         name,
         slug: regenerateSlug(name),
-        brand: brand || null,
-        basePrice: basePrice ?? null,
-        description: description || "",
+        brand,
+        basePrice,
+        description,
         images: images || [],
         tags: tags || [],
-        stock: stock ?? null,
-        status: status || "DRAFT",
+        stock,
+        status,
         sellerId: seller.id,
         categoryId,
         specs: {
@@ -98,9 +96,9 @@ export async function POST(req: NextRequest) {
               create: (variant.options || []).map((option: any) => ({
                 variantOptionName: option.variantOptionName,
                 price: option.price,
-                discountedPrice: option.discountedPrice ?? null,
+                discountedPrice: option.discountedPrice,
                 stock: option.stock,
-                coupon: option.coupon ?? null,
+                coupon: option.coupon,
               })),
             },
           })),
@@ -195,18 +193,17 @@ export async function PUT(req: NextRequest) {
       where: { productId: id },
     });
 
-    // Update product with nested data
     const product = await prisma.product.update({
       where: { id },
       data: {
         name,
         slug: regenerateSlug(name),
-        brand: brand || null,
-        basePrice: basePrice ?? null,
-        description: description || "",
+        brand,
+        basePrice,
+        description,
         images: images || [],
         tags: tags || [],
-        stock: stock ?? null,
+        stock,
         status,
         categoryId,
         specs: {
