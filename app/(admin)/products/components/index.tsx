@@ -18,6 +18,7 @@ import ProTable from '@/components/pro-table';
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
 import { useQueryCategories } from '@/hooks/useQuery';
 import { getProducts } from '@/lib/http';
+import VariationTable from './variation-table';
 
 const Products: FC = () => {
   const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
@@ -231,6 +232,11 @@ const Products: FC = () => {
           request={fetchData}
           toolBarRender={false}
           search={{ defaultCollapsed: false }}
+          expandable={{
+            expandedRowRender: (record) =>
+              record.variants.length > 0 && <VariationTable variations={record.variants} />,
+            rowExpandable: (record) => record.variants.length > 0,
+          }}
         />
       </div>
       <ProductFormModal
