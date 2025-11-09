@@ -52,8 +52,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
     }
 
     if (isEdit && initialProduct) {
-      console.log('initialProduct', initialProduct);
-      const currCategory = categories.find((c) => c.name === initialProduct.category.name);
+      const currCategory = categories.find((c) => c.name === initialProduct?.category?.name);
       const formData = {
         ...initialProduct,
         category: currCategory?.name,

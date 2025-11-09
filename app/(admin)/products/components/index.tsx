@@ -67,6 +67,7 @@ const Products: FC = () => {
       onClick: () => {
         setType('EDIT');
         setProduct(record);
+        setOpen(true);
       },
       hasSeparatorBelow: true,
     },
@@ -210,7 +211,15 @@ const Products: FC = () => {
             <h1 className='text-4xl font-bold'>Products</h1>
             <p className='text-muted-foreground'>Manage your product catalog</p>
           </div>
-          <Button onClick={() => setOpen(true)} size='lg' className='gap-2 shadow-sm'>
+          <Button
+            onClick={() => {
+              setType('CREATE');
+              setOpen(true);
+              setProduct(undefined);
+            }}
+            size='lg'
+            className='gap-2 shadow-sm'
+          >
             <Plus className='h-5 w-5' /> Create Product
           </Button>
         </header>
