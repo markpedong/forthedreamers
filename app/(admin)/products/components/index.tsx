@@ -5,7 +5,7 @@ import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import ProductFormModal from './product-form-modal';
-import { TProduct, TProductsList, ProductFormData, DropdownMenuItemType } from '@/lib/types';
+import { TProduct, ProductFormData, DropdownMenuItemType } from '@/lib/types';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
@@ -16,15 +16,18 @@ import { tryWithToast } from '@/utils/helper';
 import DropDown from '@/components/reusable/dropdown';
 import ProTable from '@/components/pro-table';
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
-import { getProducts } from '@/lib/http';
+import { useQueryCategories } from '@/hooks/useQuery';
 
-const Products: FC<TProductsList> = ({ categories = [] }) => {
+const Products: FC = () => {
   const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [product, setProduct] = useState<TProduct>();
   const actionRef = useRef<ActionType>(null);
+  const { data: categories } = useQueryCategories();
+
+  console.log('categories', categories);
 
   const handleDelete = async () => {
     if (!deleteDialog) return;
@@ -192,11 +195,16 @@ const Products: FC<TProductsList> = ({ categories = [] }) => {
   };
 
   const fetchData = async (params: any) => {
-    const res = await tryWithToast(getProducts(params));
+    // const res = await tryWithToast(getProducts(params));
+
+    // return {
+    //   data: res?.data ?? [],
+    //   total: res?.total ?? 0,
+    // };
 
     return {
-      data: res?.data ?? [],
-      total: res?.total ?? 0,
+      data: [],
+      total: 0,
     };
   };
 
@@ -228,7 +236,7 @@ const Products: FC<TProductsList> = ({ categories = [] }) => {
         onOpenChange={setEditOpen}
         mode='edit'
         initialProduct={product}
-        categories={categories}
+        categories={categories?.data ?? []}
         onSubmit={handleSubmitProduct}
       />
 
@@ -236,7 +244,7 @@ const Products: FC<TProductsList> = ({ categories = [] }) => {
         open={createOpen}
         onOpenChange={setCreateOpen}
         mode='create'
-        categories={categories}
+        categories={categories?.data ?? []}
         onSubmit={handleSubmitProduct}
       />
       <AlertDialog

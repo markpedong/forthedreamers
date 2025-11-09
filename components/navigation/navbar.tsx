@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { motion } from 'framer-motion';
 import SearchOverlay from './search-overlay';
 import { usePathname, useRouter } from 'next/navigation';

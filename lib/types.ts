@@ -164,8 +164,6 @@ export type SpecsEditorProps = {
   onSpecsChange: (specs: FormSpec[]) => void;
 }
 
-export type TProductsList = { categories: Category[] };
-
 export type TVariantOption = Omit<
   VariantOption,
   "createdAt" | "updatedAt"

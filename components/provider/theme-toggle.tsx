@@ -1,7 +1,7 @@
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import classNames from 'classnames';
 import { Moon, Sun } from '../dynamic';
 

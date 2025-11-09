@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { FC, PropsWithChildren, useEffect, useState } from 'react';
 import { ConfigProvider, theme as antdTheme } from 'antd';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { useIsClient } from '@uidotdev/usehooks';
 import { useTheme } from 'next-themes';
 import enUS from 'antd/locale/en_US';

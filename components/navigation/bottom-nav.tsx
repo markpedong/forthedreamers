@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { useAppSelector } from '@/redux/store';
 
 const navItems = [
