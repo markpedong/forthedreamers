@@ -3,7 +3,7 @@ import type { z, ZodTypeAny } from 'zod';
 import { getSession, listUserAccounts } from "./server-actions";
 import type { Control, Path, FieldValues } from 'react-hook-form';
 import { ComponentPropsWithoutRef, Ref } from "react";
-import { Category, Product, Spec, Variant, VariantOption } from "@/generated/prisma";
+import { Category, PrismaClient, Product, Spec, Variant, VariantOption } from "@/generated/prisma";
 import type { ActionType, ProTableProps as AntProTableProps } from '@ant-design/pro-components';
 
 export type TOnNavigate = (page: string) => void;
@@ -252,3 +252,10 @@ export type ApiResponse<T> = {
   pageSize: number;
   total: number;
 };
+
+export type TGetPaginatedData = {
+  model: keyof PrismaClient;
+  where: Record<string, any>;
+  include?: any;
+  orderBy?: any;
+}

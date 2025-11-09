@@ -1,6 +1,6 @@
-import { Prisma, PrismaClient } from "@/generated/prisma";
+import { Prisma } from "@/generated/prisma";
 import { NextResponse } from "next/server";
-import { ApiResponse } from "./types";
+import { ApiResponse, TGetPaginatedData } from "./types";
 import prisma from "./prisma";
 
 export const successResponse = (data: any = null, message = "OK", status = 200) => {
@@ -68,17 +68,7 @@ export const errorResponse = (err: unknown) => {
   );
 };
 
-export async function getPaginatedData<T extends object>({
-  model,
-  where,
-  include,
-  orderBy = { createdAt: "desc" },
-}: {
-  model: keyof PrismaClient;
-  where: Record<string, any>;
-  include?: any;
-  orderBy?: any;
-}): Promise<ApiResponse<T>> {
+export const getPaginatedData = async <T extends object>({ model, where, include, orderBy = { createdAt: "desc" } }: TGetPaginatedData): Promise<ApiResponse<T>> => {
   const page = Number(where.page) || 1;
   const pageSize = Number(where.pageSize) || 10;
   const prismaModel = prisma[model] as any;
