@@ -172,20 +172,23 @@ const Products: FC<TProductsList> = ({ categories = [] }) => {
     let res;
     const isEdit = mode === 'edit';
 
-    if (isEdit) {
-      res = await tryWithToast(
-        updateProduct({
-          ...data,
-          id: String(data.id),
-        }),
-      );
-    } else {
-      res = await tryWithToast(createProduct(data));
-    }
+    try {
+      if (isEdit) {
+        res = await tryWithToast(
+          updateProduct({
+            ...data,
+            id: String(data.id),
+          }),
+        );
+      } else {
+        res = await tryWithToast(createProduct(data));
+      }
 
-    toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`);
-    actionRef.current?.reload();
-    await revalidatePath('/products');
+      toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`);
+      actionRef.current?.reload();
+      await revalidatePath('/products');
+    } finally {
+    }
   };
 
   const fetchData = async (params: any) => {

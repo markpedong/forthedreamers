@@ -3,6 +3,24 @@ import { successResponse, errorResponse, getPaginatedData, buildServerQuery } fr
 import { regenerateSlug } from "@/utils/helper";
 import { NextRequest } from "next/server";
 
+const mapSpecs = (specs: any[]) =>
+  specs.map((s) => ({ label: s.label, value: s.value }));
+
+const mapVariants = (variants: any[]) =>
+  variants.map((v) => ({
+    name: v.name,
+    isRequired: v.isRequired ?? true,
+    options: {
+      create: (v.options || []).map((o: any) => ({
+        variantOptionName: o.variantOptionName,
+        price: o.price,
+        discountedPrice: o.discountedPrice ?? null,
+        stock: o.stock,
+        coupon: o.coupon ?? null,
+      })),
+    },
+  }));
+
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
@@ -36,50 +54,30 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const {
-      name,
-      brand,
-      basePrice,
-      description,
-      images,
-      tags,
-      stock,
-      status,
-      sellerId,
-      categoryId,
-      specs = [],
-      variants = [],
-    } = body;
-
-    if (!name || !categoryId)
-      return errorResponse("Name and categoryId are required");
+    const { name, categoryId, specs = [], variants = [], ...rest } = body;
+    if (!name || !categoryId) return errorResponse("Name and categoryId are required");
 
     const seller = await prisma.seller.findUnique({
-      where: { userId: sellerId },
+      where: { userId: rest.sellerId },
       select: { id: true },
     });
-
-    if (!seller)
-      return errorResponse("Seller not found for the given userId");
+    if (!seller) return errorResponse("Seller not found");
 
     const product = await prisma.product.create({
       data: {
         name,
         slug: regenerateSlug(name),
-        brand,
-        basePrice,
-        description,
-        images: images || [],
-        tags: tags || [],
-        stock,
-        status,
-        sellerId: seller.id,
-        categoryId,
+        brand: rest.brand,
+        basePrice: rest.basePrice,
+        description: rest.description,
+        images: rest.images || [],
+        tags: rest.tags || [],
+        stock: rest.stock,
+        status: rest.status,
+        category: { connect: { id: categoryId } }, // connect category
+        seller: { connect: { id: seller.id } },    // connect seller
         specs: {
-          create: specs.map((s: any) => ({
-            label: s.label,
-            value: s.value,
-          })),
+          create: specs.map((s: any) => ({ label: s.label, value: s.value })),
         },
         variants: {
           create: variants.map((v: any) => ({
@@ -98,29 +96,11 @@ export async function POST(req: NextRequest) {
         },
       },
       include: {
-        specs: {
-          omit: {
-            createdAt: true,
-            updatedAt: true,
-            productId: true,
-          },
-        },
+        specs: { omit: { createdAt: true, updatedAt: true, productId: true } },
         category: true,
         variants: {
-          omit: {
-            createdAt: true,
-            updatedAt: true,
-            productId: true,
-          },
-          include: {
-            options: {
-              omit: {
-                createdAt: true,
-                updatedAt: true,
-                variantId: true,
-              },
-            },
-          },
+          omit: { createdAt: true, updatedAt: true, productId: true },
+          include: { options: { omit: { createdAt: true, updatedAt: true, variantId: true } } },
         },
       },
     });
@@ -134,41 +114,16 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
-    const {
-      id,
-      name,
-      brand,
-      basePrice,
-      description,
-      images,
-      tags,
-      stock,
-      status,
-      categoryId,
-      specs = [],
-      variants = [],
-    } = body;
-
+    const { id, name, categoryId, specs = [], variants = [], ...rest } = body;
     if (!id) return errorResponse("Product ID is required");
-    if (!name || !categoryId)
-      return errorResponse("Name and categoryId are required");
+    if (!name || !categoryId) return errorResponse("Name and categoryId are required");
 
     const existingProduct = await prisma.product.findUnique({ where: { id } });
     if (!existingProduct) return errorResponse("Product not found");
 
     const product = await prisma.$transaction(async (tx) => {
-      const existingVariants = await tx.variant.findMany({
-        where: { productId: id },
-        select: { id: true },
-      });
-
-      const variantIds = existingVariants.map((v) => v.id);
-
       await tx.spec.deleteMany({ where: { productId: id } });
-      if (variantIds.length)
-        await tx.variantOption.deleteMany({
-          where: { variantId: { in: variantIds } },
-        });
+      await tx.variantOption.deleteMany({ where: { variantId: { in: (await tx.variant.findMany({ where: { productId: id }, select: { id: true } })).map(v => v.id) } } });
       await tx.variant.deleteMany({ where: { productId: id } });
 
       return tx.product.update({
@@ -176,19 +131,16 @@ export async function PUT(req: NextRequest) {
         data: {
           name,
           slug: regenerateSlug(name),
-          brand,
-          basePrice,
-          description,
-          images: images || [],
-          tags: tags || [],
-          stock,
-          status,
+          brand: rest.brand,
+          basePrice: rest.basePrice,
+          description: rest.description,
+          images: rest.images || [],
+          tags: rest.tags || [],
+          stock: rest.stock,
+          status: rest.status,
           categoryId,
           specs: {
-            create: specs.map((s: any) => ({
-              label: s.label,
-              value: s.value,
-            })),
+            create: specs.map((s: any) => ({ label: s.label, value: s.value })),
           },
           variants: {
             create: variants.map((v: any) => ({
@@ -207,32 +159,15 @@ export async function PUT(req: NextRequest) {
           },
         },
         include: {
-          specs: {
-            omit: {
-              createdAt: true,
-              updatedAt: true,
-              productId: true,
-            },
-          },
+          specs: { omit: { createdAt: true, updatedAt: true, productId: true } },
           category: true,
           variants: {
-            omit: {
-              createdAt: true,
-              updatedAt: true,
-              productId: true,
-            },
-            include: {
-              options: {
-                omit: {
-                  createdAt: true,
-                  updatedAt: true,
-                  variantId: true,
-                },
-              },
-            },
+            omit: { createdAt: true, updatedAt: true, productId: true },
+            include: { options: { omit: { createdAt: true, updatedAt: true, variantId: true } } },
           },
         },
       });
+
     });
 
     return successResponse(product, "Product updated successfully");

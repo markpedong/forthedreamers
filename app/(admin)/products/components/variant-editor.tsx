@@ -175,7 +175,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
 
           <div className='space-y-4'>
             <div>
-              <Label htmlFor='variantName'>Variant Name *</Label>
+              <Label className='mb-2' htmlFor='variantName'>Variant Name *</Label>
               <Input
                 id='variantName'
                 name='name'
