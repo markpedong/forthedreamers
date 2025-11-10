@@ -235,11 +235,11 @@ const Products: FC = () => {
       <AlertDialog
         title='Delete Product'
         open={!!deleteDialog}
-        onOpenChange={() => setDeleteDialog(null)}
         description='Are you sure you want to delete "{deleteDialog?.name}"? This action cannot be undone.'
         cancelText='Cancel'
         confirmText={isPending ? 'Deleting...' : 'Delete'}
         onConfirm={handleDelete}
+        onCancel={() => setDeleteDialog(null)}
       />
     </>
   );

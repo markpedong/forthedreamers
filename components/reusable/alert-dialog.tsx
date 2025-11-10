@@ -15,7 +15,7 @@ import { FC, ReactNode } from 'react';
 
 interface ReusableAlertProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
   title: string;
   description?: string;
   confirmText?: string;
@@ -47,7 +47,7 @@ const AlertDialog: FC<ReusableAlertProps> = ({
   containerClassName,
 }) => {
   return (
-    <AlertDialogUI open={open} onOpenChange={onOpenChange}>
+    <AlertDialogUI open={open} {...{ onOpenChange }}>
       <AlertDialogContent
         className={classNames('flex flex-col max-h-[90vh] p-0 gap-0', wrapperClassName)}
         onKeyDown={(e) => {
