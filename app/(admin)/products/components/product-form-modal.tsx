@@ -98,7 +98,6 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
         };
 
         await onSubmit(data, type);
-        setOpen(false);
       } catch (err) {
         toast.error(err instanceof Error ? err.message : 'Failed to save product');
       }

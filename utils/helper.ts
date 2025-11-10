@@ -1,4 +1,4 @@
-import { BaseQueryParams } from "@/lib/types";
+import { ApiResponse, BaseQueryParams } from "@/lib/types";
 import chroma from "chroma-js";
 
 const handleError = (err: unknown) => {
@@ -45,10 +45,34 @@ export async function catchRouteErrors<T>(promise: Promise<T>): Promise<[Error |
   }
 }
 
-export const tryWithToast = async <T>(promise: Promise<T>): Promise<T | null> => {
-  const [err, res] = await catchErrorWithToast(promise);
-  if (err) return null;
-  return res;
+export const tryWithToast = async <T>(
+  promise: Promise<ApiResponse<T>>
+): Promise<ApiResponse<T>> => {
+  try {
+    const res = await promise;
+
+    if (res.success === false) {
+      handleError(new Error(res.message || 'Unknown error'));
+    }
+
+    return {
+      success: res.success ?? false,
+      message: res.message ?? '',
+      data: res.data,
+      page: res.page ?? 1,
+      pageSize: res.pageSize ?? 0,
+      total: res.total ?? 0,
+    };
+  } catch (err) {
+    if (err instanceof Error) {
+      handleError(err);
+      return {
+        success: false,
+        message: err.message,
+      };
+    }
+    throw err;
+  }
 };
 
 export function slugify(text: string): string {

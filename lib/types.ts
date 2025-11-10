@@ -230,9 +230,9 @@ export type ApiResponse<T> = {
   success: boolean;
   message?: string;
   data?: T;
-  page: number;
-  pageSize: number;
-  total: number;
+  page?: number;
+  pageSize?: number;
+  total?: number;
 };
 
 export type TGetPaginatedData = {

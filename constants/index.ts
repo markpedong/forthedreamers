@@ -22,7 +22,7 @@ export const ALLOWED_KEYS = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Del
 
 export const PRODUCT_DEFAULT = {
   name: '',
-  brand: null as string | null | undefined,
+  brand: '',
   category: '',
   description: '',
   basePrice: '',

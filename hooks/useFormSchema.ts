@@ -111,15 +111,14 @@ const useFormSchema = () => {
     .object({
       id: z.string().optional(),
       name: createStringSchema("Product Name", 1, 200),
-      slug: z.string().optional(),
-      brand: z.string().max(100).nullable().optional(),
+      brand: createStringSchema("Brand", 1, 100),
       basePrice: z.string().default(''),
-      description: z.string().max(5000).optional().nullable(),
+      description: createStringSchema("Description", 1, 1000),
       images: z.array(z.string()).default([]),
       tags: z.array(z.string()).default([]),
       stock: z.string().default(''),
       status: z.enum(PRODUCT_STATUS).default('DRAFT'),
-      category: z.string(),
+      category: createStringSchema("Category", 1, 100),
       specs: z.array(specFormSchema).default([]),
       variants: z.array(variantFormSchema).default([]),
     })

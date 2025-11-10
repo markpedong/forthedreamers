@@ -171,19 +171,16 @@ const Products: FC = () => {
   ];
 
   const handleSubmitProduct = async (data: ProductFormData, type: 'CREATE' | 'EDIT') => {
-    let res;
     const isEdit = type === 'EDIT';
 
-    try {
-      if (isEdit) {
-        res = await tryWithToast(updateProduct(data));
-      } else {
-        res = await tryWithToast(createProduct(data));
-      }
+    const res = isEdit
+      ? await tryWithToast(updateProduct(data)) // now compatible
+      : await tryWithToast(createProduct(data));
 
+    if (res.success) {
       toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`);
+      setOpen(false);
       actionRef.current?.reload();
-    } finally {
     }
   };
 
