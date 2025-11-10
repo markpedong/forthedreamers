@@ -31,10 +31,6 @@ async function apiClient<T = any>(
 
   const data = await res.json().catch(() => null);
 
-  // if (!res.ok && !data?.success) {
-  //   throw new Error(data?.message || res.statusText || 'Request failed');
-  // }
-
   return data;
 }
 
