@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return successResponse(product, "Product created successfully", 201);
+    return successResponse({ data: product }, "Product created successfully", 201);
   } catch (err: unknown) {
     return errorResponse(err);
   }
@@ -156,7 +156,7 @@ export async function PUT(req: NextRequest) {
 
     });
 
-    return successResponse(product, "Product updated successfully");
+    return successResponse({ data: product }, "Product updated successfully");
   } catch (err: unknown) {
     return errorResponse(err);
   }

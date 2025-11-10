@@ -144,6 +144,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
               <Input label='Brand' name='brand' placeholder='e.g., AudioTech (optional)' />
 
               <Select
+                containerClassName='w-full'
                 label='Category *'
                 name='category'
                 options={categories.map((c) => ({ value: c.name, label: c.name }))}
