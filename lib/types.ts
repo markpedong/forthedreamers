@@ -66,31 +66,26 @@ export type PaginationProps = {
 
 export type TCreateSeller = { storeName: string, userID: string }
 
-// Product form data type (what the form expects/submits)
 export type ProductFormData = {
   id?: string;
   name: string;
-  slug?: string;
   brand: string | null;
-  basePrice: number | null;
+  basePrice: string;
   description: string | null;
   images: string[];
   tags: string[];
-  stock: number | null;
+  stock: string;
   status: 'ACTIVE' | 'INACTIVE' | 'DRAFT';
-  category: string; // Category name
-  categoryId?: string;
+  categoryId: string;
   specs: Array<{
     id?: string;
     label: string;
     value: string;
   }>;
   variants: Array<{
-    id?: string;
     name: string;
     isRequired: boolean;
     options: Array<{
-      id?: string;
       variantOptionName: string;
       price: number;
       discountedPrice: number | null;
@@ -104,7 +99,7 @@ export type ProductFormModalProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   type: 'CREATE' | 'EDIT';
-  initialProduct?: TProduct;
+  initialProduct?: Omit<TProduct, 'category'>;
   categories: Category[]
   onSubmit: (data: ProductFormData & { sellerId?: string }, type: 'CREATE' | 'EDIT') => Promise<void> | void
 }
@@ -129,7 +124,6 @@ export type InputProps<T extends FieldValues> = SharedProps<T> &
 export type TextareaProps<T extends FieldValues> = SharedProps<T> &
   Omit<ComponentPropsWithoutRef<'textarea'>, 'name'> & {
     type: 'textarea';
-    textarea: true;
   };
 
 export type ReusableInputProps<T extends FieldValues> = InputProps<T> | TextareaProps<T>;

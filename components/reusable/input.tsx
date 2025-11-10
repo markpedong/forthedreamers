@@ -18,7 +18,6 @@ import { ReusableInputProps } from '@/lib/types';
 const Input = <T extends FieldValues>(props: ReusableInputProps<T>) => {
   const {
     type = 'text',
-    textarea = false,
     disabled,
     prefixIconSrc,
     description,
@@ -35,6 +34,7 @@ const Input = <T extends FieldValues>(props: ReusableInputProps<T>) => {
   const isNumber = type === 'number';
   const computedType =
     eyeIcon && isPassword ? (showPassword ? 'text' : 'password') : isNumber ? 'text' : type;
+  const isTextArea = type === 'textarea';
 
   return (
     <FormField
@@ -53,7 +53,7 @@ const Input = <T extends FieldValues>(props: ReusableInputProps<T>) => {
                 />
               )}
 
-              {textarea ? (
+              {isTextArea ? (
                 <Textarea
                   {...field}
                   {...rest}
