@@ -179,8 +179,8 @@ const Products: FC = () => {
 
     if (res.success) {
       toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`);
-      setOpen(false);
       actionRef.current?.reload();
+      setOpen(false);
     }
   };
 
