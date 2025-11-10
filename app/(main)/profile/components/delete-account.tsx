@@ -36,9 +36,7 @@ const DeleteAccount: FC = (props: Props) => {
     }
 
     startSubmitting(async () => {
-      const verifyResult = await tryWithToast(
-        authClient.twoFactor.verifyTotp({ code: `${otp}` })
-      );
+      const verifyResult = await tryWithToast(authClient.twoFactor.verifyTotp({ code: `${otp}` }));
       if (!verifyResult || !!verifyResult.error) return;
 
       const deleteResult = await tryWithToast(deleteAccount());
