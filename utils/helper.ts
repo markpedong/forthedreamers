@@ -73,24 +73,27 @@ export async function catchErrorWithToast<T, E extends new (...args: any[]) => E
     const data = await promise;
     return [undefined, data] as [undefined, T];
   } catch (error) {
-    // Ensure it's an Error
+
     if (!(error instanceof Error)) throw error;
 
-    // Catch all errors if no filter, or only the ones specified
     if (!errorsToCatch || errorsToCatch.some(e => error instanceof e)) {
       handleError(error);
-      return [error as InstanceType<E>];
+      return [{ message: error.message, success: false } as InstanceType<E>];
     }
 
-    // Rethrow if not a specified error type
-    throw error;
+    // throw error;
+
+    return [error as InstanceType<E>];
   }
 }
 
-export const tryWithToast = async <T>(promise: Promise<T>): Promise<T | null> => {
+type ErrResp = { success?: boolean, message?: string }
+
+export const tryWithToast = async <T>(promise: Promise<T>): Promise<T & ErrResp | null> => {
   const [err, res] = await catchErrorWithToast(promise);
-  if (err) return null;
-  return res;
+  console.log('[err, res]', err, res);
+  if (err) return err as unknown as T & ErrResp;
+  return res as T & ErrResp;
 };
 
 export function slugify(text: string): string {
