@@ -44,7 +44,7 @@ export const createProduct = async (productData: ProductFormData): Promise<ApiRe
     body: productData as any,
   });
 
-export const updateProduct = async (productData: ProductFormData & { id: string }): Promise<ApiResponse<TProduct>> =>
+export const updateProduct = async (productData: ProductFormData): Promise<ApiResponse<TProduct>> =>
   apiClient<TProduct>('/api/products', {
     method: 'PUT',
     body: productData as any,

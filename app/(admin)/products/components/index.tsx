@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useRef, useState } from 'react';
+import { FC, useRef, useState, useTransition } from 'react';
 import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,6 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import Link from 'next/link';
 import { createProduct, updateProduct } from '@/lib/api-client';
-import { revalidatePath } from '@/lib/server-actions';
 import { tryWithToast } from '@/utils/helper';
 import DropDown from '@/components/reusable/dropdown';
 import ProTable from '@/components/pro-table';
@@ -22,27 +21,26 @@ import VariationTable from './variation-table';
 
 const Products: FC = () => {
   const [deleteDialog, setDeleteDialog] = useState<{ id: string; name: string } | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<'EDIT' | 'CREATE'>('CREATE');
   const [product, setProduct] = useState<TProduct>();
   const actionRef = useRef<ActionType>(null);
   const { data: categories } = useQueryCategories();
 
-  const handleDelete = async () => {
-    if (!deleteDialog) return;
-    setIsDeleting(true);
-    try {
-      // const res = await deleteProduct(deleteDialog.id);
-      // if (res.success) {
-      //   toast.success(`Deleted "${deleteDialog.name}"`);
-      //   setDeleteDialog(null);
-      // } else toast.error(res.error || 'Failed to delete product');
-    } catch {
-      toast.error('Unexpected error occurred');
-    } finally {
-      setIsDeleting(false);
-    }
+  const handleDelete = () => {
+    startTransition(async () => {
+      try {
+        // const res = await deleteProduct(deleteDialog.id);
+        // if (res.success) {
+        //   toast.success(`Deleted "${deleteDialog.name}"`);
+        //   setDeleteDialog(null);
+        // } else toast.error(res.error || 'Failed to delete product');
+      } catch {
+        toast.error('Unexpected error occurred');
+      } finally {
+      }
+    });
   };
 
   const toggleStatus = (id: string, status: string) => {
@@ -178,19 +176,13 @@ const Products: FC = () => {
 
     try {
       if (isEdit) {
-        res = await tryWithToast(
-          updateProduct({
-            ...data,
-            id: String(data.id),
-          }),
-        );
+        res = await tryWithToast(updateProduct(data));
       } else {
         res = await tryWithToast(createProduct(data));
       }
 
       toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`);
       actionRef.current?.reload();
-      await revalidatePath('/products');
     } finally {
     }
   };
@@ -253,7 +245,7 @@ const Products: FC = () => {
         onOpenChange={() => setDeleteDialog(null)}
         description='Are you sure you want to delete "{deleteDialog?.name}"? This action cannot be undone.'
         cancelText='Cancel'
-        confirmText={isDeleting ? 'Deleting...' : 'Delete'}
+        confirmText={isPending ? 'Deleting...' : 'Delete'}
         onConfirm={handleDelete}
       />
     </>
