@@ -89,10 +89,10 @@ export async function catchErrorWithToast<T, E extends new (...args: any[]) => E
 
 type ErrResp = { success?: boolean, message?: string }
 
-export const tryWithToast = async <T>(promise: Promise<T>): Promise<T & ErrResp | null> => {
+export const tryWithToast = async <T>(promise: Promise<T>, needErrResponse = false): Promise<T & ErrResp | null> => {
   const [err, res] = await catchErrorWithToast(promise);
-  console.log('[err, res]', err, res);
-  if (err) return err as unknown as T & ErrResp;
+  if (err && needErrResponse) return err as unknown as T & ErrResp;
+  if (err) return null;
   return res as T & ErrResp;
 };
 

@@ -36,7 +36,7 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const onSubmit = (values: SchemaForm<typeof loginSchema>) => {
     startTransition(async () => {
       const result = await tryWithToast(signIn(values.email, values.password, false));
-      if (!result?.success) return;
+      if (!result) return;
 
       const user = await getUserDB(`${result?.user.id}`);
       if (user?.role === USER_ROLE.USER) {
