@@ -62,9 +62,7 @@ export async function catchRouteErrors<T>(promise: Promise<T>): Promise<[Error |
 //     return err as T;
 //   }
 // };
-export const tryWithToast = async <T extends { success?: boolean; message?: string }>(
-  promise: Promise<T>
-): Promise<T> => {
+export const tryWithToast = async (promise: Promise<any>): Promise<any> => {
   const res = await promise;
 
   // @ts-ignore

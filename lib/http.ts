@@ -51,7 +51,11 @@ export const createSeller = async ({ storeName, userID }: TCreateSeller) => awai
 
 export const getProducts = async (params: any) => apiFetch<TProduct[]>(`${API_ROUTE.PRODUCTS}?${buildQueryParams(params)}`);
 
-export const getCategories = async () => apiFetch('/api/category');
+export const getCategories = async (params?: any) => apiFetch(`${API_ROUTE.CATEGORIES}?${buildQueryParams(params)}`);
+
+export const addCategory = async (name: string) => apiFetch(API_ROUTE.CATEGORIES, { method: 'POST', body: { name } });
+
+export const updateCategory = async ({ id, name }: { id: string; name: string }) => apiFetch(API_ROUTE.CATEGORIES, { method: 'PUT', body: { id, name } });
 
 export const createProduct = async (productData: ProductFormData) => apiFetch<TProduct>(API_ROUTE.PRODUCTS, { method: 'POST', body: productData });
 

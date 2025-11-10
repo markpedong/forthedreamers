@@ -154,13 +154,13 @@ export const listUsers = async () => {
   return auth.api.listUsers({ headers: await headers(), query: {} });
 }
 
-export const impersonateUser = async (userId: string) => auth.api.impersonateUser({ headers: await headers(), body: { userId } });
+export const impersonateUser = async (userId: string) => await auth.api.impersonateUser({ headers: await headers(), body: { userId } });
 
 export const stopImpersonating = async () => auth.api.stopImpersonating({ headers: await headers() });
 
-export const banUser = async (userId: string) => auth.api.banUser({ headers: await headers(), body: { userId } });
+export const banUser = async (userId: string) => await auth.api.banUser({ headers: await headers(), body: { userId } });
 
-export const unbanUser = async (userId: string) => auth.api.unbanUser({ headers: await headers(), body: { userId } });
+export const unbanUser = async (userId: string) => await auth.api.unbanUser({ headers: await headers(), body: { userId } });
 
 export const revokeUserSessions = async (userId: string) => auth.api.revokeUserSessions({ headers: await headers(), body: { userId } });
 

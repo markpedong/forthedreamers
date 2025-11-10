@@ -1,4 +1,4 @@
-import { DATE_FORMAT, TABLE_PROPS } from '@/constants';
+import { DATE_FORMAT } from '@/constants';
 import {
   ProColumns,
   ProTable as AntProTable,
@@ -11,6 +11,7 @@ import { useMemo, useRef } from 'react';
 import { SpinnerCustom } from '../reusable/spinner';
 import { ProTableProps } from '@/lib/types';
 import { Card, CardContent } from '../ui/card';
+import { TABLE_PROPS } from '@/utils/antd';
 
 const ProTable = <T extends Record<string, any>>({
   columns = [],

@@ -12,6 +12,7 @@ import {
   Lock,
   Settings,
   LogOut as Logo,
+  ShoppingBag,
 } from 'lucide-react';
 import { FC } from 'react';
 import { USER_ROLE } from '@/generated/prisma';
@@ -26,6 +27,12 @@ const Sidebar: FC = () => {
       label: 'Users',
       href: '/users',
       icon: Users,
+      allowed: session?.user.role === USER_ROLE.ADMIN,
+    },
+    {
+      label: 'Categories',
+      href: '/categories',
+      icon: ShoppingBag,
       allowed: session?.user.role === USER_ROLE.ADMIN,
     },
     { label: 'Orders', href: '/orders', icon: ShoppingCart },

@@ -6,7 +6,7 @@ export const useQueryCategories = () => {
 
   return useQuery({
     queryKey: ['categories'],
-    queryFn: async () => await getCategories(),
+    queryFn: async () => await getCategories({ isForProducts: true }),
     staleTime: STALE_TIME,
   });
 };
