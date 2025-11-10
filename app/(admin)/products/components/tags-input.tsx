@@ -13,7 +13,7 @@ interface TagsInputProps {
 const TagsInput = ({ tags, onTagsChange }: TagsInputProps) => {
   const [input, setInput] = useState('');
 
-  const handleAddTag = () => {
+  const addTag = () => {
     const tag = input.trim();
     if (tag && !tags.includes(tag)) {
       onTagsChange([...tags, tag]);
@@ -21,14 +21,12 @@ const TagsInput = ({ tags, onTagsChange }: TagsInputProps) => {
     }
   };
 
-  const handleRemoveTag = (tag: string) => {
-    onTagsChange(tags.filter((t) => t !== tag));
-  };
+  const removeTag = (tag: string) => onTagsChange(tags.filter((t) => t !== tag));
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleAddTag();
+      addTag();
     }
   };
 
@@ -42,12 +40,12 @@ const TagsInput = ({ tags, onTagsChange }: TagsInputProps) => {
           onKeyDown={handleKeyDown}
           className='flex-1'
         />
-        <Button onClick={handleAddTag} variant='outline'>
+        <Button onClick={addTag} variant='outline'>
           Add
         </Button>
       </div>
 
-      {!!tags.length && (
+      {tags.length > 0 && (
         <div className='flex flex-wrap gap-2'>
           {tags.map((tag) => (
             <div
@@ -56,7 +54,7 @@ const TagsInput = ({ tags, onTagsChange }: TagsInputProps) => {
             >
               {tag}
               <button
-                onClick={() => handleRemoveTag(tag)}
+                onClick={() => removeTag(tag)}
                 className='hover:text-destructive transition-colors'
                 aria-label={`Remove tag ${tag}`}
               >
