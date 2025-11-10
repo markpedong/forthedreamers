@@ -43,24 +43,36 @@ export async function catchRouteErrors<T>(promise: Promise<T>): Promise<[Error |
   }
 }
 
-export const tryWithToast = async <T>(promise: Promise<T>): Promise<T> => {
-  try {
-    const res = await promise;
+// export const tryWithToast = async <T>(promise: Promise<T>): Promise<T> => {
+//   try {
+//     const res = await promise;
 
-    // @ts-ignore
-    if (res?.error || res?.success === false) {
-      // @ts-ignore
-      const message = res.error?.message || (res as any).message || "Something went wrong";
+//     // @ts-ignore
+//     if (res?.error || res?.success === false) {
+//       // @ts-ignore
+//       const message = res.error?.message || (res as any).message || "Something went wrong";
 
-      toastError(message);
-    }
+//       toastError(message);
+//     }
 
-    return res;
-  } catch (err) {
-    // @ts-ignore
-    toastError(err.message);
-    return err as T;
+//     return res;
+//   } catch (err) {
+//     // @ts-ignore
+//     toastError(err.message);
+//     return err as T;
+//   }
+// };
+export const tryWithToast = async <T extends { success?: boolean; message?: string }>(
+  promise: Promise<T>
+): Promise<T> => {
+  const res = await promise;
+
+  // @ts-ignore
+  if (res?.error || res?.success === false) {
+    toastError(res.message || "Something went wrong");
   }
+
+  return res;
 };
 
 export function slugify(text: string): string {

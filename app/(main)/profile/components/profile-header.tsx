@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import AvatarUpload from './avatar-upload';
 import { LayoutDashboard, LogOut } from 'lucide-react';
-import { USER_ROLE } from '@/generated/prisma';
 import { useRouter } from 'next/navigation';
 import { useAppSelector } from '@/redux/store';
 import useWithDispatch from '@/hooks/useWithDispatch';
@@ -46,14 +45,14 @@ const ProfileHeader: FC = () => {
 
           {/* Logout button - full width on mobile, fixed on larger screens */}
           <CardAction className='mt-2 md:mt-0 w-full md:w-auto flex flex-col gap-3 h-full'>
-            {user?.role === USER_ROLE.ADMIN && (
+            {['ADMIN', 'SELLER'].includes(`${user?.role}`) && (
               <Button
                 variant='outline'
                 size='sm'
                 onClick={() => router.push('/dashboard')}
                 className='w-full md:w-auto gap-2 whitespace-nowrap bg-transparent'
               >
-                <LayoutDashboard className='h-4 w-4' /> Admin Access
+                <LayoutDashboard className='h-4 w-4' /> {`${user?.role}`} Access
               </Button>
             )}
             <Button

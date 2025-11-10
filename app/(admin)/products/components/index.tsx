@@ -174,7 +174,7 @@ const Products: FC = () => {
     const isEdit = type === 'EDIT';
 
     const res = isEdit
-      ? await tryWithToast(updateProduct(data)) // now compatible
+      ? await tryWithToast(updateProduct(data))
       : await tryWithToast(createProduct(data));
 
     if (res.success) {
