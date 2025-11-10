@@ -30,8 +30,9 @@ const VariationTable: FC<{ variations: TVariant[] }> = ({ variations }) => {
     return (
       <ProTable<TVariantOption>
         key={variation.id}
+        rowKey='id'
         headerTitle={variation.name}
-        columns={columns?.map((item) => ({ ...item, align: 'center' }))}
+        columns={columns?.map((item, idx) => ({ ...item, key: idx, align: 'center' }))}
         search={false}
         options={false}
         pagination={false}

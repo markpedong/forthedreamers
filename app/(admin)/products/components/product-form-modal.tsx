@@ -184,13 +184,13 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
               </div>
               <div className='grid grid-cols-2 gap-4'>
                 <Input
-                  label={`Base Price`}
+                  label='Base Price'
                   name='basePrice'
-                  type='text'
+                  type='number'
                   placeholder='0.00'
-                  preventSpaces
+                  maxLength={6}
                 />
-                <Input label={`Stock`} name='stock' type='text' placeholder='0' />
+                <Input label='Stock' name='stock' type='number' placeholder='0' maxLength={6} />
               </div>
 
               <Select
