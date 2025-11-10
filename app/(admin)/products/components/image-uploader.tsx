@@ -13,20 +13,17 @@ interface ImageUploaderProps {
 
 const ImageUploader = ({ images, onImagesChange, maxImages = 5 }: ImageUploaderProps) => {
   const [isDragging, setIsDragging] = useState(false);
+  const full = images.length >= maxImages;
 
   const handleFiles = (files: File[]) => {
-    const allowed = maxImages - images.length;
-    if (allowed <= 0) return;
-
-    const newImages = files.slice(0, allowed).map((file) => URL.createObjectURL(file));
+    if (full) return;
+    const allowedFiles = files.slice(0, maxImages - images.length);
+    const newImages = allowedFiles.map((file) => URL.createObjectURL(file));
     onImagesChange([...images, ...newImages]);
   };
 
-  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    handleFiles(files);
-  };
-
+  const onFileChange = (e: ChangeEvent<HTMLInputElement>) =>
+    handleFiles(Array.from(e.target.files || []));
   const onDrop = (e: DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
@@ -34,8 +31,6 @@ const ImageUploader = ({ images, onImagesChange, maxImages = 5 }: ImageUploaderP
   };
 
   const removeImage = (index: number) => onImagesChange(images.filter((_, i) => i !== index));
-
-  const full = images.length >= maxImages;
 
   return (
     <div className='space-y-4'>
@@ -73,8 +68,7 @@ const ImageUploader = ({ images, onImagesChange, maxImages = 5 }: ImageUploaderP
         </label>
       </div>
 
-      {/* Image Preview Grid */}
-      {!!images.length && (
+      {images.length > 0 && (
         <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4'>
           {images.map((src, i) => (
             <div
