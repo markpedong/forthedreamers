@@ -39,7 +39,7 @@ const ProfileDetails: FC = () => {
   const handleResendVerification = () => {
     startTransition(async () => {
       const result = await tryWithToast(sendVerificationEmailAction(`${user?.email}`));
-      if (!result.status) return;
+      if (!result?.status) return;
 
       toast.success('Success', { description: 'Verification email sent' });
     });
