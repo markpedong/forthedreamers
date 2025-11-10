@@ -31,7 +31,7 @@ const Products: FC = () => {
     startTransition(async () => {
       const res = await tryWithToast(deleteProduct(deleteDialog!.id));
 
-      if (res.success) {
+      if (res?.success) {
         toast.success(`Deleted "${deleteDialog?.name}"`);
         setDeleteDialog(null);
         actionRef.current?.reload();
@@ -173,7 +173,7 @@ const Products: FC = () => {
       ? await tryWithToast(updateProduct(data))
       : await tryWithToast(createProduct(data));
 
-    if (res.success) {
+    if (res?.success) {
       toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`);
       actionRef.current?.reload();
       setOpen(false);

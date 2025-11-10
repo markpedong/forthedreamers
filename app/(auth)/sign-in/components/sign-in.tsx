@@ -39,9 +39,9 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       const res = await tryWithToast(
         authClient.signIn.email({ email: values.email, password: values.password }),
       );
-      if (res.error) return;
+      if (res?.error) return;
 
-      const user = await getUserDB(`${res.data?.user.id}`);
+      const user = await getUserDB(`${res?.data?.user.id}`);
       if (user?.role !== USER_ROLE.USER) {
         await signOut();
         router.refresh();

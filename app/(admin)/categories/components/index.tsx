@@ -33,8 +33,7 @@ const Categories: FC = () => {
   const handleSubmit = async ({ id, name }: { id?: string; name: string }) => {
     const res = await tryWithToast(id ? updateCategory({ id, name }) : addCategory(name));
 
-    console.log(res);
-    return res.success;
+    return res?.success;
   };
 
   const renderAddEditCategory = (type: 'ADD' | 'EDIT', record?: Category) => {
