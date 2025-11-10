@@ -119,7 +119,7 @@ const useFormSchema = () => {
       tags: z.array(z.string()).default([]),
       stock: z.string().default(''),
       status: z.enum(PRODUCT_STATUS).default('DRAFT'),
-      categoryId: z.string().optional(),
+      category: z.string(),
       specs: z.array(specFormSchema).default([]),
       variants: z.array(variantFormSchema).default([]),
     })

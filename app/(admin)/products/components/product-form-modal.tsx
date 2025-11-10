@@ -21,6 +21,7 @@ import { Label } from '@/components/ui/label';
 import { PRODUCT_DEFAULT } from '@/constants';
 import { ProductFormModalProps, ProductFormData, FormVariant } from '@/lib/types';
 import useFormSchema from '@/hooks/useFormSchema';
+import { useAppSelector } from '@/redux/store';
 
 const ProductFormModal: FC<ProductFormModalProps> = ({
   open,
@@ -30,6 +31,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
   categories,
   onSubmit,
 }) => {
+  const session = useAppSelector((state) => state.appData.session);
   const { productFormSchema } = useFormSchema();
   const [tab, setTab] = useState('basic');
   const [isSubmitting, startTransition] = useTransition();
@@ -49,13 +51,13 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
     }
 
     if (isEdit && initialProduct) {
-      const category = categories.find((c) => c.id === initialProduct.categoryId);
+      const category = categories.find((c) => c.id === initialProduct.category.id);
 
       form.reset({
         ...initialProduct,
         basePrice: initialProduct?.basePrice?.toString() || null,
         stock: initialProduct?.stock?.toString() || null,
-        categoryId: category?.id,
+        category: category?.name,
         specs: initialProduct.specs || [],
         variants:
           initialProduct.variants?.map((v) => ({
@@ -73,13 +75,14 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
   const handleSubmit = (values: FormData) => {
     startTransition(async () => {
       try {
-        const currCategory = categories.find((c) => c.id === values.categoryId);
+        const currCategory = categories.find((c) => c.name === values.category);
         const data: ProductFormData = {
           ...values,
+          ...(!isEdit && { sellerId: session?.user.id }),
           name: values.name.trim(),
           description: values.description?.trim() || null,
           brand: values.brand?.trim() || null,
-          categoryId: currCategory?.id || '',
+          categoryId: `${currCategory?.id}`,
           basePrice: values.basePrice,
           stock: values.stock,
           specs: values.specs || [],
@@ -145,8 +148,8 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
 
               <Select
                 label='Category *'
-                name='categoryId'
-                options={categories.map((c) => ({ value: c.id, label: c.id }))}
+                name='category'
+                options={categories.map((c) => ({ value: c.name, label: c.name }))}
               />
 
               <Input

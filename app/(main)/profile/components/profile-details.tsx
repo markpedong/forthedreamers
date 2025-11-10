@@ -55,6 +55,8 @@ const ProfileDetails: FC = () => {
     });
   };
 
+  console.log('session', session?.session);
+
   return (
     <Card>
       <CardHeader>

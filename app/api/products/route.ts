@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
         specs: {
           omit: { createdAt: true, updatedAt: true, productId: true },
         },
+        category: { omit: { createdAt: true, updatedAt: true } },
         variants: {
           omit: { createdAt: true, updatedAt: true, productId: true },
           include: {
@@ -24,6 +25,10 @@ export async function GET(req: NextRequest) {
           },
         },
       },
+      omit: {
+        sellerId: true,
+        categoryId: true
+      }
     });
 
     return successResponse(res);

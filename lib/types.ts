@@ -76,6 +76,7 @@ export type ProductFormData = {
   tags: string[];
   stock: string;
   status: 'ACTIVE' | 'INACTIVE' | 'DRAFT';
+  sellerId?: string;
   categoryId: string;
   specs: Array<{
     id?: string;
@@ -99,7 +100,7 @@ export type ProductFormModalProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   type: 'CREATE' | 'EDIT';
-  initialProduct?: Omit<TProduct, 'category'>;
+  initialProduct?: TProduct;
   categories: Category[]
   onSubmit: (data: ProductFormData & { sellerId?: string }, type: 'CREATE' | 'EDIT') => Promise<void> | void
 }
@@ -180,11 +181,11 @@ export type TVariant = Variant & {
 
 export type TSpec = Omit<Spec, "createdAt" | "updatedAt">;
 
-export type OmittedProductFields = Omit<Product, "createdAt" | "updatedAt">
+export type OmittedProductFields = Omit<Product, "createdAt" | "updatedAt" | "categoryId">
 
 export type TProduct = OmittedProductFields & {
   specs: Spec[];
-  category: Category;
+  category: Omit<Category, 'createdAt' | 'updatedAt'>;
   variants: TVariant[];
 }
 
@@ -239,4 +240,5 @@ export type TGetPaginatedData = {
   where: Record<string, any>;
   include?: any;
   orderBy?: any;
+  omit?: any
 }
