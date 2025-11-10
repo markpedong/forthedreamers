@@ -10,13 +10,12 @@ import AlertDialog from '@/components/reusable/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import Link from 'next/link';
-import { createProduct, updateProduct } from '@/lib/api-client';
 import { tryWithToast } from '@/utils/helper';
 import DropDown from '@/components/reusable/dropdown';
 import ProTable from '@/components/pro-table';
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
 import { useQueryCategories } from '@/hooks/useQuery';
-import { getProducts } from '@/lib/http';
+import { createProduct, deleteProduct, getProducts, updateProduct } from '@/lib/http';
 import VariationTable from './variation-table';
 
 const Products: FC = () => {
@@ -30,15 +29,12 @@ const Products: FC = () => {
 
   const handleDelete = () => {
     startTransition(async () => {
-      try {
-        // const res = await deleteProduct(deleteDialog.id);
-        // if (res.success) {
-        //   toast.success(`Deleted "${deleteDialog.name}"`);
-        //   setDeleteDialog(null);
-        // } else toast.error(res.error || 'Failed to delete product');
-      } catch {
-        toast.error('Unexpected error occurred');
-      } finally {
+      const res = await tryWithToast(deleteProduct(deleteDialog!.id));
+
+      if (res.success) {
+        toast.success(`Deleted "${deleteDialog?.name}"`);
+        setDeleteDialog(null);
+        actionRef.current?.reload();
       }
     });
   };

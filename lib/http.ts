@@ -1,7 +1,8 @@
 'use server';
 
 import { buildQueryParams } from "@/utils/helper";
-import { ApiResponse, TCreateSeller, TProduct } from "./types";
+import { ApiResponse, ProductFormData, TCreateSeller, TProduct } from "./types";
+import { API_ROUTE } from "@/constants/enum";
 
 type FetchOptions = Omit<RequestInit, "body"> & {
   body?: any;
@@ -48,18 +49,13 @@ export const createSeller = async ({ storeName, userID }: TCreateSeller) => awai
   body: { storeName, userID },
 });
 
-export const getProducts = async (params: any) => apiFetch<TProduct[]>(`/api/products?${buildQueryParams(params)}`);
+export const getProducts = async (params: any) => apiFetch<TProduct[]>(`${API_ROUTE.PRODUCTS}?${buildQueryParams(params)}`);
 
-export const getCategories = async () => await apiFetch('/api/category');
+export const getCategories = async () => apiFetch('/api/category');
 
-export const createProduct = async (productData: Partial<TProduct>) =>
-  await apiFetch<TProduct>('/api/products', {
-    method: 'POST',
-    body: productData,
-  });
+export const createProduct = async (productData: ProductFormData) => apiFetch<TProduct>(API_ROUTE.PRODUCTS, { method: 'POST', body: productData });
 
-export const updateProduct = async (productData: Partial<TProduct> & { id: string }) =>
-  await apiFetch<TProduct>('/api/products', {
-    method: 'PUT',
-    body: productData,
-  });
+export const updateProduct = async (productData: ProductFormData) => apiFetch<TProduct>(API_ROUTE.PRODUCTS, { method: 'PUT', body: productData });
+
+export const deleteProduct = async (id: string) => apiFetch(API_ROUTE.PRODUCTS, { method: 'DELETE', body: { id } });
+

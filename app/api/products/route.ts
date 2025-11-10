@@ -161,3 +161,16 @@ export async function PUT(req: NextRequest) {
     return errorResponse(err);
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { id } = body;
+    if (!id) return errorResponse("Product ID is required");
+
+    await prisma.product.delete({ where: { id } });
+    return successResponse(null, "Product deleted successfully");
+  } catch (err: unknown) {
+    return errorResponse(err);
+  }
+}
