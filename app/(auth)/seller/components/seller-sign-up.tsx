@@ -43,12 +43,12 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       if (!storeErr) return;
 
       const res = await tryWithToast(signUp(values.email, values.password, values.name));
-      if (!res || !('token' in res && res.token)) return;
+      if (!res.user) return;
 
       const seller = await tryWithToast(
         createSeller({
           storeName: values.storeName,
-          userID: res.user.id,
+          userID: res.user.id || '',
         }),
       );
       if (!seller?.success) return;

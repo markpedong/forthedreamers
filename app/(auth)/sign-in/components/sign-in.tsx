@@ -37,13 +37,9 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const onSubmit = async (values: SchemaForm<typeof loginSchema>) => {
     startSubmitting(async () => {
       const res = await tryWithToast(
-        authClient.signIn.email({ email: values.email, password: values.password }).then((r) => ({
-          success: !r.error,
-          message: r.error?.message,
-          data: r.data,
-        })),
+        authClient.signIn.email({ email: values.email, password: values.password }),
       );
-      if (!res.success) return;
+      if (res.error) return;
 
       const user = await getUserDB(`${res.data?.user.id}`);
       if (user?.role !== USER_ROLE.USER) {

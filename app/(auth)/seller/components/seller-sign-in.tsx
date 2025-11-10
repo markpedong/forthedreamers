@@ -48,7 +48,7 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         return;
       }
 
-      if (result.redirect) {
+      if (result?.redirect) {
         router.push('/dashboard');
         const session = await authClient.getSession();
         dispatch(setSessionData(session.data));

@@ -61,16 +61,13 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
 
   const handleBanUnbanUser = (user: UserWithRole) => {
     startTransition(async () => {
-      let res;
+      const res = user.banned
+        ? await tryWithToast(unbanUser(user.id))
+        : await tryWithToast(banUser(user.id));
 
-      if (user.banned) {
-        res = await tryWithToast(unbanUser(user.id));
-      } else {
-        res = await tryWithToast(banUser(user.id));
-      }
       if (!res) return;
 
-      toast.success(`User ${res.user.name} has been ${res.user.banned ? 'unbanned' : 'banned'}`);
+      toast.success(`User ${user.name} has been ${user.banned ? 'unbanned' : 'banned'}`);
       router.refresh();
     });
   };

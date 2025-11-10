@@ -1,9 +1,7 @@
-import { ApiResponse, BaseQueryParams } from "@/lib/types";
+import { BaseQueryParams } from "@/lib/types";
 import chroma from "chroma-js";
 
-const handleError = (err: unknown) => {
-  const message = err instanceof Error ? err.message : "Something went wrong";
-
+const toastError = (message: string) => {
   if (typeof window !== "undefined") {
     import("sonner").then(({ toast }) => {
       toast.error(message);
@@ -14,27 +12,27 @@ const handleError = (err: unknown) => {
 };
 
 // catchError that automatically shows toast/log
-export async function catchErrorWithToast<T, E extends new (...args: any[]) => Error>(
-  promise: Promise<T>,
-  errorsToCatch?: E[]
-): Promise<[undefined, T] | [InstanceType<E>]> {
-  try {
-    const data = await promise;
-    return [undefined, data] as [undefined, T];
-  } catch (error) {
-    // Ensure it's an Error
-    if (!(error instanceof Error)) throw error;
+// export async function catchErrorWithToast<T, E extends new (...args: any[]) => Error>(
+//   promise: Promise<T>,
+//   errorsToCatch?: E[]
+// ): Promise<[undefined, T] | [InstanceType<E>]> {
+//   try {
+//     const data = await promise;
+//     return [undefined, data] as [undefined, T];
+//   } catch (error) {
+//     // Ensure it's an Error
+//     if (!(error instanceof Error)) throw error;
 
-    // Catch all errors if no filter, or only the ones specified
-    if (!errorsToCatch || errorsToCatch.some(e => error instanceof e)) {
-      handleError(error);
-      return [error as InstanceType<E>];
-    }
+//     // Catch all errors if no filter, or only the ones specified
+//     if (!errorsToCatch || errorsToCatch.some(e => error instanceof e)) {
+//       handleError(error);
+//       return [error as InstanceType<E>];
+//     }
 
-    // Rethrow if not a specified error type
-    throw error;
-  }
-}
+//     // Rethrow if not a specified error type
+//     throw error;
+//   }
+// }
 
 export async function catchRouteErrors<T>(promise: Promise<T>): Promise<[Error | null, T | null]> {
   try {
@@ -45,33 +43,23 @@ export async function catchRouteErrors<T>(promise: Promise<T>): Promise<[Error |
   }
 }
 
-export const tryWithToast = async <T>(
-  promise: Promise<ApiResponse<T>>
-): Promise<ApiResponse<T>> => {
+export const tryWithToast = async <T>(promise: Promise<T>): Promise<T> => {
   try {
     const res = await promise;
 
-    if (res.success === false) {
-      handleError(new Error(res.message || 'Unknown error'));
+    // @ts-ignore
+    if (res?.error || res?.success === false) {
+      // @ts-ignore
+      const message = res.error?.message || (res as any).message || "Something went wrong";
+
+      toastError(message);
     }
 
-    return {
-      success: res.success ?? false,
-      message: res.message ?? '',
-      data: res.data,
-      page: res.page ?? 1,
-      pageSize: res.pageSize ?? 0,
-      total: res.total ?? 0,
-    };
+    return res;
   } catch (err) {
-    if (err instanceof Error) {
-      handleError(err);
-      return {
-        success: false,
-        message: err.message,
-      };
-    }
-    throw err;
+    // @ts-ignore
+    toastError(err.message);
+    return err as T;
   }
 };
 

@@ -18,10 +18,6 @@ export const getSession = async () => {
 }
 
 export const signUp = async (email: string, password: string, name: string, callbackURL = "/profile") => {
-  if (!name) return { error: "Name is required" };
-  if (!password) return { error: "Password is required" };
-  if (!email) return { error: "Email is required" };
-
   return await auth.api.signUpEmail({
     body: {
       email,
@@ -69,7 +65,7 @@ export const signOut = async () => {
 };
 
 export async function sendVerificationEmailAction(email: string) {
-  await auth.api.sendVerificationEmail({ body: { email, callbackURL: '/profile?emailVerified=true' } });
+  return await auth.api.sendVerificationEmail({ body: { email, callbackURL: '/profile?emailVerified=true' } });
 }
 export const sendForgotPasswordEmail = async (email: string) => {
   return await auth.api.forgetPassword({ body: { email, redirectTo: '/reset-password' } });

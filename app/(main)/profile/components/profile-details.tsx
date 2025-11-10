@@ -39,7 +39,7 @@ const ProfileDetails: FC = () => {
   const handleResendVerification = () => {
     startTransition(async () => {
       const result = await tryWithToast(sendVerificationEmailAction(`${user?.email}`));
-      if (!result) return;
+      if (!result.status) return;
 
       toast.success('Success', { description: 'Verification email sent' });
     });
@@ -54,8 +54,6 @@ const ProfileDetails: FC = () => {
       setIsEditing(false);
     });
   };
-
-  console.log('session', session?.session);
 
   return (
     <Card>
