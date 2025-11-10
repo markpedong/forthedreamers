@@ -70,8 +70,6 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
     }
   }, [open, type, initialProduct, categories, form, isEdit]);
 
-  const hasVariants = (form.watch('variants')?.length || 0) > 0;
-
   const handleSubmit = (values: FormData) => {
     startTransition(async () => {
       try {
@@ -175,22 +173,15 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
 
             {/* VARIANTS TAB */}
             <TabsContent value='inventory' className='space-y-6'>
-              <div className='flex justify-between items-center mb-2'>
-                <Label>Variants</Label>
-                {hasVariants && (
-                  <span className='text-xs text-muted-foreground'>
-                    Base price & stock disabled when variants exist
-                  </span>
-                )}
-              </div>
-
               <VariantEditor
                 variants={form.watch('variants') as FormVariant[]}
                 onVariantsChange={(variants) =>
                   form.setValue('variants', variants, { shouldValidate: true })
                 }
               />
-
+              <div className='flex justify-end items-center mb-2 text-xs text-muted-foreground'>
+                Base price & stock disabled when variants exist
+              </div>
               <div className='grid grid-cols-2 gap-4'>
                 <Input
                   label={`Base Price`}
@@ -203,6 +194,7 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
               </div>
 
               <Select
+                containerClassName='w-full'
                 label='Status *'
                 name='status'
                 options={[
