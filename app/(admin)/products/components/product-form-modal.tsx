@@ -6,7 +6,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
@@ -19,26 +18,20 @@ import ImageUploader from './image-uploader';
 import { Label } from '@/components/ui/label';
 
 import { PRODUCT_DEFAULT } from '@/constants';
-import { ProductFormModalProps, ProductFormData, FormVariant } from '@/lib/types';
+import { ProductFormModalProps, ProductFormData, FormVariant, SchemaForm } from '@/lib/types';
 import useFormSchema from '@/hooks/useFormSchema';
 import { useAppSelector } from '@/redux/store';
 
-const ProductFormModal: FC<ProductFormModalProps> = ({
-  open,
-  setOpen,
-  type,
-  initialProduct,
-  categories,
-  onSubmit,
-}) => {
+const ProductFormModal: FC<ProductFormModalProps> = (props) => {
+  const { open, setOpen, type, initialProduct, categories, onSubmit } = props;
+
   const session = useAppSelector((state) => state.appData.session);
   const { productFormSchema } = useFormSchema();
   const [tab, setTab] = useState('basic');
   const [isSubmitting, startTransition] = useTransition();
   const isEdit = type === 'EDIT';
 
-  type FormData = z.infer<typeof productFormSchema>;
-  const form = useForm<FormData>({
+  const form = useForm<SchemaForm<typeof productFormSchema>>({
     resolver: zodResolver(productFormSchema) as any,
     defaultValues: PRODUCT_DEFAULT,
   });
@@ -53,24 +46,13 @@ const ProductFormModal: FC<ProductFormModalProps> = ({
     if (isEdit && initialProduct) {
       const category = categories.find((c) => c.id === initialProduct.category.id);
 
-      form.reset({
-        ...initialProduct,
-        basePrice: initialProduct?.basePrice?.toString() || null,
-        stock: initialProduct?.stock?.toString() || null,
-        category: category?.name,
-        specs: initialProduct.specs || [],
-        variants:
-          initialProduct.variants?.map((v) => ({
-            ...v,
-            options: v.options || [],
-          })) || [],
-      } as FormData);
+      form.reset({ ...initialProduct, category: category?.name } as any);
     } else {
       form.reset(PRODUCT_DEFAULT);
     }
   }, [open, type, initialProduct, categories, form, isEdit]);
 
-  const handleSubmit = (values: FormData) => {
+  const handleSubmit = (values: SchemaForm<typeof productFormSchema>) => {
     startTransition(async () => {
       try {
         const currCategory = categories.find((c) => c.name === values.category);
