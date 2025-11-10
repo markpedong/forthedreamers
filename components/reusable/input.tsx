@@ -83,9 +83,14 @@ const Input = <T extends FieldValues>(props: ReusableInputProps<T>) => {
                   }`}
                   onChange={(e) => {
                     let value = e.target.value;
+
                     if (preventSpaces) value = value.replace(/\s+/g, '');
-                    if (isNumber) value = value.replace(/\D+/g, '');
-                    field.onChange(value);
+                    if (isNumber) {
+                      value = value.replace(/\D+/g, '');
+                      field.onChange(value ? Number(value) : undefined);
+                    } else {
+                      field.onChange(value);
+                    }
                   }}
                   onKeyDown={(e) => {
                     if (preventSpaces && e.key === ' ') e.preventDefault();

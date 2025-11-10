@@ -59,13 +59,7 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
         const data: ProductFormData = {
           ...values,
           ...(!isEdit && { sellerId: session?.user.id }),
-          name: values.name.trim(),
-          description: values.description?.trim() || null,
-          brand: values.brand?.trim() || null,
           categoryId: `${currCategory?.id}`,
-          basePrice: values.basePrice,
-          stock: values.stock,
-          specs: values.specs || [],
           variants:
             values.variants?.map((v) => ({
               ...v,
@@ -75,8 +69,6 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
                 coupon: o.coupon ?? null,
               })),
             })) || [],
-          tags: values.tags || [],
-          images: values.images || [],
         };
 
         await onSubmit(data, type);
@@ -121,24 +113,26 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
                 label='Product Name *'
                 name='name'
                 placeholder='e.g., Premium Wireless Headphones'
+                preventSpaces
               />
-
-              <Input label='Brand' name='brand' placeholder='e.g., AudioTech (optional)' />
-
+              <Input
+                label='Brand'
+                name='brand'
+                placeholder='e.g., AudioTech (optional)'
+                preventSpaces
+              />
               <Select
                 containerClassName='w-full'
                 label='Category *'
                 name='category'
                 options={categories.map((c) => ({ value: c.name, label: c.name }))}
               />
-
               <Input
                 type='textarea'
                 label='Description'
                 name='description'
                 placeholder='Enter product description...'
               />
-
               <div>
                 <Label>Product Images</Label>
                 <div className='mt-1.5'>
@@ -152,8 +146,6 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
                 </div>
               </div>
             </TabsContent>
-
-            {/* VARIANTS TAB */}
             <TabsContent value='inventory' className='space-y-6'>
               <VariantEditor
                 variants={form.watch('variants') as FormVariant[]}
@@ -186,7 +178,6 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
                 ]}
               />
             </TabsContent>
-
             <TabsContent value='details' className='space-y-6'>
               <SpecsEditor
                 specs={form.watch('specs') || []}
