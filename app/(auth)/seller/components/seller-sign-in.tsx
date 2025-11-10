@@ -51,7 +51,7 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       if (result.redirect) {
         router.push('/dashboard');
         const session = await authClient.getSession();
-        dispatch(setSessionData(session));
+        dispatch(setSessionData(session.data));
       }
 
       toast.success('Logged in successfully!', { duration: 3000 });

@@ -61,7 +61,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
       toast.success('Sign in successfully!', { duration: 2000 });
       const session = await authClient.getSession();
-      dispatch(setSessionData(session));
+      dispatch(setSessionData(session.data));
       router.refresh();
     });
   };
