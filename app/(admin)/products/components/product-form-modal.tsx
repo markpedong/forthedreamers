@@ -159,7 +159,6 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
                 label='Status *'
                 name='status'
                 options={[
-                  {label: 'Draft', value: 'DRAFT'},
                   {label: 'Active', value: 'ACTIVE'},
                   {label: 'Inactive', value: 'INACTIVE'}
                 ]}

@@ -116,7 +116,7 @@ const useFormSchema = () => {
       images: z.array(z.string()).default([]),
       tags: z.array(z.string()).default([]),
       stock: z.number().nullable().optional(),
-      status: z.enum(PRODUCT_STATUS).default('DRAFT'),
+      status: z.enum(PRODUCT_STATUS).default('INACTIVE'),
       category: createStringSchema("Category", 1, 100),
       specs: z.array(specFormSchema).default([]),
       variants: z.array(variantFormSchema).default([]),

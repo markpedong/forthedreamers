@@ -7,16 +7,15 @@ import { Button } from '@/components/ui/button'
 import ProductFormModal from './product-form-modal'
 import { TProduct, ProductFormData, DropdownMenuItemType } from '@/lib/types'
 import AlertDialog from '@/components/reusable/alert-dialog'
-import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
 import Link from 'next/link'
 import { tryWithToast } from '@/utils/helper'
 import DropDown from '@/components/reusable/dropdown'
 import ProTable from '@/components/pro-table'
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components'
 import { useQueryCategories } from '@/hooks/useQuery'
-import { createProduct, deleteProduct, getProducts, updateProduct } from '@/lib/http'
+import { createProduct, deleteProduct, getProducts, toggleProductStatus, updateProduct } from '@/lib/http'
 import VariationTable from './variation-table'
+import { Switch } from 'antd'
 
 const Products: FC = () => {
   const [deleteDialog, setDeleteDialog] = useState<{id: string; name: string} | null>(null)
@@ -40,10 +39,9 @@ const Products: FC = () => {
     })
   }
 
-  const toggleStatus = (id: string, status: string) => {
-    const newStatus = status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'
-    toast.info(`Status changed to ${newStatus}`)
-    // TODO: API call to update
+  const toggleStatus = async (id: string) => {
+    const res = await tryWithToast(toggleProductStatus({id}))
+    if (res?.success) actionRef.current?.reload()
   }
 
   const dropdownMenus = (record: TProduct): DropdownMenuItemType[] => [
@@ -98,17 +96,16 @@ const Products: FC = () => {
     {
       title: 'Status',
       dataIndex: 'status',
+      hideInTable: true,
       search: true,
       renderFormItem: () => (
         <ProFormSelect
           options={[
             {label: 'Active', value: 'ACTIVE'},
-            {label: 'Inactive', value: 'INACTIVE'},
-            {label: 'Draft', value: 'DRAFT'}
+            {label: 'Inactive', value: 'INACTIVE'}
           ]}
         />
-      ),
-      render: (_, record) => <Badge variant={record.status === 'ACTIVE' ? 'default' : 'secondary'}>{record.status}</Badge>
+      )
     },
     {
       title: 'Rating',
@@ -131,13 +128,16 @@ const Products: FC = () => {
       render: (_, record) => record.sold?.toLocaleString()
     },
     {
-      title: 'Stock',
-      render: (_, record) => <span className={Number(record.stock) > 0 ? 'text-green-600' : 'text-destructive'}>{record.stock}</span>
-    },
-    {
       title: 'Active',
       search: false,
-      render: (_, record) => <Switch checked={record.status === 'ACTIVE'} onCheckedChange={() => toggleStatus(record.id, record.status)} />
+      render: (_, record) => (
+        <Switch
+          checked={record.status === 'ACTIVE'}
+          onChange={() => toggleStatus(record.id)}
+          checkedChildren='ACTIVE'
+          unCheckedChildren='INACTIVE'
+        />
+      )
     },
     {
       title: 'Actions',

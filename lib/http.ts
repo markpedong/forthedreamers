@@ -63,3 +63,4 @@ export const updateProduct = async (productData: ProductFormData) => apiFetch<TP
 
 export const deleteProduct = async (id: string) => apiFetch(API_ROUTE.PRODUCTS, { method: 'DELETE', body: { id } });
 
+export const toggleProductStatus = async ({ id }: { id: string }) => apiFetch(`${API_ROUTE.PRODUCTS}/toggle`, { method: 'PATCH', body: { id } });

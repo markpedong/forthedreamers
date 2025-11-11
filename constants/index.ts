@@ -26,7 +26,7 @@ export const PRODUCT_DEFAULT = {
   description: '',
   basePrice: null,
   stock: null,
-  status: PRODUCT_STATUS.DRAFT,
+  status: PRODUCT_STATUS.INACTIVE,
   variants: [] as any[],
   specs: [] as any[],
   tags: [] as string[],
