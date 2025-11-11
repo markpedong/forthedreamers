@@ -48,7 +48,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
       const index = updated.findIndex(v => v.id === editingId);
       if (index !== -1) updated[index] = { ...updated[index], ...data };
     } else {
-      updated.push({ ...data, options: [] }); // no uuid needed, backend assigns id
+      updated.push({ ...data, options: [] });
     }
 
     onVariantsChange(updated);
@@ -59,7 +59,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
   };
 
   const handleDelete = (id: string) => {
-    onVariantsChange(variants.filter(v => v.id !== id));
+    onVariantsChange(variants.filter(v => (v.id === id ? false : true)));
   };
 
   const handleOptionsChange = (id: string, options: TVariantOption[]) => {

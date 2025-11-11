@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-  DialogClose,
+  DialogClose
 } from '@/components/ui/dialog';
 import { ReactNode } from 'react';
 import { FieldValues } from 'react-hook-form';
@@ -46,7 +46,7 @@ const Dialog = <T extends FieldValues>({
   open,
   onOpenChange,
   contentClassname,
-  onConfirm,
+  onConfirm
 }: ReusableDialogProps<T>) => {
   return (
     <DialogUI open={open} onOpenChange={onOpenChange}>
@@ -57,7 +57,18 @@ const Dialog = <T extends FieldValues>({
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className={contentClassname}>
+      <DialogContent
+        className={contentClassname}
+        onKeyDown={e => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            onConfirm?.();
+          } else if (e.key === 'Escape') {
+            e.preventDefault();
+            onCancel?.();
+          }
+        }}
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
@@ -65,12 +76,7 @@ const Dialog = <T extends FieldValues>({
         {children}
         <DialogFooter>
           <DialogClose asChild>
-            <Button
-              variant={destructive ? 'destructive' : 'outline'}
-              type='button'
-              onClick={onCancel}
-              disabled={loading}
-            >
+            <Button variant={destructive ? 'destructive' : 'outline'} type='button' onClick={onCancel} disabled={loading}>
               {cancelText}
             </Button>
           </DialogClose>
