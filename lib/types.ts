@@ -240,3 +240,9 @@ export type TGetPaginatedData = {
   orderBy?: any;
   omit?: any
 }
+
+
+export type VariantEditorProps = {
+  variants: FormVariant[];
+  onVariantsChange: (variants: FormVariant[]) => void;
+}

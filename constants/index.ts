@@ -45,3 +45,5 @@ export const DISABLED_NAVBAR = ['/sign-in', '/reset-password', '/seller', '/prod
 export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 
 export const STALE_TIME = 1000 * 60 * 10 // 10 minutes
+
+export const VARIANT_ITEM_DEFAULT = { name: '', isRequired: true };
