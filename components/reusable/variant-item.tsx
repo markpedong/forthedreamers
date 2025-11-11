@@ -1,33 +1,17 @@
 import VariantOptionEditor from '@/app/(admin)/products/components/variant-option-editor';
-import { FormVariant, TVariantOption } from '@/lib/types';
+import { TVariantItemProps, TVariantOption } from '@/lib/types';
 import classNames from 'classnames';
 import { ChevronDown, Trash2 } from 'lucide-react';
 import { memo } from 'react';
 import { Button } from '../ui/button';
 
-const VariantItem = ({
-  variant,
-  index,
-  expanded,
-  onExpand,
-  onEdit,
-  onDelete,
-  onOptionsChange
-}: {
-  variant: FormVariant;
-  index: number;
-  expanded: boolean;
-  onExpand: (index: number) => void;
-  onEdit: (index: number) => void;
-  onDelete: (index: number) => void;
-  onOptionsChange: (index: number, options: TVariantOption[]) => void;
-}) => (
+const VariantItem = memo(({ variant, expanded, onExpand, onEdit, onDelete, onOptionsChange }: TVariantItemProps) => (
   <div className='border border-border rounded-lg overflow-hidden'>
     <div
       role='button'
       tabIndex={0}
-      onClick={() => onExpand(index)}
-      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onExpand(index)}
+      onClick={() => onExpand(variant.id!)}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onExpand(variant.id!)}
       className='w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors cursor-pointer'
     >
       <div className='flex items-center gap-3 flex-1 text-left'>
@@ -43,10 +27,10 @@ const VariantItem = ({
         </div>
       </div>
       <div className='flex gap-1' onClick={e => e.stopPropagation()}>
-        <Button variant='outline' size='sm' onClick={() => onEdit(index)}>
+        <Button variant='outline' size='sm' onClick={() => onEdit(variant.id!)}>
           Edit
         </Button>
-        <Button variant='outline' size='sm' className='text-destructive hover:text-destructive' onClick={() => onDelete(index)}>
+        <Button variant='outline' size='sm' className='text-destructive hover:text-destructive' onClick={() => onDelete(variant.id!)}>
           <Trash2 size={16} />
         </Button>
       </div>
@@ -56,9 +40,10 @@ const VariantItem = ({
       <VariantOptionEditor
         variantName={variant.name}
         options={variant.options as TVariantOption[]}
-        onOptionsChange={opt => onOptionsChange(index, opt)}
+        onOptionsChange={opt => onOptionsChange(variant.id!, opt)}
       />
     )}
   </div>
-);
+));
+
 export default memo(VariantItem);

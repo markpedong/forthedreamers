@@ -18,11 +18,9 @@ import { VARIANT_ITEM_DEFAULT } from '@/constants';
 const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
   const { variantSchema } = useFormSchema();
 
-  const [state, setState] = useState({
-    expanded: null as number | null,
-    editing: null as number | null,
-    dialogOpen: false
-  });
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<SchemaForm<typeof variantSchema>>({
     resolver: zodResolver(variantSchema),
@@ -31,40 +29,43 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
 
   const openForAdd = () => {
     form.reset(VARIANT_ITEM_DEFAULT);
-    setState({ expanded: null, editing: null, dialogOpen: true });
+    setEditingId(null);
+    setIsOpen(true);
   };
 
-  const openForEdit = (index: number) => {
-    const v = variants[index];
-    form.reset({
-      id: v.id,
-      name: v.name,
-      isRequired: v.isRequired
-    });
-    setState({ ...state, editing: index, dialogOpen: true });
+  const openForEdit = (id: string) => {
+    const variant = variants.find(v => v.id === id);
+    if (!variant) return;
+    form.reset({ id: variant.id, name: variant.name, isRequired: variant.isRequired });
+    setEditingId(id);
+    setIsOpen(true);
   };
 
   const handleSave = (data: SchemaForm<typeof variantSchema>) => {
     const updated = [...variants];
 
-    if (state.editing !== null) {
-      updated[state.editing] = { ...updated[state.editing], ...data };
+    if (editingId) {
+      const index = updated.findIndex(v => v.id === editingId);
+      if (index !== -1) updated[index] = { ...updated[index], ...data };
     } else {
-      updated.push({ ...data, options: [] });
+      updated.push({ ...data, options: [] }); // no uuid needed, backend assigns id
     }
 
     onVariantsChange(updated);
     form.reset(VARIANT_ITEM_DEFAULT);
-    setState({ expanded: null, editing: null, dialogOpen: false });
+    setEditingId(null);
+    setExpandedId(null);
+    setIsOpen(false);
   };
 
-  const handleDelete = (index: number) => {
-    onVariantsChange(variants.toSpliced(index, 1));
+  const handleDelete = (id: string) => {
+    onVariantsChange(variants.filter(v => v.id !== id));
   };
 
-  const handleOptionsChange = (index: number, options: TVariantOption[]) => {
+  const handleOptionsChange = (id: string, options: TVariantOption[]) => {
     const updated = [...variants];
-    updated[index].options = options;
+    const index = updated.findIndex(v => v.id === id);
+    if (index !== -1) updated[index].options = options;
     onVariantsChange(updated);
   };
 
@@ -72,24 +73,18 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
     <div className='space-y-4'>
       <div className='flex items-center justify-between'>
         <h3 className='font-semibold'>Variants</h3>
-        <Button size='sm' className='gap-1' onClick={openForAdd} disabled={state.dialogOpen}>
+        <Button size='sm' className='gap-1' onClick={openForAdd} disabled={isOpen}>
           <Plus size={16} /> Add Variant
         </Button>
       </div>
 
       <div className='space-y-2'>
-        {variants.map((variant, index) => (
+        {variants.map(variant => (
           <VariantItem
-            key={variant.id || index}
+            key={variant.id}
             variant={variant}
-            index={index}
-            expanded={state.expanded === index}
-            onExpand={i =>
-              setState(prev => ({
-                ...prev,
-                expanded: prev.expanded === i ? null : i
-              }))
-            }
+            expanded={expandedId === variant.id}
+            onExpand={setExpandedId}
             onEdit={openForEdit}
             onDelete={handleDelete}
             onOptionsChange={handleOptionsChange}
@@ -98,12 +93,12 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
       </div>
 
       <Dialog
-        open={state.dialogOpen}
+        open={isOpen}
         onOpenChange={open => {
           if (!open) form.reset(VARIANT_ITEM_DEFAULT);
-          setState(prev => ({ ...prev, dialogOpen: open }));
+          setIsOpen(open);
         }}
-        title={`${state.editing !== null ? 'Edit' : 'Add'} Variant`}
+        title={`${editingId ? 'Edit' : 'Add'} Variant`}
         triggerText={false}
         onConfirm={form.handleSubmit(handleSave)}
       >
