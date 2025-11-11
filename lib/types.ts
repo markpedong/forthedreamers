@@ -161,18 +161,16 @@ export type SpecsEditorProps = {
 
 export type TVariantOption = Omit<
   VariantOption,
-  "createdAt" | "updatedAt"
+  "createdAt" | "updatedAt" | "variantId"
 >;
 
 // Form variant option type (without database fields)
-export type FormVariantOption = Omit<TVariantOption, "variantId">;
-
 // Form variant type (without database fields)
 export type FormVariant = {
   id?: string;
   name: string;
   isRequired: boolean;
-  options: FormVariantOption[];
+  options: TVariantOption[];
 };
 
 export type TVariant = Variant & {

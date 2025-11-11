@@ -106,17 +106,17 @@ const VariantOptionEditor = ({
   const handleDelete = (index: number) => onOptionsChange(options.filter((_, i) => i !== index));
 
   return (
-    <div className='space-y-3'>
+    <div className='space-y-3 p-4 border-t'>
       {/* Header */}
       <div className='flex items-center justify-between'>
-        <label className='text-sm font-medium'>{variantName} Options</label>
+        <label className='text-sm font-medium'>Options</label>
         <Button size='sm' onClick={openForAdd} className='gap-1'>
           <Plus size={16} /> Add Option
         </Button>
       </div>
 
       {/* Options List */}
-      <div className='space-y-2 bg-muted/30 rounded-lg p-3 min-h-16'>
+      <div className='space-y-2 rounded-lg min-h-16'>
         {options.length === 0 ? (
           <p className='text-sm text-muted-foreground'>No options added yet</p>
         ) : (

@@ -11,8 +11,9 @@ import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import VariantOptionEditor from './variant-option-editor';
 import useFormSchema from '@/hooks/useFormSchema';
-import { FormVariant, FormVariantOption, SchemaForm, TVariantOption } from '@/lib/types';
+import { FormVariant, SchemaForm, TVariantOption } from '@/lib/types';
 import Checkbox from '@/components/reusable/checkbox';
+import classNames from 'classnames';
 
 interface VariantEditorProps {
   variants: FormVariant[];
@@ -27,7 +28,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
 
   const form = useForm<SchemaForm<typeof variantSchema>>({
     resolver: zodResolver(variantSchema),
-    defaultValues: { name: '', isRequired: true },
+    defaultValues: { name: '', isRequired: true }
   });
 
   const openForAdd = () => {
@@ -41,7 +42,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
     form.reset({
       id: v.id,
       name: v.name,
-      isRequired: v.isRequired,
+      isRequired: v.isRequired
     });
     setEditingIndex(index);
     setIsOpen(true);
@@ -53,7 +54,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
     if (editingIndex !== null) {
       updated[editingIndex] = { ...updated[editingIndex], ...data };
     } else {
-      updated.push({ ...data, options: [] as FormVariantOption[] });
+      updated.push({ ...data, options: [] });
     }
 
     onVariantsChange(updated);
@@ -65,7 +66,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
     onVariantsChange(variants.filter((_, i) => i !== index));
   };
 
-  const handleOptionsChange = (index: number, options: FormVariantOption[]) => {
+  const handleOptionsChange = (index: number, options: TVariantOption[]) => {
     const updated = [...variants];
     updated[index].options = options;
     onVariantsChange(updated);
@@ -84,10 +85,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
         {variants.map((variant, index) => {
           const expanded = expandedIndex === index;
           return (
-            <div
-              key={variant.id || index}
-              className='border border-border rounded-lg overflow-hidden'
-            >
+            <div key={variant.id || index} className='border border-border rounded-lg overflow-hidden'>
               <div
                 onClick={() => setExpandedIndex(expanded ? null : index)}
                 className='w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors'
@@ -95,19 +93,16 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
                 <div className='flex items-center gap-3 flex-1 text-left'>
                   <ChevronDown
                     size={18}
-                    className={`text-muted-foreground transition-transform ${
-                      expanded ? 'rotate-180' : ''
-                    }`}
+                    className={classNames('text-muted-foreground transition-transform', {
+                      'rotate-180': expanded
+                    })}
                   />
                   <div>
                     <p className='font-medium'>{variant.name}</p>
-                    <p className='text-xs text-muted-foreground'>
-                      {variant.isRequired ? 'Required' : 'Optional'}
-                    </p>
+                    <p className='text-xs text-muted-foreground'>{variant.isRequired ? 'Required' : 'Optional'}</p>
                   </div>
                 </div>
-
-                <div className='flex gap-1' onClick={(e) => e.stopPropagation()}>
+                <div className='flex gap-1' onClick={e => e.stopPropagation()}>
                   <Button variant='outline' size='sm' onClick={() => openForEdit(index)}>
                     Edit
                   </Button>
@@ -123,13 +118,11 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
               </div>
 
               {expanded && (
-                <div className='border-t border-border p-4 bg-muted/20'>
-                  <VariantOptionEditor
-                    variantName={variant.name}
-                    options={variant.options as TVariantOption[]}
-                    onOptionsChange={(opt) => handleOptionsChange(index, opt)}
-                  />
-                </div>
+                <VariantOptionEditor
+                  variantName={variant.name}
+                  options={variant.options as TVariantOption[]}
+                  onOptionsChange={opt => handleOptionsChange(index, opt)}
+                />
               )}
             </div>
           );
@@ -138,7 +131,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
 
       <Dialog
         open={isOpen}
-        onOpenChange={(open) => {
+        onOpenChange={open => {
           if (!open) form.reset({ name: '', isRequired: true });
           setIsOpen(open);
         }}
