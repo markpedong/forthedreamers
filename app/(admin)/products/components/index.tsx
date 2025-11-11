@@ -159,7 +159,6 @@ const Products: FC = () => {
 
     const res = isEdit ? await tryWithToast(updateProduct(data)) : await tryWithToast(createProduct(data))
 
-    console.log('res', res)
     if (res?.success) {
       toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`)
       actionRef.current?.reload()
