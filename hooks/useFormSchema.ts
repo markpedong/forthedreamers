@@ -140,6 +140,12 @@ const useFormSchema = () => {
       }
     );
 
+  const variantSchema = z.object({
+    id: z.string().optional(),
+    name: createStringSchema("Option Name", 1, 100),
+    isRequired: z.boolean(),
+  });
+
   return {
     nameEmailSchema,
     password,
@@ -157,6 +163,7 @@ const useFormSchema = () => {
     specFormSchema,
     variantFormSchema,
     variantOptionFormSchema,
+    variantSchema
   }
 }
 

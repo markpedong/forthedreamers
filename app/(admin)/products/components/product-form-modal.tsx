@@ -18,7 +18,7 @@ import ImageUploader from './image-uploader';
 import { Label } from '@/components/ui/label';
 
 import { PRODUCT_DEFAULT } from '@/constants';
-import { ProductFormModalProps, ProductFormData, FormVariant, SchemaForm } from '@/lib/types';
+import { ProductFormModalProps, ProductFormData, SchemaForm, TVariant } from '@/lib/types';
 import useFormSchema from '@/hooks/useFormSchema';
 import { useAppSelector } from '@/redux/store';
 
@@ -148,7 +148,7 @@ const ProductFormModal: FC<ProductFormModalProps> = (props) => {
             </TabsContent>
             <TabsContent value='inventory' className='space-y-6'>
               <VariantEditor
-                variants={form.watch('variants') as FormVariant[]}
+                variants={form.watch('variants') as TVariant[]}
                 onVariantsChange={(variants) =>
                   form.setValue('variants', variants, { shouldValidate: true })
                 }
