@@ -55,6 +55,16 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
   }, [open, type, initialProduct, categories, form, isEdit])
 
   const handleSubmit = (values: SchemaForm<typeof productFormSchema>) => {
+    if (values.specs.length === 0) {
+      toast.error('Please add at least one spec')
+      return
+    }
+
+    if (values.tags.length === 0) {
+      toast.error('Please add at least one tag')
+      return
+    }
+
     startTransition(async () => {
       try {
         const currCategory = categories.find(c => c.name === values.category)

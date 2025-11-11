@@ -208,6 +208,7 @@ const Products: FC = () => {
             expandedRowRender: record => record.variants.length > 0 && <VariationTable variations={record.variants} />,
             rowExpandable: record => record.variants.length > 0
           }}
+          scroll={{x: 770}}
         />
       </div>
       <ProductFormModal

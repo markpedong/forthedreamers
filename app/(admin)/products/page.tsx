@@ -1,7 +1,7 @@
-import Products from './components';
+import Products from './components'
 
 const Page = async () => {
-  return <Products />;
-};
+  return <Products />
+}
 
-export default Page;
+export default Page

@@ -1,34 +1,35 @@
-'use client';
+'use client'
 
-import { useState, type KeyboardEvent } from 'react';
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useState, useCallback, type KeyboardEvent, FC } from 'react'
+import { X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { TagsInputProps } from '@/lib/types'
 
-interface TagsInputProps {
-  tags: string[];
-  onTagsChange: (tags: string[]) => void;
-}
+const TagsInput: FC<TagsInputProps> = ({tags, onTagsChange}) => {
+  const [input, setInput] = useState('')
 
-const TagsInput = ({ tags, onTagsChange }: TagsInputProps) => {
-  const [input, setInput] = useState('');
+  const addTag = useCallback(() => {
+    const tag = input.trim()
+    if (!tag) return
 
-  const addTag = () => {
-    const tag = input.trim();
-    if (tag && !tags.includes(tag)) {
-      onTagsChange([...tags, tag]);
-      setInput('');
+    if (!tags.includes(tag)) {
+      onTagsChange([...tags, tag])
     }
-  };
+    setInput('')
+  }, [input, tags, onTagsChange])
 
-  const removeTag = (tag: string) => onTagsChange(tags.filter((t) => t !== tag));
+  const removeTag = useCallback((tag: string) => onTagsChange(tags.filter(t => t !== tag)), [tags, onTagsChange])
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addTag();
-    }
-  };
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        addTag()
+      }
+    },
+    [addTag]
+  )
 
   return (
     <div className='space-y-3'>
@@ -36,7 +37,7 @@ const TagsInput = ({ tags, onTagsChange }: TagsInputProps) => {
         <Input
           placeholder='Add a tag and press Enter'
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           className='flex-1'
         />
@@ -47,13 +48,11 @@ const TagsInput = ({ tags, onTagsChange }: TagsInputProps) => {
 
       {tags.length > 0 && (
         <div className='flex flex-wrap gap-2'>
-          {tags.map((tag) => (
-            <div
-              key={tag}
-              className='flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm'
-            >
+          {tags.map(tag => (
+            <div key={tag} className='flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm'>
               {tag}
               <button
+                type='button'
                 onClick={() => removeTag(tag)}
                 className='hover:text-destructive transition-colors'
                 aria-label={`Remove tag ${tag}`}
@@ -65,7 +64,7 @@ const TagsInput = ({ tags, onTagsChange }: TagsInputProps) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default TagsInput;
+export default TagsInput

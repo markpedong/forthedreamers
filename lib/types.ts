@@ -4,7 +4,7 @@ import { getSession, listUserAccounts } from "./server-actions";
 import type { Control, Path, FieldValues } from 'react-hook-form';
 import { ComponentPropsWithoutRef, Ref } from "react";
 import { Category, PrismaClient, Product, PRODUCT_STATUS, Spec, Variant, VariantOption } from "@/generated/prisma";
-import type { ActionType, ProTableProps as AntProTableProps } from '@ant-design/pro-components';
+import type { ActionType, ProTableProps as AntProTableProps, ProFormInstance } from '@ant-design/pro-components';
 
 export type TOnNavigate = (page: string) => void;
 
@@ -210,12 +210,13 @@ export type DropdownProps = {
 };
 
 export type ProTableProps<T> = AntProTableProps<T, any, any> & {
-  exportDataFn?: () => Promise<void>;
-  timeLabel?: string;
-  disableTimeFilter?: boolean;
+  exportDataFn?: () => Promise<void>
+  timeLabel?: string
+  disableTimeFilter?: boolean
   actionRef?: Ref<ActionType | undefined>;
-  isLoading?: boolean;
-};
+  formRef?: Ref<ProFormInstance | undefined>;
+  isLoading?: boolean
+}
 
 export type BaseQueryParams = {
   current?: number
@@ -270,4 +271,9 @@ export type OptionForm = {
   discountedPrice: string
   stock: string
   coupon: string
+}
+
+export type TagsInputProps = {
+  tags: string[];
+  onTagsChange: (tags: string[]) => void;
 }
