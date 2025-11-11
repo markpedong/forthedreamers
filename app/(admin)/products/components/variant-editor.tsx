@@ -84,7 +84,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
             key={variant.id}
             variant={variant}
             expanded={expandedId === variant.id}
-            onExpand={setExpandedId}
+            onExpand={(id: string) => setExpandedId(prev => (prev === id ? null : id))}
             onEdit={openForEdit}
             onDelete={handleDelete}
             onOptionsChange={handleOptionsChange}

@@ -36,6 +36,8 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
     defaultValues: PRODUCT_DEFAULT
   });
 
+  console.log("initialProduct", initialProduct);
+
   useEffect(() => {
     if (!open) {
       form.reset(PRODUCT_DEFAULT);

@@ -38,6 +38,7 @@ const VariantItem = memo(({ variant, expanded, onExpand, onEdit, onDelete, onOpt
 
     {expanded && (
       <VariantOptionEditor
+        key={variant.id}
         variantName={variant.name}
         options={variant.options as TVariantOption[]}
         onOptionsChange={opt => onOptionsChange(variant.id!, opt)}

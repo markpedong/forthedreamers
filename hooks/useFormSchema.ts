@@ -112,33 +112,34 @@ const useFormSchema = () => {
       id: z.string().optional(),
       name: createStringSchema("Product Name", 1, 200),
       brand: createStringSchema("Brand", 1, 100),
-      basePrice: z.number().min(0, { message: "Base price must be at least 0" }),
+      basePrice: z.number().nullable(),
       description: createStringSchema("Description", 1, 1000),
       images: z.array(z.string()).default([]),
       tags: z.array(z.string()).default([]),
-      stock: z.number().min(0, { message: "Base price must be at least 0" }),
+      stock: z.number().nullable(),
       status: z.enum(PRODUCT_STATUS).default('DRAFT'),
       category: createStringSchema("Category", 1, 100),
       specs: z.array(specFormSchema).default([]),
       variants: z.array(variantFormSchema).default([]),
     })
-    .refine(
-      (data) => {
-        if (data.variants && data.variants.length > 0) {
-          return true;
+    .superRefine((data, ctx) => {
+      if ((!data.variants || data.variants.length === 0)) {
+        if (data.basePrice === null || data.basePrice === undefined) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Base price is required when no variants are present",
+            path: ["basePrice"],
+          });
         }
-        return (
-          data.basePrice !== null &&
-          data.basePrice !== undefined &&
-          data.stock !== null &&
-          data.stock !== undefined
-        );
-      },
-      {
-        message: "Base price and stock are required when no variants are present",
-        path: ["basePrice"],
+        if (data.stock === null || data.stock === undefined) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Stock is required when no variants are present",
+            path: ["stock"],
+          });
+        }
       }
-    );
+    })
 
   const variantSchema = z.object({
     id: z.string().optional(),

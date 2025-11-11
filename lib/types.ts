@@ -70,11 +70,11 @@ export type ProductFormData = {
   id?: string;
   name: string;
   brand: string | null;
-  basePrice: number;
+  basePrice?: number | null;
   description: string | null;
   images: string[];
   tags: string[];
-  stock: number;
+  stock?: number | null;
   status: PRODUCT_STATUS;
   sellerId?: string;
   categoryId: string;
