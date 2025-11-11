@@ -249,9 +249,10 @@ export type VariantEditorProps = {
 
 export type TVariantItemProps = {
   variant: FormVariant;
+  index: number;
   expanded: boolean;
-  onExpand: (id: string) => void;
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
-  onOptionsChange: (id: string, options: TVariantOption[]) => void;
+  onExpand: (index: number) => void;
+  onEdit: (index: number) => void;
+  onDelete: (index: number) => void;
+  onOptionsChange: (index: number, options: TVariantOption[]) => void;
 }

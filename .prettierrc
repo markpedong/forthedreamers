@@ -1,11 +1,11 @@
 {
   "printWidth": 140,
   "tabWidth": 2,
-  "semi": true,
+  "semi": false,
   "singleQuote": true,
   "jsxSingleQuote": true,
   "trailingComma": "none",
-  "bracketSpacing": true,
+  "bracketSpacing": false,
   "arrowParens": "avoid",
   "endOfLine": "lf",
   "importOrder": [

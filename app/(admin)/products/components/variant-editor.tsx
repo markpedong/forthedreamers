@@ -1,73 +1,72 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Plus } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react'
+import { Plus } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 
-import { Button } from '@/components/ui/button';
-import Dialog from '@/components/reusable/dialog';
-import Form from '@/components/reusable/form';
-import Input from '@/components/reusable/input';
-import Checkbox from '@/components/reusable/checkbox';
-import useFormSchema from '@/hooks/useFormSchema';
-import { SchemaForm, TVariantOption, VariantEditorProps } from '@/lib/types';
-import VariantItem from '@/components/reusable/variant-item';
-import { VARIANT_ITEM_DEFAULT } from '@/constants';
+import { Button } from '@/components/ui/button'
+import Dialog from '@/components/reusable/dialog'
+import Form from '@/components/reusable/form'
+import Input from '@/components/reusable/input'
+import Checkbox from '@/components/reusable/checkbox'
+import useFormSchema from '@/hooks/useFormSchema'
+import { SchemaForm, TVariantOption, VariantEditorProps } from '@/lib/types'
+import VariantItem from '@/components/reusable/variant-item'
+import { VARIANT_ITEM_DEFAULT } from '@/constants'
 
-const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
-  const { variantSchema } = useFormSchema();
+const VariantEditor = ({variants, onVariantsChange}: VariantEditorProps) => {
+  const {variantSchema} = useFormSchema()
 
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
 
   const form = useForm<SchemaForm<typeof variantSchema>>({
     resolver: zodResolver(variantSchema),
     defaultValues: VARIANT_ITEM_DEFAULT
-  });
+  })
 
   const openForAdd = () => {
-    form.reset(VARIANT_ITEM_DEFAULT);
-    setEditingId(null);
-    setIsOpen(true);
-  };
+    form.reset(VARIANT_ITEM_DEFAULT)
+    setEditingIndex(null)
+    setIsOpen(true)
+  }
 
-  const openForEdit = (id: string) => {
-    const variant = variants.find(v => v.id === id);
-    if (!variant) return;
-    form.reset({ id: variant.id, name: variant.name, isRequired: variant.isRequired });
-    setEditingId(id);
-    setIsOpen(true);
-  };
+  const openForEdit = (index: number) => {
+    const variant = variants[index]
+    form.reset({id: variant.id, name: variant.name, isRequired: variant.isRequired})
+    setEditingIndex(index)
+    setIsOpen(true)
+  }
 
   const handleSave = (data: SchemaForm<typeof variantSchema>) => {
-    const updated = [...variants];
+    const updated = [...variants]
 
-    if (editingId) {
-      const index = updated.findIndex(v => v.id === editingId);
-      if (index !== -1) updated[index] = { ...updated[index], ...data };
+    if (editingIndex !== null) {
+      updated[editingIndex] = {...updated[editingIndex], ...data}
     } else {
-      updated.push({ ...data, options: [] });
+      updated.push({...data, options: []})
     }
 
-    onVariantsChange(updated);
-    form.reset(VARIANT_ITEM_DEFAULT);
-    setEditingId(null);
-    setExpandedId(null);
-    setIsOpen(false);
-  };
+    onVariantsChange(updated)
+    form.reset(VARIANT_ITEM_DEFAULT)
+    setEditingIndex(null)
+    setExpandedIndex(null)
+    setIsOpen(false)
+  }
 
-  const handleDelete = (id: string) => {
-    onVariantsChange(variants.filter(v => (v.id === id ? false : true)));
-  };
+  const handleDelete = (index: number) => {
+    const updated = [...variants]
+    updated.splice(index, 1)
+    onVariantsChange(updated)
+  }
 
-  const handleOptionsChange = (id: string, options: TVariantOption[]) => {
-    const updated = [...variants];
-    const index = updated.findIndex(v => v.id === id);
-    if (index !== -1) updated[index].options = options;
-    onVariantsChange(updated);
-  };
+  const handleOptionsChange = (index: number, options: TVariantOption[]) => {
+    const updated = [...variants]
+    updated[index].options = options
+    onVariantsChange(updated)
+  }
 
   return (
     <div className='space-y-4'>
@@ -79,15 +78,16 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
       </div>
 
       <div className='space-y-2'>
-        {variants.map(variant => (
+        {variants.map((variant, index) => (
           <VariantItem
-            key={variant.id}
+            key={variant.id || index}
             variant={variant}
-            expanded={expandedId === variant.id}
-            onExpand={(id: string) => setExpandedId(prev => (prev === id ? null : id))}
-            onEdit={openForEdit}
-            onDelete={handleDelete}
-            onOptionsChange={handleOptionsChange}
+            index={index}
+            expanded={expandedIndex === index}
+            onExpand={() => setExpandedIndex(prev => (prev === index ? null : index))}
+            onEdit={() => openForEdit(index)}
+            onDelete={() => handleDelete(index)}
+            onOptionsChange={(index, opts) => handleOptionsChange(index, opts)}
           />
         ))}
       </div>
@@ -95,10 +95,10 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
       <Dialog
         open={isOpen}
         onOpenChange={open => {
-          if (!open) form.reset(VARIANT_ITEM_DEFAULT);
-          setIsOpen(open);
+          if (!open) form.reset(VARIANT_ITEM_DEFAULT)
+          setIsOpen(open)
         }}
-        title={`${editingId ? 'Edit' : 'Add'} Variant`}
+        title={`${editingIndex !== null ? 'Edit' : 'Add'} Variant`}
         triggerText={false}
         onConfirm={form.handleSubmit(handleSave)}
       >
@@ -108,7 +108,7 @@ const VariantEditor = ({ variants, onVariantsChange }: VariantEditorProps) => {
         </Form>
       </Dialog>
     </div>
-  );
-};
+  )
+}
 
-export default VariantEditor;
+export default VariantEditor
