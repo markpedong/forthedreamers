@@ -86,11 +86,10 @@ const useFormSchema = () => {
   })
 
   const variantOptionFormSchema = z.object({
-    id: z.string().optional(),
     variantOptionName: createStringSchema("Option Name", 1, 100),
-    price: z.number().min(0, { message: "Price must be at least 0" }),
+    price: z.number().min(1, { message: "Price must be at least 1" }),
+    stock: z.number().min(1, { message: "Stock must be at least 1" }),
     discountedPrice: z.number().nullable().optional(),
-    stock: z.number().min(0, { message: "Stock must be at least 0" }),
     coupon: z.string().nullable().optional(),
   });
 

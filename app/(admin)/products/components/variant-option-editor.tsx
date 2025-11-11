@@ -1,102 +1,74 @@
 'use client'
 
-import { useState } from 'react'
+import { FC, useState } from 'react'
 import { Trash2, Plus } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { TVariantOption } from '@/lib/types'
+import { SchemaForm, TVariantOption, VariantOptionEditorProps } from '@/lib/types'
+import useFormSchema from '@/hooks/useFormSchema'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { VARIANT_OPTION_DEFAULT } from '@/constants'
+import Form from '@/components/reusable/form'
+import Dialog from '@/components/reusable/dialog'
+import Input from '@/components/reusable/input'
 
-// Helper to generate temporary ID for new items
-const generateTempId = () => `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-
-interface VariantOptionEditorProps {
-  variantName: string
-  options: TVariantOption[]
-  onOptionsChange: (options: TVariantOption[]) => void
-}
-
-const VariantOptionEditor = ({variantName, options, onOptionsChange}: VariantOptionEditorProps) => {
+const VariantOptionEditor: FC<VariantOptionEditorProps> = ({variantName, options, onOptionsChange}) => {
   const [isOpen, setIsOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
-
-  const [form, setForm] = useState({
-    id: undefined as string | undefined,
-    variantOptionName: '',
-    price: '',
-    discountedPrice: '',
-    stock: '',
-    coupon: ''
+  const {variantOptionFormSchema} = useFormSchema()
+  const form = useForm<SchemaForm<typeof variantOptionFormSchema>>({
+    resolver: zodResolver(variantOptionFormSchema),
+    defaultValues: VARIANT_OPTION_DEFAULT
   })
 
-  const updateForm = (key: keyof typeof form, value: string | undefined) => setForm(prev => ({...prev, [key]: value}))
-
-  const resetForm = () => {
-    setForm({
-      id: undefined,
-      variantOptionName: '',
-      price: '',
-      discountedPrice: '',
-      stock: '',
-      coupon: ''
-    })
-    setEditingIndex(null)
-  }
-
   const openForAdd = () => {
-    resetForm()
+    form.reset()
+    setEditingIndex(null)
     setIsOpen(true)
   }
 
   const openForEdit = (index: number) => {
     const option = options[index]
-    setEditingIndex(index)
-    setForm({
-      id: option.id,
+    form.reset({
       variantOptionName: option.variantOptionName,
-      price: option.price.toString(),
-      discountedPrice: option.discountedPrice?.toString() || '',
-      stock: option.stock.toString(),
-      coupon: option.coupon || ''
+      coupon: option.coupon,
+      discountedPrice: option.discountedPrice,
+      price: option.price,
+      stock: option.stock
     })
+    setEditingIndex(index)
     setIsOpen(true)
   }
 
-  const handleSave = () => {
-    if (!form.variantOptionName.trim() || !form.price || !form.stock) return
-
-    const priceNum = parseFloat(form.price)
-    const stockNum = parseInt(form.stock)
-
-    if (isNaN(priceNum) || isNaN(stockNum) || priceNum < 0 || stockNum < 0) {
-      return
-    }
-
+  const handleSave = (values: SchemaForm<typeof variantOptionFormSchema>) => {
     const newOption: TVariantOption = {
-      id: form.id || generateTempId(),
-      variantOptionName: form.variantOptionName.trim(),
-      price: priceNum,
-      discountedPrice: form.discountedPrice ? parseFloat(form.discountedPrice) : null,
-      stock: stockNum,
-      coupon: form.coupon?.trim() || null
+      id: editingIndex !== null ? options[editingIndex].id : '',
+      variantOptionName: values.variantOptionName,
+      price: values.price ?? 0,
+      discountedPrice: values.discountedPrice || null,
+      stock: values.stock ?? 0,
+      coupon: values.coupon || null
     }
 
     const updated = [...options]
     if (editingIndex !== null) {
-      updated[editingIndex] = {...updated[editingIndex], ...newOption}
+      updated[editingIndex] = newOption
     } else {
-      updated.push(newOption as TVariantOption)
+      updated.push(newOption)
     }
 
     onOptionsChange(updated)
-    resetForm()
+    form.reset(VARIANT_OPTION_DEFAULT)
+    setEditingIndex(null)
     setIsOpen(false)
   }
 
-  const handleDelete = (index: number) => onOptionsChange(options.filter((_, i) => i !== index))
+  const handleDelete = (index: number) => {
+    onOptionsChange(options.filter((_, i) => i !== index))
+  }
 
   return (
     <div className='space-y-3 p-4 border-t'>
-      {/* Header */}
       <div className='flex items-center justify-between'>
         <label className='text-sm font-medium'>Options</label>
         <Button size='sm' onClick={openForAdd} className='gap-1'>
@@ -104,7 +76,6 @@ const VariantOptionEditor = ({variantName, options, onOptionsChange}: VariantOpt
         </Button>
       </div>
 
-      {/* Options List */}
       <div className='space-y-2 rounded-lg min-h-16'>
         {options.length === 0 ? (
           <p className='text-sm text-muted-foreground'>No options added yet</p>
@@ -132,102 +103,25 @@ const VariantOptionEditor = ({variantName, options, onOptionsChange}: VariantOpt
 
       {/* Dialog */}
       <Dialog
+        title={`${editingIndex !== null ? 'Edit' : 'Add'} ${variantName} Option`}
         open={isOpen}
         onOpenChange={open => {
-          if (!open) resetForm()
+          if (!open) form.reset()
           setIsOpen(open)
         }}
+        onConfirm={form.handleSubmit(handleSave)}
+        confirmText='Save Option'
+        triggerText={false}
       >
-        <DialogContent className='max-w-sm'>
-          <DialogHeader>
-            <DialogTitle>
-              {editingIndex !== null ? 'Edit' : 'Add'} {variantName} Option
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className='space-y-3'>
-            {/* Name */}
-            <div>
-              <label htmlFor='variantOptionName' className='text-sm font-medium mb-1.5 block'>
-                Option Name *
-              </label>
-              <input
-                id='variantOptionName'
-                type='text'
-                placeholder={`e.g., Red, Small`}
-                value={form.variantOptionName}
-                onChange={e => updateForm('variantOptionName', e.target.value)}
-                className='w-full px-3 py-2 border border-border rounded-md'
-              />
-            </div>
-
-            {/* Prices */}
-            <div className='grid grid-cols-2 gap-3'>
-              <div>
-                <label htmlFor='price' className='text-sm font-medium mb-1.5 block'>
-                  Price *
-                </label>
-                <input
-                  id='price'
-                  type='number'
-                  step='0.01'
-                  placeholder='0.00'
-                  value={form.price}
-                  onChange={e => updateForm('price', e.target.value)}
-                  className='w-full px-3 py-2 border border-border rounded-md'
-                />
-              </div>
-              <div>
-                <label htmlFor='discountedPrice' className='text-sm font-medium mb-1.5 block'>
-                  Discounted Price
-                </label>
-                <input
-                  id='discountedPrice'
-                  type='number'
-                  step='0.01'
-                  placeholder='Optional'
-                  value={form.discountedPrice}
-                  onChange={e => updateForm('discountedPrice', e.target.value)}
-                  className='w-full px-3 py-2 border border-border rounded-md'
-                />
-              </div>
-            </div>
-            <div>
-              <label htmlFor='stock' className='text-sm font-medium mb-1.5 block'>
-                Stock *
-              </label>
-              <input
-                id='stock'
-                type='number'
-                placeholder='0'
-                value={form.stock}
-                onChange={e => updateForm('stock', e.target.value)}
-                className='w-full px-3 py-2 border border-border rounded-md'
-              />
-            </div>
-
-            <div>
-              <label htmlFor='coupon' className='text-sm font-medium mb-1.5 block'>
-                Coupon Code (Optional)
-              </label>
-              <input
-                id='coupon'
-                type='text'
-                placeholder='e.g., SAVE10'
-                value={form.coupon}
-                onChange={e => updateForm('coupon', e.target.value)}
-                className='w-full px-3 py-2 border border-border rounded-md'
-              />
-            </div>
+        <Form form={form} customSubmitButton>
+          <Input name='variantOptionName' label='Option Name *' placeholder='e.g., Red, Small' preventSpaces />
+          <div className='grid grid-cols-2 gap-3'>
+            <Input name='price' label='Price *' type='number' step='0.01' placeholder='0.00' />
+            <Input name='discountedPrice' label='Discounted Price (Optional)' type='number' step='0.01' placeholder='Optional' />
           </div>
-
-          <DialogFooter>
-            <Button variant='outline' onClick={() => setIsOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave}>Save Option</Button>
-          </DialogFooter>
-        </DialogContent>
+          <Input name='stock' label='Stock *' type='number' placeholder='0' />
+          <Input name='coupon' label='Coupon Code (Optional)' placeholder='e.g., SAVE10' />
+        </Form>
       </Dialog>
     </div>
   )

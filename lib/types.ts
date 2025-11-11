@@ -256,3 +256,18 @@ export type TVariantItemProps = {
   onDelete: (index: number) => void;
   onOptionsChange: (index: number, options: TVariantOption[]) => void;
 }
+
+
+export type VariantOptionEditorProps = {
+  variantName: string
+  options: TVariantOption[]
+  onOptionsChange: (options: TVariantOption[]) => void
+}
+
+export type OptionForm = {
+  variantOptionName: string
+  price: string
+  discountedPrice: string
+  stock: string
+  coupon: string
+}
