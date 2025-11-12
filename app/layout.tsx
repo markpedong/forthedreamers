@@ -1,32 +1,29 @@
-import type { Metadata } from 'next';
-import { Outfit } from 'next/font/google';
-import './globals.css';
-import MainProvider from '@/components/provider/main-provider';
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import './globals.css'
+import MainProvider from '@/components/provider/main-provider'
 
-const outfit = Outfit({
-  variable: '--font-outfit',
-  subsets: ['latin'],
-});
+const _geist = Geist({subsets: ['latin']})
+const _geistMono = Geist_Mono({subsets: ['latin']})
 
 export const metadata: Metadata = {
   title: {
     template: '%s | Better-Auth Tutorial',
-    absolute: 'Better-Auth Tutorial by Coding in Flow',
+    absolute: 'Better-Auth Tutorial by Coding in Flow'
   },
-  description:
-    'Learn how to handle authentication in Next.js using Better-Auth with this tutorial by Coding in Flow',
-};
+  description: 'Learn how to handle authentication in Next.js using Better-Auth with this tutorial by Coding in Flow'
+}
 
 export default async function RootLayout({
-  children,
+  children
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang='en' suppressHydrationWarning>
-      <body className={`${outfit.className} antialiased`}>
+      <body className={`font-sans antialiased ${_geist.className} ${_geistMono.className}`}>
         <MainProvider>{children}</MainProvider>
       </body>
     </html>
-  );
+  )
 }
