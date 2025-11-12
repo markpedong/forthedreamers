@@ -1,18 +1,14 @@
+import prisma from '@/lib/prisma';
 import { errorResponse, successResponse } from '@/lib/server-helper';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
 
 export async function GET(request: Request, { params }: { params: { slug: string } }) {
-  const { slug } = params;
+  const { slug } = await params;
 
   try {
     const product = await prisma.product.findUnique({
       where: { slug },
       include: {
-        specs: {
-          include: { options: true },
-        },
+        specs: true,
         category: {},
         variants: {
           include: { options: true },

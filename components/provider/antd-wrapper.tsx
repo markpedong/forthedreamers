@@ -65,7 +65,7 @@ const AntdWrapper: FC<PropsWithChildren> = ({ children }) => {
           locale={enUS}
           theme={{
             token: {
-              fontFamily: 'Outfit',
+              fontFamily: 'Geist',
               colorPrimary: colors.primary,
               colorPrimaryHover: colors.primary,
               colorPrimaryTextHover: colors.primaryForeground,

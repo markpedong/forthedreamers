@@ -167,3 +167,5 @@ export const buildDateParams = (where: Record<string, any>): Record<string, any>
 
   return newWhere;
 };
+
+// export const filterImageSrc = (str: string) => /\.(?:jpe?g|png|gif|jfif|bmp|tiff?|webp)$/i.test(str) ? str : undefined;

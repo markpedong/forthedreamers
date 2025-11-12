@@ -21,7 +21,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang='en' suppressHydrationWarning>
-      <body className={`font-sans antialiased ${_geist.className} ${_geistMono.className}`}>
+      <body className={`font-sans antialiased`}>
         <MainProvider>{children}</MainProvider>
       </body>
     </html>
