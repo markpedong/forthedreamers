@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Trash2, Plus, X, Edit } from 'lucide-react'
 import type { VariantEditorProps } from '@/lib/types'
 import type { Variant } from '@/generated/prisma'
+import { Label } from '@/components/ui/label'
 
 const DEFAULT_VARIANT: Omit<Partial<Variant>, 'id' | 'productId' | 'createdAt' | 'updatedAt'> = {
   name: '',
@@ -250,10 +251,12 @@ export default function VariantEditor({variants, onVariantsChange}: VariantEdito
 
               <div className='space-y-2'>
                 {Object.entries(getAttributes(variant.attributes)).map(([key, value]) => (
-                  <div key={key} className='flex items-center justify-between gap-2'>
-                    <div className='flex-1 flex items-center gap-2'>
-                      <span className='text-xs font-medium text-muted-foreground uppercase tracking-wide'>{key}:</span>
-                      <Input value={value} readOnly className='h-8 text-sm flex-1' />
+                  <div key={key} className='flex items-center justify-between gap-4'>
+                    <div className='flex items-center gap-4 mb-2 w-full'>
+                      <Label htmlFor={key} className='text-xs font-medium text-muted-foreground uppercase tracking-wide w-12'>
+                        {key}
+                      </Label>
+                      <Input id={key} value={value} readOnly className='h-8 text-sm flex-1' />
                     </div>
                     <div className='flex gap-1'>
                       <Button
