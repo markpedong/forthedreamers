@@ -3,7 +3,7 @@ import type { z, ZodTypeAny } from 'zod';
 import { getSession, listUserAccounts } from "./server-actions";
 import type { Control, Path, FieldValues } from 'react-hook-form';
 import { ComponentPropsWithoutRef, Ref } from "react";
-import { Category, PrismaClient, Product, PRODUCT_STATUS, Spec, Variant, VariantOption } from "@/generated/prisma";
+import { Category, PrismaClient, Product, PRODUCT_STATUS, Spec, Variant } from "@/generated/prisma";
 import type { ActionType, ProTableProps as AntProTableProps, ProFormInstance } from '@ant-design/pro-components';
 
 export type TOnNavigate = (page: string) => void;
@@ -159,22 +159,11 @@ export type SpecsEditorProps = {
   onSpecsChange: (specs: FormSpec[]) => void;
 }
 
-export type TVariantOption = Omit<
-  VariantOption,
-  "createdAt" | "updatedAt" | "variantId"
->;
-
-// Form variant option type (without database fields)
 // Form variant type (without database fields)
 export type FormVariant = {
   id?: string;
   name: string;
   isRequired: boolean;
-  options: TVariantOption[];
-};
-
-export type TVariant = Variant & {
-  options: TVariantOption[]
 };
 
 export type TSpec = Omit<Spec, "createdAt" | "updatedAt">;
@@ -184,7 +173,7 @@ export type OmittedProductFields = Omit<Product, "createdAt" | "updatedAt" | "ca
 export type TProduct = OmittedProductFields & {
   specs: Spec[];
   category: Omit<Category, 'createdAt' | 'updatedAt'>;
-  variants: TVariant[];
+  variants: Variant[];
 }
 
 export type ProTableRef = {
@@ -244,8 +233,8 @@ export type TGetPaginatedData = {
 
 
 export type VariantEditorProps = {
-  variants: FormVariant[];
-  onVariantsChange: (variants: FormVariant[]) => void;
+  variants: Partial<Variant>[];
+  onVariantsChange: (variants: Partial<Variant>[]) => void;
 }
 
 export type TVariantItemProps = {
@@ -255,14 +244,13 @@ export type TVariantItemProps = {
   onExpand: (index: number) => void;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
-  onOptionsChange: (index: number, options: TVariantOption[]) => void;
+  onOptionsChange: (index: number, options: Variant[]) => void;
 }
 
 
 export type VariantOptionEditorProps = {
   variantName: string
-  options: TVariantOption[]
-  onOptionsChange: (options: TVariantOption[]) => void
+  onOptionsChange: (options: []) => void
 }
 
 export type OptionForm = {

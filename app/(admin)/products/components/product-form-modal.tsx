@@ -18,9 +18,10 @@ import ImageUploader from './image-uploader'
 import { Label } from '@/components/ui/label'
 
 import { PRODUCT_DEFAULT } from '@/constants'
-import { ProductFormModalProps, ProductFormData, SchemaForm, TVariant } from '@/lib/types'
+import { ProductFormModalProps, ProductFormData, SchemaForm } from '@/lib/types'
 import useFormSchema from '@/hooks/useFormSchema'
 import { useAppSelector } from '@/redux/store'
+import { Variant } from '@/generated/prisma'
 
 const ProductFormModal: FC<ProductFormModalProps> = props => {
   const {open, setOpen, type, initialProduct, categories, onSubmit} = props
@@ -138,10 +139,9 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
             </TabsContent>
             <TabsContent value='inventory' className='space-y-6'>
               <VariantEditor
-                variants={form.watch('variants') as TVariant[]}
-                onVariantsChange={variants => {
+                variants={form.watch('variants') as Partial<Variant>[]}
+                onVariantsChange={(variants: any) => {
                   form.setValue('variants', variants, {shouldValidate: true})
-
                   if (variants.length > 0) {
                     form.clearErrors(['basePrice', 'stock'])
                   } else {

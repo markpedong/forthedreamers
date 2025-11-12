@@ -167,3 +167,13 @@ export const buildDateParams = (where: Record<string, any>): Record<string, any>
 
   return newWhere;
 };
+
+// export const filterImageSrc = (str: string) => /\.(?:jpe?g|png|gif|jfif|bmp|tiff?|webp)$/i.test(str) ? str : undefined;
+
+export const fileToBase64 = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = reject
+  })

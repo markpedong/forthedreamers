@@ -16,12 +16,6 @@ export const successResponse = (data: any = null, message = "OK", status = 200) 
   );
 };
 
-const prismaErrorMap: Record<string, { message: string; status: number }> = {
-  P2002: { message: "Unique constraint failed", status: 400 },
-  P2025: { message: "Record not found", status: 404 },
-  P2003: { message: "Foreign key constraint failed", status: 400 },
-};
-
 export const errorResponse = (err: unknown) => {
   let message = "Unknown server error";
   let status = 500;
