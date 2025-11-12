@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, useState, useRef } from 'react'
+import { FC, useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -16,7 +16,6 @@ const ProductGallery: FC<ProductGalleryProps> = ({images}) => {
   const hasMultiple = validImages.length > 1
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [loaded, setLoaded] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
 
   const currentImage = validImages[selectedIndex]
 

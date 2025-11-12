@@ -1,56 +1,51 @@
-"use client"
+'use client'
 
-import { Star } from "lucide-react"
+import { Badge } from '@/components/ui/badge'
+import { OmittedProductFields } from '@/lib/types'
+import { Star } from 'lucide-react'
 
 interface ProductOverviewProps {
-  product: {
-    name: string
-    brand: string
-    price: number
-    originalPrice: number
-    rating: number
-    reviewCount: number
-  }
+  product: OmittedProductFields
 }
 
-export function ProductOverview({ product }: ProductOverviewProps) {
-  const discountPercentage = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+const ProductOverview: React.FC<ProductOverviewProps> = ({product}) => {
+  const {name, brand, basePrice, rating, reviewCount} = product
+  const price = 399
+  const basePriceNum = Number(basePrice)
+  const discount = basePriceNum > price ? Math.round(((basePriceNum - price) / basePriceNum) * 100) : 0
+  const fullStars = Math.floor(rating)
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <p className="text-sm text-muted-foreground">{product.brand}</p>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{product.name}</h1>
-        </div>
+    <div className='flex flex-col gap-6'>
+      <div className='flex flex-col gap-2'>
+        <p className='text-xs uppercase tracking-widest text-muted-foreground'>{brand}</p>
+        <h1 className='text-4xl lg:text-5xl font-light tracking-tight text-foreground leading-tight'>{name}</h1>
       </div>
 
-      {/* Rating and Reviews */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1">
+      <div className='flex items-center gap-3'>
+        <div className='flex gap-0.5'>
           {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              size={16}
-              className={i < Math.floor(product.rating) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}
-            />
+            <Star key={i} size={16} className={i < fullStars ? 'fill-foreground text-foreground' : 'text-muted-foreground'} />
           ))}
         </div>
-        <span className="text-sm text-muted-foreground">
-          {product.rating} ({product.reviewCount} reviews)
+        <span className='text-sm text-muted-foreground'>
+          {rating} ({reviewCount} reviews)
         </span>
       </div>
 
-      {/* Price Section */}
-      <div className="flex items-baseline gap-3">
-        <span className="text-3xl font-bold text-foreground">${product.price.toFixed(2)}</span>
-        <span className="text-lg text-muted-foreground line-through">${product.originalPrice.toFixed(2)}</span>
-        {discountPercentage > 0 && (
-          <span className="rounded-full bg-destructive/10 px-3 py-1 text-sm font-semibold text-destructive">
-            Save {discountPercentage}%
-          </span>
+      <div className='flex items-baseline gap-4'>
+        <span className='text-3xl font-light text-foreground'>${price.toFixed(2)}</span>
+        {discount > 0 && (
+          <>
+            <span className='text-lg text-muted-foreground line-through'>${basePriceNum.toFixed(2)}</span>
+            <Badge variant='secondary' className='bg-accent/10 text-accent hover:bg-accent/20'>
+              Save {discount}%
+            </Badge>
+          </>
         )}
       </div>
     </div>
   )
 }
+
+export default ProductOverview

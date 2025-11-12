@@ -1,5 +1,7 @@
 import { getProduct } from '@/lib/http'
 import ProductGallery from './components/product-gallery'
+import ProductOverview from './components/product-overview'
+import { OmittedProductFields } from '@/lib/types'
 
 interface ProductPageProps {
   params: Promise<{slug: string}>
@@ -11,17 +13,12 @@ const ProductPage = async ({params}: ProductPageProps) => {
 
   return (
     <main className='min-h-screen bg-background'>
-      <div className='mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8'>
-        <div className='grid gap-16 lg:grid-cols-2'>
-          <div>
-            <ProductGallery images={products.data?.images || []} />
-          </div>
-          {/* 
-          <div className='flex flex-col gap-10'>
-            <ProductOverview product={mockProduct} />ˇ
-            <VariantSelector variants={mockProduct.variants} />
-            <AddToCartSection product={mockProduct} />
-          </div> */}
+      <div className='mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 grid gap-16 lg:grid-cols-2'>
+        <ProductGallery images={products.data?.images ?? []} />
+        <div className='flex flex-col gap-10'>
+          <ProductOverview product={products.data as OmittedProductFields} />
+          {/* <VariantSelector variants={mockProduct.variants} />
+          <AddToCartSection product={mockProduct} /> */}
         </div>
       </div>
 
