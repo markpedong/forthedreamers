@@ -14,7 +14,6 @@ import ProTable from '@/components/pro-table'
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components'
 import { useQueryCategories } from '@/hooks/useQuery'
 import { createProduct, deleteProduct, getProducts, toggleProductStatus, updateProduct } from '@/lib/http'
-import VariationTable from './variation-table'
 import { Switch } from 'antd'
 
 const Products: FC = () => {
@@ -203,11 +202,6 @@ const Products: FC = () => {
           request={fetchData}
           toolBarRender={false}
           search={{defaultCollapsed: false}}
-          expandable={{
-            expandedRowRender: record => record.variants.length > 0 && <VariationTable variations={record.variants} />,
-            rowExpandable: record => record.variants.length > 0
-          }}
-          scroll={{x: 770}}
         />
       </div>
       <ProductFormModal
