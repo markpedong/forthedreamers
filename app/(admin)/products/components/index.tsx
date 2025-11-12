@@ -128,7 +128,7 @@ const Products: FC = () => {
       render: (_, record) => record.sold?.toLocaleString()
     },
     {
-      title: 'Active',
+      title: 'Status',
       search: false,
       render: (_, record) => (
         <Switch
