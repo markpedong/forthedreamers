@@ -63,6 +63,11 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
       return
     }
 
+    if (values.images.length === 0) {
+      toast.error('Please add at least one image')
+      return
+    }
+
     startTransition(async () => {
       try {
         const currCategory = categories.find(c => c.name === values.category)

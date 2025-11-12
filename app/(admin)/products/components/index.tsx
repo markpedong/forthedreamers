@@ -24,7 +24,7 @@ const Products: FC = () => {
   const [type, setType] = useState<'EDIT' | 'CREATE'>('CREATE')
   const [product, setProduct] = useState<TProduct>()
   const actionRef = useRef<ActionType>(null)
-  const {data: categories} = useQueryCategories()
+  const {data: categories, refetch} = useQueryCategories()
 
   const handleDelete = () => {
     startTransition(async () => {
@@ -207,7 +207,7 @@ const Products: FC = () => {
             expandedRowRender: record => record.variants.length > 0 && <VariationTable variations={record.variants} />,
             rowExpandable: record => record.variants.length > 0
           }}
-          scroll={{x: 770}}
+          onReset={() => refetch()}
         />
       </div>
       <ProductFormModal
