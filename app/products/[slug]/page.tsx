@@ -1,8 +1,15 @@
 import { getProduct } from '@/lib/http'
 import ProductGallery from './components/product-gallery'
 import ProductOverview from './components/product-overview'
-import { OmittedProductFields } from '@/lib/types'
+import { OmittedProductFields, TProduct } from '@/lib/types'
 import VariantSelector from './components/variant-selector'
+import { API_ROUTE } from '@/constants/enum'
+
+export async function generateStaticParams() {
+  const products = (await fetch(API_ROUTE.PRODUCTS).then(res => res.json())) as {data: TProduct[]}
+
+  return products.data?.map(product => ({slug: product.slug})) ?? []
+}
 
 interface ProductPageProps {
   params: Promise<{slug: string}>

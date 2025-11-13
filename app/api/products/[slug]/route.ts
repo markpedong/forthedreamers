@@ -1,7 +1,7 @@
 import prisma from '@/lib/prisma';
 import { errorResponse, successResponse } from '@/lib/server-helper';
 
-export async function GET(request: Request, { params }: { params: { slug: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ slug: string; }> }) {
   const { slug } = await params;
 
   try {

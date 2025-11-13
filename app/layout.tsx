@@ -1,9 +1,7 @@
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
 import './globals.css'
 import MainProvider from '@/components/provider/main-provider'
-
-const _geist = Geist({subsets: ['latin']})
+import { geist } from './font'
 
 export const metadata: Metadata = {
   title: {
@@ -20,7 +18,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang='en' suppressHydrationWarning>
-      <body className={`${_geist.className}  antialiased`}>
+      <body className={`${geist.className}  antialiased`}>
         <MainProvider>{children}</MainProvider>
       </body>
     </html>
