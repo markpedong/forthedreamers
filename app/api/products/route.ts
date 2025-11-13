@@ -73,183 +73,104 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function PUT(req: NextRequest) {
+export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    const { id, name, categoryId, specs = [], variants = [], ...rest } =
-      body as ProductFormData & { sellerId?: string };
+    const { id, name, categoryId, specs = [], variants = [], ...rest } = body as ProductFormData & {
+      sellerId?: string;
+    };
 
     if (!id) return errorResponse("Product ID is required");
-    if (!name || !categoryId)
-      return errorResponse("Name and categoryId are required");
+    if (!name || !categoryId) return errorResponse("Name and categoryId are required");
 
     const existingProduct = await prisma.product.findUnique({
       where: { id },
       include: { specs: true, variants: true },
     });
-
     if (!existingProduct) return errorResponse("Product not found");
 
-    const updatedProduct = await prisma.$transaction(async (tx) => {
-      // 🧩 Step 1: Update product main info
-      await tx.product.update({
+    const existingSpecs = existingProduct.specs;
+    const existingVariants = existingProduct.variants;
+
+    const txResult = await prisma.$transaction(async (tx) => {
+      const product = await tx.product.update({
         where: { id },
         data: {
           name,
           slug: regenerateSlug(name),
           brand: rest.brand,
-          basePrice: rest.basePrice ? Number(rest.basePrice) : 0,
-          description: rest.description ?? "",
-          images: rest.images ?? [],
-          tags: rest.tags ?? [],
-          stock: rest.stock ? Number(rest.stock) : 0,
+          basePrice: Number(rest.basePrice),
+          description: String(rest.description),
+          images: rest.images || [],
+          tags: rest.tags || [],
+          stock: Number(rest.stock),
           status: rest.status,
           category: { connect: { id: categoryId } },
         },
       });
 
-      // 🧩 Step 2: Handle Specs Diff (Add / Update / Delete)
-      const existingSpecs = existingProduct.specs;
-      const incomingSpecs = specs;
-
-      const specOps: any[] = [];
-
-      // Check for create/update
-      for (const incoming of incomingSpecs) {
-        const existing = existingSpecs.find((s) => s.id === incoming.id);
-
-        if (!existing) {
-          // Create new
-          specOps.push(
-            tx.spec.create({
-              data: {
-                label: incoming.label,
-                value: incoming.value,
-                productId: id,
-              },
-            })
-          );
-        } else if (
-          existing.label !== incoming.label ||
-          existing.value !== incoming.value
-        ) {
-          // Update changed
-          specOps.push(
-            tx.spec.update({
-              where: { id: existing.id },
-              data: {
-                label: incoming.label,
-                value: incoming.value,
-              },
-            })
-          );
-        }
-      }
-
-      // Delete removed specs
-      const incomingSpecIds = incomingSpecs.map((s) => s.id);
-      const specsToDelete = existingSpecs.filter(
-        (s) => !incomingSpecIds.includes(s.id)
+      const newSpecs = specs.filter((s) => !existingSpecs.some((es) => es.id === s.id));
+      const deletedSpecs = existingSpecs.filter((es) => !specs.some((s) => s.id === es.id));
+      const updatedSpecs = specs.filter((s) =>
+        existingSpecs.some(
+          (es) => es.id === s.id && (es.label !== s.label || es.value !== s.value)
+        )
       );
-      for (const spec of specsToDelete) {
-        specOps.push(tx.spec.delete({ where: { id: spec.id } }));
-      }
 
-      // 🧩 Step 3: Handle Variants Diff (Add / Update / Delete)
-      const existingVariants = existingProduct.variants;
-      const incomingVariants = variants;
-
-      const variantOps: any[] = [];
-
-      for (const incoming of incomingVariants) {
-        const existing = existingVariants.find((v) => v.id === incoming.id);
-
-        if (!existing) {
-          // Create new
-          variantOps.push(
-            tx.variant.create({
-              data: {
-                name: incoming.name,
-                price: Number(incoming.price),
-                discountedPrice: incoming.discountedPrice
-                  ? Number(incoming.discountedPrice)
-                  : null,
-                stock: Number(incoming.stock),
-                coupon: incoming.coupon ?? null,
-                image: incoming.image ?? null,
-                attributes: incoming.attributes ?? {},
-                productId: id,
-              },
-            })
-          );
-        } else {
-          // Check if something changed
-          const hasChanged =
-            existing.name !== incoming.name ||
-            existing.price !== Number(incoming.price) ||
-            existing.discountedPrice !==
-            (incoming.discountedPrice
-              ? Number(incoming.discountedPrice)
-              : null) ||
-            existing.stock !== Number(incoming.stock) ||
-            existing.coupon !== (incoming.coupon ?? null) ||
-            existing.image !== (incoming.image ?? null) ||
-            JSON.stringify(existing.attributes) !==
-            JSON.stringify(incoming.attributes);
-
-          if (hasChanged) {
-            variantOps.push(
-              tx.variant.update({
-                where: { id: existing.id },
-                data: {
-                  name: incoming.name,
-                  price: Number(incoming.price),
-                  discountedPrice: incoming.discountedPrice
-                    ? Number(incoming.discountedPrice)
-                    : null,
-                  stock: Number(incoming.stock),
-                  coupon: incoming.coupon ?? null,
-                  image: incoming.image ?? null,
-                  attributes: incoming.attributes ?? {},
-                },
-              })
-            );
-          }
-        }
-      }
-
-      // Delete removed variants
-      const incomingVariantIds = incomingVariants.map((v) => v.id);
-      const variantsToDelete = existingVariants.filter(
-        (v) => !incomingVariantIds.includes(v.id)
+      const newVariants = variants.filter((v) => !existingVariants.some((ev) => ev.id === v.id));
+      const deletedVariants = existingVariants.filter((ev) => !variants.some((v) => v.id === ev.id));
+      const updatedVariants = variants.filter((v) =>
+        existingVariants.some(
+          (ev) =>
+            ev.id === v.id &&
+            (ev.name !== v.name ||
+              ev.price !== v.price ||
+              ev.discountedPrice !== v.discountedPrice ||
+              ev.coupon !== v.coupon ||
+              ev.stock !== v.stock ||
+              JSON.stringify(ev.attributes) !== JSON.stringify(v.attributes))
+        )
       );
-      for (const variant of variantsToDelete) {
-        variantOps.push(tx.variant.delete({ where: { id: variant.id } }));
-      }
 
-      // 🧩 Step 4: Execute all batched operations
-      await Promise.all([...specOps, ...variantOps]);
+      await Promise.all([
+        ...newSpecs.map((s) =>
+          tx.spec.create({ data: { ...s, productId: id } })
+        ),
+        ...updatedSpecs.map((s) =>
+          tx.spec.update({ where: { id: s.id }, data: { label: s.label, value: s.value } })
+        ),
+        ...deletedSpecs.map((s) => tx.spec.delete({ where: { id: s.id } })),
 
-      // 🧩 Step 5: Return fully refreshed product
-      return tx.product.findUnique({
-        where: { id },
-        include: {
-          category: true,
-          specs: true,
-          variants: true,
-        },
-      });
+        ...newVariants.map((v) =>
+          tx.variant.create({ data: { ...v, productId: id } })
+        ),
+        ...updatedVariants.map((v) =>
+          tx.variant.update({
+            where: { id: v.id },
+            data: {
+              name: v.name,
+              price: v.price,
+              discountedPrice: v.discountedPrice ?? null,
+              coupon: v.coupon ?? null,
+              stock: v.stock,
+              image: v.image,
+              attributes: v.attributes,
+            },
+          })
+        ),
+        ...deletedVariants.map((v) => tx.variant.delete({ where: { id: v.id } })),
+      ]);
+
+      return product;
     });
 
-    return successResponse(
-      { data: updatedProduct },
-      "Product updated successfully"
-    );
-  } catch (err: unknown) {
-    console.error("PUT /product error:", err);
-    return errorResponse(err);
+    return successResponse(txResult);
+  } catch (err) {
+    console.error(err);
+    return errorResponse("Failed to update product");
   }
 }
+
 
 export async function DELETE(req: NextRequest) {
   try {
