@@ -11,6 +11,8 @@ import Form from '@/components/reusable/form'
 import { useForm } from 'react-hook-form'
 import useFormSchema from '@/hooks/useFormSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Input as InputUI } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => {
   const {attributeSchema} = useFormSchema()
@@ -18,6 +20,7 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
     resolver: zodResolver(attributeSchema),
     defaultValues: {label: '', value: ''}
   })
+
   const [editingAttrKey, setEditingAttrKey] = useState<string | null>(null)
   const [editingAttrValue, setEditingAttrValue] = useState<string>('')
   const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({})
@@ -40,6 +43,7 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
     currentAttrs[label] = value
     onVariantsChange(variants.map(v => (v.id === variantId ? {...v, attributes: currentAttrs} : v)))
     setDialogOpen(prev => ({...prev, [variantId]: false}))
+    form.reset()
   }
 
   const handleDeleteAttribute = (variantId: string, key: string) => {
@@ -68,134 +72,120 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
 
   return (
     <div className='space-y-3'>
-      {variants.map(variant => {
-        console.log(variant)
-        return (
-          <Card key={variant.id} className='p-4 relative'>
-            <div className='absolute top-2 right-2'>
-              <Button variant='ghost' size='sm' onClick={() => handleDeleteVariant(variant.id)} className='text-destructive p-1'>
-                <Trash2 className='w-4 h-4' />
-              </Button>
+      {variants.map(variant => (
+        <Card key={variant.id} className='p-4 relative'>
+          <div className='absolute top-2 right-2'>
+            <Button variant='ghost' size='sm' onClick={() => handleDeleteVariant(variant.id)} className='text-destructive p-1'>
+              <Trash2 className='w-4 h-4' />
+            </Button>
+          </div>
+
+          <div className='space-y-4'>
+            <div className='grid grid-cols-2 gap-4'>
+              {['name', 'image'].map(field => {
+                const fieldValue = variant[field as keyof typeof variant] as string
+                return (
+                  <Input
+                    key={`${variant.id}-${field}`}
+                    label={field === 'name' ? 'Variant Name' : 'Image URL'}
+                    name={field}
+                    value={fieldValue ?? ''}
+                    onChange={e => handleUpdateVariant(variant.id, field as keyof typeof variant, e.target.value)}
+                    placeholder={field === 'name' ? 'e.g., Red S Size' : 'https://...'}
+                    className='mt-1'
+                  />
+                )
+              })}
             </div>
 
-            <div className='space-y-4'>
-              <div className='grid grid-cols-2 gap-4'>
-                <Input
-                  label='Variant Name'
-                  name='variantName'
-                  value={variant.name ?? ''}
-                  onChange={e => handleUpdateVariant(variant.id, 'name', e.target.value)}
-                  placeholder='e.g., Red S Size'
-                  className='mt-1'
-                />
-                <Input
-                  name='image'
-                  label='Image URL'
-                  value={variant.image ?? ''}
-                  onChange={e => handleUpdateVariant(variant.id, 'image', e.target.value)}
-                  placeholder='https://...'
-                  className='mt-1'
-                />
+            <div className='grid grid-cols-4 gap-4'>
+              {['price', 'discountedPrice', 'stock', 'coupon'].map(field => {
+                const fieldValue = variant[field as keyof typeof variant] as number
+                const hasLabel = field === 'discountedPrice' || field === 'coupon'
+                const placeholder = field === 'discountedPrice' || field === 'coupon' ? 'Optional' : '0'
+
+                return hasLabel ? (
+                  <Input
+                    key={`${variant.id}-${field}`}
+                    label={field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                    name={field}
+                    type='number'
+                    value={fieldValue ?? ''}
+                    onChange={e =>
+                      handleUpdateVariant(variant.id, field as keyof typeof variant, e.target.value ? Number(e.target.value) : null)
+                    }
+                    placeholder={placeholder}
+                    className='mt-1'
+                  />
+                ) : (
+                  <div key={`${variant.id}-${field}`}>
+                    <Label className='text-sm font-medium'>{field.charAt(0).toUpperCase() + field.slice(1)}</Label>
+                    <InputUI
+                      value={fieldValue ?? 0}
+                      type='number'
+                      onChange={e => handleUpdateVariant(variant.id, field as keyof typeof variant, Number(e.target.value))}
+                      className='mt-1'
+                    />
+                  </div>
+                )
+              })}
+            </div>
+            <div className='border-t pt-3 relative'>
+              <div className='flex justify-between items-center mb-3'>
+                <span className='text-sm font-medium text-foreground'>Attributes ({Object.keys(variant.attributes).length})</span>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='h-8 px-2'
+                  onClick={() => setDialogOpen(prev => ({...prev, [variant.id]: true}))}
+                >
+                  <Plus className='w-4 h-4 mr-1' /> Add
+                </Button>
               </div>
 
-              <div className='grid grid-cols-4 gap-4'>
-                <Input
-                  name='Price'
-                  label='Price'
-                  type='number'
-                  value={variant.price ?? 0}
-                  onChange={e => handleUpdateVariant(variant.id, 'price', Number(e.target.value))}
-                  placeholder='0'
-                  className='mt-1'
-                />
-                <Input
-                  label='Discounted Price'
-                  name='discountedPrice'
-                  type='number'
-                  value={variant.discountedPrice ?? ''}
-                  onChange={e => handleUpdateVariant(variant.id, 'discountedPrice', e.target.value ? Number(e.target.value) : null)}
-                  placeholder='Optional'
-                  className='mt-1'
-                />
-                <Input
-                  type='number'
-                  label='Stock'
-                  name='stock'
-                  value={variant.stock ?? 0}
-                  onChange={e => handleUpdateVariant(variant.id, 'stock', Number(e.target.value))}
-                  placeholder='0'
-                  className='mt-1'
-                />
-                <Input
-                  label='Coupon'
-                  name='coupon'
-                  value={variant.coupon ?? ''}
-                  onChange={e => handleUpdateVariant(variant.id, 'coupon', e.target.value || null)}
-                  placeholder='Optional'
-                  className='mt-1'
-                />
-              </div>
-              <div className='border-t pt-3 relative'>
-                <div className='flex justify-between items-center mb-3'>
-                  <span className='text-sm font-medium text-foreground'>Attributes ({Object.keys(variant.attributes).length})</span>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    className='h-8 px-2'
-                    onClick={() => setDialogOpen(prev => ({...prev, [variant.id]: true}))}
-                  >
-                    <Plus className='w-4 h-4 mr-1' /> Add
-                  </Button>
-                </div>
-
-                <div className='space-y-2'>
-                  {Object.entries(variant.attributes).map(([key, value]) => {
-                    const isEditing = editingAttrKey === key
-                    console.log('key', key, 'value', value)
-                    return (
-                      <div key={key} className='flex items-center justify-between gap-4'>
-                        <div className='flex items-center gap-4 w-full'>
-                          <Input
-                            name='key'
-                            label={isEditing ? `Edit ${key}` : key}
-                            id={key}
-                            value={isEditing ? editingAttrValue : value}
-                            readOnly={!isEditing}
-                            onChange={e => setEditingAttrValue(e.target.value)}
-                            isHorizontal
-                          />
-                        </div>
-                        <div className='flex gap-1'>
-                          <Button
-                            variant='ghost'
-                            size='sm'
-                            onClick={() => {
-                              if (isEditing) {
-                                handleSaveAttributeEdit(variant.id, key)
-                              } else {
-                                setEditingAttrKey(key)
-                                setEditingAttrValue(value)
-                              }
-                            }}
-                            className='h-8 w-8 p-0'
-                          >
-                            {isEditing ? <Check className='w-4 h-4' /> : <Edit className='w-4 h-4' />}
-                          </Button>
-                          <Button
-                            variant='ghost'
-                            size='sm'
-                            onClick={() => handleDeleteAttribute(variant.id, key)}
-                            className='h-8 w-8 p-0 text-destructive'
-                          >
-                            <X className='w-4 h-4' />
-                          </Button>
-                        </div>
+              <div className='space-y-2'>
+                {Object.entries(variant.attributes).map(([key, value]) => {
+                  const isEditing = editingAttrKey === key
+                  return (
+                    <div key={key} className='flex items-center justify-between gap-4'>
+                      <div className='grid grid-cols-[1fr_4fr] justify-items-end items-center gap-4 w-full'>
+                        <Label htmlFor={key}>{key}:</Label>
+                        <InputUI
+                          id={key}
+                          value={isEditing ? editingAttrValue : value}
+                          readOnly={!isEditing}
+                          onChange={e => setEditingAttrValue(e.target.value)}
+                        />
                       </div>
-                    )
-                  })}
-                </div>
+                      <div className='flex gap-1'>
+                        <Button
+                          variant='ghost'
+                          size='sm'
+                          onClick={() => {
+                            if (isEditing) {
+                              handleSaveAttributeEdit(variant.id, key)
+                            } else {
+                              setEditingAttrKey(key)
+                              setEditingAttrValue(value)
+                            }
+                          }}
+                          className='h-8 w-8 p-0'
+                        >
+                          {isEditing ? <Check className='w-4 h-4 text-green-400' /> : <Edit className='w-4 h-4' />}
+                        </Button>
+                        <Button
+                          variant='ghost'
+                          size='sm'
+                          onClick={() => handleDeleteAttribute(variant.id, key)}
+                          className='h-8 w-8 p-0 text-destructive'
+                        >
+                          <X className='w-4 h-4' />
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-
               <Dialog
                 title='Add Attribute'
                 open={dialogOpen[variant.id] || false}
@@ -206,15 +196,14 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
                 )}
               >
                 <Form form={form} customSubmitButton>
-                  <Input label='Label: ' name='label' placeholder='Attribute key' preventSpaces isHorizontal />
-                  <Input label='Value: ' name='value' placeholder='Attribute value' preventSpaces isHorizontal />
+                  <Input label='Label' name='label' placeholder='Attribute key' isHorizontal preventSpaces />
+                  <Input label='Value' name='value' placeholder='Attribute value' isHorizontal preventSpaces />
                 </Form>
               </Dialog>
             </div>
-          </Card>
-        )
-      })}
-
+          </div>
+        </Card>
+      ))}
       <Button
         onClick={() =>
           onVariantsChange([
