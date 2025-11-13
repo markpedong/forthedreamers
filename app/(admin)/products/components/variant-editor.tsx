@@ -25,7 +25,7 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
   const [editingAttrValue, setEditingAttrValue] = useState<string>('')
   const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({})
 
-  const handleUpdateVariant = (id: string, field: keyof Partial<TVariant>, value: any) => {
+  const handleUpdateVariant = (id: string, field: keyof TVariant, value: any) => {
     onVariantsChange(variants.map(v => (v.id === id ? {...v, [field]: value} : v)))
   }
 
@@ -102,31 +102,32 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
 
             <div className='grid grid-cols-4 gap-4'>
               {['price', 'discountedPrice', 'stock', 'coupon'].map(field => {
-                const fieldValue = variant[field as keyof typeof variant] as number
-                const hasLabel = field === 'discountedPrice' || field === 'coupon'
-                const placeholder = field === 'discountedPrice' || field === 'coupon' ? 'Optional' : '0'
+                const fieldValue = variant[field as keyof typeof variant]
+                const isNumberField = ['price', 'discountedPrice', 'stock'].includes(field)
+                const placeholder = {
+                  price: '0.00',
+                  discountedPrice: '0.00',
+                  stock: '0',
+                  coupon: 'PROMO_CODE'
+                }
 
-                return hasLabel ? (
-                  <Input
-                    key={`${variant.id}-${field}`}
-                    label={field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
-                    name={field}
-                    type='number'
-                    value={fieldValue ?? ''}
-                    onChange={e =>
-                      handleUpdateVariant(variant.id, field as keyof typeof variant, e.target.value ? Number(e.target.value) : null)
-                    }
-                    placeholder={placeholder}
-                    className='mt-1'
-                  />
-                ) : (
+                return (
                   <div key={`${variant.id}-${field}`}>
                     <Label className='text-sm font-medium'>{field.charAt(0).toUpperCase() + field.slice(1)}</Label>
                     <InputUI
-                      value={fieldValue ?? 0}
-                      type='number'
-                      onChange={e => handleUpdateVariant(variant.id, field as keyof typeof variant, Number(e.target.value))}
+                      value={String(fieldValue) ?? ''}
+                      type={isNumberField ? 'number' : 'text'}
+                      onChange={e => {
+                        const val = e.target.value
+                        console.log("val: ", val)
+                        handleUpdateVariant(
+                          variant.id,
+                          field as keyof typeof variant,
+                          isNumberField ? (val === '' ? undefined : Number(val)) : val
+                        )
+                      }}
                       className='mt-1'
+                      placeholder={placeholder[field as keyof typeof placeholder]}
                     />
                   </div>
                 )
@@ -225,7 +226,7 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
         variant='outline'
         className='w-full mt-2'
       >
-        <Plus className='w-4 h-4 mr-2' /> Add Partial Variant
+        <Plus className='w-4 h-4 mr-2' /> Add Variant
       </Button>
     </div>
   )
