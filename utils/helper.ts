@@ -71,8 +71,10 @@ export async function catchErrorWithToast<T, E extends new (...args: any[]) => E
 ): Promise<[undefined, T] | [InstanceType<E>]> {
   try {
     const data = await promise;
+
     return [undefined, data] as [undefined, T];
   } catch (error) {
+
 
     if (!(error instanceof Error)) throw error;
 

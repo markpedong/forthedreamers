@@ -13,7 +13,7 @@ import DropDown from '@/components/reusable/dropdown'
 import ProTable from '@/components/pro-table'
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components'
 import { useQueryCategories } from '@/hooks/useQuery'
-import { deleteProduct, getProducts, toggleProductStatus } from '@/lib/http'
+import { createProduct, deleteProduct, getProducts, toggleProductStatus, updateProduct } from '@/lib/http'
 import { Switch } from 'antd'
 
 const Products: FC = () => {
@@ -156,19 +156,20 @@ const Products: FC = () => {
   const handleSubmitProduct = async (data: ProductFormData, type: 'CREATE' | 'EDIT') => {
     const isEdit = type === 'EDIT'
 
-    console.log("Data: ", data)
-    // const res = isEdit ? await tryWithToast(updateProduct(data)) : await tryWithToast(createProduct(data))
+    const res = isEdit ? await tryWithToast(updateProduct(data)) : await tryWithToast(createProduct(data))
 
-    // if (res?.success) {
-    //   toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`)
-    //   actionRef.current?.reload()
-    //   setOpen(false)
-    // }
+    console.log('response from create/edit', res)
+    if (res?.success) {
+      toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`)
+      actionRef.current?.reload()
+      setOpen(false)
+    }
   }
 
   const fetchData = async (params: any) => {
     const res = await tryWithToast(getProducts(params))
 
+    console.log("response from getProducts", res)
     return {
       data: res?.data ?? [],
       total: res?.total ?? 0

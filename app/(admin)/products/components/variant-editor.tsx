@@ -24,8 +24,9 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
   const [editingAttr, setEditingAttr] = useState<{key: string; value: string} | null>(null)
   const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({})
 
-  const updateVariant = (id: string, field: keyof TVariant, value: any) =>
-    onVariantsChange(variants.map(v => (v.id === id ? {...v, [field]: value} : v)))
+  const updateVariant = (id: string, field: keyof TVariant, value: any) => {
+    return onVariantsChange(variants.map(v => (v.id === id ? {...v, [field]: value} : v)))
+  }
 
   const addAttribute = ({label, value, variantId}: SchemaForm<typeof attributeSchema> & {variantId: string}) => {
     const variant = variants.find(v => v.id === variantId)

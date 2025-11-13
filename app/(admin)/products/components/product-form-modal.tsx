@@ -71,9 +71,9 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
     startTransition(async () => {
       try {
         const currCategory = categories.find(c => c.name === values.category)
-
+        const { category, ...rest } = values
         const data: ProductFormData = {
-          ...values,
+          ...rest,
           ...(!isEdit && {sellerId: session?.user.id}),
           categoryId: `${currCategory?.id}`,
           variants: values?.variants.map(({id, ...v}) => v) as TVariant[], 
@@ -133,7 +133,6 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
               <VariantEditor
                 variants={form.watch('variants') as TVariant[]}
                 onVariantsChange={(variants: any) => {
-                  console.log('Variants: ', variants)
                   form.setValue('variants', variants, {shouldValidate: true})
                   if (variants.length > 0) {
                     form.clearErrors(['basePrice', 'stock'])

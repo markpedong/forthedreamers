@@ -77,8 +77,6 @@ function VariantSelector({variants}: VariantSelectorProps) {
       ...prev,
       [attrType]: value
     }))
-
-    console.log(variants.find(v => Object.entries(selectedAttributes).every(([key, value]) => v.attributes[key] === value)))
   }
 
   return (

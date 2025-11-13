@@ -91,6 +91,8 @@ const useFormSchema = () => {
     price: z.number().min(1, { message: "Price must be at least 1" }),
     stock: z.number().min(1, { message: "Stock must be at least 1" }),
     image: z.string().nullable().optional(),
+    coupon: z.string().nullable().optional(),
+    discountedPrice: z.number().nullable().optional(),
     attributes: z.record(z.string(), z.string()).default({}),
   });
 
