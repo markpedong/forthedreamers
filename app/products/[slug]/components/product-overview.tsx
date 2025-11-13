@@ -2,6 +2,7 @@
 
 import { Badge } from '@/components/ui/badge'
 import { OmittedProductFields } from '@/lib/types'
+import { useAppSelector } from '@/redux/store'
 import { Star } from 'lucide-react'
 
 interface ProductOverviewProps {
@@ -9,6 +10,7 @@ interface ProductOverviewProps {
 }
 
 const ProductOverview: React.FC<ProductOverviewProps> = ({product}) => {
+  const selectedVariant = useAppSelector(state => state.appData.selectedVariant)
   const {name, brand, basePrice, rating, reviewCount} = product
   const price = 399
   const basePriceNum = Number(basePrice)
@@ -34,7 +36,14 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({product}) => {
       </div>
 
       <div className='flex items-baseline gap-4'>
-        <span className='text-3xl font-light text-foreground'>${price.toFixed(2)}</span>
+        <span className='text-3xl font-light text-foreground'>
+          $
+          {!!selectedVariant
+            ? selectedVariant?.discountedPrice
+              ? selectedVariant.discountedPrice
+              : selectedVariant?.price
+            : price.toFixed(2)}
+        </span>
         {discount > 0 && (
           <>
             <span className='text-lg text-muted-foreground line-through'>${basePriceNum.toFixed(2)}</span>

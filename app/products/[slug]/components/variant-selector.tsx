@@ -1,16 +1,18 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { TVariant } from '@/lib/types'
+import { useAppDispatch } from '@/redux/store'
+import { setSelectedVariant } from '@/redux/features/appSlice'
 
 interface VariantSelectorProps {
   variants: TVariant[]
 }
 
 const VariantSelector = ({variants}: VariantSelectorProps) => {
-  console.log("variants", variants)
+  const dispatch = useAppDispatch()
   const attributeTypes = useMemo(() => Array.from(new Set(variants.flatMap(v => Object.keys(v.attributes)))), [variants])
 
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>(() =>
@@ -44,6 +46,16 @@ const VariantSelector = ({variants}: VariantSelectorProps) => {
   )
 
   const handleSelect = (type: string, value: string) => setSelectedAttributes(prev => ({...prev, [type]: value}))
+
+  useEffect(() => {
+    if (selectedVariant) {
+      dispatch(setSelectedVariant(selectedVariant))
+    }
+
+    return () => {
+      dispatch(setSelectedVariant(null))
+    }
+  }, [selectedVariant])
 
   return (
     <div className='flex flex-col gap-6'>
