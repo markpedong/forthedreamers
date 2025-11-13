@@ -9,99 +9,60 @@ interface VariantSelectorProps {
   variants: TVariant[]
 }
 
-function VariantSelector({variants}: VariantSelectorProps) {
-  const attributeTypes = useMemo(() => {
-    const types = new Set<string>()
-    variants.forEach(v => {
-      Object.keys(v.attributes).forEach(key => types.add(key))
-    })
-    return Array.from(types)
-  }, [variants])
+const VariantSelector = ({variants}: VariantSelectorProps) => {
+  console.log("variants", variants)
+  const attributeTypes = useMemo(() => Array.from(new Set(variants.flatMap(v => Object.keys(v.attributes)))), [variants])
 
-  // Initialize selected attributes
-  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>(() => {
-    const initial: Record<string, string> = {}
-    attributeTypes.forEach(type => {
-      initial[type] = variants[0]?.attributes[type] || ''
-    })
-    return initial
-  })
+  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>(() =>
+    Object.fromEntries(attributeTypes.map(type => [type, variants[0]?.attributes[type] || '']))
+  )
 
-  // Find matching variant based on current selections
-  const selectedVariant = useMemo(() => {
-    return variants.find(v => Object.entries(selectedAttributes).every(([key, value]) => v.attributes[key] === value))
-  }, [variants, selectedAttributes])
+  const selectedVariant = useMemo(
+    () => variants.find(v => attributeTypes.every(type => v.attributes[type] === selectedAttributes[type])),
+    [variants, selectedAttributes, attributeTypes]
+  )
 
-  // Get all unique option values per attribute
-  const allOptions = useMemo(() => {
-    const options: Record<string, string[]> = {}
+  const allOptions = useMemo(
+    () => Object.fromEntries(attributeTypes.map(type => [type, Array.from(new Set(variants.map(v => v.attributes[type]))).sort()])),
+    [variants, attributeTypes]
+  )
 
-    attributeTypes.forEach(attrType => {
-      const uniqueValues = new Set<string>()
-      variants.forEach(variant => {
-        uniqueValues.add(variant.attributes[attrType])
-      })
-      options[attrType] = Array.from(uniqueValues).sort()
-    })
+  const availableOptions = useMemo(
+    () =>
+      Object.fromEntries(
+        attributeTypes.map(type => [
+          type,
+          allOptions[type].map(value => ({
+            value,
+            available: variants.some(v =>
+              Object.entries({...selectedAttributes, [type]: value}).every(([k, val]) => v.attributes[k] === val)
+            )
+          }))
+        ])
+      ),
+    [allOptions, selectedAttributes, variants, attributeTypes]
+  )
 
-    return options
-  }, [variants, attributeTypes])
-
-  const availableOptions = useMemo(() => {
-    const options: Record<string, {value: string; available: boolean}[]> = {}
-
-    attributeTypes.forEach(attrType => {
-      options[attrType] = allOptions[attrType].map(value => {
-        // and checking if any variant matches ALL other already-selected attributes
-        const testSelection = {
-          ...selectedAttributes,
-          [attrType]: value
-        }
-
-        const isCompatible = variants.some(variant => {
-          return Object.entries(testSelection).every(([key, selectedValue]) => variant.attributes[key] === selectedValue)
-        })
-
-        return {
-          value,
-          available: isCompatible
-        }
-      })
-    })
-
-    return options
-  }, [variants, selectedAttributes, attributeTypes, allOptions])
-
-  const handleAttributeSelect = (attrType: string, value: string) => {
-    setSelectedAttributes(prev => ({
-      ...prev,
-      [attrType]: value
-    }))
-  }
+  const handleSelect = (type: string, value: string) => setSelectedAttributes(prev => ({...prev, [type]: value}))
 
   return (
     <div className='flex flex-col gap-6'>
-      <div>
-        <h2 className='text-sm uppercase tracking-widest text-muted-foreground'>Options</h2>
-      </div>
-
-      {attributeTypes.map(attrType => (
-        <div key={attrType} className='flex flex-col gap-3'>
+      {attributeTypes.map(type => (
+        <div key={type} className='flex flex-col gap-3'>
           <div className='flex items-center justify-between'>
-            <label className='text-xs uppercase tracking-widest text-muted-foreground'>{attrType}</label>
-            {selectedAttributes[attrType] && (
+            <label className='text-xs uppercase tracking-widest text-muted-foreground'>{type}</label>
+            {selectedAttributes[type] && (
               <Badge variant='secondary' className='text-xs'>
-                {selectedAttributes[attrType]}
+                {selectedAttributes[type]}
               </Badge>
             )}
           </div>
-
           <div className='flex flex-wrap gap-3'>
-            {availableOptions[attrType]?.map(option => (
+            {availableOptions[type]?.map(option => (
               <Button
-                key={`${attrType}-${option.value}`}
-                variant={selectedAttributes[attrType] === option.value ? 'default' : 'outline'}
-                onClick={() => handleAttributeSelect(attrType, option.value)}
+                key={`${type}-${option.value}`}
+                variant={selectedAttributes[type] === option.value ? 'default' : 'outline'}
+                onClick={() => handleSelect(type, option.value)}
                 className='capitalize text-sm font-normal'
                 disabled={!option.available}
               >
@@ -112,19 +73,18 @@ function VariantSelector({variants}: VariantSelectorProps) {
         </div>
       ))}
 
-      {/* Stock Status and Price */}
-      <div className='border-t border-border pt-6 mt-2'>
-        <div className='flex items-center justify-between gap-4'>
-          <div>
-            <p className='text-xs uppercase tracking-widest text-muted-foreground mb-1'>Stock Status</p>
-            <p className={`text-sm font-medium ${selectedVariant && selectedVariant.stock > 0 ? 'text-foreground' : 'text-destructive'}`}>
-              {selectedVariant ? (selectedVariant.stock > 0 ? `${selectedVariant.stock} Available` : 'Out of Stock') : 'Unavailable'}
-            </p>
-          </div>
-          <div className='text-right'>
-            <p className='text-xs uppercase tracking-widest text-muted-foreground mb-1'>Price</p>
-            <p className='text-lg font-light text-foreground'>{selectedVariant ? `$${selectedVariant.price.toFixed(2)}` : '—'}</p>
-          </div>
+      <div className='border-t border-border pt-6 mt-2 flex justify-between gap-4'>
+        <div>
+          <p className='text-xs uppercase tracking-widest text-muted-foreground mb-1'>Stock Status</p>
+          <p
+            className={`text-sm font-medium ${selectedVariant?.stock && selectedVariant.stock > 0 ? 'text-foreground' : 'text-destructive'}`}
+          >
+            {selectedVariant ? (selectedVariant.stock > 0 ? `${selectedVariant.stock} Available` : 'Out of Stock') : 'Unavailable'}
+          </p>
+        </div>
+        <div className='text-right'>
+          <p className='text-xs uppercase tracking-widest text-muted-foreground mb-1'>Price</p>
+          <p className='text-lg font-light text-foreground'>{selectedVariant ? `$${selectedVariant.price.toFixed(2)}` : '—'}</p>
         </div>
       </div>
     </div>

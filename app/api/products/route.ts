@@ -117,8 +117,8 @@ export async function PUT(req: Request) {
         )
       );
 
-      const newVariants = variants.filter((v) => !existingVariants.some((ev) => ev.id === v.id));
-      const deletedVariants = existingVariants.filter((ev) => !variants.some((v) => v.id === ev.id));
+      const newVariants = variants.filter((v) => !existingVariants.some((ev) => ev.id === v.id)); // some returns boolean that's existing in the db variants, then filtering it via boolean
+      const deletedVariants = existingVariants.filter((ev) => !variants.some((v) => v.id === ev.id)); // some returns boolean that's existing in the db variants, then filtering it via boolean
       const updatedVariants = variants.filter((v) =>
         existingVariants.some(
           (ev) =>
