@@ -1,0 +1,20 @@
+.reusableInput {
+  @apply grid;
+  grid-template-columns: 1fr 7fr;
+
+  p {
+    grid-area: 2 / 2 / 3 / 3;
+  }
+
+  // .inputHasError {
+  //   border-radius: 0.6rem;
+  //   border: 0.15rem solid var(--destructive) !important;
+
+  //   &:focus,
+  //   &:active {
+  //     border-color: none !important;
+  //     background: none !important;
+  //     box-shadow: none !important;
+  //   }
+  // }
+}

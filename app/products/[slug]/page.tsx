@@ -2,7 +2,6 @@ import { getProduct } from '@/lib/http'
 import ProductGallery from './components/product-gallery'
 import ProductOverview from './components/product-overview'
 import { OmittedProductFields } from '@/lib/types'
-import VariantSelector from './components/variant-selector'
 
 interface ProductPageProps {
   params: Promise<{slug: string}>
@@ -18,7 +17,7 @@ const ProductPage = async ({params}: ProductPageProps) => {
         <ProductGallery images={products.data?.images ?? []} />
         <div className='flex flex-col'>
           <ProductOverview product={products.data as OmittedProductFields} />
-          <VariantSelector
+          {/* <VariantSelector
             variants={[
               // Black variants
               {
@@ -96,7 +95,7 @@ const ProductPage = async ({params}: ProductPageProps) => {
                 attributes: {color: 'Gold', size: 'Compact', material: 'Leather'}
               }
             ]}
-          />
+          /> */}
           {/*  <AddToCartSection product={mockProduct} /> */}
         </div>
       </div>
