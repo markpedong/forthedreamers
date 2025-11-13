@@ -85,14 +85,6 @@ const useFormSchema = () => {
     path: ["confirmPassword"],
   })
 
-  const variantOptionFormSchema = z.object({
-    variantOptionName: createStringSchema("Option Name", 1, 100),
-    price: z.number().min(1, { message: "Price must be at least 1" }),
-    stock: z.number().min(1, { message: "Stock must be at least 1" }),
-    discountedPrice: z.number().nullable().optional(),
-    coupon: z.string().nullable().optional(),
-  });
-
   const variantFormSchema = z.object({
     id: z.string().optional(),
     name: createStringSchema("Variant Name", 1, 100),
@@ -112,17 +104,6 @@ const useFormSchema = () => {
     label: createStringSchema("Attribute label", 1, 100),
     value: createStringSchema("Attribute Value", 1, 100)
   });
-
-  const variantSchema = z.object({
-    id: z.string(),
-    name: z.string().min(1, 'Variant name is required'),
-    image: z.string().url('Invalid URL').optional(),
-    price: z.number().min(0),
-    discountedPrice: z.number().optional(),
-    stock: z.number().min(0),
-    coupon: z.string().optional(),
-    attributes: z.array(attributeSchema)
-  })
 
   const productFormSchema = z
     .object({
@@ -174,8 +155,6 @@ const useFormSchema = () => {
     productFormSchema,
     specFormSchema,
     variantFormSchema,
-    variantOptionFormSchema,
-    variantSchema,
     attributeSchema
   }
 }

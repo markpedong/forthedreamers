@@ -40,13 +40,6 @@ export type ValueEnum = ValueEnumItem[] | (() => Promise<ValueEnumItem[]>);
 
 export type SearchType = 'text' | 'select' | 'number' | 'date';
 
-interface SearchConfig {
-  type: SearchType
-  placeholder?: string
-  width?: number
-  valueEnum?: ValueEnum
-}
-
 export type RequestParams = { page: number; pageSize: number; filters?: Record<string, any> };
 
 export type SorterInfo = { field?: string; order?: 'asc' | 'desc' };
@@ -77,11 +70,7 @@ export type ProductFormData = {
   stock?: number | null;
   status: PRODUCT_STATUS;
   categoryId: string;
-  specs: Array<{
-    id?: string;
-    label: string;
-    value: string;
-  }>;
+  specs: FormSpec[];
   variants: Omit<TVariant[], 'id'> & { id?: string };
 };
 
