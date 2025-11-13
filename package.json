@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "rm -rf .next && npm i && prisma generate && next dev --turbopack",
-		"build": "rm -rf .next && npm i && prisma generate && next build --turbopack",
+		"build": "rm -rf .next && npm i && prisma generate --no-engine && next build --turbopack",
 		"start": "rm -rf .next && npm i && next start -p 3004",
 		"lint": "eslint",
 		"db:push": "npx prisma db push",
