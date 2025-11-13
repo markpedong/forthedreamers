@@ -99,7 +99,7 @@ function VariantSelector({variants}: VariantSelectorProps) {
       {attributeTypes.map(attrType => (
         <div key={attrType} className='flex flex-col gap-3'>
           <div className='flex items-center justify-between'>
-            <label className='text-xs uppercase tracking-widest text-muted-foreground capitalize'>{attrType}</label>
+            <label className='text-xs uppercase tracking-widest text-muted-foreground'>{attrType}</label>
             {selectedAttributes[attrType] && (
               <Badge variant='secondary' className='text-xs'>
                 {selectedAttributes[attrType]}

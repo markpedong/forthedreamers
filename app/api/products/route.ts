@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
         category: true,
         variants: {
           omit: { createdAt: true, updatedAt: true, productId: true },
-          include: { options: { omit: { createdAt: true, updatedAt: true, variantId: true } } },
+          // include: { options: { omit: { createdAt: true, updatedAt: true, variantId: true } } },
         },
       },
     });
@@ -109,7 +109,7 @@ export async function PUT(req: NextRequest) {
 
     const product = await prisma.$transaction(async (tx) => {
       await tx.spec.deleteMany({ where: { productId: id } });
-      await tx.variantOption.deleteMany({ where: { variantId: { in: (await tx.variant.findMany({ where: { productId: id }, select: { id: true } })).map(v => v.id) } } });
+      // await tx.variantOption.deleteMany({ where: { variantId: { in: (await tx.variant.findMany({ where: { productId: id }, select: { id: true } })).map(v => v.id) } } });
       await tx.variant.deleteMany({ where: { productId: id } });
 
       return tx.product.update({
@@ -149,7 +149,7 @@ export async function PUT(req: NextRequest) {
           category: true,
           variants: {
             omit: { createdAt: true, updatedAt: true, productId: true },
-            include: { options: { omit: { createdAt: true, updatedAt: true, variantId: true } } },
+            // include: { options: { omit: { createdAt: true, updatedAt: true, variantId: true } } },
           },
         },
       });

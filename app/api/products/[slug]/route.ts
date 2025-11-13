@@ -10,9 +10,7 @@ export async function GET(request: Request, { params }: { params: { slug: string
       include: {
         specs: true,
         category: {},
-        variants: {
-          include: { options: true },
-        },
+        variants: true,
       },
     });
 

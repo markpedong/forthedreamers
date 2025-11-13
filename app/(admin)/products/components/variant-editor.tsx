@@ -1,4 +1,3 @@
-//@ts-nocheck
 'use client'
 
 import { useState } from 'react'
@@ -6,12 +5,17 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { Trash2, Plus, X, Check, Edit } from 'lucide-react'
+import { Label } from '@/components/ui/label'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import type { VariantEditorProps } from '@/lib/types'
 import type { Variant } from '@/generated/prisma'
-import { Label } from '@/components/ui/label'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 
-const DEFAULT_VARIANT: Omit<Partial<Variant>, 'id' | 'productId' | 'createdAt' | 'updatedAt'> = {
+// Define a safe local type for attributes
+type VariantWithAttributes = Omit<Variant, 'attributes'> & {
+  attributes: Record<string, string>
+}
+
+const DEFAULT_VARIANT: Partial<VariantWithAttributes> = {
   name: '',
   price: 0,
   discountedPrice: null,
@@ -21,60 +25,60 @@ const DEFAULT_VARIANT: Omit<Partial<Variant>, 'id' | 'productId' | 'createdAt' |
   attributes: {}
 }
 
-const getAttributes = (attrs: Variant['attributes']): Record<string, string> => {
-  if (!attrs || typeof attrs !== 'object') return {}
-  return attrs as Record<string, string>
-}
-
 export default function VariantEditor({variants, onVariantsChange}: VariantEditorProps) {
-  const [expandedId, setExpandedId] = useState<string | null>(null)
-  const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({})
+  // Convert variants to a safe format with attributes as object
+  const safeVariants: VariantWithAttributes[] = variants.map(v => ({
+    ...v,
+    attributes: (v.attributes ?? {}) as Record<string, string>
+  }))
+
   const [editingAttrKey, setEditingAttrKey] = useState<string | null>(null)
   const [editingAttrValue, setEditingAttrValue] = useState<string>('')
 
+  const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({})
   const [attributeLabel, setAttributeLabel] = useState<Record<string, string>>({})
   const [attributeValue, setAttributeValue] = useState<Record<string, string>>({})
 
   const handleAddVariant = () => {
-    const newVariant: Partial<Variant> = {
+    const newVariant: Partial<VariantWithAttributes> = {
       id: `temp-${Date.now()}`,
       productId: variants[0]?.productId || '',
       ...DEFAULT_VARIANT
     }
-    onVariantsChange([...variants, newVariant])
+    onVariantsChange([...safeVariants, newVariant as Variant])
   }
 
-  const handleUpdateVariant = (
-    id: string,
-    field: keyof Omit<Partial<Variant>, 'id' | 'productId' | 'createdAt' | 'updatedAt'>,
-    value: any
-  ) => {
-    onVariantsChange(variants.map(v => (v.id === id ? {...v, [field]: value} : v)))
+  const handleUpdateVariant = (id: string, field: keyof Partial<VariantWithAttributes>, value: any) => {
+    onVariantsChange(safeVariants.map(v => (v.id === id ? {...v, [field]: value} : v)) as Variant[])
   }
 
   const handleAddAttributeFromDialog = (variantId: string) => {
-    const labelKey = `${variantId}-label`
-    const valueKey = `${variantId}-value`
-    const label = attributeLabel[labelKey]?.trim()
-    const value = attributeValue[valueKey]?.trim()
+    const label = attributeLabel[`${variantId}-label`]?.trim()
+    const value = attributeValue[`${variantId}-value`]?.trim()
     if (!label || !value) return
 
-    const currentAttributes = getAttributes(variants.find(v => v.id === variantId)?.attributes)
-    if (currentAttributes[label]) {
+    const variant = safeVariants.find(v => v.id === variantId)
+    if (!variant) return
+    const currentAttrs = {...variant.attributes}
+
+    if (currentAttrs[label]) {
       alert(`Attribute key "${label}" already exists.`)
       return
     }
 
-    onVariantsChange(variants.map(v => (v.id === variantId ? {...v, attributes: {...currentAttributes, [label]: value}} : v)))
+    currentAttrs[label] = value
 
+    onVariantsChange(safeVariants.map(v => (v.id === variantId ? {...v, attributes: currentAttrs} : v)) as Variant[])
+
+    // cleanup
     setAttributeLabel(prev => {
       const updated = {...prev}
-      delete updated[labelKey]
+      delete updated[`${variantId}-label`]
       return updated
     })
     setAttributeValue(prev => {
       const updated = {...prev}
-      delete updated[valueKey]
+      delete updated[`${variantId}-value`]
       return updated
     })
     setDialogOpen(prev => ({...prev, [variantId]: false}))
@@ -82,40 +86,33 @@ export default function VariantEditor({variants, onVariantsChange}: VariantEdito
 
   const handleDeleteAttribute = (variantId: string, key: string) => {
     onVariantsChange(
-      variants.map(v => {
+      safeVariants.map(v => {
         if (v.id === variantId) {
-          const attrs = {...getAttributes(v.attributes)}
+          const attrs = {...v.attributes}
           delete attrs[key]
           return {...v, attributes: attrs}
         }
         return v
-      })
+      }) as Variant[]
     )
   }
 
   const handleSaveAttributeEdit = (variantId: string, key: string) => {
     if (!editingAttrValue.trim()) return
     onVariantsChange(
-      variants.map(v =>
-        v.id === variantId
-          ? {
-              ...v,
-              attributes: {...getAttributes(v.attributes), [key]: editingAttrValue.trim()}
-            }
-          : v
-      )
+      safeVariants.map(v => (v.id === variantId ? {...v, attributes: {...v.attributes, [key]: editingAttrValue.trim()}} : v)) as Variant[]
     )
     setEditingAttrKey(null)
     setEditingAttrValue('')
   }
 
   const handleDeleteVariant = (id: string) => {
-    onVariantsChange(variants.filter(v => v.id !== id))
+    onVariantsChange(safeVariants.filter(v => v.id !== id) as Variant[])
   }
 
   return (
     <div className='space-y-3'>
-      {variants.map(variant => (
+      {safeVariants.map(variant => (
         <Card key={variant.id} className='p-4 relative'>
           {/* Delete Variant Button Top Right */}
           <div className='absolute top-2 right-2'>
@@ -128,7 +125,7 @@ export default function VariantEditor({variants, onVariantsChange}: VariantEdito
             {/* Name & Image */}
             <div className='grid grid-cols-2 gap-4'>
               <div>
-                <label className='text-sm font-medium'>Variant Name</label>
+                <Label className='text-sm font-medium'>Variant Name</Label>
                 <Input
                   value={variant.name ?? ''}
                   onChange={e => handleUpdateVariant(variant.id, 'name', e.target.value)}
@@ -137,7 +134,7 @@ export default function VariantEditor({variants, onVariantsChange}: VariantEdito
                 />
               </div>
               <div>
-                <label className='text-sm font-medium'>Image URL</label>
+                <Label className='text-sm font-medium'>Image URL</Label>
                 <Input
                   value={variant.image ?? ''}
                   onChange={e => handleUpdateVariant(variant.id, 'image', e.target.value)}
@@ -150,7 +147,7 @@ export default function VariantEditor({variants, onVariantsChange}: VariantEdito
             {/* Price, Discount, Stock, Coupon */}
             <div className='grid grid-cols-4 gap-4'>
               <div>
-                <label className='text-sm font-medium'>Price</label>
+                <Label className='text-sm font-medium'>Price</Label>
                 <Input
                   type='number'
                   value={variant.price ?? 0}
@@ -160,7 +157,7 @@ export default function VariantEditor({variants, onVariantsChange}: VariantEdito
                 />
               </div>
               <div>
-                <label className='text-sm font-medium'>Discounted Price</label>
+                <Label className='text-sm font-medium'>Discounted Price</Label>
                 <Input
                   type='number'
                   value={variant.discountedPrice ?? ''}
@@ -170,7 +167,7 @@ export default function VariantEditor({variants, onVariantsChange}: VariantEdito
                 />
               </div>
               <div>
-                <label className='text-sm font-medium'>Stock</label>
+                <Label className='text-sm font-medium'>Stock</Label>
                 <Input
                   type='number'
                   value={variant.stock ?? 0}
@@ -180,7 +177,7 @@ export default function VariantEditor({variants, onVariantsChange}: VariantEdito
                 />
               </div>
               <div>
-                <label className='text-sm font-medium'>Coupon</label>
+                <Label className='text-sm font-medium'>Coupon</Label>
                 <Input
                   value={variant.coupon ?? ''}
                   onChange={e => handleUpdateVariant(variant.id, 'coupon', e.target.value || null)}
@@ -194,48 +191,24 @@ export default function VariantEditor({variants, onVariantsChange}: VariantEdito
             <div className='border-t pt-2 relative'>
               {/* Section header with Add Attribute button */}
               <div className='flex justify-between items-center mb-2'>
-                <span className='text-sm font-medium text-foreground'>
-                  Attributes ({Object.keys(getAttributes(variant.attributes)).length})
-                </span>
-
-                <Dialog
-                  open={dialogOpen[variant.id] || false}
-                  onOpenChange={open => setDialogOpen(prev => ({...prev, [variant.id]: open}))}
+                <span className='text-sm font-medium text-foreground'>Attributes ({Object.keys(variant.attributes).length})</span>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='h-8 px-2'
+                  onClick={() => setDialogOpen(prev => ({...prev, [variant.id]: true}))}
                 >
-                  <DialogTrigger asChild>
-                    <Button variant='outline' size='sm' className='h-8 px-2'>
-                      <Plus className='w-4 h-4 mr-1' /> Add
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className='sm:max-w-sm'>
-                    <div className='flex flex-col gap-2'>
-                      <Label htmlFor={`label-${variant.id}`}>Label</Label>
-                      <Input
-                        id={`label-${variant.id}`}
-                        placeholder='Label'
-                        value={attributeLabel[`${variant.id}-label`] || ''}
-                        onChange={e => setAttributeLabel(prev => ({...prev, [`${variant.id}-label`]: e.target.value}))}
-                      />
-                      <Label htmlFor={`value-${variant.id}`}>Value</Label>
-                      <Input
-                        id={`value-${variant.id}`}
-                        placeholder='Value'
-                        value={attributeValue[`${variant.id}-value`] || ''}
-                        onChange={e => setAttributeValue(prev => ({...prev, [`${variant.id}-value`]: e.target.value}))}
-                      />
-                      <Button onClick={() => handleAddAttributeFromDialog(variant.id)}>Save</Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                  <Plus className='w-4 h-4 mr-1' /> Add
+                </Button>
               </div>
 
               <div className='space-y-2'>
-                {Object.entries(getAttributes(variant.attributes)).map(([key, value]) => {
+                {Object.entries(variant.attributes).map(([key, value]) => {
                   const isEditing = editingAttrKey === key
                   return (
                     <div key={key} className='flex items-center justify-between gap-4'>
                       <div className='flex items-center gap-4 mb-2 w-full'>
-                        <Label htmlFor={key} className='text-xs font-medium text-muted-foreground uppercase tracking-wide w-12'>
+                        <Label htmlFor={key} className='text-xs font-medium text-muted-foreground uppercase tracking-wide w-32 text-right'>
                           {key}
                         </Label>
                         <Input
@@ -275,6 +248,36 @@ export default function VariantEditor({variants, onVariantsChange}: VariantEdito
                   )
                 })}
               </div>
+
+              {/* Add Attribute Dialog */}
+              <Dialog open={dialogOpen[variant.id] || false} onOpenChange={open => setDialogOpen(prev => ({...prev, [variant.id]: open}))}>
+                <DialogContent className='sm:max-w-sm'>
+                  <DialogHeader>
+                    <DialogTitle>Add Attribute</DialogTitle>
+                  </DialogHeader>
+                  <div className='flex flex-col gap-3'>
+                    <div>
+                      <Label htmlFor={`label-${variant.id}`}>Label</Label>
+                      <Input
+                        id={`label-${variant.id}`}
+                        placeholder='Attribute key'
+                        value={attributeLabel[`${variant.id}-label`] || ''}
+                        onChange={e => setAttributeLabel(prev => ({...prev, [`${variant.id}-label`]: e.target.value}))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`value-${variant.id}`}>Value</Label>
+                      <Input
+                        id={`value-${variant.id}`}
+                        placeholder='Attribute value'
+                        value={attributeValue[`${variant.id}-value`] || ''}
+                        onChange={e => setAttributeValue(prev => ({...prev, [`${variant.id}-value`]: e.target.value}))}
+                      />
+                    </div>
+                    <Button onClick={() => handleAddAttributeFromDialog(variant.id)}>Save</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </Card>

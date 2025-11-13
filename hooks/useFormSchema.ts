@@ -96,8 +96,10 @@ const useFormSchema = () => {
   const variantFormSchema = z.object({
     id: z.string().optional(),
     name: createStringSchema("Variant Name", 1, 100),
-    isRequired: z.boolean().default(true),
-    options: z.array(variantOptionFormSchema).default([]),
+    price: z.number().min(1, { message: "Price must be at least 1" }),
+    stock: z.number().min(1, { message: "Stock must be at least 1" }),
+    image: z.string().nullable().optional(),
+    attributes: z.record(z.string(), z.string()).default({}),
   });
 
   const specFormSchema = z.object({

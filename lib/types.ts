@@ -76,7 +76,6 @@ export type ProductFormData = {
   tags: string[];
   stock?: number | null;
   status: PRODUCT_STATUS;
-  sellerId?: string;
   categoryId: string;
   specs: Array<{
     id?: string;
@@ -85,14 +84,12 @@ export type ProductFormData = {
   }>;
   variants: Array<{
     name: string;
-    isRequired: boolean;
-    options: Array<{
-      variantOptionName: string;
-      price: number;
-      discountedPrice: number | null;
-      stock: number;
-      coupon: string | null;
-    }>;
+    price: number
+    discountedPrice?: number | number;
+    coupon?: string | null;
+    stock: number
+    image?: string | null;
+    attributes: Record<string, string>;
   }>;
 };
 
@@ -233,20 +230,9 @@ export type TGetPaginatedData = {
 
 
 export type VariantEditorProps = {
-  variants: Partial<Variant>[];
+  variants: Variant[];
   onVariantsChange: (variants: Partial<Variant>[]) => void;
 }
-
-export type TVariantItemProps = {
-  variant: FormVariant;
-  index: number;
-  expanded: boolean;
-  onExpand: (index: number) => void;
-  onEdit: (index: number) => void;
-  onDelete: (index: number) => void;
-  onOptionsChange: (index: number, options: Variant[]) => void;
-}
-
 
 export type VariantOptionEditorProps = {
   variantName: string
