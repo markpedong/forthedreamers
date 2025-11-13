@@ -143,8 +143,6 @@ export type ReusableSelectProps<T extends FieldValues> = {
   containerClassName?: string
 };
 
-
-// Form spec type (without database fields)
 export type FormSpec = {
   id?: string;
   label: string;
@@ -156,7 +154,6 @@ export type SpecsEditorProps = {
   onSpecsChange: (specs: FormSpec[]) => void;
 }
 
-// Form variant type (without database fields)
 export type FormVariant = {
   id?: string;
   name: string;
@@ -167,10 +164,14 @@ export type TSpec = Omit<Spec, "createdAt" | "updatedAt">;
 
 export type OmittedProductFields = Omit<Product, "createdAt" | "updatedAt" | "categoryId">
 
+export type TVariant = Omit<Variant, "createdAt" | "updatedAt" | "attributes"> & {
+  attributes: Record<string, string>
+}
+
 export type TProduct = OmittedProductFields & {
   specs: Spec[];
   category: Omit<Category, 'createdAt' | 'updatedAt'>;
-  variants: Variant[];
+  variants: TVariant[];
 }
 
 export type ProTableRef = {
@@ -181,7 +182,8 @@ export type ProTableRef = {
 };
 
 export type DropdownMenuItemType = {
-  label: React.ReactElement; // MUST be a single DOM element
+  label: React.ReactElement
+
   onClick?: () => void;
   isDestructive?: boolean;
   hasSeparatorBelow?: boolean;
@@ -190,7 +192,8 @@ export type DropdownMenuItemType = {
 };
 
 export type DropdownProps = {
-  trigger: React.ReactElement; // MUST be a single DOM element
+  trigger: React.ReactElement
+
   align?: 'start' | 'center' | 'end';
   menus: DropdownMenuItemType[];
 };
@@ -230,8 +233,8 @@ export type TGetPaginatedData = {
 
 
 export type VariantEditorProps = {
-  variants: Variant[];
-  onVariantsChange: (variants: Partial<Variant>[]) => void;
+  variants: TVariant[];
+  onVariantsChange: (variants: Partial<TVariant>[]) => void;
 }
 
 export type VariantOptionEditorProps = {

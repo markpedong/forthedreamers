@@ -3,22 +3,13 @@
 import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-
-interface Variant {
-  id: string
-  name: string
-  price: number
-  stock: number
-  image?: string
-  attributes: Record<string, string>
-}
+import { TVariant } from '@/lib/types'
 
 interface VariantSelectorProps {
-  variants: Variant[]
+  variants: TVariant[]
 }
 
 function VariantSelector({variants}: VariantSelectorProps) {
-  // Get all unique attribute types
   const attributeTypes = useMemo(() => {
     const types = new Set<string>()
     variants.forEach(v => {
