@@ -58,9 +58,9 @@ const VariantSelector = ({variants}: VariantSelectorProps) => {
   }, [selectedVariant])
 
   return (
-    <div className='flex flex-col gap-6'>
+    <div className='flex flex-col gap-6 mt-6'>
       {attributeTypes.map(type => (
-        <div key={type} className='flex flex-col gap-3'>
+        <div key={type} className='flex flex-col gap-1'>
           <div className='flex items-center justify-between'>
             <label className='text-xs uppercase tracking-widest text-muted-foreground'>{type}</label>
             {selectedAttributes[type] && (
