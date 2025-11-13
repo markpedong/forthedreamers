@@ -108,6 +108,11 @@ const useFormSchema = () => {
     value: createStringSchema("Spec Value", 1, 500),
   });
 
+  const attributeSchema = z.object({
+    label: createStringSchema("Attribute label", 1, 100),
+    value: createStringSchema("Attribute Value", 1, 100)
+  });
+
   const productFormSchema = z
     .object({
       id: z.string().optional(),
@@ -165,7 +170,8 @@ const useFormSchema = () => {
     specFormSchema,
     variantFormSchema,
     variantOptionFormSchema,
-    variantSchema
+    variantSchema,
+    attributeSchema
   }
 }
 

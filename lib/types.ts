@@ -117,6 +117,7 @@ export type InputProps<T extends FieldValues> = SharedProps<T> &
   Omit<ComponentPropsWithoutRef<'input'>, 'name' | 'type'> & {
     type?: 'text' | 'password' | 'number' | 'email';
     textarea?: false;
+    isHorizontal?: boolean
   };
 
 export type TextareaProps<T extends FieldValues> = SharedProps<T> &
