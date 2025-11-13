@@ -85,15 +85,17 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
               {['name', 'image'].map(field => {
                 const fieldValue = variant[field as keyof typeof variant] as string
                 return (
-                  <Input
-                    key={`${variant.id}-${field}`}
-                    label={field === 'name' ? 'Variant Name' : 'Image URL'}
-                    name={field}
-                    value={fieldValue ?? ''}
-                    onChange={e => handleUpdateVariant(variant.id, field as keyof typeof variant, e.target.value)}
-                    placeholder={field === 'name' ? 'e.g., Red S Size' : 'https://...'}
-                    className='mt-1'
-                  />
+                  <div key={field}>
+                    <Label className='text-sm font-medium'>{field === 'name' ? 'Variant Name' : 'Image URL'}</Label>
+                    <InputUI
+                      key={`${variant.id}-${field}`}
+                      name={field}
+                      value={fieldValue ?? ''}
+                      onChange={e => handleUpdateVariant(variant.id, field as keyof typeof variant, e.target.value)}
+                      placeholder={field === 'name' ? 'e.g., Red S Size' : 'https://...'}
+                      className='mt-1'
+                    />
+                  </div>
                 )
               })}
             </div>

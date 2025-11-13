@@ -113,6 +113,17 @@ const useFormSchema = () => {
     value: createStringSchema("Attribute Value", 1, 100)
   });
 
+  const variantSchema = z.object({
+    id: z.string(),
+    name: z.string().min(1, 'Variant name is required'),
+    image: z.string().url('Invalid URL').optional(),
+    price: z.number().min(0),
+    discountedPrice: z.number().optional(),
+    stock: z.number().min(0),
+    coupon: z.string().optional(),
+    attributes: z.array(attributeSchema)
+  })
+
   const productFormSchema = z
     .object({
       id: z.string().optional(),
@@ -146,12 +157,6 @@ const useFormSchema = () => {
         }
       }
     })
-
-  const variantSchema = z.object({
-    id: z.string().optional(),
-    name: createStringSchema("Option Name", 1, 100),
-    isRequired: z.boolean(),
-  });
 
   return {
     nameEmailSchema,
