@@ -82,15 +82,7 @@ export type ProductFormData = {
     label: string;
     value: string;
   }>;
-  variants: Array<{
-    name: string;
-    price: number
-    discountedPrice?: number | number;
-    coupon?: string | null;
-    stock: number
-    image?: string | null;
-    attributes: Record<string, string>;
-  }>;
+  variants: Omit<TVariant[], 'id'> & { id?: string };
 };
 
 export type ProductFormModalProps = {
