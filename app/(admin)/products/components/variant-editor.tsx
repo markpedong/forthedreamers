@@ -134,6 +134,9 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
                           value={isEditing ? editingAttr.value : value}
                           readOnly={!isEditing}
                           onChange={e => setEditingAttr({key, value: e.target.value})}
+                          onKeyDown={e => {
+                            if (e.key === ' ') e.preventDefault()
+                          }}
                         />
                       </div>
                       <div className='flex gap-1'>
