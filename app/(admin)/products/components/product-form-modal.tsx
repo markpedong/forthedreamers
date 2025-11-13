@@ -133,6 +133,7 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
               <VariantEditor
                 variants={form.watch('variants') as TVariant[]}
                 onVariantsChange={(variants: any) => {
+                  console.log("variants", variants)
                   form.setValue('variants', variants, {shouldValidate: true})
                   if (variants.length > 0) {
                     form.clearErrors(['basePrice', 'stock'])

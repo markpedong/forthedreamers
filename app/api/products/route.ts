@@ -59,7 +59,12 @@ export async function POST(req: NextRequest) {
         category: { connect: { id: categoryId } },
         seller: { connect: { id: seller.id } },
         specs: { create: specs },
-        variants: { create: variants },
+        variants: {
+          create: variants?.map(item => ({
+            ...item,
+            attributes: Object.fromEntries(Object.entries(item.attributes || {}).map(([key, value]) => [key.toLowerCase(), value]))
+          }))
+        },
       },
       include: {
         specs: { omit: { createdAt: true, updatedAt: true, productId: true } },
@@ -148,13 +153,13 @@ export async function PUT(req: Request) {
           tx.variant.update({
             where: { id: v.id },
             data: {
-              name: v.name,
+              name: v.name?.toLowerCase(),
               price: v.price,
               discountedPrice: v.discountedPrice ?? null,
               coupon: v.coupon ?? null,
               stock: v.stock,
               image: v.image,
-              attributes: v.attributes,
+              attributes: Object.fromEntries(Object.entries(v.attributes || {}).map(([key, value]) => [key.toLowerCase(), value]))
             },
           })
         ),

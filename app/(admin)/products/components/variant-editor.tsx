@@ -21,7 +21,7 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
     defaultValues: {label: '', value: ''}
   })
 
-  const [editingAttr, setEditingAttr] = useState<{key: string; value: string} | null>(null)
+  const [editingAttr, setEditingAttr] = useState<Record<string, {key: string; value: string} | null>>({})
   const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({})
 
   const updateVariant = (id: string, field: keyof TVariant, value: any) => {
@@ -48,12 +48,13 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
   }
 
   const saveAttributeEdit = (variantId: string, key: string) => {
-    if (!editingAttr?.value.trim()) return
+    const edited = editingAttr[variantId]
+    if (!edited?.value.trim()) return
     updateVariant(variantId, 'attributes', {
       ...variants.find(v => v.id === variantId)?.attributes,
-      [key]: editingAttr.value.trim()
+      [key]: edited.value.trim()
     })
-    setEditingAttr(null)
+    setEditingAttr(prev => ({...prev, [variantId]: null}))
   }
 
   const deleteVariant = (id: string) => onVariantsChange(variants.filter(v => v.id !== id))
@@ -123,20 +124,20 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
                 </Button>
               </div>
               <div className='space-y-2'>
-                {Object.entries(variant.attributes).map(([key, value]) => {
-                  const isEditing = editingAttr?.key === key
+                {Object.entries(variant.attributes).map(([key, value], index) => {
+                  const isEditing = editingAttr[variant.id]?.key === key
                   return (
-                    <div key={key} className='flex items-center justify-between gap-4'>
+                    <div key={key + index} className='flex items-center justify-between gap-4'>
                       <div className='grid grid-cols-[1fr_4fr] items-center gap-4 w-full'>
                         <Label htmlFor={key}>{key}:</Label>
                         <InputUI
-                          id={key}
-                          value={isEditing ? editingAttr.value : value}
-                          readOnly={!isEditing}
-                          onChange={e => setEditingAttr({key, value: e.target.value})}
-                          onKeyDown={e => {
-                            if (e.key === ' ') e.preventDefault()
-                          }}
+                          value={isEditing ? editingAttr[variant.id]!.value : value}
+                          onChange={e =>
+                            setEditingAttr(prev => ({
+                              ...prev,
+                              [variant.id]: {key, value: e.target.value}
+                            }))
+                          }
                         />
                       </div>
                       <div className='flex gap-1'>
@@ -144,7 +145,9 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
                           variant='ghost'
                           size='sm'
                           className='h-8 w-8 p-0'
-                          onClick={() => (isEditing ? saveAttributeEdit(variant.id, key) : setEditingAttr({key, value}))}
+                          onClick={() =>
+                            isEditing ? saveAttributeEdit(variant.id, key) : setEditingAttr(prev => ({...prev, [variant.id]: {key, value}}))
+                          }
                         >
                           {isEditing ? <Check className='w-4 h-4 text-green-400' /> : <Edit className='w-4 h-4' />}
                         </Button>
@@ -164,7 +167,13 @@ const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => 
               <Dialog
                 title='Add Attribute'
                 open={dialogOpen[variant.id] || false}
-                onOpenChange={open => setDialogOpen(prev => ({...prev, [variant.id]: open}))}
+                onOpenChange={open => {
+                  if (!open) {
+                    form.reset({label: '', value: ''})
+                  }
+
+                  setDialogOpen(prev => ({...prev, [variant.id]: open}))
+                }}
                 triggerText={false}
                 onConfirm={form.handleSubmit((data: SchemaForm<typeof attributeSchema>) => addAttribute({...data, variantId: variant.id}))}
               >
