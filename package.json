@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "rm -rf .next && npm i && prisma generate && next dev --turbopack",
+		"dev": "rm -rf .next && npm i && prisma generate --no-engine && next dev --turbopack",
 		"build": "rm -rf .next && npm i && prisma generate --no-engine && next build --turbopack",
 		"start": "rm -rf .next && npm i && next start -p 3004",
 		"lint": "eslint",
