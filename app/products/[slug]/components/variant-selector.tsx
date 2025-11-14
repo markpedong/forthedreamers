@@ -14,10 +14,12 @@ interface VariantSelectorProps {
 const VariantSelector = ({variants}: VariantSelectorProps) => {
   const dispatch = useAppDispatch()
   const attributeTypes = useMemo(() => Array.from(new Set(variants.flatMap(v => Object.keys(v.attributes)))), [variants])
+  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({})
 
-  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>(() =>
-    Object.fromEntries(attributeTypes.map(type => [type, variants[0]?.attributes[type] || '']))
-  )
+  useEffect(() => {
+    const defaultAttrs = Object.fromEntries(attributeTypes.map(type => [type, variants[0]?.attributes[type] || '']))
+    setSelectedAttributes(defaultAttrs)
+  }, [variants, attributeTypes])
 
   const selectedVariant = useMemo(
     () => variants.find(v => attributeTypes.every(type => v.attributes[type] === selectedAttributes[type])),
@@ -48,14 +50,8 @@ const VariantSelector = ({variants}: VariantSelectorProps) => {
   const handleSelect = (type: string, value: string) => setSelectedAttributes(prev => ({...prev, [type]: value}))
 
   useEffect(() => {
-    if (selectedVariant) {
-      dispatch(setSelectedVariant(selectedVariant))
-    }
-
-    return () => {
-      dispatch(setSelectedVariant(null))
-    }
-  }, [selectedVariant])
+    dispatch(setSelectedVariant(selectedVariant || null))
+  }, [dispatch, selectedVariant])
 
   return (
     <div className='flex flex-col gap-6 mt-6'>
@@ -85,19 +81,13 @@ const VariantSelector = ({variants}: VariantSelectorProps) => {
         </div>
       ))}
 
-      <div className='border-t border-border pt-6 mt-2 flex justify-between gap-4'>
-        <div>
-          <p className='text-xs uppercase tracking-widest text-muted-foreground mb-1'>Stock Status</p>
-          <p
-            className={`text-sm font-medium ${selectedVariant?.stock && selectedVariant.stock > 0 ? 'text-foreground' : 'text-destructive'}`}
-          >
-            {selectedVariant ? (selectedVariant.stock > 0 ? `${selectedVariant.stock} Available` : 'Out of Stock') : 'Unavailable'}
-          </p>
-        </div>
-        <div className='text-right'>
-          <p className='text-xs uppercase tracking-widest text-muted-foreground mb-1'>Price</p>
-          <p className='text-lg font-light text-foreground'>{selectedVariant ? `$${selectedVariant.price.toFixed(2)}` : '—'}</p>
-        </div>
+      <div className='border-t border-border pt-6 my-2 flex justify-between gap-4'>
+        <p className='text-xs uppercase tracking-widest text-muted-foreground mb-1'>Stock Status</p>
+        <p
+          className={`text-sm font-medium ${selectedVariant?.stock && selectedVariant.stock > 0 ? 'text-foreground' : 'text-destructive'}`}
+        >
+          {selectedVariant ? (selectedVariant.stock > 0 ? `${selectedVariant.stock} Available` : 'Out of Stock') : 'Unavailable'}
+        </p>
       </div>
     </div>
   )

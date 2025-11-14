@@ -34,20 +34,19 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({product}) => {
           {rating} ({reviewCount} reviews)
         </span>
       </div>
-
-      <div className='flex items-baseline gap-4'>
-        <span className='text-3xl font-light text-foreground'>
-          $
+      <div className='flex items-baseline gap-3'>
+        <span className='text-3xl lg:text-4xl font-light text-foreground'>
+          ${' '}
           {!!selectedVariant
             ? selectedVariant?.discountedPrice
               ? selectedVariant.discountedPrice
               : selectedVariant?.price
             : price.toFixed(2)}
         </span>
-        {discount > 0 && (
+        {Number(basePrice) > Number(selectedVariant?.price) && (
           <>
-            <span className='text-lg text-muted-foreground line-through'>${basePriceNum.toFixed(2)}</span>
-            <Badge variant='secondary' className='bg-accent/10 text-accent hover:bg-accent/20'>
+            <span className='text-lg text-muted-foreground line-through'>${Number(basePrice).toFixed(2)}</span>
+            <Badge variant='destructive' className='bg-accent/10 text-accent-foreground hover:bg-accent/20'>
               Save {discount}%
             </Badge>
           </>
