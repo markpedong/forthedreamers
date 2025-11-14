@@ -4,6 +4,7 @@ import ProductOverview from './components/product-overview'
 import VariantSelector from './components/variant-selector'
 import { OmittedProductFields, TVariant } from '@/lib/types'
 import { getProductPrisma } from '@/lib/server-actions'
+import { AddToCartSection } from './components/add-to-cart-section'
 
 export async function generateStaticParams() {
   const products = await prisma.product.findMany({
@@ -32,7 +33,7 @@ const ProductPage = async ({params}: ProductPageProps) => {
         <div className='flex flex-col'>
           <ProductOverview product={product as OmittedProductFields} />
           <VariantSelector variants={product?.variants as unknown as TVariant[]} />
-          {/*  <AddToCartSection product={mockProduct} /> */}
+          <AddToCartSection product={product as OmittedProductFields} />
         </div>
       </div>
 
