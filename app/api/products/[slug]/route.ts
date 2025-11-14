@@ -1,22 +1,11 @@
-import prisma from '@/lib/prisma';
+import { getProductPrisma } from '@/lib/server-actions';
 import { errorResponse, successResponse } from '@/lib/server-helper';
 
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string; }> }) {
   const { slug } = await params;
 
   try {
-    const product = await prisma.product.findUnique({
-      where: { slug },
-      include: {
-        specs: {
-          omit: { createdAt: true, updatedAt: true, productId: true },
-        },
-        category: { omit: { createdAt: true, updatedAt: true } },
-        variants: {
-          omit: { createdAt: true, updatedAt: true, productId: true },
-        },
-      },
-    });
+    const product = await getProductPrisma(slug)
 
     if (!product) {
       return errorResponse("Product not found");

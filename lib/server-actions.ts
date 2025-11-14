@@ -167,3 +167,16 @@ export const revokeUserSessions = async (userId: string) => auth.api.revokeUserS
 export const deleteUserByAdmin = async (userId: string) => auth.api.removeUser({ headers: await headers(), body: { userId } });
 
 export const getUserDB = async (userID: string) => await prisma.user.findUnique({ where: { id: userID }, select: { role: true } });
+
+export const getProductPrisma = async (slug: string) => await prisma.product.findUnique({
+  where: { slug },
+  include: {
+    specs: {
+      omit: { createdAt: true, updatedAt: true, productId: true }
+    },
+    category: { omit: { createdAt: true, updatedAt: true } },
+    variants: {
+      omit: { createdAt: true, updatedAt: true, productId: true }
+    }
+  }
+})
