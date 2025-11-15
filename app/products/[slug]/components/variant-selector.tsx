@@ -56,7 +56,15 @@ const VariantSelector = ({variants}: VariantSelectorProps) => {
   }, [dispatch, selectedVariant])
 
   return (
-    <div className='flex flex-col gap-6 mt-6'>
+    <div className='flex flex-col gap-6 mt-8'>
+      <div className='border-t border-border pt-6 my-2 flex justify-between gap-4'>
+        <p className='text-xs uppercase tracking-widest font-bold text-primary mb-1'>Stock Status</p>
+        <p
+          className={`text-sm font-light  ${selectedVariant?.stock && selectedVariant.stock > 0 ? 'text-accent-foreground' : 'text-destructive'}`}
+        >
+          {selectedVariant ? (selectedVariant.stock > 0 ? `${selectedVariant.stock} Available` : 'Out of Stock') : 'Unavailable'}
+        </p>
+      </div>
       {attributeTypes.map(type => (
         <div key={type} className='flex flex-col gap-1'>
           <div className='flex items-center justify-between'>
@@ -84,15 +92,6 @@ const VariantSelector = ({variants}: VariantSelectorProps) => {
           </div>
         </div>
       ))}
-
-      <div className='border-t border-border pt-6 my-2 flex justify-between gap-4'>
-        <p className='text-xs uppercase tracking-widest font-bold text-primary mb-1'>Stock Status</p>
-        <p
-          className={`text-sm font-light  ${selectedVariant?.stock && selectedVariant.stock > 0 ? 'text-accent-foreground' : 'text-destructive'}`}
-        >
-          {selectedVariant ? (selectedVariant.stock > 0 ? `${selectedVariant.stock} Available` : 'Out of Stock') : 'Unavailable'}
-        </p>
-      </div>
     </div>
   )
 }
