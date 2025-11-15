@@ -1,18 +1,20 @@
-'use client';
+'use client'
 
-import { ThemeProvider } from 'next-themes';
-import { FC, PropsWithChildren, Suspense } from 'react';
-import { Toaster } from '../ui/sonner';
-import ThemeToggleButton from './theme-toggle';
-import ToastListener from './toast-listener';
-import ImpesonationIndicator from './impersonation-indicator';
-import ReduxProvider from './redux-provider';
-import Navbar from '../navigation/navbar';
-import BottomNav from '../navigation/bottom-nav';
-import AntdWrapper from './antd-wrapper';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-const MainProvider: FC<PropsWithChildren> = ({ children }) => {
-  const queryClient = new QueryClient();
+import { ThemeProvider } from 'next-themes'
+import { FC, PropsWithChildren, Suspense } from 'react'
+import { Toaster } from '../ui/sonner'
+import ThemeToggleButton from './theme-toggle'
+import ToastListener from './toast-listener'
+import ImpesonationIndicator from './impersonation-indicator'
+import ReduxProvider from './redux-provider'
+import Navbar from '../navigation/navbar'
+import BottomNav from '../navigation/bottom-nav'
+import AntdWrapper from './antd-wrapper'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import Footer from '../navigation/footer'
+
+const MainProvider: FC<PropsWithChildren> = ({children}) => {
+  const queryClient = new QueryClient()
 
   return (
     <ReduxProvider>
@@ -28,9 +30,10 @@ const MainProvider: FC<PropsWithChildren> = ({ children }) => {
         <ThemeToggleButton />
         <ImpesonationIndicator />
       </ThemeProvider>
+      <Footer />
       <BottomNav />
     </ReduxProvider>
-  );
-};
+  )
+}
 
-export default MainProvider;
+export default MainProvider

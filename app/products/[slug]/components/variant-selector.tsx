@@ -10,10 +10,10 @@ import classNames from 'classnames'
 import styles from './styles.module.scss'
 
 interface VariantSelectorProps {
-  variants: TVariant[]
+  variants?: TVariant[]
 }
 
-const VariantSelector = ({variants}: VariantSelectorProps) => {
+const VariantSelector = ({variants = []}: VariantSelectorProps) => {
   const dispatch = useAppDispatch()
   const attributeTypes = useMemo(() => Array.from(new Set(variants.flatMap(v => Object.keys(v.attributes)))), [variants])
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({})

@@ -1,11 +1,11 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
-import { TProduct } from '@/lib/types'
+import { OmittedProductFields } from '@/lib/types'
 import { useAppSelector } from '@/redux/store'
 
 interface ProductOverviewProps {
-  product: TProduct
+  product: OmittedProductFields
 }
 
 const ProductOverview: React.FC<ProductOverviewProps> = ({product}) => {
