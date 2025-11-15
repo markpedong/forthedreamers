@@ -34,11 +34,10 @@ export function AddToCartSection({product}: AddToCartSectionProps) {
 
   return (
     <div className='flex flex-col gap-6'>
-      {/* Quantity Selector - REDESIGNED */}
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
-          <label className='text-sm font-medium text-foreground'>Quantity</label>
-          <span className='text-xs text-muted-foreground'>{quantity > 1 ? `${quantity} items` : '1 item'}</span>
+          <label className='text-xs uppercase tracking-widest font-bold text-primary'>QUANTITY</label>
+          <span className='text-sm font-light text-accent-foreground'>{quantity > 1 ? `${quantity} items` : '1 item'}</span>
         </div>
 
         <div className='flex gap-2'>

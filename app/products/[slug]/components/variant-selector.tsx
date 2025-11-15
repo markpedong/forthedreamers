@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge'
 import { TVariant } from '@/lib/types'
 import { useAppDispatch } from '@/redux/store'
 import { setSelectedVariant } from '@/redux/features/appSlice'
+import classNames from 'classnames'
+import styles from './styles.module.scss'
 
 interface VariantSelectorProps {
   variants: TVariant[]
@@ -71,7 +73,9 @@ const VariantSelector = ({variants}: VariantSelectorProps) => {
                 key={`${type}-${option.value}`}
                 variant={selectedAttributes[type] === option.value ? 'default' : 'outline'}
                 onClick={() => handleSelect(type, option.value)}
-                className='capitalize text-sm font-normal'
+                className={classNames('capitalize text-sm font-normal', {
+                  [styles.isDisabled]: !option.available
+                })}
                 disabled={!option.available}
               >
                 {option.value}
@@ -82,9 +86,9 @@ const VariantSelector = ({variants}: VariantSelectorProps) => {
       ))}
 
       <div className='border-t border-border pt-6 my-2 flex justify-between gap-4'>
-        <p className='text-xs uppercase tracking-widest text-muted-foreground mb-1'>Stock Status</p>
+        <p className='text-xs uppercase tracking-widest font-bold text-primary mb-1'>Stock Status</p>
         <p
-          className={`text-sm font-medium ${selectedVariant?.stock && selectedVariant.stock > 0 ? 'text-foreground' : 'text-destructive'}`}
+          className={`text-sm font-light  ${selectedVariant?.stock && selectedVariant.stock > 0 ? 'text-accent-foreground' : 'text-destructive'}`}
         >
           {selectedVariant ? (selectedVariant.stock > 0 ? `${selectedVariant.stock} Available` : 'Out of Stock') : 'Unavailable'}
         </p>
