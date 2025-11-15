@@ -14,7 +14,6 @@ export function ProductInfoTabs({product}: ProductInfoTabsProps) {
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null)
 
   const tabs = [
-    {id: 'description', label: 'Description'},
     {id: 'specs', label: 'Specifications'},
     {id: 'shipping', label: 'Shipping & Returns'},
     {id: 'faq', label: 'FAQ'}
@@ -46,7 +45,7 @@ export function ProductInfoTabs({product}: ProductInfoTabsProps) {
   return (
     <>
       <div className='border-b border-border'>
-        <div className='overflow-x-auto mx-auto max-w-7xl pt-16'>
+        <div className='overflow-x-auto mx-auto max-w-7xl pt-16 px-4 sm:px-6 lg:px-8'>
           {tabs.map(tab => (
             <button
               key={tab.id}
@@ -60,7 +59,7 @@ export function ProductInfoTabs({product}: ProductInfoTabsProps) {
           ))}
         </div>
       </div>
-      <div className='mx-auto max-w-7xl pt-8'>
+      <div className='mx-auto max-w-7xl pt-8 px-4 sm:px-6 lg:px-8'>
         {activeTab === 'specs' && (
           <div className='grid gap-4 sm:grid-cols-2'>
             {product.specs.map((spec, index) => (
@@ -73,7 +72,7 @@ export function ProductInfoTabs({product}: ProductInfoTabsProps) {
         )}
 
         {activeTab === 'shipping' && (
-          <div className='space-y-4 text-foreground'>
+          <div className='space-y-4 text-foreground '>
             <div>
               <h3 className='font-semibold mb-2'>Shipping</h3>
               <p className='text-muted-foreground'>
