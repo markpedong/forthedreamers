@@ -1,4 +1,4 @@
-'use client';
+    'use client';
 
 import { FC } from 'react';
 import { Home, ShoppingBag, Package, User } from 'lucide-react';
