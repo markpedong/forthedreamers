@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { revalidatePath as revalidatePathNext } from "next/cache";
 import prisma from "./prisma";
+import { Route } from "next";
 
 export type TChangePass = { currentPassword: string, newPassword: string }
 
@@ -52,7 +53,7 @@ export const signInSocial = async (provider: "github" | "google") => {
   });
 
   if (url) {
-    redirect(url);
+    redirect(url as Route);
   }
 };
 

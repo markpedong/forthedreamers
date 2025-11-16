@@ -27,11 +27,7 @@ export const metadata: Metadata = {
   description: 'Learn how to handle authentication in Next.js using Better-Auth with this tutorial by Coding in Flow'
 }
 
-export default async function RootLayout({
-  children
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default async function RootLayout({children}: LayoutProps<'/'>) {
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={`${geist.className}  antialiased`}>

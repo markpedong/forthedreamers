@@ -19,12 +19,8 @@ export async function generateStaticParams() {
   return products?.map(product => ({slug: product.slug})) ?? []
 }
 
-interface ProductPageProps {
-  params: Promise<{slug: string}>
-}
-
-const ProductPage = async ({params}: ProductPageProps) => {
-  const {slug} = await params
+const ProductPage = async (props: PageProps<'/products/[slug]'>) => {
+  const {slug} = await props.params
   const product = await getProductPrisma(slug)
 
   return (

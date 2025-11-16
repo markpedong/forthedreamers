@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useAppSelector } from '@/redux/store'
+import { Route } from 'next'
 
 const navItems = [
   {icon: Home, label: 'Home', href: '/'},
@@ -33,7 +34,7 @@ const BottomNav: FC = () => {
             return (
               <motion.div key={href} whileHover={{scale: 1.1}} whileTap={{scale: 0.95}}>
                 <Link
-                  href={href}
+                  href={href as Route}
                   className={cn(
                     'flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-colors relative',
                     isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'

@@ -44,7 +44,7 @@ const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
       if (!result) return;
 
       toast.success('Verified!', { duration: 2000 });
-      router.push('/seller-dashboard');
+      router.push('/dashboard');
     });
   };
 

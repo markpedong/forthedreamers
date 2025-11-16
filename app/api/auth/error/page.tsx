@@ -1,25 +1,25 @@
-'use client';
+'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { FC, Suspense, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation'
+import { FC, Suspense, useEffect } from 'react'
 
 const ErrorPage: FC = () => {
-  const error = useSearchParams().get('error');
-  const router = useRouter();
+  const error = useSearchParams().get('error')
+  const router = useRouter()
 
   useEffect(() => {
-    router.push('/sign-in?error=' + error);
-  }, [error]);
+    router.push(`/sign-in?error=${error}`)
+  }, [error])
 
-  return null;
-};
+  return null
+}
 
 const Page = () => {
   return (
     <Suspense fallback={null}>
       <ErrorPage />
     </Suspense>
-  );
-};
+  )
+}
 
-export default Page;
+export default Page

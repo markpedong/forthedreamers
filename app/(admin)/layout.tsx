@@ -1,18 +1,14 @@
-import { getSession } from '@/lib/server-actions';
-import { redirect } from 'next/navigation';
-import AdminHeader from './components/admin-header';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { AdminSidebar } from '@/components/dynamic';
+import { getSession } from '@/lib/server-actions'
+import { redirect } from 'next/navigation'
+import AdminHeader from './components/admin-header'
+import { SidebarProvider } from '@/components/ui/sidebar'
+import { AdminSidebar } from '@/components/dynamic'
 
-export default async function AdminLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const session = await getSession();
+export default async function AdminLayout({children}: LayoutProps<'/'>) {
+  const session = await getSession()
 
   if (!['ADMIN', 'SELLER'].includes(session?.user.role ?? '')) {
-    redirect('/');
+    redirect('/')
   }
 
   return (
@@ -25,5 +21,5 @@ export default async function AdminLayout({
         </div>
       </div>
     </SidebarProvider>
-  );
+  )
 }

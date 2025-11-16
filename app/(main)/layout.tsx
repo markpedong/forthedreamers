@@ -1,17 +1,13 @@
-import { getSession } from '@/lib/server-actions';
-import { redirect } from 'next/navigation';
+import { getSession } from '@/lib/server-actions'
+import { redirect } from 'next/navigation'
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const session = await getSession();
+export default async function RootLayout({children}: LayoutProps<'/'>) {
+  const session = await getSession()
 
   if (!session) {
-    redirect('/sign-in?isSignedIn=false');
-    return;
+    redirect('/sign-in?isSignedIn=false')
+    return
   }
 
-  return children;
+  return children
 }

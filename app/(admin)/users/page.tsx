@@ -20,7 +20,7 @@ const Page = async () => {
       redirect('/products')
     }
 
-    redirect('/error')
+    redirect('/')
   }
 }
 
