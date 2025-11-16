@@ -51,7 +51,7 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({product}) => {
           </>
         )}
       </div>
-      <div className='text-sm my-3 font-medium'>{product.description}</div>
+      {/* <div className='text-sm my-3 font-medium'>{product.description}</div> */}
     </div>
   )
 }

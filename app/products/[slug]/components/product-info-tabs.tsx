@@ -14,6 +14,7 @@ export function ProductInfoTabs({product}: ProductInfoTabsProps) {
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null)
 
   const tabs = [
+    {id: 'description', label: 'Description'},
     {id: 'specs', label: 'Specifications'},
     {id: 'shipping', label: 'Shipping & Returns'},
     {id: 'faq', label: 'FAQ'}
@@ -60,6 +61,11 @@ export function ProductInfoTabs({product}: ProductInfoTabsProps) {
         </div>
       </div>
       <div className='mx-auto max-w-7xl pt-8 px-4 sm:px-6 lg:px-8'>
+        {activeTab === 'description' && (
+          <div className='space-y-4 text-foreground '>
+            <p>{product.description}</p>
+          </div>
+        )}
         {activeTab === 'specs' && (
           <div className='grid gap-4 sm:grid-cols-2'>
             {product.specs.map((spec, index) => (
