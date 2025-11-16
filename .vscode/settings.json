@@ -13,5 +13,6 @@
   "tailwindCSS.lint.suggestCanonicalClasses": "ignore",
   "editor.codeActionsOnSave": {
     "source.removeUnusedImports": "explicit"
-  }
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
