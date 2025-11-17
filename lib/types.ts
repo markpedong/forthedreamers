@@ -3,7 +3,7 @@ import type { z, ZodTypeAny } from 'zod';
 import { getSession, listUserAccounts } from "./server-actions";
 import type { Control, Path, FieldValues } from 'react-hook-form';
 import { ComponentPropsWithoutRef, Ref } from "react";
-import { Category, PrismaClient, Product, PRODUCT_STATUS, Spec, Variant } from "@/generated/prisma";
+import { Category, PrismaClient, Product, PRODUCT_STATUS, Seller, Spec, Variant } from "@/generated/prisma";
 import type { ActionType, ProTableProps as AntProTableProps, ProFormInstance } from '@ant-design/pro-components';
 
 export type TOnNavigate = (page: string) => void;
@@ -146,14 +146,17 @@ export type TSpec = Omit<Spec, "createdAt" | "updatedAt">;
 
 export type OmittedProductFields = Omit<Product, "createdAt" | "updatedAt" | "categoryId">
 
+export type TSeller = Omit<Seller, "createdAt" | "updatedAt">
+
 export type TVariant = Omit<Variant, "createdAt" | "updatedAt" | "attributes"> & {
-  attributes: Record<string, string>
+  attributes: Record<string, string>,
 }
 
 export type TProduct = OmittedProductFields & {
   specs: Spec[];
   category: Omit<Category, 'createdAt' | 'updatedAt'>;
   variants: TVariant[];
+  seller: TSeller
 }
 
 export type ProTableRef = {

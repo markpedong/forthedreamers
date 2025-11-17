@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { TProduct } from '@/lib/types'
+import SellerInfo from './seller-info'
 
 interface ProductInfoTabsProps {
   product: TProduct
@@ -10,10 +11,11 @@ interface ProductInfoTabsProps {
 
 export function ProductInfoTabs({product}: ProductInfoTabsProps) {
   console.log(' product', product)
-  const [activeTab, setActiveTab] = useState('description')
+  const [activeTab, setActiveTab] = useState('seller')
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null)
 
   const tabs = [
+    {id: 'seller', label: 'Seller Info'},
     {id: 'description', label: 'Description'},
     {id: 'specs', label: 'Specifications'},
     {id: 'shipping', label: 'Shipping & Returns'},
@@ -61,6 +63,7 @@ export function ProductInfoTabs({product}: ProductInfoTabsProps) {
         </div>
       </div>
       <div className='mx-auto max-w-7xl pt-8 px-4 sm:px-6 lg:px-8'>
+        {activeTab === 'seller' && <SellerInfo seller={product.seller} />}
         {activeTab === 'description' && (
           <div className='space-y-4 text-foreground '>
             <p>{product.description}</p>

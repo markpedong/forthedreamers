@@ -178,6 +178,9 @@ export const getProductPrisma = async (slug: string) => await prisma.product.fin
     category: { omit: { createdAt: true, updatedAt: true } },
     variants: {
       omit: { createdAt: true, updatedAt: true, productId: true }
+    },
+    seller: {
+      omit: { createdAt: true, updatedAt: true, id: true, userId: true }
     }
   }
 })
