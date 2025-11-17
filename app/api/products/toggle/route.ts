@@ -1,8 +1,9 @@
 import { PRODUCT_STATUS } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 import { errorResponse, successResponse } from "@/lib/server-helper";
+import { NextRequest } from "next/server";
 
-export async function PATCH(req: Request) {
+export async function PATCH(req: NextRequest) {
   try {
     const { id } = await req.json();
 

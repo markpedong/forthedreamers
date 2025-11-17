@@ -1,7 +1,8 @@
 import prisma from "@/lib/prisma";
 import { buildServerQuery, errorResponse, successResponse } from "@/lib/server-helper";
+import { NextRequest } from "next/server";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const where = buildServerQuery(url);
 
@@ -12,7 +13,7 @@ export async function GET(req: Request) {
   return successResponse({ data: categories });
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { name } = await request.json();
     const category = await prisma.category.create({ data: { name } });
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
   try {
     const { id, name } = await request.json();
     const category = await prisma.category.update({ where: { id }, data: { name } });
