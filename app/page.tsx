@@ -1,12 +1,20 @@
+import prisma from '@/lib/prisma'
+import LandingPage from './components'
+import { TProduct } from '@/lib/types'
 
-type Props = {};
+type Props = {}
 
-const Page = (props: Props) => {
-  return (
-    <div>
-      landing page
-    </div>
-  );
-};
+const Page = async (props: Props) => {
+  const products = (await prisma.product.findMany({
+    include: {
+      variants: true,
+      specs: true,
+      category: true,
+      seller: true
+    }
+  })) as TProduct[]
 
-export default Page;
+  return <LandingPage products={products} />
+}
+
+export default Page
