@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { ArrowRight, ImageOff } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { TProduct } from '@/lib/types'
+import { useRouter } from '@bprogress/next'
+import ImagePlaceholder from '@/components/reusable/image-placeholder'
 
 const lifestyle = {
   main: {
@@ -27,26 +29,24 @@ const lifestyle = {
   ]
 }
 
-const ProductCard: FC<TProduct> = ({name, images, basePrice, variants}) => {
+const ProductCard: FC<TProduct> = ({name, images, basePrice, variants, slug}) => {
   const [isImageInvalid, setIsImageInvalid] = useState(false)
   const imageSrc = images && images.length > 0 ? images[0] : null
   const showImage = imageSrc && !isImageInvalid
-
+  const push = useRouter().push
   return (
-    <div className='group cursor-pointer space-y-3'>
-      <AspectRatio ratio={3 / 4} className='overflow-hidden rounded-sm bg-neutral-100'>
+    <div className='group cursor-pointer space-y-3' onClick={() => push(`/products/${slug}`)}>
+      <AspectRatio ratio={3 / 4} className='overflow-hidden rounded-sm '>
         {showImage ? (
-          <Image 
-            src={imageSrc} 
-            alt={name} 
-            fill 
-            className='object-cover transition-transform duration-700 group-hover:scale-105' 
+          <Image
+            src={imageSrc}
+            alt={name}
+            fill
+            className='object-cover transition-transform duration-700 group-hover:scale-105'
             onError={() => setIsImageInvalid(true)}
           />
         ) : (
-          <div className='flex h-full w-full items-center justify-center bg-neutral-200 text-neutral-400'>
-            <ImageOff className='h-10 w-10' />
-          </div>
+          <ImagePlaceholder />
         )}
       </AspectRatio>
       <div>
