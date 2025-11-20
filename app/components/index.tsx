@@ -1,12 +1,12 @@
 'use client'
 
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ImageOff } from 'lucide-react'
 import { TProduct } from '@/lib/types'
 
 const lifestyle = {
@@ -27,17 +27,35 @@ const lifestyle = {
   ]
 }
 
-const ProductCard: FC<TProduct> = ({name, images, basePrice, variants}) => (
-  <div className='group cursor-pointer space-y-3'>
-    <AspectRatio ratio={3 / 4} className='overflow-hidden rounded-sm bg-neutral-100'>
-      <Image src={images[0]} alt={name} fill className='object-cover transition-transform duration-700 group-hover:scale-105' />
-    </AspectRatio>
-    <div>
-      <h3 className='font-medium'>{name}</h3>
-      <p className='text-sm text-neutral-500'>{basePrice ?? variants?.[0].price}</p>
+const ProductCard: FC<TProduct> = ({name, images, basePrice, variants}) => {
+  const [isImageInvalid, setIsImageInvalid] = useState(false)
+  const imageSrc = images && images.length > 0 ? images[0] : null
+  const showImage = imageSrc && !isImageInvalid
+
+  return (
+    <div className='group cursor-pointer space-y-3'>
+      <AspectRatio ratio={3 / 4} className='overflow-hidden rounded-sm bg-neutral-100'>
+        {showImage ? (
+          <Image 
+            src={imageSrc} 
+            alt={name} 
+            fill 
+            className='object-cover transition-transform duration-700 group-hover:scale-105' 
+            onError={() => setIsImageInvalid(true)}
+          />
+        ) : (
+          <div className='flex h-full w-full items-center justify-center bg-neutral-200 text-neutral-400'>
+            <ImageOff className='h-10 w-10' />
+          </div>
+        )}
+      </AspectRatio>
+      <div>
+        <h3 className='font-medium'>{name}</h3>
+        <p className='text-sm text-neutral-500'>$ {basePrice ?? variants?.[0].price}</p>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 const LifestyleImg: FC<{src: string; alt: string; title?: string}> = ({src, alt, title}) => (
   <div className='relative overflow-hidden rounded-sm group h-full'>
