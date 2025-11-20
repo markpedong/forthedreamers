@@ -1,118 +1,79 @@
 'use client'
 
 import { FC } from 'react'
-import { Facebook, Twitter, Instagram, Heart, Mail, MapPin, Phone } from 'lucide-react'
+import { Facebook, Twitter, Instagram } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useIsMobile'
+import Link from 'next/link'
 import classNames from 'classnames'
-import styles from './styles.module.scss'
+import { Route } from 'next'
 
-const socialLinks = [
-  {icon: Facebook, label: 'Facebook', href: '#'},
-  {icon: Twitter, label: 'Twitter', href: '#'},
-  {icon: Instagram, label: 'Instagram', href: '#'}
+const links = {
+  shop: ['New Arrivals', 'Best Sellers', 'Accessories', 'Sale'],
+  support: ['FAQ', 'Shipping & Returns', 'Contact Us', 'Privacy Policy'],
+  footer: ['Terms', 'Privacy', 'Cookies']
+}
+
+const socials = [
+  {icon: Instagram, href: '1'},
+  {icon: Twitter, href: '2'},
+  {icon: Facebook, href: '3'}
 ]
 
-const quickLinks = ['Shop All', 'New Arrivals', 'Best Sellers', 'Special Offers']
-const customerService = ['Contact Us', 'Shipping Info', 'Returns', 'FAQ']
-
 const Footer: FC = () => {
-  const year = new Date().getFullYear()
-  const linkClass = 'opacity-70 hover:opacity-100 transition-opacity'
-  const sectionTitle = 'font-semibold text-sm'
   const isMobile = useIsMobile()
 
   return (
-    <div className='border-t border-border pt-16 mt-16'>
-      <div
-        className={classNames('max-w-7xl mx-auto px-4 pb-12 lg:pb-16', {
-          [styles.isMobile]: isMobile
-        })}
-      >
-        <div className='grid grid-cols-1 md:grid-cols-4 gap-10 lg:gap-16 mb-12'>
-          <div className='space-y-4'>
-            <h3 className='text-lg font-semibold'>Premium Store</h3>
-            <p className='text-sm opacity-80'>Curated products for the modern lifestyle. Quality you can trust.</p>
-
-            <div className='flex space-x-4 mt-4'>
-              {socialLinks.map(({icon: Icon, href, label}) => (
-                <a key={label} href={href} aria-label={label} className={linkClass}>
-                  <Icon className='w-5 h-5' />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div className='space-y-4'>
-            <h4 className={sectionTitle}>Quick Links</h4>
-            <ul className='space-y-2 text-sm'>
-              {quickLinks.map(link => (
-                <li key={link}>
-                  <a href='#' className={linkClass}>
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className='space-y-4'>
-            <h4 className={sectionTitle}>Customer Service</h4>
-            <ul className='space-y-2 text-sm'>
-              {customerService.map(item => (
-                <li key={item}>
-                  <a href='#' className={linkClass}>
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className='space-y-4'>
-            <h4 className={sectionTitle}>Get in Touch</h4>
-            <address className='not-italic space-y-3 text-sm'>
-              <a href='tel:+1234567890' className={`flex items-center gap-2 ${linkClass}`}>
-                <Phone className='w-4 h-4' />
-                +1 (234) 567-890
-              </a>
-
-              <a href='mailto:support@store.com' className={`flex items-center gap-2 ${linkClass}`}>
-                <Mail className='w-4 h-4' />
-                support@store.com
-              </a>
-
-              <div className='flex items-center gap-2 opacity-70'>
-                <MapPin className='w-4 h-4' />
-                123 Commerce St, City
-              </div>
-            </address>
-          </div>
+    <footer className={classNames('max-w-7xl mx-auto px-4 py-16 pb-12 lg:pb-16', isMobile && 'pb-24')}>
+      <div className='grid grid-cols-1 md:grid-cols-4 gap-12 mb-16'>
+        <div className='space-y-4'>
+          <h4 className='text-lg font-bold uppercase tracking-tighter'>ForTheDreamers</h4>
+          <p className='text-sm text-neutral-500 leading-relaxed'>
+            A digital space for the modern minimalist. Curated with care, designed for life.
+          </p>
         </div>
 
-        <div className='border-t border-background/20 pt-8 mb-8' />
+        <Section title='Shop' items={links.shop} />
+        <Section title='Support' items={links.support} />
 
-        <div className='flex flex-col md:flex-row justify-between items-center gap-4 text-xs opacity-70'>
-          <div className='flex items-center gap-1'>
-            Made with <Heart className='w-3 h-3 fill-current' /> by Premium Store
+        <div>
+          <h5 className='font-medium mb-4'>Connect</h5>
+          <div className='flex gap-4 text-neutral-500'>
+            {socials.map(({icon: Icon, href}) => (
+              <Link key={href} href={href as Route} className='hover:text-primary'>
+                <Icon className='w-5 h-5' />
+              </Link>
+            ))}
           </div>
-
-          <div className='flex gap-6'>
-            <a href='#' className='hover:opacity-100 transition-opacity'>
-              Privacy Policy
-            </a>
-            <a href='#' className='hover:opacity-100 transition-opacity'>
-              Terms of Service
-            </a>
-            <a href='#' className='hover:opacity-100 transition-opacity'>
-              Cookie Policy
-            </a>
-          </div>
-
-          <p>&copy; {year} Premium Store. All rights reserved.</p>
         </div>
       </div>
-    </div>
+
+      <div className='pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-400'>
+        <p>© {new Date().getFullYear()} ForTheDreamers. All rights reserved.</p>
+        <div className='flex gap-6'>
+          {links.footer.map(t => (
+            <Link key={t} href='#' className='hover:text-primary'>
+              {t}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </footer>
   )
 }
+
+const Section: FC<{title: string; items: string[]}> = ({title, items}) => (
+  <div>
+    <h5 className='font-medium mb-4'>{title}</h5>
+    <ul className='space-y-2 text-sm text-neutral-500'>
+      {items.map(item => (
+        <li key={item}>
+          <Link href='#' className='hover:text-primary'>
+            {item}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </div>
+)
 
 export default Footer

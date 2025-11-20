@@ -1,45 +1,13 @@
 import Image from "next/image";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Instagram, Twitter, Facebook } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default function Page() {
   return (
     <div className="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-200">
-      {/* Navigation / Header (Minimal) */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-neutral-100">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="text-xl font-bold tracking-tighter uppercase">
-            ForTheDreamers
-          </div>
-          <nav className="hidden md:flex gap-8 text-sm font-medium text-neutral-600">
-            <Link href="#" className="hover:text-black transition-colors">
-              Shop
-            </Link>
-            <Link href="#" className="hover:text-black transition-colors">
-              Collections
-            </Link>
-            <Link href="#" className="hover:text-black transition-colors">
-              About
-            </Link>
-            <Link href="#" className="hover:text-black transition-colors">
-              Journal
-            </Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" className="hidden sm:flex">
-              Search
-            </Button>
-            <Button variant="outline" size="sm">
-              Cart (0)
-            </Button>
-          </div>
-        </div>
-      </header>
-
       <main className="pt-16">
         {/* Hero Section */}
         <section className="relative w-full h-[85vh] flex items-center justify-center overflow-hidden">
@@ -209,101 +177,6 @@ export default function Page() {
           </div>
         </section>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-white border-t border-neutral-100 py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-            <div className="space-y-4">
-              <h4 className="text-lg font-bold uppercase tracking-tighter">
-                ForTheDreamers
-              </h4>
-              <p className="text-sm text-neutral-500 leading-relaxed">
-                A digital space for the modern minimalist. Curated with care,
-                designed for life.
-              </p>
-            </div>
-            <div>
-              <h5 className="font-medium mb-4">Shop</h5>
-              <ul className="space-y-2 text-sm text-neutral-500">
-                <li>
-                  <Link href="#" className="hover:text-black">
-                    New Arrivals
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-black">
-                    Best Sellers
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-black">
-                    Accessories
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-black">
-                    Sale
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-medium mb-4">Support</h5>
-              <ul className="space-y-2 text-sm text-neutral-500">
-                <li>
-                  <Link href="#" className="hover:text-black">
-                    FAQ
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-black">
-                    Shipping & Returns
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-black">
-                    Contact Us
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-black">
-                    Privacy Policy
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-medium mb-4">Connect</h5>
-              <div className="flex gap-4 text-neutral-500">
-                <Link href="#" className="hover:text-black">
-                  <Instagram className="w-5 h-5" />
-                </Link>
-                <Link href="#" className="hover:text-black">
-                  <Twitter className="w-5 h-5" />
-                </Link>
-                <Link href="#" className="hover:text-black">
-                  <Facebook className="w-5 h-5" />
-                </Link>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-neutral-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-400">
-            <p>© 2024 ForTheDreamers. All rights reserved.</p>
-            <div className="flex gap-6">
-              <Link href="#" className="hover:text-black">
-                Terms
-              </Link>
-              <Link href="#" className="hover:text-black">
-                Privacy
-              </Link>
-              <Link href="#" className="hover:text-black">
-                Cookies
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
