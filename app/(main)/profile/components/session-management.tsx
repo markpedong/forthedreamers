@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { LogOut } from 'lucide-react';
-import { Session } from 'better-auth';
 import { revokeOtherSessions } from '@/lib/server-actions';
 import { useRouter } from 'next/navigation';
 import SessionItem from '@/components/reusable/session-item';
@@ -15,6 +14,14 @@ interface SessionsSectionProps {
   sessions: Session[];
   currentSessionToken?: string;
 }
+
+type Session = {
+  id: string;
+  token: string;
+  userAgent?: string | null;
+  ipAddress?: string | null;
+  createdAt: Date | string;
+};
 
 const SessionManagement: FC<SessionsSectionProps> = ({ sessions, currentSessionToken }) => {
   const router = useRouter();

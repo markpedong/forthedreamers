@@ -167,24 +167,6 @@ input[type='number']::-webkit-outer-spin-button {
   }
 }
 
-.ant-btn-primary {
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-
-  &:hover {
-    background-color: var(--primary) !important;
-    color: var(--primary-foreground) !important;
-  }
-}
-
-.ant-table-row-expand-icon {
-  &:focus,
-  &:hover {
-    border-color: var(--primary) !important;
-    color: var(--primary) !important;
-  }
-}
-
 input[type="number"] {
   -moz-appearance: textfield;
 }

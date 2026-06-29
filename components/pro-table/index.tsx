@@ -1,88 +1,96 @@
-import { DATE_FORMAT } from '@/constants'
-import { ProColumns, ProTable as AntProTable, ProFormDateRangePicker, ActionType, ProFormInstance } from '@ant-design/pro-components'
-import dayjs from 'dayjs'
-import { useMemo, useRef } from 'react'
-import { SpinnerCustom } from '../reusable/spinner'
-import { ProTableProps } from '@/lib/types'
-import { Card, CardContent } from '../ui/card'
-import { TABLE_PROPS } from '@/utils/antd'
+"use client";
+
+import { useEffect, useImperativeHandle, useState } from "react";
+import { SpinnerCustom } from "../reusable/spinner";
+import { Card, CardContent } from "../ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { ProTableProps } from "@/lib/types";
+
+const getRowKey = <T extends Record<string, any>>(row: T, rowKey: keyof T | string) =>
+  String(row[rowKey] ?? row.id);
 
 const ProTable = <T extends Record<string, any>>({
   columns = [],
-  exportDataFn,
-  rowKey = 'id',
-  formRef: externalFormRef,
-  actionRef: externalActionRef,
-  timeLabel,
-  disableTimeFilter = false,
+  rowKey = "id",
+  actionRef,
+  request,
+  dataSource,
   isLoading = false,
-  ...rest
+  headerTitle,
 }: ProTableProps<T>) => {
-  const internalActionRef = useRef<ActionType>(null)
-  const actionRef = externalActionRef ?? internalActionRef
-  const internalFormRef = useRef<ProFormInstance>(null)
-  const formRef = externalFormRef ?? internalFormRef
+  const [rows, setRows] = useState<T[]>(dataSource ?? []);
+  const [loading, setLoading] = useState(false);
 
-  const transformedColumns: ProColumns<T>[] = useMemo(() => {
-    const base: ProColumns<T>[] = [
-      {
-        title: timeLabel || 'Date Range',
-        dataIndex: 'dateRange',
-        order: -1,
-        hideInTable: true,
-        colSize: 2,
-        search: !disableTimeFilter,
-        renderFormItem: () => (
-          <ProFormDateRangePicker
-            dataFormat={DATE_FORMAT}
-            placeholder={['Started At', 'Ended At']}
-            fieldProps={{
-              showTime: true,
-              format: DATE_FORMAT,
-              disabledDate: current => current && (current > dayjs().endOf('day') || current < dayjs().subtract(30, 'day'))
-            }}
-          />
-        )
-      },
-      ...columns.map(col => ({
-        ...col,
-        search: col.search ? true : false
-      }))
-    ]
+  const reload = async () => {
+    if (!request) {
+      setRows(dataSource ?? []);
+      return;
+    }
 
-    return base.map(item => ({
-      ...item,
-      align: 'center',
-      formItemProps: {labelCol: {span: '120px'}}
-    }))
-  }, [columns, timeLabel, disableTimeFilter])
+    setLoading(true);
+    try {
+      const result = await request({ page: 1, pageSize: 20, current: 1 });
+      setRows(result.data);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (isLoading) return <SpinnerCustom />
+  useImperativeHandle(actionRef, () => ({
+    reload,
+    reset: reload,
+    setPage: reload,
+    setFilters: reload,
+  }));
+
+  useEffect(() => {
+    reload();
+  }, [dataSource]);
+
+  if (isLoading || loading) return <SpinnerCustom />;
+
+  const visibleColumns = columns.filter((column) => !column.hideInTable);
 
   return (
     <Card>
-      <CardContent>
-        {
-          //@ts-expect-error
-          <AntProTable<T>
-            {...TABLE_PROPS}
-            {...rest}
-            rowKey={rowKey}
-            actionRef={actionRef}
-            formRef={formRef as any}
-            columns={transformedColumns}
-            search={{collapseRender: false, defaultCollapsed: false}}
-            form={{
-              initialValues: {
-                dateRange: [dayjs().subtract(30, 'day').startOf('day'), dayjs().endOf('day')],
-                ...(rest.form?.initialValues ?? {})
-              }
-            }}
-          />
-        }
+      <CardContent className="p-0">
+        {headerTitle && <div className="border-b p-4">{headerTitle}</div>}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {visibleColumns.map((column, index) => (
+                <TableHead key={`${String(column.dataIndex ?? column.title)}-${index}`}>
+                  {column.title}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.length ? (
+              rows.map((row) => (
+                <TableRow key={getRowKey(row, rowKey)}>
+                  {visibleColumns.map((column, index) => {
+                    const value = column.dataIndex ? row[column.dataIndex] : undefined;
+                    return (
+                      <TableCell key={`${getRowKey(row, rowKey)}-${index}`}>
+                        {column.render ? column.render(value, row) : value}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={visibleColumns.length || 1} className="py-8 text-center text-muted-foreground">
+                  No data
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default ProTable
+export default ProTable;

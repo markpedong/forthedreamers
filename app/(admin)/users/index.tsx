@@ -3,7 +3,6 @@
 import { FC, useState, useTransition } from 'react';
 import { Plus, MoreHorizontal, BadgeCheckIcon, BadgeAlertIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { UserWithRole } from 'better-auth/plugins';
 import { toast } from 'sonner';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { DropdownMenuItemType, SchemaForm } from '@/lib/types';
@@ -27,7 +26,16 @@ import { authClient } from '@/lib/auth-client';
 import { tryWithToast } from '@/utils/helper';
 import DropDown from '@/components/reusable/dropdown';
 import ProTable from '@/components/pro-table';
-import { ProColumns, ProFormSelect } from '@ant-design/pro-components';
+import { ProColumn } from '@/lib/types';
+
+type UserWithRole = {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  role?: string | null;
+  banned?: boolean | null;
+};
 
 const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
   const router = useRouter();
@@ -141,7 +149,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     },
   ];
 
-  const columns: ProColumns<UserWithRole>[] = [
+  const columns: ProColumn<UserWithRole>[] = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -175,15 +183,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     },
     {
       title: 'Role',
-      renderFormItem: () => (
-        <ProFormSelect
-          placeholder='eg: Customer'
-          options={[
-            { label: 'Customer', value: 'Customer' },
-            { label: 'Vendor', value: 'Vendor' },
-          ]}
-        />
-      ),
+      renderFormItem: () => null,
       render: (_, record) => <Badge>{record.role}</Badge>,
     },
     // {

@@ -21,10 +21,10 @@ const geist = localFont({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Better-Auth Tutorial',
-    absolute: 'Better-Auth Tutorial by Coding in Flow'
+    template: '%s | For the Dreamers',
+    absolute: 'For the Dreamers'
   },
-  description: 'Learn how to handle authentication in Next.js using Better-Auth with this tutorial by Coding in Flow'
+  description: 'A modern marketplace for independent dreamers and makers.'
 }
 
 export default async function RootLayout({children}: LayoutProps<'/'>) {

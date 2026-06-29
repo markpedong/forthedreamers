@@ -1,16 +1,14 @@
-import { auth } from "./auth";
 import type { z, ZodTypeAny } from 'zod';
 import { getSession, listUserAccounts } from "./server-actions";
 import type { Control, Path, FieldValues } from 'react-hook-form';
 import { ComponentPropsWithoutRef, Ref } from "react";
 import { Category, PrismaClient, Product, PRODUCT_STATUS, Seller, Spec, Variant } from "@/generated/prisma";
-import type { ActionType, ProTableProps as AntProTableProps, ProFormInstance } from '@ant-design/pro-components';
 
 export type TOnNavigate = (page: string) => void;
 
 export type Session = Awaited<ReturnType<typeof getSession>>
 
-export type SessionUser = typeof auth.$Infer.Session.user;
+export type SessionUser = NonNullable<Session>["user"];
 
 export type ProfileLayoutProps = {
   sections: Array<{
@@ -166,6 +164,21 @@ export type ProTableRef = {
   setFilters: (filters: Record<string, any>) => void;
 };
 
+export type ActionType = ProTableRef;
+
+export type ProColumn<T> = {
+  title: React.ReactNode;
+  dataIndex?: keyof T | string;
+  search?: boolean;
+  hideInTable?: boolean;
+  render?: (value: any, record: T) => React.ReactNode;
+  renderFormItem?: () => React.ReactNode;
+  sorter?: (a: T, b: T) => number;
+  fieldProps?: Record<string, any>;
+  width?: number;
+  align?: "left" | "center" | "right";
+};
+
 export type DropdownMenuItemType = {
   label: React.ReactElement
 
@@ -183,12 +196,19 @@ export type DropdownProps = {
   menus: DropdownMenuItemType[];
 };
 
-export type ProTableProps<T> = AntProTableProps<T, any, any> & {
+export type ProTableProps<T> = {
+  rowKey?: keyof T | string;
+  columns?: ProColumn<T>[];
+  dataSource?: T[];
+  request?: (params: Record<string, any>) => Promise<{ data: T[]; total: number }>;
+  headerTitle?: React.ReactNode;
+  toolBarRender?: false;
+  search?: Record<string, any> | false;
   exportDataFn?: () => Promise<void>
   timeLabel?: string
   disableTimeFilter?: boolean
   actionRef?: Ref<ActionType | undefined>;
-  formRef?: Ref<ProFormInstance | undefined>;
+  formRef?: Ref<unknown>;
   isLoading?: boolean
 }
 

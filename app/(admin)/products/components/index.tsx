@@ -5,16 +5,15 @@ import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import ProductFormModal from './product-form-modal'
-import { TProduct, ProductFormData, DropdownMenuItemType } from '@/lib/types'
+import { ActionType, ProColumn, TProduct, ProductFormData, DropdownMenuItemType } from '@/lib/types'
 import AlertDialog from '@/components/reusable/alert-dialog'
 import Link from 'next/link'
 import { tryWithToast } from '@/utils/helper'
 import DropDown from '@/components/reusable/dropdown'
 import ProTable from '@/components/pro-table'
-import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components'
 import { useQueryCategories } from '@/hooks/useQuery'
 import { createProduct, deleteProduct, getProducts, toggleProductStatus, updateProduct } from '@/lib/http'
-import { Switch } from 'antd'
+import { Switch } from '@/components/ui/switch'
 
 const Products: FC = () => {
   const [deleteDialog, setDeleteDialog] = useState<{id: string; name: string} | null>(null)
@@ -75,7 +74,7 @@ const Products: FC = () => {
     }
   ]
 
-  const columns: ProColumns<TProduct>[] = [
+  const columns: ProColumn<TProduct>[] = [
     {
       title: 'Product',
       dataIndex: 'name',
@@ -97,14 +96,7 @@ const Products: FC = () => {
       dataIndex: 'status',
       hideInTable: true,
       search: true,
-      renderFormItem: () => (
-        <ProFormSelect
-          options={[
-            {label: 'Active', value: 'ACTIVE'},
-            {label: 'Inactive', value: 'INACTIVE'}
-          ]}
-        />
-      )
+      renderFormItem: () => null
     },
     {
       title: 'Rating',
@@ -132,9 +124,7 @@ const Products: FC = () => {
       render: (_, record) => (
         <Switch
           checked={record.status === 'ACTIVE'}
-          onChange={() => toggleStatus(record.id)}
-          checkedChildren='ACTIVE'
-          unCheckedChildren='INACTIVE'
+          onCheckedChange={() => toggleStatus(record.id)}
         />
       )
     },

@@ -1,93 +1,43 @@
-import { betterAuth } from "better-auth";
-import prisma from "./prisma";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import transporter from "./nodemailer";
-import ResetPassword from "@/components/emails/reset-password";
-import { render } from "@react-email/render";
-import VerifyEmail from "@/components/emails/verify-email";
-import { admin as adminPlugin, lastLoginMethod, twoFactor } from 'better-auth/plugins';
-import { nextCookies } from "better-auth/next-js";
-import DeleteAccountEmail from "@/components/emails/delete-account-email";
-import { passkey } from "better-auth/plugins/passkey";
-import { ac, admin, user } from "./permission";
-import { USER_ROLE } from "@/generated/prisma";
+import { cache } from "react";
+import { prisma } from "./prisma";
+import { createSupabaseServerClient } from "./supabase/server";
 
-export const auth = betterAuth({
-  appName: "For the Dreamers",
-  database: prismaAdapter(prisma, { provider: "postgresql" }),
-  socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      accessType: "offline",
-      prompt: "select_account consent",
-    }
-  },
-  emailAndPassword: {
-    enabled: true,
-    sendResetPassword: async ({ user, url }) => {
-      const html = await render(
-        ResetPassword({
-          userName: user.name,
-          resetUrl: url,
-          userEmail: user.email,
-        })
-      );
+export const getCurrentUserID = cache(async (): Promise<string | undefined> => {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-      await transporter.sendMail({
-        from: `${process.env.EMAIL_SENDER_NAME} <${process.env.GMAIL_USER}>`,
-        to: user.email,
-        subject: "Reset your password",
-        html: html,
-      });
-    },
-  },
-  emailVerification: {
-    sendOnSignUp: false,
-    // autoSignInAfterVerification: false,
-    // expiresIn: 3600 // 1hour
-    sendVerificationEmail: async ({ user, url }) => {
-      const html = await render(VerifyEmail({ username: user.name, verifyUrl: url }));
+  return user?.id;
+});
 
-      await transporter.sendMail({
-        from: `${process.env.EMAIL_SENDER_NAME} <${process.env.GMAIL_USER}>`,
-        to: user.email,
-        subject: "Please verify your email",
-        html: html,
-      });
-    },
-  },
-  user: {
-    deleteUser: {
-      enabled: true,
-      sendDeleteAccountVerification: async ({ user, url }) => {
-        const html = await render(DeleteAccountEmail({ userName: user.name, url }));
+export const getSessionUser = cache(async () => {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-        await transporter.sendMail({
-          from: `${process.env.EMAIL_SENDER_NAME} <${process.env.GMAIL_USER}>`,
-          to: user.email,
-          subject: "Delete your account",
-          html: html,
-        });
-      }
-    }
-  },
-  rateLimit: {
-    enabled: true
-  },
-  plugins: [
-    lastLoginMethod(),
-    nextCookies(),
-    twoFactor(),
-    passkey(),
-    adminPlugin({
-      defaultRole: USER_ROLE.USER,
-      ac,
-      roles: {
-        [USER_ROLE.ADMIN]: admin,
-        [USER_ROLE.USER]: user,
-        [USER_ROLE.SELLER]: admin
-      }
-    }),
-  ]
+  if (!user) return null;
+
+  const profile = await prisma.user.findUnique({ where: { id: user.id } });
+  const name =
+    profile?.name ||
+    (typeof user.user_metadata.name === "string" && user.user_metadata.name) ||
+    (typeof user.user_metadata.full_name === "string" && user.user_metadata.full_name) ||
+    user.email?.split("@")[0] ||
+    "user";
+
+  if (!profile && user.email) {
+    return prisma.user.create({
+      data: {
+        id: user.id,
+        email: user.email,
+        name,
+        emailVerified: Boolean(user.email_confirmed_at),
+        image: typeof user.user_metadata.avatar_url === "string" ? user.user_metadata.avatar_url : null,
+      },
+    });
+  }
+
+  return profile;
 });

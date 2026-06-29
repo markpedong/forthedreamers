@@ -1,4 +1,3 @@
-import { Session } from 'better-auth';
 import { Badge } from '../ui/badge';
 import { getDeviceIcon } from './helpers';
 import { getBrowserInfo } from '@/lib/utils';
@@ -13,6 +12,14 @@ import { tryWithToast } from '@/utils/helper';
 type Props = {
   session: Session;
   isCurrent?: boolean;
+};
+
+type Session = {
+  id: string;
+  token: string;
+  userAgent?: string | null;
+  ipAddress?: string | null;
+  createdAt: Date | string;
 };
 
 const SessionItem: FC<Props> = ({ session, isCurrent }) => {
