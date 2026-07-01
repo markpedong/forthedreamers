@@ -7,8 +7,8 @@
     "build": "npm run db:push && next build",
     "start": "next start",
     "lint": "eslint",
-    "db:push": "npx prisma db push",
-    "db:reset": "prisma migrate reset && prisma migrate dev"
+    "db:push": "prisma db push && prisma generate",
+    "db:reset": "prisma migrate reset --force && prisma generate"
   },
   "dependencies": {
     "@bprogress/next": "^3.2.12",
