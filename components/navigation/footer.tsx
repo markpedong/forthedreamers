@@ -1,7 +1,6 @@
 'use client'
 
 import { FC } from 'react'
-import { Facebook, Twitter, Instagram } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import Link from 'next/link'
 import classNames from 'classnames'
@@ -14,9 +13,9 @@ const links = {
 }
 
 const socials = [
-  {icon: Instagram, href: '1'},
-  {icon: Twitter, href: '2'},
-  {icon: Facebook, href: '3'}
+  {icon: '/images/instagram.svg', label: 'Instagram', href: '1'},
+  {icon: '/images/x.svg', label: 'X', href: '2'},
+  {icon: '/images/facebook.svg', label: 'Facebook', href: '3'}
 ]
 
 const Footer: FC = () => {
@@ -38,9 +37,16 @@ const Footer: FC = () => {
         <div>
           <h5 className='font-medium mb-4'>Connect</h5>
           <div className='flex gap-4 text-neutral-500'>
-            {socials.map(({icon: Icon, href}) => (
-              <Link key={href} href={href as Route} className='hover:text-primary'>
-                <Icon className='w-5 h-5' />
+            {socials.map(({icon, label, href}) => (
+              <Link key={href} href={href as Route} aria-label={label} className='hover:text-primary'>
+                <span
+                  aria-hidden='true'
+                  className='block w-5 h-5 bg-current'
+                  style={{
+                    mask: `url(${icon}) center / contain no-repeat`,
+                    WebkitMask: `url(${icon}) center / contain no-repeat`
+                  }}
+                />
               </Link>
             ))}
           </div>

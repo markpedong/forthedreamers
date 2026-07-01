@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import MainProvider from '@/components/provider/main-provider'
 import localFont from 'next/font/local'
+import { ThemeProvider } from 'next-themes'
 
 const geist = localFont({
   src: [
@@ -31,7 +32,9 @@ export default async function RootLayout({children}: LayoutProps<'/'>) {
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={`${geist.className}  antialiased`}>
-        <MainProvider>{children}</MainProvider>
+        <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+          <MainProvider>{children}</MainProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

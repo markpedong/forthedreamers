@@ -1,6 +1,5 @@
 'use client'
 
-import { ThemeProvider } from 'next-themes'
 import { FC, PropsWithChildren, Suspense, useState } from 'react'
 import { Toaster } from '../ui/sonner'
 import ThemeToggleButton from './theme-toggle'
@@ -10,6 +9,7 @@ import Navbar from '../navigation/navbar'
 import BottomNav from '../navigation/bottom-nav'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Footer from '../navigation/footer'
+import ReduxProvider from './redux-provider'
 
 const MainProvider: FC<PropsWithChildren> = ({children}) => {
   const [queryClient] = useState(() => new QueryClient({
@@ -24,9 +24,8 @@ const MainProvider: FC<PropsWithChildren> = ({children}) => {
   }))
 
   return (
-    <>
+    <ReduxProvider>
       <Navbar />
-      <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
         <Suspense fallback={null}>
           <ToastListener />
         </Suspense>
@@ -36,10 +35,9 @@ const MainProvider: FC<PropsWithChildren> = ({children}) => {
         <Toaster />
         <ThemeToggleButton />
         <ImpesonationIndicator />
-      </ThemeProvider>
       <Footer />
       <BottomNav />
-    </>
+    </ReduxProvider>
   )
 }
 
