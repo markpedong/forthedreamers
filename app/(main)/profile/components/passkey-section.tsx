@@ -14,9 +14,14 @@ import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
-import { Passkey } from 'better-auth/plugins/passkey';
 import { useRouter } from 'next/navigation';
 import { tryWithToast } from '@/utils/helper';
+
+type Passkey = {
+  id: string;
+  name?: string | null;
+  createdAt: Date;
+};
 
 const PasskeysSection: FC<{ passkeys: Passkey[] }> = ({ passkeys }) => {
   const router = useRouter();

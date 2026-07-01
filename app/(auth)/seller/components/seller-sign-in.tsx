@@ -48,11 +48,9 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         return;
       }
 
-      if (result?.redirect) {
-        router.push('/dashboard');
-        const session = await authClient.getSession();
-        dispatch(setSessionData(session.data));
-      }
+      router.push('/dashboard');
+      const session = await authClient.getSession();
+      dispatch(setSessionData(session.data));
 
       toast.success('Logged in successfully!', { duration: 3000 });
     });

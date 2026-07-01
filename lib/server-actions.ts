@@ -8,7 +8,7 @@ import { createSupabaseAdminClient, createSupabaseServerClient } from "./supabas
 export type TChangePass = { currentPassword: string; newPassword: string };
 
 const unsupported = (feature: string) => ({
-  error: `${feature} has not been migrated from Better Auth to Supabase yet.`,
+  error: `${feature} is not supported by the Supabase auth setup yet.`,
   success: false,
 });
 
@@ -18,20 +18,44 @@ export const getSession = async () => {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) return null;
+  const { data: sessionData } = await supabase.auth.getSession();
+
+  const profile = await prisma.user.findUnique({
+    where: { id: data.user.id },
+    select: {
+      name: true,
+      image: true,
+      emailVerified: true,
+      role: true,
+      twoFactorEnabled: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
 
   return {
     user: {
       id: data.user.id,
       email: data.user.email,
       name:
+        profile?.name ||
         (typeof data.user.user_metadata.name === "string" && data.user.user_metadata.name) ||
         data.user.email?.split("@")[0] ||
         "user",
       image:
-        typeof data.user.user_metadata.avatar_url === "string"
+        profile?.image ??
+        (typeof data.user.user_metadata.avatar_url === "string"
           ? data.user.user_metadata.avatar_url
-          : null,
-      emailVerified: Boolean(data.user.email_confirmed_at),
+          : null),
+      emailVerified: profile?.emailVerified ?? Boolean(data.user.email_confirmed_at),
+      role: profile?.role ?? "USER",
+      twoFactorEnabled: profile?.twoFactorEnabled ?? false,
+      createdAt: profile?.createdAt ?? new Date(data.user.created_at),
+      updatedAt: profile?.updatedAt ?? new Date(data.user.updated_at ?? data.user.created_at),
+    },
+    session: {
+      token: sessionData.session?.access_token ?? "",
+      impersonatedBy: null as string | null,
     },
   };
 };
@@ -65,7 +89,7 @@ export const signUp = async (email: string, password: string, name: string, call
   return result.data;
 };
 
-export const signIn = async (email: string, password: string) => {
+export const signIn = async (email: string, password: string, _rememberMe?: boolean) => {
   const supabase = await createSupabaseServerClient();
   const result = await supabase.auth.signInWithPassword({ email, password });
   if (result.error) throw new Error(result.error.message);
@@ -82,7 +106,7 @@ export const signInSocial = async (provider: "github" | "google") => {
   });
 
   if (error) throw new Error(error.message);
-  if (data.url) redirect(data.url);
+  if (data.url) redirect(data.url as never);
 };
 
 export const signOut = async () => {
@@ -92,11 +116,13 @@ export const signOut = async () => {
 
 export async function sendVerificationEmailAction(email: string) {
   const supabase = await createSupabaseServerClient();
-  return supabase.auth.resend({
+  const result = await supabase.auth.resend({
     type: "signup",
     email,
     options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/auth/callback?next=/profile` },
   });
+
+  return { ...result, status: !result.error };
 }
 
 export const sendForgotPasswordEmail = async (email: string) => {
@@ -146,31 +172,67 @@ export const updateUserImage = async ({ image }: { image: string }) => {
   return { user };
 };
 
-export const listUserAccounts = async () => unsupported("Linked accounts");
+type LinkedAccount = {
+  id: string;
+  accountId: string;
+  providerId: string;
+  createdAt: Date | null;
+};
+
+export const listUserAccounts = async (): Promise<LinkedAccount[]> => [];
 export const requestPasswordReset = sendForgotPasswordEmail;
 export const revokeOtherSessions = async () => unsupported("Session revocation");
 export const listAllSessions = async () => [];
-export const revokeSession = async () => unsupported("Session revocation");
-export const unlinkAccount = async () => unsupported("Unlink account");
+export const revokeSession = async (_session: { token: string }) => unsupported("Session revocation");
+export const unlinkAccount = async (_account: { accountId: string; providerId: string }) => unsupported("Unlink account");
 export const deleteAccount = async () => unsupported("Account deletion");
-export const twoFactorEnable = async () => unsupported("Two-factor setup");
-export const generateBackupCodes = async () => unsupported("Backup codes");
+export const twoFactorEnable = async (_password: string) => ({
+  ...unsupported("Two-factor setup"),
+  totpURI: null as string | null,
+  backupCodes: [] as string[],
+});
+export const generateBackupCodes = async (_password: string) => ({
+  ...unsupported("Backup codes"),
+  backupCodes: [] as string[],
+});
 export const listPasskeys = async () => [];
-export const deletePasskey = async () => unsupported("Passkey deletion");
+export const deletePasskey = async (_passkeyId: string) => unsupported("Passkey deletion");
 export const permissionListUsers = async () => ({ success: true });
 
 export const listUsers = async () => {
   const admin = createSupabaseAdminClient();
   const { data, error } = await admin.auth.admin.listUsers();
   if (error) throw new Error(error.message);
-  return data.users;
+
+  const profiles = await prisma.user.findMany({
+    where: { id: { in: data.users.map((user) => user.id) } },
+    select: { id: true, name: true, emailVerified: true, role: true, banned: true },
+  });
+  const profileById = new Map(profiles.map((profile) => [profile.id, profile]));
+
+  return data.users.map((user) => {
+    const profile = profileById.get(user.id);
+
+    return {
+      ...user,
+      name:
+        profile?.name ||
+        (typeof user.user_metadata.name === "string" && user.user_metadata.name) ||
+        user.email?.split("@")[0] ||
+        "user",
+      email: user.email ?? "",
+      emailVerified: profile?.emailVerified ?? Boolean(user.email_confirmed_at),
+      role: profile?.role ?? "USER",
+      banned: profile?.banned ?? false,
+    };
+  });
 };
 
-export const impersonateUser = async () => unsupported("User impersonation");
+export const impersonateUser = async (_userId: string) => unsupported("User impersonation");
 export const stopImpersonating = async () => unsupported("User impersonation");
 export const banUser = async (userId: string) => prisma.user.update({ where: { id: userId }, data: { banned: true } });
 export const unbanUser = async (userId: string) => prisma.user.update({ where: { id: userId }, data: { banned: false } });
-export const revokeUserSessions = async () => unsupported("Admin session revocation");
+export const revokeUserSessions = async (_userId: string) => unsupported("Admin session revocation");
 
 export const deleteUserByAdmin = async (userId: string) => {
   const admin = createSupabaseAdminClient();

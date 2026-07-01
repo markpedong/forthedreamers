@@ -11,9 +11,6 @@ const nextConfig: NextConfig = {
     authInterrupts: true,
     typedEnv: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     remotePatterns: [
       {

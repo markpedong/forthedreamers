@@ -6,7 +6,7 @@ import { createSupabaseBrowserClient } from "./supabase/client";
 const supabase = createSupabaseBrowserClient();
 const unsupported = async (feature: string) => ({
   data: null,
-  error: { message: `${feature} has not been migrated from Better Auth to Supabase yet.` },
+  error: { message: `${feature} is not supported by the Supabase auth setup yet.` },
 });
 
 export const authClient = {
@@ -15,7 +15,7 @@ export const authClient = {
   signIn: {
     email: async ({ email, password }: { email: string; password: string }) =>
       supabase.auth.signInWithPassword({ email, password }),
-    passkey: async () => supabase.auth.signInWithPasskey(),
+    passkey: async (..._args: unknown[]) => supabase.auth.signInWithPasskey(),
     social: async ({ provider, callbackURL }: { provider: Provider; callbackURL?: string }) =>
       supabase.auth.signInWithOAuth({
         provider,
@@ -35,14 +35,14 @@ export const authClient = {
         },
       }),
   },
-  linkSocial: async ({ provider }: { provider: Provider }) =>
+  linkSocial: async ({ provider, callbackURL }: { provider: string; callbackURL?: string }) =>
     supabase.auth.linkIdentity({
-      provider,
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      provider: provider as Provider,
+      options: { redirectTo: `${window.location.origin}${callbackURL ?? "/auth/callback"}` },
     }),
-  requestPasswordReset: async ({ email }: { email: string }) =>
+  requestPasswordReset: async ({ email, redirectTo }: { email: string; redirectTo?: string }) =>
     supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${window.location.origin}${redirectTo ?? "/reset-password"}`,
     }),
   changePassword: async ({ newPassword }: { currentPassword?: string; newPassword: string }) =>
     supabase.auth.updateUser({ password: newPassword }),
@@ -50,11 +50,11 @@ export const authClient = {
     supabase.auth.updateUser({ data: { name, avatar_url: image } }),
   deleteUser: async () => unsupported("Client-side account deletion"),
   twoFactor: {
-    disable: async () => unsupported("Two-factor disable"),
-    verifyTotp: async () => unsupported("Two-factor verification"),
+    disable: async (..._args: unknown[]) => unsupported("Two-factor disable"),
+    verifyTotp: async (..._args: unknown[]) => unsupported("Two-factor verification"),
   },
   passkey: {
-    addPasskey: async () => supabase.auth.addPasskey(),
+    addPasskey: async (_options?: unknown) => unsupported("Passkey registration"),
   },
   admin: {
     listUsers: async () => unsupported("Admin user listing"),
