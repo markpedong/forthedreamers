@@ -1,16 +1,15 @@
-import { TProduct } from '@/lib/types'
-import LandingPage from './components'
+import LandingPage, { type LandingProduct } from './components'
 import prisma from '@/lib/prisma'
 
 const Page = async () => {
   const products = (await prisma.product.findMany({
     include: {
       variants: true,
-      specs: true,
-      category: true,
       seller: true
-    }
-  })) as TProduct[]
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 24
+  })) satisfies LandingProduct[]
 
   return <LandingPage products={products} />
 }

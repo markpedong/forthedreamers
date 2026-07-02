@@ -1,6 +1,5 @@
 'use client';
 
-import loginImage from '@/public/images/sign-in.webp';
 import Image from 'next/image';
 import { useState } from 'react';
 import TwoFactorPage from './2fa';
@@ -25,19 +24,25 @@ export default function AuthInterface() {
   };
 
   return (
-    <div className='flex min-h-screen bg-background'>
-      <div className='hidden lg:flex flex-1 relative'>
+    <div className='grid min-h-screen bg-background lg:grid-cols-[minmax(0,1fr)_560px]'>
+      <div className='relative hidden overflow-hidden lg:block'>
         <Image
-          src={loginImage}
-          alt='Login illustration'
+          src='/images/sign-in.webp'
+          alt='Curated products'
           fill
+          sizes='(min-width: 1024px) calc(100vw - 560px), 0px'
           priority
-          className='object-cover object-center'
+          className='object-cover'
         />
+        <div className='absolute inset-0 bg-black/25' />
+        <div className='absolute bottom-10 left-10 max-w-md text-white'>
+          <p className='mb-3 text-sm uppercase tracking-[0.24em] text-white/75'>For The Dreamers</p>
+          <h1 className='text-5xl font-light leading-tight'>Curated finds, secure checkout.</h1>
+        </div>
       </div>
 
-      <div className='flex flex-1 items-center justify-center'>
-        <div className='w-full max-w-xl'>{pages[currentPage as keyof typeof pages]}</div>
+      <div className='flex items-center justify-center'>
+        <div className='w-full'>{pages[currentPage as keyof typeof pages]}</div>
       </div>
     </div>
   );

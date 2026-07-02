@@ -1,29 +1,22 @@
-import { AppleIcon, FacebookIcon, GoogleIcon, TikTokIcon } from '@/components/icons/oauth';
+import { useTransition } from 'react';
+import { GoogleIcon } from '@/components/icons/oauth';
 import { Button } from '@/components/ui/button';
 import { signInSocial } from '@/lib/server-actions';
 
-type Props = {};
+const OauthButtons = () => {
+  const [pending, startTransition] = useTransition();
 
-const OauthButtons = (props: Props) => {
-  const buttons = [
-    { icon: GoogleIcon, text: 'Google', onClick: () => signInSocial('google') },
-    { icon: AppleIcon, text: 'Apple' },
-    { icon: FacebookIcon, text: 'Facebook' },
-    { icon: TikTokIcon, text: 'TikTok' },
-  ];
   return (
-    <>
-      {buttons.map((item, i) => {
-        const Icon = item.icon;
-
-        return (
-          <Button key={i} variant='outline' className='h-11' onClick={item.onClick}>
-            <Icon />
-            <span className='ml-2'>{item.text}</span>
-          </Button>
-        );
-      })}
-    </>
+    <Button
+      type='button'
+      variant='outline'
+      className='h-11 w-full'
+      disabled={pending}
+      onClick={() => startTransition(() => signInSocial('google'))}
+    >
+      <GoogleIcon />
+      <span className='ml-2'>{pending ? 'Opening Google...' : 'Continue with Google'}</span>
+    </Button>
   );
 };
 

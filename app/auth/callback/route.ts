@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { upsertAuthUser } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 const safeNextPath = (value: string | null) =>
@@ -19,6 +20,11 @@ export const GET = async (request: Request) => {
   if (error) {
     return NextResponse.redirect(new URL("/sign-in?error=oauth", url.origin));
   }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) await upsertAuthUser(user);
 
   return NextResponse.redirect(new URL(next, url.origin));
 };

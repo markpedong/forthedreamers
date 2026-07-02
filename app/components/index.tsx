@@ -11,6 +11,11 @@ import { TProduct } from '@/lib/types'
 import { useRouter } from '@bprogress/next'
 import ImagePlaceholder from '@/components/reusable/image-placeholder'
 
+export type LandingProduct = Pick<TProduct, 'id' | 'name' | 'images' | 'basePrice' | 'slug'> & {
+  variants: {price: number}[]
+  seller: Pick<TProduct['seller'], 'storeName'>
+}
+
 const lifestyle = {
   main: {
     src: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2670&auto=format&fit=crop',
@@ -29,7 +34,7 @@ const lifestyle = {
   ]
 }
 
-const ProductCard: FC<TProduct> = ({name, images, basePrice, variants, slug}) => {
+const ProductCard: FC<LandingProduct> = ({name, images, basePrice, variants, slug}) => {
   const [isImageInvalid, setIsImageInvalid] = useState(false)
   const imageSrc = images && images.length > 0 ? images[0] : null
   const showImage = imageSrc && !isImageInvalid
@@ -42,6 +47,7 @@ const ProductCard: FC<TProduct> = ({name, images, basePrice, variants, slug}) =>
             src={imageSrc}
             alt={name}
             fill
+            sizes='(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw'
             className='object-cover transition-transform duration-700 group-hover:scale-105'
             onError={() => setIsImageInvalid(true)}
           />
@@ -59,7 +65,13 @@ const ProductCard: FC<TProduct> = ({name, images, basePrice, variants, slug}) =>
 
 const LifestyleImg: FC<{src: string; alt: string; title?: string}> = ({src, alt, title}) => (
   <div className='relative overflow-hidden rounded-sm group h-full'>
-    <Image src={src} alt={alt} fill className='object-cover transition-transform duration-700 group-hover:scale-105' />
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      sizes='(min-width: 768px) 50vw, 100vw'
+      className='object-cover transition-transform duration-700 group-hover:scale-105'
+    />
     {title && (
       <div className='absolute bottom-0 left-0 p-8 text-white'>
         <p className='text-sm uppercase tracking-widest mb-2'>Editorial</p>
@@ -69,7 +81,7 @@ const LifestyleImg: FC<{src: string; alt: string; title?: string}> = ({src, alt,
   </div>
 )
 
-const LandingPage: FC<{products: TProduct[]}> = ({products = []}) => (
+const LandingPage: FC<{products: LandingProduct[]}> = ({products = []}) => (
   <main className='min-h-screen'>
     {/* HERO */}
     <section className='relative h-[85vh] flex items-center justify-center'>
@@ -77,6 +89,7 @@ const LandingPage: FC<{products: TProduct[]}> = ({products = []}) => (
         src='https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=2670&auto=format&fit=crop'
         alt='Hero'
         fill
+        sizes='100vw'
         className='object-cover'
         priority
       />

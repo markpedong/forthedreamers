@@ -120,7 +120,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           </Button>
         </div>
         <Divider title='or continue with' />
-        <div className='grid grid-cols-2 gap-3'>
+        <div>
           <OauthButtons />
         </div>
 

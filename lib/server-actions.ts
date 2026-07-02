@@ -1,9 +1,11 @@
 "use server";
 
 import { revalidatePath as revalidatePathNext } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import prisma from "./prisma";
 import { createSupabaseAdminClient, createSupabaseServerClient } from "./supabase/server";
+import { upsertAuthUser } from "./auth";
 
 export type TChangePass = { currentPassword: string; newPassword: string };
 
@@ -14,24 +16,20 @@ const unsupported = (feature: string) => ({
 
 export const revalidatePath = async (path: string) => revalidatePathNext(path);
 
+const appOrigin = async () => {
+  const headerStore = await headers();
+  const proto = headerStore.get("x-forwarded-proto") ?? "http";
+  const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+  return process.env.NEXT_PUBLIC_APP_URL || (host ? `${proto}://${host}` : "");
+};
+
 export const getSession = async () => {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) return null;
   const { data: sessionData } = await supabase.auth.getSession();
 
-  const profile = await prisma.user.findUnique({
-    where: { id: data.user.id },
-    select: {
-      name: true,
-      image: true,
-      emailVerified: true,
-      role: true,
-      twoFactorEnabled: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
+  const profile = await upsertAuthUser(data.user);
 
   return {
     user: {
@@ -62,11 +60,12 @@ export const getSession = async () => {
 
 export const signUp = async (email: string, password: string, name: string, callbackURL = "/profile") => {
   const supabase = await createSupabaseServerClient();
+  const origin = await appOrigin();
   const result = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/auth/callback?next=${callbackURL}`,
+      emailRedirectTo: `${origin}/auth/callback?next=${callbackURL}`,
       data: { name },
     },
   });
@@ -98,10 +97,11 @@ export const signIn = async (email: string, password: string, _rememberMe?: bool
 
 export const signInSocial = async (provider: "github" | "google") => {
   const supabase = await createSupabaseServerClient();
+  const origin = await appOrigin();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/auth/callback?next=/profile`,
+      redirectTo: `${origin}/auth/callback?next=/profile`,
     },
   });
 
@@ -116,10 +116,11 @@ export const signOut = async () => {
 
 export async function sendVerificationEmailAction(email: string) {
   const supabase = await createSupabaseServerClient();
+  const origin = await appOrigin();
   const result = await supabase.auth.resend({
     type: "signup",
     email,
-    options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/auth/callback?next=/profile` },
+    options: { emailRedirectTo: `${origin}/auth/callback?next=/profile` },
   });
 
   return { ...result, status: !result.error };
@@ -127,8 +128,9 @@ export async function sendVerificationEmailAction(email: string) {
 
 export const sendForgotPasswordEmail = async (email: string) => {
   const supabase = await createSupabaseServerClient();
+  const origin = await appOrigin();
   return supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/auth/callback?next=/reset-password`,
+    redirectTo: `${origin}/auth/callback?next=/reset-password`,
   });
 };
 

@@ -7,7 +7,15 @@ import { AdminSidebar } from '@/components/dynamic'
 export default async function AdminLayout({children}: LayoutProps<'/'>) {
   const session = await getSession()
 
-  if (!['ADMIN', 'SELLER'].includes(session?.user.role ?? '')) {
+  if (!session) {
+    redirect('/sign-in?isSignedIn=false')
+  }
+
+  if (!session.user.emailVerified) {
+    redirect('/profile?emailVerified=false')
+  }
+
+  if (!['ADMIN', 'SELLER'].includes(session.user.role ?? '')) {
     redirect('/')
   }
 
