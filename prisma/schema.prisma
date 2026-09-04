@@ -49,11 +49,12 @@ model User {
   image            String?
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @default(now()) @updatedAt
-  twoFactorEnabled Boolean?     @default(false)
+  twoFactorEnabled Boolean      @default(false)
   role             USER_ROLE    @default(USER)
-  banned           Boolean?     @default(false)
+  banned           Boolean      @default(false)
   banReason        String?
   banExpires       DateTime?
+
   sessions         Session[]
   accounts         Account[]
   twofactors       TwoFactor[]
@@ -89,20 +90,20 @@ model Session {
 }
 
 model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
+  id                   String    @id
+  accountId            String
+  providerId           String
+  userId               String
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken          String?
+  refreshToken         String?
+  idToken              String?
+  accessTokenExpiresAt DateTime?
   refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  scope                String?
+  password             String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
   @@index([createdAt])
   @@index([updatedAt])
@@ -163,13 +164,14 @@ model Seller {
   address     String?
   logo        String?
   banner      String?
+
   products    Product[]
   orders      Order[]
+
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
   @@index([createdAt])
-  @@index([updatedAt])
   @@map("seller")
 }
 
@@ -187,16 +189,20 @@ model Product {
   sold          Int            @default(0)
   stock         Int?
   status        PRODUCT_STATUS @default(INACTIVE)
+
   sellerId      String
   seller        Seller         @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
   categoryId    String
   category      Category       @relation(fields: [categoryId], references: [id])
+
   specs         Spec[]
   variants      Variant[]
   reviews       Review[]
   orderItems    OrderItem[]
   cartItems     CartItem[]
   wishlistItems Wishlist[]
+
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
@@ -211,13 +217,14 @@ model Product {
   @@index([tags], type: Gin, map: "product_tags_gin_idx")
   @@index([createdAt])
   @@index([updatedAt])
+
   @@map("product")
 }
 
 model Variant {
-  id        String  @id @default(uuid())
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id              String     @id @default(uuid())
+  productId       String
+  product         Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   name            String
   price           Float
@@ -227,17 +234,18 @@ model Variant {
   image           String?
   attributes      Json
 
-  cartItems  CartItem[]
-  orderItems OrderItem[]
-  reviews    Review[]
+  cartItems       CartItem[]
+  orderItems      OrderItem[]
+  reviews         Review[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
   @@index([productId])
   @@index([price])
   @@index([discountedPrice])
   @@index([stock])
+
   @@map("variant")
 }
 
@@ -247,12 +255,14 @@ model Spec {
   value     String
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([productId])
   @@index([createdAt])
   @@index([updatedAt])
+
   @@map("spec")
 }
 
@@ -260,51 +270,65 @@ model Category {
   id        String    @id @default(uuid())
   name      String    @unique
   products  Product[]
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
   @@index([createdAt])
   @@index([updatedAt])
+
   @@map("category")
 }
 
 model CartItem {
-  id     String @id @default(uuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   variantId String
-  variant   Variant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  variant   Variant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
 
   quantity  Int      @default(1)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  product   Product? @relation(fields: [productId], references: [id])
-  productId String?
 
   @@unique([userId, variantId])
   @@index([userId])
   @@index([variantId])
+  @@index([productId])
+
+  @@map("cart_item")
 }
 
 model Wishlist {
   id        String   @id @default(uuid())
+
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
   addedAt   DateTime @default(now())
 
   @@unique([userId, productId])
   @@index([userId])
   @@index([addedAt])
+
   @@map("wishlist")
 }
 
 model Address {
   id          String       @id @default(uuid())
+
   userId      String
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   type        ADDRESS_TYPE @default(HOME)
   label       String?
   fullName    String
@@ -314,82 +338,106 @@ model Address {
   postalCode  String
   street      String
   isDefault   Boolean      @default(false)
+
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
   @@index([userId, isDefault])
   @@index([createdAt])
   @@index([updatedAt])
+
   @@map("address")
 }
 
 model Review {
   id        String   @id @default(uuid())
+
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  variantId String? // optional: review can target a specific variant
+
+  variantId String?
   variant   Variant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   rating      Int
   title       String?
   comment     String?
+  isPublished Boolean  @default(true)
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  isPublished Boolean  @default(true)
 
   @@index([productId])
   @@index([variantId])
   @@index([userId])
   @@index([rating])
+
   @@map("review")
 }
 
 model OrderGroup {
   id            String         @id @default(uuid())
+
   userId        String
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   totalAmount   Float
   paymentStatus PAYMENT_STATUS @default(PENDING)
+
   orders        Order[]
+
   createdAt     DateTime       @default(now())
 
   @@index([userId, paymentStatus])
   @@index([createdAt])
+
   @@map("order_group")
 }
 
 model Order {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String      @id @default(cuid())
+
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  sellerId     String?
+  seller       Seller?     @relation(fields: [sellerId], references: [id])
+
+  orderGroupId String?
+  orderGroup   OrderGroup? @relation(fields: [orderGroupId], references: [id])
 
   orderItems   OrderItem[]
+
   total        Float
   discount     Float?
   coupon       String?
-  status       String      @default("PENDING")
+  status       ORDER_STATUS @default(PENDING)
+
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
-  seller       Seller?     @relation(fields: [sellerId], references: [id])
-  sellerId     String?
-  orderGroup   OrderGroup? @relation(fields: [orderGroupId], references: [id])
-  orderGroupId String?
 
   @@index([userId])
+  @@index([sellerId])
+  @@index([orderGroupId])
   @@index([status])
   @@index([coupon])
+
   @@map("order")
 }
 
 model OrderItem {
-  id        String  @id @default(uuid())
-  orderId   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  variantId String
-  variant   Variant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  id                        String   @id @default(uuid())
+
+  orderId                   String
+  order                     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  variantId                 String
+  variant                   Variant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  productId                 String?
+  product                   Product? @relation(fields: [productId], references: [id])
 
   quantity                  Int
   priceAtPurchase           Float
@@ -398,13 +446,13 @@ model OrderItem {
   taxAtPurchase             Float?
   finalPriceAfterDiscount   Float
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  product   Product? @relation(fields: [productId], references: [id])
-  productId String?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
 
   @@index([orderId])
   @@index([variantId])
+  @@index([productId])
   @@index([couponUsed])
+
   @@map("order_item")
 }
