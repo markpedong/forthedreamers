@@ -12,9 +12,7 @@ export default function AuthInterface() {
   const params = useSearchParams();
   const social = params.get('social');
 
-  if (social === 'true') {
-    console.log('Social sign-in successful. Please check your email for further instructions.');
-  }
+
   const [currentPage, setCurrentPage] = useState('login');
   const pages = {
     login: <SignIn onNavigate={setCurrentPage} />,

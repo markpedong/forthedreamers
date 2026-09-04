@@ -16,13 +16,20 @@ const useWithDispatch = () => {
 
   const signOut = async () => {
     dispatch(setSessionData(null));
-    localStorage.clear()
-    sessionStorage.clear()
 
-    await sessionSignOut();
+    // Call Supabase signOut first and await it before clearing local storage
+    try {
+      await sessionSignOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+
+    // Clear local storage after Supabase session is invalidated
+    localStorage.clear();
+    sessionStorage.clear();
+
     await deleteAllCookies();
     await revalidatePath(pathname);
-
   }
 
   return { updateSession, signOut };
