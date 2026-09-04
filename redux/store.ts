@@ -27,14 +27,8 @@ const storage = typeof window !== 'undefined' ? createWebStorage('local') : crea
 
 const persistConfig = {
   key: 'root',
-  version: 1,
+  version: 2,
   storage,
-  // transforms: [
-  //   createTransform(
-  //     (i) => compress(JSON.stringify(i)),
-  //     (o) => JSON.parse(decompress(o)),
-  //   ),
-  // ],
 };
 
 const reducer = combineReducers({
