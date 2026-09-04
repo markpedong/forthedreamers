@@ -12,7 +12,7 @@ import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
-import { authClient } from '@/lib/auth-client';
+import { passkey } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { tryWithToast } from '@/utils/helper';
@@ -41,7 +41,7 @@ const PasskeysSection: FC<{ passkeys: Passkey[] }> = ({ passkeys }) => {
   const onSubmit = async ({ name }: z.infer<typeof passkeySchema>) => {
     startSubmitting(async () => {
       if (isAddModal) {
-        const res = await tryWithToast(authClient.passkey.addPasskey({ name }));
+        const res = await tryWithToast(passkey.addPasskey({ name }));
         if (!res || res?.error) return;
 
         toast.success('Passkey added successfully');

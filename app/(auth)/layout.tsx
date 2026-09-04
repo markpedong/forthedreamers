@@ -4,10 +4,10 @@ import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Better-Auth Tutorial',
-    absolute: 'Better-Auth Tutorial by Coding in Flow'
+    template: '%s | For The Dreamers',
+    absolute: 'For The Dreamers'
   },
-  description: 'Learn how to handle authentication in Next.js using Better-Auth with this tutorial by Coding in Flow'
+  description: 'Curated finds, secure checkout.'
 }
 
 export default async function AuthLayout({children}: LayoutProps<'/'>) {

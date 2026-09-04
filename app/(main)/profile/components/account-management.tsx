@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { CHANGE_PASSWORD_DEFAULT, OAUTH_PROVIDERS } from '@/constants';
 import useFormSchema from '@/hooks/useFormSchema';
-import { authClient } from '@/lib/auth-client';
+import { requestPasswordReset, linkSocial } from '@/lib/auth-client';
 import { changePassword, unlinkAccount } from '@/lib/server-actions';
 import { Account, SchemaForm } from '@/lib/types';
 import Form from '@/components/reusable/form';
@@ -61,7 +61,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
   const handleSetPassword = () => {
     startSubmitting(async () => {
       const result = await tryWithToast(
-        authClient.requestPasswordReset({
+        requestPasswordReset({
           email: `${user?.email}`,
           redirectTo: '/reset-password',
         }),
@@ -122,7 +122,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
                   account={null}
                   loading={isSubmitting}
                   onClick={(provider) =>
-                    authClient.linkSocial({
+                    linkSocial({
                       provider,
                       callbackURL: '/profile?accountLinked=true&tab=account',
                     })

@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import useFormSchema from '@/hooks/useFormSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TWOFACTOR_DEFAULT } from '@/constants';
-import { authClient } from '@/lib/auth-client';
+import { twoFactor } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import { generateBackupCodes, twoFactorEnable } from '@/lib/server-actions';
 import AlertDialog from '@/components/reusable/alert-dialog';
@@ -71,7 +71,7 @@ const TwoFactorSection: FC = () => {
       const steps: Record<SetupStep, () => Promise<void>> = {
         password: async () => {
           if (is2faEnabled) {
-            const res = await tryWithToast(authClient.twoFactor.disable({ password: password! }));
+            const res = await tryWithToast(twoFactor.disable({ password: password! }));
             if (!res || handleApiError(res, 'password', 'Invalid password')) return;
             toast.success('Two-factor authentication disabled');
             resetSetup();
@@ -93,7 +93,7 @@ const TwoFactorSection: FC = () => {
             form.setFocus('otp');
             return;
           }
-          const res = await tryWithToast(authClient.twoFactor.verifyTotp({ code: otp }));
+          const res = await tryWithToast(twoFactor.verifyTotp({ code: otp }));
           if (!res || handleApiError(res, 'otp', 'Invalid OTP code')) return;
           await new Promise((r) => setTimeout(r, 1500));
           setShowVerificationSuccess(true);

@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import { toast } from 'sonner';
-import { authClient } from '@/lib/auth-client';
+import { twoFactor } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { tryWithToast } from '@/utils/helper';
 
@@ -32,7 +32,7 @@ const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
     startTransition(async () => {
       const res = await tryWithToast(
-        authClient.twoFactor.verifyTotp(
+        twoFactor.verifyTotp(
           { code: `${values.otp}` },
           {
             onSuccess: () => {

@@ -5,8 +5,8 @@ import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import { Button } from '@/components/ui/button';
 import useFormSchema from '@/hooks/useFormSchema';
-import { authClient } from '@/lib/auth-client';
-import { deleteAccount } from '@/lib/server-actions';
+import { twoFactor, deleteUser as authDeleteUser } from '@/lib/auth-client';
+import { deleteUser as serverDeleteUser } from '@/lib/server-actions';
 import { SchemaForm } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trash2 } from 'lucide-react';
@@ -36,10 +36,10 @@ const DeleteAccount: FC = (props: Props) => {
     }
 
     startSubmitting(async () => {
-      const verifyResult = await tryWithToast(authClient.twoFactor.verifyTotp({ code: `${otp}` }));
+      const verifyResult = await tryWithToast(twoFactor.verifyTotp({ code: `${otp}` }));
       if (!verifyResult || !!verifyResult.error) return;
 
-      const deleteResult = await tryWithToast(deleteAccount());
+      const deleteResult = await tryWithToast(serverDeleteUser());
       if (!deleteResult) return;
 
       toast.success('Delete request sent successfully');

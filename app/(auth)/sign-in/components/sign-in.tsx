@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import Divider from '@/components/reusable/divider';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { authClient } from '@/lib/auth-client';
+import { getSession, signOut, authSignIn } from '@/lib/auth-client';
 import Link from 'next/link';
 import { tryWithToast } from '@/utils/helper';
 import { getUserDB } from '@/lib/server-actions';
@@ -37,7 +37,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const onSubmit = async (values: SchemaForm<typeof loginSchema>) => {
     startSubmitting(async () => {
       const res = await tryWithToast(
-        authClient.signIn.email({ email: values.email, password: values.password }),
+        authSignIn.email({ email: values.email, password: values.password }),
       );
       if (res?.error) return;
 
@@ -57,18 +57,16 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       }
 
       toast.success('Sign in successfully!', { duration: 2000 });
-      const session = await authClient.getSession();
+      const session = await getSession();
       dispatch(setSessionData(session.data));
       router.refresh();
     });
   };
 
-  const handlePasskeySignin = () => {
-    authClient.signIn.passkey(undefined, {
-      onSuccess: () => {
-        router.push('/profile');
-      },
-    });
+  const handlePasskeySignin = async () => {
+    const res = await tryWithToast(authSignIn.passkey());
+    if (res?.error) return;
+    router.push('/profile');
   };
 
   // enable this if you want to use passkey upon refresh.

@@ -18,7 +18,7 @@ import { USER_ROLE } from '@/generated/prisma';
 import { tryWithToast } from '@/utils/helper';
 import { useAppDispatch } from '@/redux/store';
 import { setSessionData } from '@/redux/features/appSlice';
-import { authClient } from '@/lib/auth-client';
+import { authSignIn, getSession } from '@/lib/auth-client';
 import useWithDispatch from '@/hooks/useWithDispatch';
 import Link from 'next/link';
 
@@ -49,7 +49,7 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       }
 
       router.push('/dashboard');
-      const session = await authClient.getSession();
+      const session = await getSession();
       dispatch(setSessionData(session.data));
 
       toast.success('Logged in successfully!', { duration: 3000 });

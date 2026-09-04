@@ -22,7 +22,7 @@ import Input from '@/components/reusable/input';
 import useFormSchema from '@/hooks/useFormSchema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { authClient } from '@/lib/auth-client';
+import { twoFactor } from '@/lib/auth-client';
 import { tryWithToast } from '@/utils/helper';
 import DropDown from '@/components/reusable/dropdown';
 import ProTable from '@/components/pro-table';
@@ -108,7 +108,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     }
 
     startTransition(async () => {
-      const verifyResult = await tryWithToast(authClient.twoFactor.verifyTotp({ code: `${otp}` }));
+      const verifyResult = await tryWithToast(twoFactor.verifyTotp({ code: `${otp}` }));
       if (!verifyResult || !!verifyResult.error) return;
 
       const deleteResult = await tryWithToast(deleteUserByAdmin(`${selectedUser?.id}`));
