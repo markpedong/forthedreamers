@@ -5,10 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { LogOut } from 'lucide-react';
-import { revokeOtherSessions } from '@/lib/server-actions';
 import { useRouter } from 'next/navigation';
 import SessionItem from '@/components/reusable/session-item';
-import { tryWithToast } from '@/utils/helper';
 
 interface SessionsSectionProps {
   sessions: Session[];
@@ -31,11 +29,7 @@ const SessionManagement: FC<SessionsSectionProps> = ({ sessions, currentSessionT
 
   const handleAction = () => {
     startTransition(async () => {
-      const result = await tryWithToast(revokeOtherSessions());
-      if (!result) return;
-
-      toast.success('Success', { description: `Revoked other sessions successfully.` });
-      router.refresh();
+      toast.info('Session revocation is not available yet');
     });
   };
 

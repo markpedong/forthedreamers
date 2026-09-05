@@ -96,14 +96,14 @@ type ErrResp = {
   message?: string;
 };
 
-export const tryWithToast = async <T extends ErrResp>(
+export const tryWithToast = async <T>(
   promise: Promise<T>,
 ): Promise<T | null> => {
   try {
     const res = await promise;
 
-    if (res?.error) {
-      toast.error(res.error.message);
+    if ((res as ErrResp)?.error) {
+      toast.error((res as ErrResp).error?.message || 'Something went wrong');
       return null;
     }
 

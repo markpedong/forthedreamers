@@ -4,7 +4,6 @@ import { FC, useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trash2 } from 'lucide-react';
-import { deletePasskey } from '@/lib/server-actions';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import useFormSchema from '@/hooks/useFormSchema';
 import { useForm } from 'react-hook-form';
@@ -15,7 +14,6 @@ import Input from '@/components/reusable/input';
 import { passkey } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { tryWithToast } from '@/utils/helper';
 
 type Passkey = {
   id: string;
@@ -41,15 +39,15 @@ const PasskeysSection: FC<{ passkeys: Passkey[] }> = ({ passkeys }) => {
   const onSubmit = async ({ name }: z.infer<typeof passkeySchema>) => {
     startSubmitting(async () => {
       if (isAddModal) {
-        const res = await tryWithToast(passkey.addPasskey({ name }));
-        if (!res || res?.error) return;
+        const res = await passkey.addPasskey({ name });
+        if (res?.error) {
+          toast.info('Passkey registration is not available yet');
+          return;
+        }
 
         toast.success('Passkey added successfully');
       } else if (selectedPasskey) {
-        const result = await tryWithToast(deletePasskey(selectedPasskey.id));
-        if (!result) return;
-
-        toast.success('Passkey deleted successfully');
+        toast.info('Passkey deletion is not available yet');
       }
 
       setIsOpen(false);

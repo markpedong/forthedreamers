@@ -8,7 +8,7 @@ import {
   Smartphone,
   User,
 } from 'lucide-react';
-import { getSession, listAllSessions, listPasskeys, listUserAccounts } from '@/lib/server-actions';
+import { getSession, listAllSessions, listUsers } from '@/lib/server-actions';
 import ProfileDetails from './components/profile-details';
 import ProfileLayout from './components/profile-layout';
 import AccountManagement from './components/account-management';
@@ -28,9 +28,9 @@ const ProfilePage = async () => {
   const session = await getSession();
 
   const [accounts, sessions, passkeys] = await Promise.all([
-    listUserAccounts(),
+    Promise.resolve([] as { id: string; accountId: string; providerId: string; createdAt: Date | null }[]),
     listAllSessions(),
-    listPasskeys(),
+    Promise.resolve([] as { id: string; name?: string | null; createdAt: Date }[]),
   ]);
   const nonCredentialAccounts = accounts.filter((a) => a.providerId !== 'credential');
   const hasPassword = accounts.some((a) => a.providerId === 'credential');

@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { revalidatePath, stopImpersonating } from '@/lib/server-actions';
 import { useAppSelector } from '@/redux/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HatGlasses } from 'lucide-react';
@@ -13,9 +12,7 @@ const ImpersonationIndicator: FC = () => {
   if (!session?.session?.impersonatedBy) return null;
 
   const handleStopImpersonating = async () => {
-    await stopImpersonating();
     router.push('/users');
-    await revalidatePath('/users');
   };
 
   return (

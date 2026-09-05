@@ -254,30 +254,8 @@ export const requestPasswordReset = async ({ email, redirectTo }: { email: strin
   return { success: true };
 };
 
-export const revokeOtherSessions = async () => unsupported("Session revocation");
 export const listAllSessions = async () => [];
-export const revokeSession = async (_session: { token: string }) => unsupported("Session revocation");
-export const unlinkAccount = async (_account: { accountId: string; providerId: string }) => unsupported("Unlink account");
-
-// Supabase delete user (server action - uses admin client)
-export const deleteUser = async () => {
-  return { success: false, error: "Account deletion is not available. Please contact support." };
-};
-
-// Supabase two-factor enable (stub - uses Supabase native 2FA if configured)
-export const twoFactorEnable = async (_password: string) => ({
-  ...unsupported("Two-factor setup"),
-  totpURI: null as string | null,
-  backupCodes: [] as string[],
-});
-
-export const generateBackupCodes = async (_password: string) => ({
-  ...unsupported("Backup codes"),
-  backupCodes: [] as string[],
-});
-
 export const listPasskeys = async () => [];
-export const deletePasskey = async (_passkeyId: string) => unsupported("Passkey deletion");
 export const permissionListUsers = async () => ({ success: true });
 
 export const listUsers = async () => {
@@ -309,11 +287,14 @@ export const listUsers = async () => {
   });
 };
 
-export const impersonateUser = async (_userId: string) => unsupported("User impersonation");
-export const stopImpersonating = async () => unsupported("User impersonation");
-export const banUser = async (userId: string) => prisma.user.update({ where: { id: userId }, data: { banned: true } });
-export const unbanUser = async (userId: string) => prisma.user.update({ where: { id: userId }, data: { banned: false } });
-export const revokeUserSessions = async (_userId: string) => unsupported("Admin session revocation");
+export const banUser = async (userId: string) => {
+  await prisma.user.update({ where: { id: userId }, data: { banned: true } });
+  return { success: true };
+};
+export const unbanUser = async (userId: string) => {
+  await prisma.user.update({ where: { id: userId }, data: { banned: false } });
+  return { success: true };
+};
 
 export const deleteUserByAdmin = async (userId: string) => {
   const admin = createSupabaseAdminClient();

@@ -9,7 +9,7 @@ import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { CHANGE_PASSWORD_DEFAULT, OAUTH_PROVIDERS } from '@/constants';
 import useFormSchema from '@/hooks/useFormSchema';
 import { requestPasswordReset, linkSocial } from '@/lib/auth-client';
-import { changePassword, unlinkAccount } from '@/lib/server-actions';
+import { changePassword } from '@/lib/server-actions';
 import { Account, SchemaForm } from '@/lib/types';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
@@ -18,7 +18,6 @@ import AccountCard from '@/components/reusable/account-card';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { tryWithToast } from '@/utils/helper';
 import { useAppSelector } from '@/redux/store';
 
 interface AccountManagementProps {
@@ -41,13 +40,14 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
 
   const onSubmit = (values: SchemaForm<typeof changePasswordSchema>) => {
     startSubmitting(async () => {
-      const result = await tryWithToast(
-        changePassword({
-          currentPassword: values.currentPassword,
-          newPassword: values.confirmPassword,
-        }),
-      );
-      if (!result) return;
+      const result = await changePassword({
+        currentPassword: values.currentPassword,
+        newPassword: values.confirmPassword,
+      });
+      if (result?.error) {
+        toast.error(result.error);
+        return;
+      }
 
       toast.success('Password changed successfully!', {
         description: 'Revoking other sessions...',
@@ -60,26 +60,22 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
 
   const handleSetPassword = () => {
     startSubmitting(async () => {
-      const result = await tryWithToast(
-        requestPasswordReset({
-          email: `${user?.email}`,
-          redirectTo: '/reset-password',
-        }),
-      );
-      if (!result) return;
+      const result = await requestPasswordReset({
+        email: `${user?.email}`,
+        redirectTo: '/reset-password',
+      });
+      if ((result as any).error) {
+        const message = (result as any).error?.message || 'Something went wrong';
+        toast.error(message);
+        return;
+      }
 
       toast.success('Password reset link sent successfully');
     });
   };
 
   const handleUnlinkAccount = (accountId: string, providerId: string) => {
-    startSubmitting(async () => {
-      const result = await tryWithToast(unlinkAccount({ accountId, providerId }));
-      if (!result) return;
-
-      toast.success('Account unlinked successfully');
-      router.refresh();
-    });
+    toast.info(`Unlinking ${providerId} account is not available yet`);
   };
 
   return (

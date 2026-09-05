@@ -5,8 +5,7 @@ import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import { Button } from '@/components/ui/button';
 import useFormSchema from '@/hooks/useFormSchema';
-import { twoFactor, deleteUser as authDeleteUser } from '@/lib/auth-client';
-import { deleteUser as serverDeleteUser } from '@/lib/server-actions';
+import { twoFactor } from '@/lib/auth-client';
 import { SchemaForm } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trash2 } from 'lucide-react';
@@ -14,7 +13,6 @@ import { useRouter } from 'next/navigation';
 import { FC, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { tryWithToast } from '@/utils/helper';
 
 type Props = {};
 
@@ -36,13 +34,13 @@ const DeleteAccount: FC = (props: Props) => {
     }
 
     startSubmitting(async () => {
-      const verifyResult = await tryWithToast(twoFactor.verifyTotp({ code: `${otp}` }));
-      if (!verifyResult || !!verifyResult.error) return;
+      const verifyResult = await twoFactor.verifyTotp({ code: `${otp}` });
+      if (verifyResult?.error) {
+        toast.error(verifyResult.error.message);
+        return;
+      }
 
-      const deleteResult = await tryWithToast(serverDeleteUser());
-      if (!deleteResult) return;
-
-      toast.success('Delete request sent successfully');
+      toast.info('Account deletion is not available. Please contact support.');
       setShowDeleteDialog(false);
       router.refresh();
     });

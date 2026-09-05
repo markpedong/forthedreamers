@@ -11,7 +11,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { TWOFACTOR_DEFAULT } from '@/constants';
 import { twoFactor } from '@/lib/auth-client';
 import { toast } from 'sonner';
-import { generateBackupCodes, twoFactorEnable } from '@/lib/server-actions';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import QRCode from 'react-qr-code';
 import Form from '@/components/reusable/form';
@@ -19,7 +18,6 @@ import Input from '@/components/reusable/input';
 import { AlertCircle, CopyIcon, RefreshCw, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { BackupCodesStep } from './2fa-components';
-import { tryWithToast } from '@/utils/helper';
 import { useAppSelector } from '@/redux/store';
 
 const TwoFactorSection: FC = () => {
@@ -71,20 +69,16 @@ const TwoFactorSection: FC = () => {
       const steps: Record<SetupStep, () => Promise<void>> = {
         password: async () => {
           if (is2faEnabled) {
-            const res = await tryWithToast(twoFactor.disable({ password: password! }));
-            if (!res || handleApiError(res, 'password', 'Invalid password')) return;
+            const res = await twoFactor.disable({ password: password! });
+            if (res?.error) {
+              handleApiError(res, 'password', 'Invalid password');
+              return;
+            }
             toast.success('Two-factor authentication disabled');
             resetSetup();
           } else {
-            const res = await tryWithToast(twoFactorEnable(password!));
-            if (!res || !res.totpURI || !res.backupCodes?.length) {
-              form.setError('password', { message: 'Invalid password or server error' });
-              toast.error('Failed to enable 2FA');
-              return;
-            }
-            setQrCodeUrl(res.totpURI);
-            setBackupCodes(res.backupCodes);
-            setSetupStep('qr-code');
+            toast.info('Two-factor authentication is not available yet');
+            resetSetup();
           }
         },
         'qr-code': async () => {
@@ -93,22 +87,19 @@ const TwoFactorSection: FC = () => {
             form.setFocus('otp');
             return;
           }
-          const res = await tryWithToast(twoFactor.verifyTotp({ code: otp }));
-          if (!res || handleApiError(res, 'otp', 'Invalid OTP code')) return;
+          const res = await twoFactor.verifyTotp({ code: otp });
+          if (res?.error) {
+            handleApiError(res, 'otp', 'Invalid OTP code');
+            return;
+          }
           await new Promise((r) => setTimeout(r, 1500));
           setShowVerificationSuccess(true);
           setSetupStep('backup-codes');
         },
         'backup-codes': resetSetup,
         regenerate: async () => {
-          const res = await tryWithToast(generateBackupCodes(password!));
-          if (!res || !res.backupCodes?.length) {
-            form.setError('password', { message: 'Invalid password' });
-            toast.error('Failed to regenerate backup codes');
-            return;
-          }
-          setBackupCodes(res.backupCodes);
-          setSetupStep('backup-codes-regenerated');
+          toast.info('Backup code regeneration is not available yet');
+          resetSetup();
         },
         'backup-codes-regenerated': resetSetup,
         '': async () => {},

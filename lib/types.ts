@@ -1,5 +1,5 @@
 import type { z, ZodTypeAny } from 'zod';
-import { getSession, listUserAccounts } from "./server-actions";
+import { getSession } from "./server-actions";
 import type { Control, Path, FieldValues } from 'react-hook-form';
 import { ComponentPropsWithoutRef, Ref } from "react";
 import { Category, PrismaClient, Product, PRODUCT_STATUS, Seller, Spec, Variant } from "@/generated/prisma";
@@ -22,7 +22,7 @@ export type ProfileLayoutProps = {
 
 export type SchemaForm<T extends ZodTypeAny> = z.infer<T>;
 
-export type Account = Awaited<ReturnType<typeof listUserAccounts>>[number];
+export type Account = { id: string; accountId: string; providerId: string; createdAt: Date | null };
 
 export type SetupStep =
   | 'password'

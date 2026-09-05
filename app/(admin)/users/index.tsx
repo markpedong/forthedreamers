@@ -9,9 +9,6 @@ import { DropdownMenuItemType, SchemaForm } from '@/lib/types';
 import {
   banUser,
   deleteUserByAdmin,
-  impersonateUser,
-  revalidatePath,
-  revokeUserSessions,
   unbanUser,
 } from '@/lib/server-actions';
 import { useRouter } from 'next/navigation';
@@ -80,24 +77,12 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     });
   };
 
-  const handleImpersonateUser = (userId: string) => {
-    startTransition(async () => {
-      const result = await tryWithToast(impersonateUser(userId));
-      if (!result) return;
-
-      router.push('/');
-      await revalidatePath('/');
-    });
+  const handleImpersonateUser = (_userId: string) => {
+    toast.info('Impersonation is not available');
   };
 
-  const handleRevokeSession = async (user: UserWithRole) => {
-    startTransition(async () => {
-      const res = await tryWithToast(revokeUserSessions(user.id));
-      if (!res || !res.success) return;
-
-      toast.success('Sessions revoked successfully');
-      router.refresh();
-    });
+  const handleRevokeSession = (_user: UserWithRole) => {
+    toast.info('Session revocation is not available');
   };
 
   const onSubmit = async ({ otp }: SchemaForm<typeof twoFactorSchema>) => {
@@ -129,14 +114,6 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     {
       label: <div>Edit</div>,
       onClick: () => handleEditUser(record.id),
-    },
-    {
-      label: <div>Impersonate</div>,
-      onClick: () => handleImpersonateUser(record.id),
-    },
-    {
-      label: <div>Revoke Sessions</div>,
-      onClick: () => handleRevokeSession(record),
     },
     {
       label: <div>{record.banned ? 'Unban' : 'Ban'}</div>,

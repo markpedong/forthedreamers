@@ -2,12 +2,10 @@ import { Badge } from '../ui/badge';
 import { getDeviceIcon } from './helpers';
 import { getBrowserInfo } from '@/lib/utils';
 import { Button } from '../ui/button';
-import { FC, useTransition } from 'react';
+import { FC } from 'react';
 import { LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { revokeSession } from '@/lib/server-actions';
-import { tryWithToast } from '@/utils/helper';
 
 type Props = {
   session: Session;
@@ -24,16 +22,9 @@ type Session = {
 
 const SessionItem: FC<Props> = ({ session, isCurrent }) => {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
 
   const handleAction = () => {
-    startTransition(async () => {
-      const result = await tryWithToast(revokeSession({ token: session.token }));
-      if (!result) return;
-
-      toast.success('Success', { description: `Revoked session successfully.` });
-      router.refresh();
-    });
+    toast.info('Session revocation is not available yet');
   };
 
   return (
@@ -67,7 +58,6 @@ const SessionItem: FC<Props> = ({ session, isCurrent }) => {
           variant='ghost'
           size='sm'
           onClick={() => handleAction()}
-          disabled={isPending}
           className='ml-2 text-destructive hover:text-destructive hover:bg-destructive/10'
         >
           <LogOut className='w-4 h-4' />
