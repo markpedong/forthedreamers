@@ -1,74 +1,60 @@
-import { SchemaForm, TOnNavigate } from '@/lib/types';
-import PageWrapper from './page-wrapper';
-import OauthButtons from './oauth-buttons';
-import useFormSchema from '@/hooks/useFormSchema';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import Input from '@/components/reusable/input';
-import { useTransition } from 'react';
-import Form from '@/components/reusable/form';
-import { toast } from 'sonner';
-import { signUp } from '@/lib/server-actions';
-import Divider from '@/components/reusable/divider';
-import { useRouter } from 'next/navigation';
-import { tryWithToast } from '@/utils/helper';
-import useWithDispatch from '@/hooks/useWithDispatch';
+import { SchemaForm, TOnNavigate } from '@/lib/types'
+import PageWrapper from './page-wrapper'
+import OauthButtons from './oauth-buttons'
+import useFormSchema from '@/hooks/useFormSchema'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import Input from '@/components/reusable/input'
+import { useTransition } from 'react'
+import Form from '@/components/reusable/form'
+import { toast } from 'sonner'
+import { signUp } from '@/lib/server-actions'
+import Divider from '@/components/reusable/divider'
+import { useRouter } from 'next/navigation'
 
-const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
-  const router = useRouter();
-  const [isSigningUp, startSigningUp] = useTransition();
-  const { registrationSchema } = useFormSchema();
+const SignUp = ({onNavigate}: {onNavigate: TOnNavigate}) => {
+  const router = useRouter()
+  const [isSigningUp, startSigningUp] = useTransition()
+  const {registrationSchema} = useFormSchema()
+
   const form = useForm<SchemaForm<typeof registrationSchema>>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
       name: '',
       email: '',
       password: '',
-      confirmPassword: '',
-    },
-  });
-  const { updateSession } = useWithDispatch();
+      confirmPassword: ''
+    }
+  })
 
   const onSubmit = async (values: SchemaForm<typeof registrationSchema>) => {
     startSigningUp(async () => {
-      const res = await tryWithToast(signUp(values.email, values.password, values.name));
-      if (!res) return;
+      try {
+        await signUp(values.email, values.password, values.name)
 
-      updateSession();
-      toast.success('Account created successfully!', { duration: 3000 });
-      router.refresh();
-    });
-  };
+        toast.success('Account created successfully!', {
+          duration: 3000
+        })
 
+        router.refresh()
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Something went wrong')
+      }
+    })
+  }
   return (
     <PageWrapper>
       <div>
-        <div className='text-center mb-8'>
-          <h1 className='text-3xl font-bold mb-2'>Create account</h1>
+        <div className='mb-8 text-center'>
+          <h1 className='mb-2 text-3xl font-bold'>Create account</h1>
           <p className='text-muted-foreground'>Sign up to get started</p>
         </div>
 
-        <Form
-          form={form}
-          onSubmit={onSubmit}
-          submitLabel={isSigningUp ? 'Signing up...' : 'Sign up'}
-        >
-          <Input
-            control={form.control}
-            name='name'
-            label='Full Name'
-            placeholder='John Doe'
-            disabled={isSigningUp}
-            preventSpaces
-          />
-          <Input
-            control={form.control}
-            name='email'
-            label='Email'
-            placeholder='you@example.com'
-            disabled={isSigningUp}
-            preventSpaces
-          />
+        <Form form={form} onSubmit={onSubmit} submitLabel={isSigningUp ? 'Signing up...' : 'Sign up'}>
+          <Input control={form.control} name='name' label='Full Name' placeholder='John Doe' disabled={isSigningUp} preventSpaces />
+
+          <Input control={form.control} name='email' label='Email' placeholder='you@example.com' disabled={isSigningUp} preventSpaces />
+
           <Input
             control={form.control}
             name='password'
@@ -78,6 +64,7 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
             disabled={isSigningUp}
             preventSpaces
           />
+
           <Input
             control={form.control}
             name='confirmPassword'
@@ -88,13 +75,14 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
             preventSpaces
           />
         </Form>
+
         <Divider title='or continue with' />
 
         <div className='grid grid-cols-2 gap-3'>
-          <OauthButtons />
+          <OauthButtons next='/profile' />
         </div>
 
-        <p className='text-center text-sm text-muted-foreground mt-6'>
+        <p className='mt-6 text-center text-sm text-muted-foreground'>
           Already have an account?{' '}
           <button onClick={() => onNavigate('login')} className='text-primary hover:underline'>
             Sign in
@@ -102,7 +90,7 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         </p>
       </div>
     </PageWrapper>
-  );
-};
+  )
+}
 
-export default SignUp;
+export default SignUp

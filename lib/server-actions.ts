@@ -95,18 +95,27 @@ export const signIn = async (email: string, password: string, _rememberMe?: bool
   return result.data;
 };
 
-export const signInSocial = async (provider: "github" | "google") => {
+export const signInSocial = async (
+  provider: 'github' | 'google',
+  next = '/profile',
+) => {
   const supabase = await createSupabaseServerClient();
   const origin = await appOrigin();
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: `${origin}/auth/callback?next=/profile`,
+      redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
     },
   });
 
-  if (error) throw new Error(error.message);
-  if (data.url) redirect(data.url as never);
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (data.url) {
+    redirect(data.url as never);
+  }
 };
 
 export const signOut = async () => {

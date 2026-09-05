@@ -118,7 +118,7 @@ const SignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
         <Divider title='or continue with' />
 
         <div>
-          <OauthButtons />
+          <OauthButtons next='/profile' />
         </div>
 
         <p className='text-center text-sm text-muted-foreground mt-6'>

@@ -22,7 +22,7 @@ const Footer: FC = () => {
   const isMobile = useIsMobile()
 
   return (
-    <footer className={classNames('max-w-7xl mx-auto px-4 py-16 pb-12 lg:pb-16', isMobile && 'pb-24')}>
+    <footer className={classNames('max-w-7xl mx-auto px-4 py-16 pb-6', isMobile && 'pb-24')}>
       <div className='grid grid-cols-1 md:grid-cols-4 gap-12 mb-16'>
         <div className='space-y-4'>
           <h4 className='text-lg font-bold uppercase tracking-tighter'>ForTheDreamers</h4>
