@@ -1,5 +1,6 @@
 import { BaseQueryParams } from "@/lib/types";
 import chroma from "chroma-js";
+import { toast } from "sonner";
 
 // catchError that automatically shows toast/log
 // export async function catchErrorWithToast<T, E extends new (...args: any[]) => Error>(
@@ -74,8 +75,6 @@ export async function catchErrorWithToast<T, E extends new (...args: any[]) => E
 
     return [undefined, data] as [undefined, T];
   } catch (error) {
-
-
     if (!(error instanceof Error)) throw error;
 
     if (!errorsToCatch || errorsToCatch.some(e => error instanceof e)) {
@@ -89,13 +88,33 @@ export async function catchErrorWithToast<T, E extends new (...args: any[]) => E
   }
 }
 
-type ErrResp = { success?: boolean, message?: string }
+type ErrResp = {
+  error?: {
+    message: string;
+  } | null;
+  success?: boolean;
+  message?: string;
+};
 
-export const tryWithToast = async <T>(promise: Promise<T>, needErrResponse = false): Promise<T & ErrResp | null> => {
-  const [err, res] = await catchErrorWithToast(promise);
-  if (err && needErrResponse) return err as unknown as T & ErrResp;
-  if (err) return null;
-  return res as T & ErrResp;
+export const tryWithToast = async <T extends ErrResp>(
+  promise: Promise<T>,
+): Promise<T | null> => {
+  try {
+    const res = await promise;
+
+    if (res?.error) {
+      toast.error(res.error.message);
+      return null;
+    }
+
+    return res;
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Something went wrong";
+
+    toast.error(message);
+    return null;
+  }
 };
 
 export function slugify(text: string): string {
