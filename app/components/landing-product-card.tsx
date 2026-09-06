@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import {useState} from 'react'
 import Image from 'next/image'
-import { Heart } from 'lucide-react'
-import { IMG_FALLBACK } from '@/constants'
+import {Heart} from 'lucide-react'
+import {IMG_FALLBACK} from '@/constants'
+import {useWishlist} from '@/components/provider/wishlist-provider'
 
 interface LandingProductCardProps {
   id: string
@@ -16,10 +17,9 @@ interface LandingProductCardProps {
   reviewCount?: number
   isNew?: boolean
   isSale?: boolean
-  onWishlist?: () => void
 }
 
-export function LandingProductCard({
+export const LandingProductCard = ({
   id,
   name,
   sellerName,
@@ -29,15 +29,14 @@ export function LandingProductCard({
   rating,
   reviewCount,
   isNew,
-  isSale,
-  onWishlist
-}: LandingProductCardProps) {
-  const [wishlist, setWishlist] = useState(false)
+  isSale
+}: LandingProductCardProps) => {
   const [imageError, setImageError] = useState(false)
+  const wishlist = useWishlist()
+  const isWishlisted = wishlist.ids.includes(id)
 
   const handleWishlist = () => {
-    setWishlist(!wishlist)
-    onWishlist?.()
+    wishlist.toggle(id)
   }
 
   const discountPercent = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0
@@ -76,9 +75,12 @@ export function LandingProductCard({
             e.preventDefault()
             handleWishlist()
           }}
+          disabled={wishlist.isPending(id)}
+          aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+          aria-pressed={isWishlisted}
           className='absolute top-3 right-3 p-2 bg-card/90 hover:bg-card rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100'
         >
-          <Heart className={`w-5 h-5 ${wishlist ? 'fill-current text-accent' : 'text-foreground'}`} />
+          <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-current text-accent' : 'text-foreground'}`} />
         </button>
       </div>
 

@@ -1,19 +1,9 @@
-'use client';
+import Link from 'next/link'
 
-import { FC } from 'react';
-import { useRouter } from 'next/navigation';
+const CartBackLink = () => (
+  <Link href='/cart' className='flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6'>
+    Back to Cart
+  </Link>
+)
 
-const CartBackLink: FC = () => {
-  const router = useRouter();
-
-  return (
-    <button
-      onClick={() => router.push('/cart' as never)}
-      className='flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 cursor-pointer'
-    >
-      Back to Cart
-    </button>
-  );
-};
-
-export default CartBackLink;
+export default CartBackLink

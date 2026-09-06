@@ -1,15 +1,15 @@
 'use client'
 
-import { Badge } from '@/components/ui/badge'
-import { OmittedProductFields, TVariant } from '@/lib/types'
+import {Badge} from '@/components/ui/badge'
+import {OmittedProductFields, TVariant} from '@/lib/types'
 
 interface ProductOverviewProps {
-  product: OmittedProductFields
+  product: Pick<OmittedProductFields, 'name' | 'brand' | 'basePrice'>
   selectedVariant?: TVariant | null
 }
 
 const ProductOverview: React.FC<ProductOverviewProps> = ({product, selectedVariant}) => {
-  const {name, brand, basePrice, rating, reviewCount} = product
+  const {name, brand, basePrice} = product
   const price = 399
   const basePriceNum = Number(basePrice)
   const discount = basePriceNum > price ? Math.round(((basePriceNum - price) / basePriceNum) * 100) : 0

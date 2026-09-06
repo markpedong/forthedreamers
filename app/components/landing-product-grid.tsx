@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { TProduct } from '@/lib/types'
-import { LandingProductCard } from './landing-product-card'
+import {useMemo} from 'react'
+import {TProduct} from '@/lib/types'
+import {LandingProductCard} from './landing-product-card'
 
 interface LandingProductGridProps {
   products: TProduct[]
@@ -10,9 +10,7 @@ interface LandingProductGridProps {
   sortBy?: string
 }
 
-export function LandingProductGrid({products, selectedCategory, sortBy = 'newest'}: LandingProductGridProps) {
-  const [wishlisted, setWishlisted] = useState<Set<string>>(new Set())
-
+export const LandingProductGrid = ({products, selectedCategory, sortBy = 'newest'}: LandingProductGridProps) => {
   const filteredAndSortedProducts = useMemo(() => {
     let result = [...products]
 
@@ -39,23 +37,11 @@ export function LandingProductGrid({products, selectedCategory, sortBy = 'newest
       default:
         // Newest first (isNew flag takes priority)
         // result.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0))
-        result
+        break
     }
 
     return result
   }, [products, selectedCategory, sortBy])
-
-  const handleWishlist = (productId: string) => {
-    setWishlisted(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(productId)) {
-        newSet.delete(productId)
-      } else {
-        newSet.add(productId)
-      }
-      return newSet
-    })
-  }
 
   return (
     <div className='max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8'>
@@ -77,7 +63,6 @@ export function LandingProductGrid({products, selectedCategory, sortBy = 'newest
                   sellerName={product.seller.storeName}
                   price={Number(product.basePrice)}
                   image={product.images[0]}
-                  onWishlist={() => handleWishlist(product.id)}
                 />
               </div>
             ))}

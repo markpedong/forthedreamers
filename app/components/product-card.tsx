@@ -1,17 +1,16 @@
 'use client'
 import { FC, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import ImagePlaceholder from '@/components/reusable/image-placeholder'
-import { useRouter } from '@bprogress/next'
 import type { LandingProduct } from './index'
 const ProductCard: FC<LandingProduct> = ({name, images, basePrice, variants, slug}) => {
   const [isImageInvalid, setIsImageInvalid] = useState(false)
   const imageSrc = images && images.length > 0 ? images[0] : null
   const showImage = imageSrc && !isImageInvalid
-  const push = useRouter().push
   return (
-    <div className='group cursor-pointer space-y-3' onClick={() => push(`/products/${slug}`)}>
+    <Link href={`/products/${slug}`} className='group cursor-pointer space-y-3'>
       <AspectRatio ratio={3 / 4} className='overflow-hidden rounded-sm '>
         {showImage ? (
           <Image
@@ -30,9 +29,7 @@ const ProductCard: FC<LandingProduct> = ({name, images, basePrice, variants, slu
         <h3 className='font-medium'>{name}</h3>
         <p className='text-sm text-neutral-500'>$ {basePrice ?? variants?.[0].price}</p>
       </div>
-    </div>
+    </Link>
   )
 }
-
-
 export default ProductCard

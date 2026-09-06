@@ -14,7 +14,7 @@ import {
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { motion } from 'framer-motion';
 import SearchOverlay from './search-overlay';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { useAuthSession } from '@/lib/supabase/auth-context';
@@ -25,19 +25,18 @@ const Navbar: FC = () => {
   const { session, signOut } = useAuthSession();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const isMobile = useIsMobile();
-  const router = useRouter();
   const pathname = usePathname();
 
   if (DISABLED_NAVBAR.includes(pathname)) return null;
 
   const CartButton = (
-    <button
-      onClick={() => router.push("/cart" as never)}
+    <Link
+      href='/cart'
       className='relative p-2 hover:bg-muted rounded-full transition-colors'
     >
       <ShoppingCart className='w-5 h-5' />
       <CartItemCount />
-    </button>
+    </Link>
   );
 
   const ProfileButton = !isMobile && (
@@ -48,14 +47,16 @@ const Navbar: FC = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-56'>
-        <DropdownMenuItem className='cursor-pointer' onClick={() => router.push('/profile')}>
-          Profile
+        <DropdownMenuItem asChild>
+          <Link href='/profile'>Profile</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push('/profile/orders' as never)}>Orders</DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href='/profile?tab=orders'>Orders</Link>
+        </DropdownMenuItem>
         {pathname !== '/profile' && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className='cursor-pointer' onClick={() => signOut()} variant='destructive'>
+            <DropdownMenuItem className='cursor-pointer' onClick={() => void signOut()} variant='destructive'>
               Logout
             </DropdownMenuItem>
           </>
@@ -125,9 +126,11 @@ const Navbar: FC = () => {
                 {ProfileButton}
               </>
             ) : (
-              <Button variant='ghost' onClick={() => router.push('/sign-in')}>
-                Sign In
-                <LogIn />
+              <Button variant='ghost' asChild>
+                <Link href='/sign-in'>
+                  Sign In
+                  <LogIn />
+                </Link>
               </Button>
             )}
           </div>

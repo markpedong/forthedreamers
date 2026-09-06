@@ -1,8 +1,3 @@
-import prisma from '@/lib/prisma';
-import { WishlistProvider } from '@/components/provider/wishlist-provider';
-import { getSession } from '@/lib/server-actions';
-import { readCartCount } from '@/lib/services/cart';
-import { CartCountProvider } from '@/components/provider/cart-count-provider';
 import type { Metadata } from 'next'
 import './globals.css'
 import MainProvider from '@/components/provider/main-provider'
@@ -33,16 +28,16 @@ export const metadata: Metadata = {
   description: 'A modern marketplace for independent dreamers and makers.'
 }
 
-export default async function RootLayout({children}: LayoutProps<'/'>) {
-  const session = await getSession();
-  const [count, wishlist] = session ? await Promise.all([readCartCount(session.user.id), prisma.wishlist.findMany({ where: { userId: session.user.id }, select: { productId: true } })]) : [0, []];
+const RootLayout = ({children}: LayoutProps<'/'>) => {
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={`${geist.className}  antialiased`}>
         <ThemeProvider>
-          <CartCountProvider key={session?.user.id ?? "guest"} initialCount={count}><WishlistProvider initialIds={wishlist.map(item => item.productId)}><MainProvider>{children}</MainProvider></WishlistProvider></CartCountProvider>
+          <MainProvider>{children}</MainProvider>
         </ThemeProvider>
       </body>
     </html>
   )
 }
+
+export default RootLayout
