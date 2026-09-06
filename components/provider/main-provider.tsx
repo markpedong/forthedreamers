@@ -9,9 +9,13 @@ import Navbar from '../navigation/navbar'
 import BottomNav from '../navigation/bottom-nav'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Footer from '../navigation/footer'
-import ReduxProvider from './redux-provider'
+import { AuthProvider, useAuthSession, type AuthSession } from '@/lib/supabase/auth-context'
 
-const MainProvider: FC<PropsWithChildren> = ({children}) => {
+type MainProviderProps = PropsWithChildren<{
+  initialSession?: AuthSession | null
+}>
+
+const MainProvider: FC<MainProviderProps> = ({ children, initialSession }) => {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
@@ -24,7 +28,7 @@ const MainProvider: FC<PropsWithChildren> = ({children}) => {
   }))
 
   return (
-    <ReduxProvider>
+    <AuthProvider initialSession={initialSession}>
       <Navbar />
         <Suspense fallback={null}>
           <ToastListener />
@@ -37,7 +41,7 @@ const MainProvider: FC<PropsWithChildren> = ({children}) => {
         <ImpesonationIndicator />
       <Footer />
       <BottomNav />
-    </ReduxProvider>
+    </AuthProvider>
   )
 }
 

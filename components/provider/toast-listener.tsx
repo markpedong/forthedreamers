@@ -1,19 +1,16 @@
 'use client'
 
-import useWithDispatch from '@/hooks/useWithDispatch'
-import { setSessionData } from '@/redux/features/appSlice'
-import { useAppDispatch } from '@/redux/store'
+import { useAuthSession } from '@/lib/supabase/auth-context'
 import { Route } from 'next'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 
 const ToastListener = () => {
-  const dispatch = useAppDispatch()
-  const searchParams = useSearchParams()
+  const { session, signOut } = useAuthSession()
   const router = useRouter()
   const pathname = usePathname()
-  const {updateSession} = useWithDispatch()
+  const searchParams = useSearchParams()
 
   const error = searchParams.get('error')
   const emailVerified = searchParams.get('emailVerified')
@@ -33,14 +30,15 @@ const ToastListener = () => {
 
   useEffect(() => {
     if (isSignedIn === 'false') {
-      dispatch(setSessionData(null))
+      signOut()
       deleteParameters(['isSignedIn'])
     }
   }, [pathname, isSignedIn])
 
   useEffect(() => {
     if (isFromSocial) {
-      updateSession()
+      // Refresh session from server after social login redirect
+      router.refresh()
       deleteParameters(['social'])
     }
   }, [pathname, isFromSocial])

@@ -1,15 +1,21 @@
+'use client'
+
 import { Button } from '@/components/ui/button';
-import { useAppSelector } from '@/redux/store';
+import { useAuthSession } from '@/lib/supabase/auth-context';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HatGlasses } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 
 const ImpersonationIndicator: FC = () => {
-  const session = useAppSelector((state) => state.appData?.session);
+  const session = useAuthSession().session;
   const router = useRouter();
 
-  if (!session?.session?.impersonatedBy) return null;
+  // Check for impersonation (custom property from Supabase extension)
+  const isImpersonated = session?.session && 'impersonatedBy' in (session.session as any);
+  const impersonatedBy = isImpersonated ? (session.session as any).impersonatedBy : null;
+
+  if (!impersonatedBy) return null;
 
   const handleStopImpersonating = async () => {
     router.push('/users');
