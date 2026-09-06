@@ -233,15 +233,6 @@ export const updateUserImage = async ({ image }: { image: string }) => {
   return { user };
 };
 
-type LinkedAccount = {
-  id: string;
-  accountId: string;
-  providerId: string;
-  createdAt: Date | null;
-};
-
-export const listUserAccounts = async (): Promise<LinkedAccount[]> => [];
-
 // Supabase password reset (server action - uses admin client)
 export const requestPasswordReset = async ({ email, redirectTo }: { email: string; redirectTo?: string }) => {
   const supabase = await createSupabaseServerClient();
@@ -255,7 +246,7 @@ export const requestPasswordReset = async ({ email, redirectTo }: { email: strin
 };
 
 export const listAllSessions = async () => [];
-export const listPasskeys = async () => [];
+
 export const permissionListUsers = async () => ({ success: true });
 
 export const listUsers = async () => {
