@@ -71,9 +71,9 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
     const { category, ...rest } = values
     const data: ProductFormData = {
       ...rest,
-      ...(!isEdit && {sellerId: session?.user?.id ?? ''}),
+      ...(isEdit && { id: initialProduct?.id }),
       categoryId: `${currCategory?.id}`,
-      variants: values?.variants.map(({id, ...v}) => v) as TVariant[],
+      variants: values?.variants.map(({id, ...v}) => ({ ...v, ...(isEdit && id ? { id } : {}) })) as TVariant[],
     }
 
     onSubmit(data, type)

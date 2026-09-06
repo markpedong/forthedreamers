@@ -1,39 +1,43 @@
 'use client'
 
-import { FC, useState } from 'react'
+import { FC, useState, useOptimistic, useTransition } from 'react'
 import { ShoppingCart, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { OmittedProductFields, TVariant } from '@/lib/types'
-import { useAddCartItem } from '@/lib/hooks/use-cart'
+import { useWishlist } from '@/components/provider/wishlist-provider'
+import { addToCart } from '@/lib/actions/cart'
+import { useCartCount } from '@/components/provider/cart-count-provider'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 const AddToCartSection: FC<{product: OmittedProductFields; selectedVariant?: TVariant | null}> = ({product, selectedVariant}) => {
   const [quantity, setQuantity] = useState(1)
-  const [isWishlisted, setIsWishlisted] = useState(false)
-  const { mutate: addToCart, isPending: adding } = useAddCartItem()
-  const { mutate: executeBuyNow, isPending: buying } = useAddCartItem()
-
+  const wishlist = useWishlist()
+  const isWishlisted = wishlist.ids.includes(product.id)
+  const [adding, startTransition] = useTransition()
+  const buying = adding
+  const [optimisticAdded, markAdded] = useOptimistic(false, (_state, _value: boolean) => true)
+  const { setCount } = useCartCount()
+  const router = useRouter()
   const handleQuantity = (value: number) => {
-    if (value > 0) setQuantity(value)
+    if (Number.isSafeInteger(value) && value > 0 && value <= Math.min(999, selectedVariant?.stock ?? 999)) setQuantity(value)
   }
-
-  const handleAddToCart = () => {
-    if (!selectedVariant) return;
-    addToCart(
-      { variantId: selectedVariant.id, quantity }
-    );
+  const submit = (buyNow: boolean) => {
+    if (!selectedVariant || adding) return
+    startTransition(async () => {
+      markAdded(true)
+      try {
+        const result = await addToCart(selectedVariant.id, quantity)
+        if (!result.success) { toast.error(result.message); return }
+        setCount(result.data.count)
+        toast.success(result.message)
+        if (buyNow) router.push('/checkout')
+      } catch { toast.error('Unable to add to cart. Please try again.') }
+      finally { markAdded(false) }
+    })
   }
-
-  const handleBuyNow = () => {
-    if (!selectedVariant) return;
-    executeBuyNow(
-      { variantId: selectedVariant.id, quantity },
-      {
-        onSuccess: () => {
-          window.location.href = '/checkout';
-        },
-      }
-    );
-  }
+  const handleAddToCart = () => submit(false)
+  const handleBuyNow = () => submit(true)
 
   return (
     <div className='flex flex-col gap-6 mt-8'>
@@ -69,7 +73,7 @@ const AddToCartSection: FC<{product: OmittedProductFields; selectedVariant?: TVa
       <div className='flex flex-col gap-3 sm:flex-row'>
         <Button size='lg' className='flex-1 gap-2 h-12' onClick={handleAddToCart} disabled={adding}>
           <ShoppingCart size={20} />
-          {adding ? 'Adding...' : 'Add to Cart'}
+          {optimisticAdded ? 'Adding...' : 'Add to Cart'}
         </Button>
 
         <Button size='lg' variant='outline' className='flex-1 h-12' onClick={handleBuyNow} disabled={buying}>
@@ -79,7 +83,7 @@ const AddToCartSection: FC<{product: OmittedProductFields; selectedVariant?: TVa
 
       {/* Wishlist */}
       {selectedVariant?.stock === 0 && (
-        <Button variant='outline' className='w-full gap-2 h-11' onClick={() => setIsWishlisted(prev => !prev)}>
+        <Button variant='outline' className='w-full gap-2 h-11' disabled={wishlist.pending} onClick={() => wishlist.toggle(product.id)}>
           <Heart size={20} className={isWishlisted ? 'fill-destructive text-destructive' : ''} />
           {isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
         </Button>

@@ -14,7 +14,7 @@ import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import Divider from '@/components/reusable/divider';
 import { useRouter } from 'next/navigation';
-import { useCheckStore, useCreateSeller } from '@/lib/hooks/use-api';
+import { sellerSignup } from '@/lib/actions/seller';
 import { tryWithToast } from '@/utils/helper';
 import { signUp } from '@/lib/server-actions';
 import { toast } from 'sonner';
@@ -23,9 +23,7 @@ import Link from 'next/link';
 const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
   const [isSigningUp, startTransition] = useTransition();
-  const checkStore = useCheckStore();
-  const createSeller = useCreateSeller();
-  const isSubmitting = isSigningUp || checkStore.isPending || createSeller.isPending;
+  const isSubmitting = isSigningUp;
   const { createSellerSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof createSellerSchema>>({
     resolver: zodResolver(createSellerSchema),
@@ -39,21 +37,12 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   });
 
   const onSubmit = (values: SchemaForm<typeof createSellerSchema>) => {
-    checkStore.mutate(values.storeName, {
-      onSuccess: () => {
-        startTransition(async () => {
-          const res = await tryWithToast(signUp(values.email, values.password, values.name));
-          if (!res?.user) return;
-
-          createSeller.mutate({ storeName: values.storeName, userID: res.user.id }, {
-            onSuccess: (seller) => {
-              if (!seller.success) return;
-              router.refresh();
-              toast.success('Account created successfully!');
-            },
-          });
-        });
-      },
+    startTransition(async () => {
+      try {
+        const result = await sellerSignup(values);
+        if (result.success) { toast.success(result.message); router.refresh(); }
+        else toast.error(result.message);
+      } catch { toast.error('Unable to sign up'); }
     });
   };
 

@@ -1,19 +1,4 @@
-import LandingPage, { type LandingProduct } from './components'
-import prisma from '@/lib/prisma'
-
-const Page = async () => {
-  const products = (await prisma.product.findMany({
-    include: {
-      variants: true,
-      seller: true
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 24
-  })) satisfies LandingProduct[]
-
-  return <LandingPage products={products} />
-}
-
+import LandingPage from './components'
+import { homeProducts } from '@/lib/services/catalog'
+export default async function Page() { return <LandingPage products={await homeProducts()} /> }
 export const dynamic = 'force-dynamic'
-
-export default Page

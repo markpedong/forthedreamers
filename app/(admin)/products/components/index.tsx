@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, useState } from 'react'
+import { FC, useState, useOptimistic, useTransition } from 'react'
 import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -10,34 +10,35 @@ import AlertDialog from '@/components/reusable/alert-dialog'
 import Link from 'next/link'
 import DropDown from '@/components/reusable/dropdown'
 import ProTable from '@/components/pro-table'
-import { useProducts, useCategories, useCreateProduct, useUpdateProduct, useDeleteProduct, useToggleProductStatus } from '@/lib/hooks/use-api'
+import { createProduct, updateProduct, deleteProduct, setProductStatus } from '@/lib/actions/admin-catalog'
 import { Switch } from '@/components/ui/switch'
 
-const Products: FC = () => {
+const Products: FC<{ initialProducts: TProduct[]; initialCategories: import("@/generated/prisma").Category[] }> = ({ initialProducts, initialCategories }) => {
   const [deleteDialog, setDeleteDialog] = useState<{id: string; name: string} | null>(null)
   const [open, setOpen] = useState(false)
   const [type, setType] = useState<'EDIT' | 'CREATE'>('CREATE')
   const [product, setProduct] = useState<TProduct>()
-  const { data: products, isLoading } = useProducts({ page: 1, pageSize: 20, current: 1 })
-  const { data: categories } = useCategories({ isForProducts: true })
-  const { mutate: deleteProduct, isPending } = useDeleteProduct()
-  const { mutate: toggleProductStatus } = useToggleProductStatus()
-  const createProduct = useCreateProduct()
-  const updateProduct = useUpdateProduct()
-
+  const [isPending, startTransition] = useTransition()
+  const [rows, optimistic] = useOptimistic(initialProducts, (state, change: { id: string; active?: boolean }) => change.active === undefined ? state.filter(p => p.id !== change.id) : state.map(p => p.id === change.id ? { ...p, status: change.active ? 'ACTIVE' as const : 'INACTIVE' as const } : p))
   const handleDelete = () => {
     if (!deleteDialog) return
-    deleteProduct(deleteDialog.id, {
-      onSuccess: (res) => {
-        if (!res.success) return
-        toast.success(`Deleted "${deleteDialog.name}"`)
-        setDeleteDialog(null)
-        setProduct(undefined)
-      },
+    startTransition(async () => {
+      optimistic({ id: deleteDialog.id })
+      try {
+        const result = await deleteProduct(deleteDialog.id)
+        if (!result.success) { toast.error(result.message); return }
+        toast.success('Product deleted'); setDeleteDialog(null); setProduct(undefined)
+      } catch { toast.error('Unable to delete product') }
     })
   }
-
-  const toggleStatus = (id: string) => toggleProductStatus({ id })
+  const toggleStatus = (id: string) => {
+    const active = rows.find(p => p.id === id)?.status !== 'ACTIVE'
+    startTransition(async () => {
+      optimistic({ id, active })
+      try { const result = await setProductStatus(id, active); if (!result.success) toast.error(result.message) }
+      catch { toast.error('Unable to update status') }
+    })
+  }
 
   const dropdownMenus = (record: TProduct): DropdownMenuItemType[] => [
     {
@@ -120,6 +121,7 @@ const Products: FC = () => {
       search: false,
       render: (_, record) => (
         <Switch
+          disabled={isPending}
           checked={record.status === 'ACTIVE'}
           onCheckedChange={() => toggleStatus(record.id)}
         />
@@ -141,14 +143,12 @@ const Products: FC = () => {
   ]
 
   const handleSubmitProduct = (data: ProductFormData, type: 'CREATE' | 'EDIT') => {
-    const isEdit = type === 'EDIT'
-    const mutation = isEdit ? updateProduct : createProduct
-    mutation.mutate(data, {
-      onSuccess: (res) => {
-        if (!res.success) return
-        toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`)
-        setOpen(false)
-      },
+    startTransition(async () => {
+      try {
+        const result = await (type === 'EDIT' ? updateProduct(data) : createProduct(data))
+        if (!result.success) { toast.error(result.message); return }
+        toast.success(result.message); setOpen(false)
+      } catch { toast.error('Unable to save product') }
     })
   }
 
@@ -176,8 +176,8 @@ const Products: FC = () => {
         <ProTable<TProduct>
           rowKey='id'
           columns={columns?.map(item => ({...item, align: 'center'}))}
-          dataSource={products?.data}
-          isLoading={isLoading}
+          dataSource={rows}
+          isLoading={false}
           toolBarRender={false}
           search={{defaultCollapsed: false}}
         />
@@ -186,9 +186,9 @@ const Products: FC = () => {
         open={open}
         setOpen={setOpen}
         type={type}
-        categories={categories?.data ?? []}
+        categories={initialCategories}
         onSubmit={handleSubmitProduct}
-        isSubmitting={createProduct.isPending || updateProduct.isPending}
+        isSubmitting={isPending}
         initialProduct={type === 'EDIT' ? product : undefined}
       />
       <AlertDialog

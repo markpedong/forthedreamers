@@ -1,14 +1,10 @@
 'use client';
 
 import { FC } from 'react';
-import { useCartItems } from '@/lib/hooks/use-cart';
+import { useCartCount } from '@/components/provider/cart-count-provider';
 
 const CartItemCount: FC = () => {
-  const { data } = useCartItems();
-
-  if (data === undefined) return null;
-
-  const count = data.data?.length ?? 0;
+  const { count } = useCartCount();
   if (count === 0) return null;
 
   return (

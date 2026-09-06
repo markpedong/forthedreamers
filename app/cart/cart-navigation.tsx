@@ -2,12 +2,10 @@
 
 import { FC } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCartItems } from '@/lib/hooks/use-cart';
 import { Button } from '@/components/ui/button';
 
 const CartNavigation: FC = () => {
   const router = useRouter();
-  const { isLoading } = useCartItems();
 
   return (
     <>
@@ -15,7 +13,6 @@ const CartNavigation: FC = () => {
         className='w-full'
         size='lg'
         onClick={() => router.push('/checkout' as never)}
-        disabled={isLoading}
       >
         Proceed to Checkout
       </Button>
@@ -23,7 +20,6 @@ const CartNavigation: FC = () => {
         variant='outline'
         className='w-full'
         onClick={() => router.push('/')}
-        disabled={isLoading}
       >
         Continue Shopping
       </Button>

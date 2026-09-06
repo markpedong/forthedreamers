@@ -1,8 +1,8 @@
 'use client';
 
-import { FC } from 'react';
-import { useRouter } from 'next/navigation';
-import { useCheckout } from '@/lib/hooks/use-cart';
+import { FC, useTransition } from 'react';
+import { startCheckout } from '@/lib/actions/checkout';
+import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -11,28 +11,23 @@ interface PlaceOrderButtonProps {
 }
 
 const PlaceOrderButton: FC<PlaceOrderButtonProps> = ({ total }) => {
-  const router = useRouter();
-  const checkoutMutation = useCheckout();
-
-  const handlePlaceOrder = () => {
-    checkoutMutation.mutate(
-      undefined,
-      {
-        onSuccess: (data) => {
-          router.push(`/checkout/success?orderId=${data.data.orderGroupId}` as never);
-        },
-      }
-    );
-  };
+  const [pending, startTransition] = useTransition();
+  const handlePlaceOrder = () => startTransition(async () => {
+    try {
+      const result = await startCheckout();
+      if (!result.success) { toast.error(result.message); return; }
+      window.location.assign(result.data.url);
+    } catch { toast.error('Unable to start payment'); }
+  });
 
   return (
     <Button
       size='lg'
       className='w-full'
       onClick={handlePlaceOrder}
-      disabled={checkoutMutation.isPending}
+      disabled={pending}
     >
-      {checkoutMutation.isPending ? (
+      {pending ? (
         <>
           <Loader2 className='w-4 h-4 animate-spin mr-2' />
           Processing...

@@ -4,52 +4,47 @@ import { FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Trash2, Minus, Plus } from 'lucide-react';
-import { useCartItems, useRemoveCartItem, useUpdateCartQuantity } from '@/lib/hooks/use-cart';
 
-interface CartItemWithRelations {
-  id: string;
-  userId: string;
-  variantId: string;
-  productId?: string | null;
-  quantity: number;
-  variant: {
-    id: string;
-    name: string;
-    price: number;
-    discountedPrice?: number | null;
-    stock: number;
-    image?: string | null;
-    product: {
-      id: string;
-      name: string;
-      slug: string;
-      seller: { storeName: string };
-    };
+
+import { useOptimistic, useRef, useState, useTransition } from 'react';
+import { toast } from 'sonner';
+import { updateCartQuantity, removeCartItem } from '@/lib/actions/cart';
+import type { CartItem } from '@/lib/services/cart';
+import CartNavigation from './cart-navigation';
+import { useCartCount } from '@/components/provider/cart-count-provider';
+
+const CartItemsList: FC<{ items: CartItem[] }> = ({ items }) => {
+  const [canonical, setCanonical] = useState(items);
+  const [optimistic, apply] = useOptimistic(canonical, (state, change: { id: string; quantity?: number }) =>
+    change.quantity === undefined ? state.filter(item => item.id !== change.id) : state.map(item => item.id === change.id ? { ...item, quantity: change.quantity! } : item));
+  const [, startTransition] = useTransition();
+  const queues = useRef(new Map<string, Promise<void>>());
+  const { setCount } = useCartCount();
+  const change = (id: string, quantity?: number) => {
+    startTransition(async () => {
+      apply({ id, quantity });
+      const previous = queues.current.get(id) ?? Promise.resolve();
+      const request = previous.catch(() => {}).then(async () => {
+        try {
+          const result = quantity === undefined ? await removeCartItem(id) : await updateCartQuantity(id, quantity);
+          if (!result.success) { toast.error(result.message); return; }
+          setCanonical(state => result.data.item ? state.map(item => item.id === id ? result.data.item! : item) : state.filter(item => item.id !== id));
+          setCount(result.data.count);
+          if (quantity === undefined) toast.success(result.message);
+        } catch { toast.error('Unable to update cart. Please try again.'); }
+      });
+      queues.current.set(id, request);
+      await request;
+      if (queues.current.get(id) === request) queues.current.delete(id);
+    });
   };
-  product?: { name: string } | null;
-}
-
-interface CartItemsListProps {
-  items: CartItemWithRelations[];
-}
-
-const CartItemsList: FC<CartItemsListProps> = ({ items }) => {
-  const { data: cartData } = useCartItems();
-  const removeMutation = useRemoveCartItem();
-  const updateMutation = useUpdateCartQuantity();
-
-  const handleRemove = (cartItemId: string) => {
-    removeMutation.mutate(cartItemId);
-  };
-
-  const handleQuantityChange = (cartItemId: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    updateMutation.mutate({ cartItemId, quantity: newQuantity });
-  };
-
+  const handleRemove = (id: string) => change(id);
+  const handleQuantityChange = (id: string, quantity: number) => { if (quantity >= 1) change(id, quantity); };
+  const total = optimistic.reduce((sum, item) => sum + (item.variant.discountedPrice ?? item.variant.price) * item.quantity, 0);
+  if (!optimistic.length) return <div className="text-center py-12"><h2 className="text-2xl font-bold mb-6">Your cart is empty</h2><Link href="/">Continue Shopping</Link></div>;
   return (
-    <>
-      {items.map((item) => {
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8"><div className="lg:col-span-2 space-y-4">
+      {optimistic.map((item) => {
         const price = item.variant.discountedPrice ?? item.variant.price;
         const itemTotal = price * item.quantity;
 
@@ -97,7 +92,7 @@ const CartItemsList: FC<CartItemsListProps> = ({ items }) => {
             <div className='flex flex-col items-end gap-2'>
               <button
                 onClick={() => handleRemove(item.id)}
-                disabled={removeMutation.isPending}
+
                 className='p-1 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50'
                 aria-label='Remove item'
               >
@@ -108,7 +103,7 @@ const CartItemsList: FC<CartItemsListProps> = ({ items }) => {
                 <button
                   onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                   className='p-1 border rounded hover:bg-muted'
-                  disabled={item.quantity <= 1 || updateMutation.isPending}
+                  disabled={item.quantity <= 1}
                 >
                   <Minus className='w-3 h-3' />
                 </button>
@@ -117,7 +112,7 @@ const CartItemsList: FC<CartItemsListProps> = ({ items }) => {
                   onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                   className='p-1 border rounded hover:bg-muted'
                   disabled={
-                    item.quantity >= item.variant.stock || updateMutation.isPending
+                    item.quantity >= item.variant.stock
                   }
                 >
                   <Plus className='w-3 h-3' />
@@ -130,7 +125,13 @@ const CartItemsList: FC<CartItemsListProps> = ({ items }) => {
           </div>
         );
       })}
-    </>
+    </div><div className="order-first lg:order-last"><div className="p-6 border rounded-lg bg-card space-y-4">
+      <h2 className="text-xl font-bold">Order Summary</h2>
+      <div className="space-y-2 text-sm"><div className="flex justify-between"><span>Subtotal</span><span>${total.toFixed(2)}</span></div>
+      <div className="flex justify-between"><span>Shipping</span><span className="text-green-600">Free</span></div>
+      <div className="border-t pt-2 flex justify-between font-bold text-lg"><span>Total</span><span>${total.toFixed(2)}</span></div></div>
+      <CartNavigation />
+    </div></div></div>
   );
 };
 

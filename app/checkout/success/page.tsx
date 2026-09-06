@@ -32,7 +32,7 @@ const CheckoutSuccessPage = async ({
   }
 
   const orderGroup = await prisma.orderGroup.findUnique({
-    where: { id: orderId },
+    where: { id: orderId, userId: session.user.id },
     include: {
       orders: {
         include: {
@@ -65,10 +65,10 @@ const CheckoutSuccessPage = async ({
 
   return (
     <main className="max-w-4xl mx-auto py-12 px-4 text-center">
-      <CheckCircle className="w-16 h-16 mx-auto text-green-500 mb-4" />
-      <h1 className="text-3xl font-bold mb-2">Order Confirmed!</h1>
+      {orderGroup.paymentStatus === 'PAID' && <CheckCircle className="w-16 h-16 mx-auto text-green-500 mb-4" />}
+      <h1 className="text-3xl font-bold mb-2">{orderGroup.paymentStatus === 'PAID' ? 'Order Confirmed!' : 'Payment ' + orderGroup.paymentStatus.toLowerCase()}</h1>
       <p className="text-muted-foreground mb-6">
-        Thank you for your purchase. Your order ID is <span className="font-mono font-bold">{orderGroup.id}</span>.
+        {orderGroup.paymentStatus === 'PAID' ? 'Thank you for your purchase.' : 'Your order is not paid yet.'} Your order ID is <span className="font-mono font-bold">{orderGroup.id}</span>.
       </p>
 
       <div className="border rounded-lg p-6 bg-card text-left max-w-2xl mx-auto mb-8">

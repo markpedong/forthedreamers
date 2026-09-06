@@ -1,6 +1,5 @@
-'use client'
 
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
@@ -8,12 +7,11 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { ArrowRight } from 'lucide-react'
 import { TProduct } from '@/lib/types'
-import { useRouter } from '@bprogress/next'
+import ProductCard from './product-card'
 import ImagePlaceholder from '@/components/reusable/image-placeholder'
 
 export type LandingProduct = Pick<TProduct, 'id' | 'name' | 'images' | 'basePrice' | 'slug'> & {
   variants: {price: number}[]
-  seller: Pick<TProduct['seller'], 'storeName'>
 }
 
 const lifestyle = {
@@ -32,35 +30,6 @@ const lifestyle = {
       alt: 'Lifestyle Detail 2'
     }
   ]
-}
-
-const ProductCard: FC<LandingProduct> = ({name, images, basePrice, variants, slug}) => {
-  const [isImageInvalid, setIsImageInvalid] = useState(false)
-  const imageSrc = images && images.length > 0 ? images[0] : null
-  const showImage = imageSrc && !isImageInvalid
-  const push = useRouter().push
-  return (
-    <div className='group cursor-pointer space-y-3' onClick={() => push(`/products/${slug}`)}>
-      <AspectRatio ratio={3 / 4} className='overflow-hidden rounded-sm '>
-        {showImage ? (
-          <Image
-            src={imageSrc}
-            alt={name}
-            fill
-            sizes='(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw'
-            className='object-cover transition-transform duration-700 group-hover:scale-105'
-            onError={() => setIsImageInvalid(true)}
-          />
-        ) : (
-          <ImagePlaceholder />
-        )}
-      </AspectRatio>
-      <div>
-        <h3 className='font-medium'>{name}</h3>
-        <p className='text-sm text-neutral-500'>$ {basePrice ?? variants?.[0].price}</p>
-      </div>
-    </div>
-  )
 }
 
 const LifestyleImg: FC<{src: string; alt: string; title?: string}> = ({src, alt, title}) => (
