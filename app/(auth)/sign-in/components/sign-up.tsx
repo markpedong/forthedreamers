@@ -50,7 +50,7 @@ const SignUp = ({onNavigate}: {onNavigate: TOnNavigate}) => {
           <p className='text-muted-foreground'>Sign up to get started</p>
         </div>
 
-        <Form form={form} onSubmit={onSubmit} submitLabel={isSigningUp ? 'Signing up...' : 'Sign up'}>
+        <Form form={form} onSubmit={onSubmit} isSending={isSigningUp} submitLabel={isSigningUp ? 'Signing up...' : 'Sign up'}>
           <Input control={form.control} name='name' label='Full Name' placeholder='John Doe' disabled={isSigningUp} preventSpaces />
 
           <Input control={form.control} name='email' label='Email' placeholder='you@example.com' disabled={isSigningUp} preventSpaces />

@@ -42,6 +42,7 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           <Form
             form={form}
             onSubmit={onSubmit}
+            isSending={isSending}
             submitLabel={isSending ? 'Sending...' : 'Send reset link'}
           >
             <Input

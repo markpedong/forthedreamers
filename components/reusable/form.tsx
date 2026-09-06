@@ -18,6 +18,7 @@ const Form = <T extends FieldValues>({
   form,
   onSubmit,
   submitLabel,
+  isSending = false,
   className,
   customSubmitButton = false,
   ...rest
@@ -38,7 +39,7 @@ const Form = <T extends FieldValues>({
       >
         {children}
         {!customSubmitButton && (
-          <Button className='w-full h-11' disabled={submitLabel?.includes('.')}>
+          <Button className='w-full h-11' disabled={isSending} aria-busy={isSending}>
             {submitLabel}
           </Button>
         )}

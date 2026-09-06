@@ -88,7 +88,7 @@ const SignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
         </div>
 
         <div className='space-y-5'>
-          <Form form={form} onSubmit={onSubmit} submitLabel={isSubmit ? 'Signing in...' : 'Sign in'}>
+          <Form form={form} onSubmit={onSubmit} isSending={isSubmit} submitLabel={isSubmit ? 'Signing in...' : 'Sign in'}>
             <Input name='email' label='Email' placeholder='you@example.com' preventSpaces disabled={isSubmit} />
 
             <Input name='password' label='Password' type='password' placeholder='••••••••' preventSpaces disabled={isSubmit} />
