@@ -184,4 +184,6 @@ async function ShippingAddressForm({ userId }: { userId: string }) {
   );
 }
 
+export const dynamic = 'force-dynamic';
+
 export default CheckoutPage;

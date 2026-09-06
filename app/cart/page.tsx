@@ -82,4 +82,6 @@ const CartPage = async () => {
   );
 };
 
+export const dynamic = 'force-dynamic';
+
 export default CartPage;
