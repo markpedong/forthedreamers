@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, PropsWithChildren, Suspense, useState } from 'react'
+import {FC, PropsWithChildren, Suspense, useState} from 'react'
 import { Toaster } from '../ui/sonner'
 import ThemeToggleButton from './theme-toggle'
 import ToastListener from './toast-listener'
@@ -10,13 +10,15 @@ import BottomNav from '../navigation/bottom-nav'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AppProgressProvider } from '@bprogress/next'
 import Footer from '../navigation/footer'
-import { AuthProvider, useAuthSession, type AuthSession } from '@/lib/supabase/auth-context'
+import {CartCountProvider} from './cart-count-provider'
+import {WishlistProvider} from './wishlist-provider'
+import {AuthProvider, type AuthSession} from '@/lib/supabase/auth-context'
 
 type MainProviderProps = PropsWithChildren<{
   initialSession?: AuthSession | null
 }>
 
-const MainProvider: FC<MainProviderProps> = ({ children, initialSession }) => {
+const MainProvider: FC<MainProviderProps> = ({children, initialSession}) => {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
@@ -32,16 +34,20 @@ const MainProvider: FC<MainProviderProps> = ({ children, initialSession }) => {
     <AppProgressProvider>
       <AuthProvider initialSession={initialSession}>
         <QueryClientProvider client={queryClient}>
-          <Navbar />
-          <Suspense fallback={null}>
-            <ToastListener />
-          </Suspense>
-          {children}
-          <Toaster />
-          <ThemeToggleButton />
-          <ImpesonationIndicator />
-          <Footer />
-          <BottomNav />
+          <CartCountProvider initialCount={0}>
+            <WishlistProvider initialIds={[]}>
+              <Navbar />
+              <Suspense fallback={null}>
+                <ToastListener />
+              </Suspense>
+              {children}
+              <Toaster />
+              <ThemeToggleButton />
+              <ImpesonationIndicator />
+              <Footer />
+              <BottomNav />
+            </WishlistProvider>
+          </CartCountProvider>
         </QueryClientProvider>
       </AuthProvider>
     </AppProgressProvider>

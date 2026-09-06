@@ -1,30 +1,19 @@
-'use client';
+'use client'
 
-import { FC } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import {Button} from '@/components/ui/button'
+import Link from 'next/link'
 
-const CartNavigation: FC = () => {
-  const router = useRouter();
-
+const CartNavigation = () => {
   return (
     <>
-      <Button
-        className='w-full'
-        size='lg'
-        onClick={() => router.push('/checkout' as never)}
-      >
-        Proceed to Checkout
+      <Button className='w-full' size='lg' asChild>
+        <Link href='/checkout'>Proceed to Checkout</Link>
       </Button>
-      <Button
-        variant='outline'
-        className='w-full'
-        onClick={() => router.push('/')}
-      >
-        Continue Shopping
+      <Button variant='outline' className='w-full' asChild>
+        <Link href='/'>Continue Shopping</Link>
       </Button>
     </>
-  );
-};
+  )
+}
 
-export default CartNavigation;
+export default CartNavigation
