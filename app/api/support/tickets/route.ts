@@ -54,8 +54,8 @@ export async function GET(request: NextRequest) {
 const ticketSchema = z.object({
   subject: z.string().min(5).max(200),
   message: z.string().min(10).max(2000),
-  category: z.enum(["order", "product", "shipping", "account", "other"]),
-  priority: z.enum(["low", "medium", "high"]).optional().default("medium"),
+  category: z.enum(["ORDER", "PRODUCT", "SHIPPING", "ACCOUNT", "OTHER"]),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH"]).optional().default("MEDIUM"),
   orderId: z.string().optional(),
   productId: z.string().optional(),
 });

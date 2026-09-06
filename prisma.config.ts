@@ -1,8 +1,5 @@
-import { config as loadEnv } from "dotenv";
 import { defineConfig } from "prisma/config";
 import { normalizeDatabaseUrl } from "./lib/database-url";
-
-loadEnv();
 
 export default defineConfig({
   schema: "prisma/schema.prisma",

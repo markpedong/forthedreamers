@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id?: string }> }
 ) {
   try {
     const session = await getSession();
@@ -124,6 +124,9 @@ export async function DELETE(
     }
 
     const { id } = await params;
+    if (!id) {
+      return errorResponse("Wishlist item ID is required");
+    }
 
     const wishlistItem = await prisma.wishlist.findFirst({
       where: {
