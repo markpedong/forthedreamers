@@ -4,6 +4,7 @@ import { revalidatePath as revalidatePathNext } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import prisma from "./prisma";
+import { getRandomDefaultAvatarUrl } from "./default-avatars";
 import { createSupabaseAdminClient, createSupabaseServerClient } from "./supabase/server";
 import { upsertAuthUser } from "./auth";
 
@@ -61,12 +62,13 @@ export const getSession = async () => {
 export const signUp = async (email: string, password: string, name: string, callbackURL = "/profile") => {
   const supabase = await createSupabaseServerClient();
   const origin = await appOrigin();
+  const image = getRandomDefaultAvatarUrl();
   const result = await supabase.auth.signUp({
     email,
     password,
     options: {
       emailRedirectTo: `${origin}/auth/callback?next=${callbackURL}`,
-      data: { name },
+      data: { name, avatar_url: image },
     },
   });
 
@@ -80,6 +82,7 @@ export const signUp = async (email: string, password: string, name: string, call
         id: result.data.user.id,
         email: result.data.user.email,
         name,
+        image,
         emailVerified: Boolean(result.data.user.email_confirmed_at),
       },
     });

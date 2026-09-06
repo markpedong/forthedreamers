@@ -2,6 +2,7 @@
 
 import { z } from 'zod'
 import { USER_ROLE } from '@/generated/prisma'
+import { getRandomDefaultAvatarUrl } from '@/lib/default-avatars'
 import prisma from '@/lib/prisma'
 import { getSession } from '@/lib/server-actions'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
@@ -53,7 +54,8 @@ export const sellerSignup = async (input: unknown) => {
     }
 
     const supabase = await createSupabaseServerClient()
-    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } })
+    const image = getRandomDefaultAvatarUrl()
+    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name, avatar_url: image } } })
     const authUser = data.user
 
     if (error || !authUser || !authUser.identities?.length) {
@@ -64,11 +66,12 @@ export const sellerSignup = async (input: unknown) => {
       await prisma.$transaction(async tx => {
         await tx.user.upsert({
           where: { id: authUser.id },
-          update: { email, name, role: USER_ROLE.SELLER },
+          update: { email, name, image, role: USER_ROLE.SELLER },
           create: {
             id: authUser.id,
             email,
             name,
+            image,
             emailVerified: Boolean(authUser.email_confirmed_at),
             role: USER_ROLE.SELLER
           }

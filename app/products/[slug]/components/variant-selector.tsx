@@ -1,41 +1,33 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { TVariant } from '@/lib/types'
-import classNames from 'classnames'
+import {useMemo} from 'react'
+import {Badge} from '@/components/ui/badge'
+import {Button} from '@/components/ui/button'
+import type {ProductPageVariant} from './product-types'
 import styles from './styles.module.scss'
 
 interface VariantSelectorProps {
-  variants?: TVariant[]
-  attributeTypes?: string[]
+  variants: ProductPageVariant[]
+  attributeTypes: string[]
   selectedAttributes: Record<string, string>
   setSelectedAttributes: React.Dispatch<React.SetStateAction<Record<string, string>>>
 }
 
 const VariantSelector = ({
-  variants = [],
+  variants,
   attributeTypes,
   selectedAttributes,
   setSelectedAttributes
 }: VariantSelectorProps) => {
-  const computedAttributeTypes = useMemo(() => {
-    if (!attributeTypes && variants.length > 0) {
-      return Array.from(new Set(variants.flatMap(v => Object.keys(v.attributes))))
-    }
-    return attributeTypes || []
-  }, [variants, attributeTypes])
-
   const allOptions = useMemo(
-    () => Object.fromEntries(computedAttributeTypes.map(type => [type, Array.from(new Set(variants.map(v => v.attributes[type]))).sort()])),
-    [variants, computedAttributeTypes]
+    () => Object.fromEntries(attributeTypes.map(type => [type, Array.from(new Set(variants.map(variant => variant.attributes[type]))).sort()])),
+    [variants, attributeTypes]
   )
 
   const availableOptions = useMemo(
     () =>
       Object.fromEntries(
-        computedAttributeTypes.map(type => [
+        attributeTypes.map(type => [
           type,
           allOptions[type].map(value => ({
             value,
@@ -45,30 +37,30 @@ const VariantSelector = ({
           }))
         ])
       ),
-    [allOptions, selectedAttributes, variants, computedAttributeTypes]
+    [allOptions, selectedAttributes, variants, attributeTypes]
   )
 
   const handleSelect = (type: string, value: string) => setSelectedAttributes(prev => ({...prev, [type]: value}))
 
   const selectedVariant = useMemo(
-    () => variants.find(v => computedAttributeTypes.every(type => v.attributes[type] === selectedAttributes[type])),
-    [variants, selectedAttributes, computedAttributeTypes]
+    () => variants.find(variant => attributeTypes.every(type => variant.attributes[type] === selectedAttributes[type])),
+    [variants, selectedAttributes, attributeTypes]
   )
 
+  if (!variants.length) return null
+
   return (
-    <div className='flex flex-col gap-6 mt-8'>
-      <div className='border-t border-border pt-6 my-2 flex justify-between gap-4'>
-        <p className='text-xs uppercase tracking-widest font-bold text-primary mb-1'>Stock Status</p>
-        <p
-          className={`text-sm font-light  ${selectedVariant?.stock && selectedVariant.stock > 0 ? 'text-accent-foreground' : 'text-destructive'}`}
-        >
-          {selectedVariant ? (selectedVariant.stock > 0 ? `${selectedVariant.stock} Available` : 'Out of Stock') : 'Unavailable'}
+    <div className='mt-8 flex flex-col gap-6'>
+      <div className='flex justify-between gap-4 border-t border-border pt-6'>
+        <p className='mb-1 text-xs font-bold uppercase tracking-widest text-primary'>Stock</p>
+        <p className={selectedVariant?.stock ? 'text-sm text-foreground' : 'text-sm text-destructive'}>
+          {selectedVariant ? (selectedVariant.stock > 0 ? `${selectedVariant.stock} available` : 'Out of stock') : 'Select a variant'}
         </p>
       </div>
-      {computedAttributeTypes.map(type => (
+      {attributeTypes.map(type => (
         <div key={type} className='flex flex-col gap-1'>
           <div className='flex items-center justify-between'>
-            <label className='text-xs uppercase tracking-widest text-primary font-bold'>{type}: </label>
+            <label className='text-xs font-bold uppercase tracking-widest text-primary'>{type}</label>
             {selectedAttributes[type] && (
               <Badge variant='secondary' className='text-xs'>
                 {selectedAttributes[type]}
@@ -81,9 +73,7 @@ const VariantSelector = ({
                 key={`${type}-${option.value}`}
                 variant={selectedAttributes[type] === option.value ? 'default' : 'outline'}
                 onClick={() => handleSelect(type, option.value)}
-                className={classNames('capitalize text-sm font-normal', {
-                  [styles.isDisabled]: !option.available
-                })}
+                className={`text-sm font-normal capitalize ${!option.available ? styles.isDisabled : ''}`}
                 disabled={!option.available}
               >
                 {option.value}

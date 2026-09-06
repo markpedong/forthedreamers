@@ -1,20 +1,20 @@
 'use client'
 
-import { type FC, useState } from 'react'
+import {useState} from 'react'
 import Image from 'next/image'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
-import { IMG_FALLBACK } from '@/constants'
+import {ChevronLeft, ChevronRight} from 'lucide-react'
+import {Button} from '@/components/ui/button'
+import {Skeleton} from '@/components/ui/skeleton'
 import ImagePlaceholder from '@/components/reusable/image-placeholder'
-import { cn } from '@/lib/utils'
+import {cn} from '@/lib/utils'
 
 interface ProductGalleryProps {
   images: string[]
+  alt: string
 }
 
-const ProductGallery: FC<ProductGalleryProps> = ({images}) => {
-  const validImages = images.length ? images : [IMG_FALLBACK]
+const ProductGallery = ({images, alt}: ProductGalleryProps) => {
+  const validImages = images.filter(Boolean)
   const hasMultiple = validImages.length > 1
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -32,20 +32,22 @@ const ProductGallery: FC<ProductGalleryProps> = ({images}) => {
     setImageErrors(prev => new Set(prev).add(selectedIndex))
   }
 
-  const renderMainImage = () =>
-    hasError ? (
-      <ImagePlaceholder hasError />
-    ) : (
+  const renderMainImage = () => {
+    if (!currentImage || hasError) return <ImagePlaceholder hasError={Boolean(currentImage)} />
+
+    return (
       <Image
-        src={currentImage || '/placeholder.svg'}
-        alt='Product image'
+        src={currentImage}
+        alt={alt}
         fill
-        className='object-cover transition-transform duration-300 group-hover:scale-105'
+        sizes='(min-width: 1024px) 50vw, 100vw'
+        className='object-contain p-6 transition-transform duration-300 group-hover:scale-[1.02]'
         onLoad={handleImageLoad}
         onError={handleImageError}
         priority
       />
     )
+  }
 
   const renderThumbnails = () =>
     validImages.map((img, idx) => {
@@ -70,9 +72,10 @@ const ProductGallery: FC<ProductGalleryProps> = ({images}) => {
             <ImagePlaceholder />
           ) : (
             <Image
-              src={img || '/placeholder.svg'}
-              alt={`Thumbnail ${idx + 1}`}
+              src={img}
+              alt={`${alt} thumbnail ${idx + 1}`}
               fill
+              sizes='80px'
               className='object-cover'
               onError={() => setImageErrors(prev => new Set(prev).add(idx))}
             />
@@ -82,9 +85,9 @@ const ProductGallery: FC<ProductGalleryProps> = ({images}) => {
     })
 
   return (
-    <div className='flex flex-col gap-6' role='region' aria-label='Product image gallery'>
-      <div className='group relative overflow-hidden rounded-xl border border-border bg-background aspect-square shadow-sm hover:shadow-md transition-shadow duration-300'>
-        {loading && <Skeleton className='absolute inset-0' />}
+    <div className='flex flex-col gap-4' role='region' aria-label={`${alt} image gallery`}>
+      <div className='group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted/20'>
+        {loading && currentImage && !hasError && <Skeleton className='absolute inset-0 z-10' />}
         {renderMainImage()}
 
         {hasMultiple && (
@@ -92,7 +95,7 @@ const ProductGallery: FC<ProductGalleryProps> = ({images}) => {
             <Button
               variant='outline'
               size='icon'
-              className='absolute left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 bg-background/90 backdrop-blur-sm hover:bg-background transition-all duration-200'
+              className='absolute left-3 top-1/2 z-20 -translate-y-1/2 bg-background/90 backdrop-blur-sm transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100'
               onClick={handlePrev}
               aria-label='Previous image'
             >
@@ -101,7 +104,7 @@ const ProductGallery: FC<ProductGalleryProps> = ({images}) => {
             <Button
               variant='outline'
               size='icon'
-              className='absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 bg-background/90 backdrop-blur-sm hover:bg-background transition-all duration-200'
+              className='absolute right-3 top-1/2 z-20 -translate-y-1/2 bg-background/90 backdrop-blur-sm transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100'
               onClick={handleNext}
               aria-label='Next image'
             >
@@ -115,7 +118,7 @@ const ProductGallery: FC<ProductGalleryProps> = ({images}) => {
         )}
       </div>
 
-      {hasMultiple && <div className='flex gap-2 overflow-x-auto py-2 px-1'>{renderThumbnails()}</div>}
+      {hasMultiple && <div className='flex gap-2 overflow-x-auto px-1 py-2'>{renderThumbnails()}</div>}
     </div>
   )
 }

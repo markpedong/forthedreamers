@@ -5,7 +5,9 @@ import Link from 'next/link'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import ImagePlaceholder from '@/components/reusable/image-placeholder'
 import type { LandingProduct } from './index'
-const ProductCard: FC<LandingProduct> = ({name, images, basePrice, variants, slug}) => {
+type ProductCardProps = LandingProduct & {rating?: number; reviewCount?: number}
+
+const ProductCard: FC<ProductCardProps> = ({name, images, basePrice, variants, slug, rating = 0, reviewCount = 0}) => {
   const [isImageInvalid, setIsImageInvalid] = useState(false)
   const imageSrc = images && images.length > 0 ? images[0] : null
   const showImage = imageSrc && !isImageInvalid
@@ -27,6 +29,9 @@ const ProductCard: FC<LandingProduct> = ({name, images, basePrice, variants, slu
       </AspectRatio>
       <div>
         <h3 className='font-medium'>{name}</h3>
+        {reviewCount > 0 && (
+          <p className='mt-1 text-xs text-muted-foreground'>★ {rating.toFixed(1)} · {reviewCount} reviews</p>
+        )}
         <p className='text-sm text-neutral-500'>$ {basePrice ?? variants?.[0].price}</p>
       </div>
     </Link>

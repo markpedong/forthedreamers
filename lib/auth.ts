@@ -1,5 +1,6 @@
 import { cache } from "react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { getRandomDefaultAvatarUrl } from "./default-avatars";
 import { prisma } from "./prisma";
 import { createSupabaseServerClient } from "./supabase/server";
 
@@ -13,10 +14,18 @@ export const upsertAuthUser = async (user: SupabaseUser) => {
     (typeof user.user_metadata.full_name === "string" && user.user_metadata.full_name) ||
     user.email.split("@")[0] ||
     "user";
-  const image = typeof user.user_metadata.avatar_url === "string" ? user.user_metadata.avatar_url : null;
+  const metadataImage = typeof user.user_metadata.avatar_url === "string" ? user.user_metadata.avatar_url : null;
   const emailVerified = Boolean(user.email_confirmed_at);
 
   if (!profile) {
+    const image = metadataImage ?? getRandomDefaultAvatarUrl();
+
+    if (!metadataImage) {
+      const supabase = await createSupabaseServerClient();
+      const { error } = await supabase.auth.updateUser({ data: { avatar_url: image } });
+      if (error) console.error("Unable to persist default avatar in Supabase Auth:", error.message);
+    }
+
     return prisma.user.create({
       data: {
         id: user.id,
@@ -27,6 +36,8 @@ export const upsertAuthUser = async (user: SupabaseUser) => {
       },
     });
   }
+
+  const image = metadataImage ?? profile.image;
 
   if (
     profile.email !== user.email ||

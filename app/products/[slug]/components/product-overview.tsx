@@ -1,56 +1,48 @@
-'use client'
-
+import {Star} from 'lucide-react'
 import {Badge} from '@/components/ui/badge'
-import {OmittedProductFields, TVariant} from '@/lib/types'
+import type {ProductPageVariant, ProductPurchaseData} from './product-types'
 
 interface ProductOverviewProps {
-  product: Pick<OmittedProductFields, 'name' | 'brand' | 'basePrice'>
-  selectedVariant?: TVariant | null
+  product: ProductPurchaseData
+  selectedVariant: ProductPageVariant | null
 }
 
-const ProductOverview: React.FC<ProductOverviewProps> = ({product, selectedVariant}) => {
-  const {name, brand, basePrice} = product
-  const price = 399
-  const basePriceNum = Number(basePrice)
-  const discount = basePriceNum > price ? Math.round(((basePriceNum - price) / basePriceNum) * 100) : 0
-  // const fullStars = Math.floor(rating)
+const formatPrice = (value: number) => `$${value.toFixed(2)}`
+
+const ProductOverview = ({product, selectedVariant}: ProductOverviewProps) => {
+  const currentPrice = selectedVariant?.discountedPrice ?? selectedVariant?.price ?? product.basePrice
+  const originalPrice = selectedVariant?.discountedPrice ? selectedVariant.price : null
+  const discount = originalPrice && currentPrice ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : 0
+  const rating = product.rating || 0
 
   return (
-    <div className='flex flex-col gap-2'>
-      <div className='flex flex-col'>
-        <p className='text-xs uppercase tracking-widest text-muted-foreground'>{brand}</p>
-        <h1 className='text-2xl lg:text-3xl font-medium tracking-tight text-foreground leading-tight'>{name}</h1>
+    <div className='flex flex-col gap-5'>
+      <div className='flex flex-wrap items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground'>
+        <span>{product.categoryName}</span>
+        {product.brand && <span>· {product.brand}</span>}
       </div>
 
-      {/* <div className='flex items-center gap-3'>
-        <div className='flex gap-0.5'>
-          {[...Array(5)].map((_, i) => (
-            <Star key={i} size={16} className={i < fullStars ? 'fill-foreground text-foreground' : 'text-muted-foreground'} />
-          ))}
+      <div className='space-y-3'>
+        <h1 className='text-3xl font-medium leading-tight tracking-tight text-foreground lg:text-4xl'>{product.name}</h1>
+        <div className='flex flex-wrap items-center gap-x-3 gap-y-2 text-sm'>
+          <span className='flex items-center gap-1 font-medium text-foreground'>
+            <Star size={16} className={rating ? 'fill-primary text-primary' : 'text-muted-foreground'} />
+            {rating ? rating.toFixed(1) : 'No rating yet'}
+          </span>
+          <span className='text-muted-foreground'>{product.reviewCount} reviews</span>
+          <span className='text-muted-foreground'>{product.soldCount.toLocaleString()} sold</span>
         </div>
-        <span className='text-sm text-muted-foreground'>
-          {rating} ({reviewCount} reviews)
-        </span>
-      </div> */}
-      <div className='flex items-baseline gap-3'>
-        <span className='text-2xl lg:text-3xl font-medium text-foreground'>
-          ${' '}
-          {!!selectedVariant
-            ? selectedVariant?.discountedPrice
-              ? selectedVariant.discountedPrice
-              : selectedVariant?.price
-            : price.toFixed(2)}
-        </span>
-        {Number(basePrice) > Number(selectedVariant?.price) && (
-          <>
-            <span className='text-md text-muted-foreground line-through'>${Number(basePrice).toFixed(2)}</span>
-            <Badge variant='destructive' className='bg-destructive/10 text-accent-foreground hover:bg-destructive/20'>
-              Save {discount}%
-            </Badge>
-          </>
-        )}
       </div>
-      {/* <div className='text-sm my-3 font-medium'>{product.description}</div> */}
+
+      <div className='flex flex-wrap items-baseline gap-3 border-y border-border py-5'>
+        {currentPrice !== null ? (
+          <span className='text-3xl font-semibold tracking-tight text-foreground'>{formatPrice(currentPrice)}</span>
+        ) : (
+          <span className='text-lg font-medium text-muted-foreground'>Price unavailable</span>
+        )}
+        {originalPrice && <span className='text-base text-muted-foreground line-through'>{formatPrice(originalPrice)}</span>}
+        {discount > 0 && <Badge variant='secondary'>{discount}% off</Badge>}
+      </div>
     </div>
   )
 }

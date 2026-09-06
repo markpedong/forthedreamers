@@ -1,27 +1,31 @@
 'use client'
 
-import {FC, useState} from 'react'
+import {useState} from 'react'
 import {useRouter} from 'next/navigation'
 import {Heart, ShoppingCart} from 'lucide-react'
+import {toast} from 'sonner'
 import {Button} from '@/components/ui/button'
 import {useCartCount} from '@/components/provider/cart-count-provider'
 import {useWishlist} from '@/components/provider/wishlist-provider'
 import {addToCart} from '@/lib/actions/cart'
-import {OmittedProductFields, TVariant} from '@/lib/types'
-import {toast} from 'sonner'
+import type {ProductPageVariant, ProductPurchaseData} from './product-types'
 
-const AddToCartSection: FC<{product: Pick<OmittedProductFields, 'id'>; selectedVariant?: TVariant | null}> = ({product, selectedVariant}) => {
+const AddToCartSection = ({product, selectedVariant}: {product: ProductPurchaseData; selectedVariant: ProductPageVariant | null}) => {
   const [quantity, setQuantity] = useState(1)
   const wishlist = useWishlist()
   const isWishlisted = wishlist.ids.includes(product.id)
   const [pendingAction, setPendingAction] = useState<'add' | 'buy' | null>(null)
   const {count, setCount} = useCartCount()
   const router = useRouter()
+  const maxQuantity = Math.min(999, selectedVariant?.stock ?? 0)
+  const safeQuantity = Math.min(quantity, Math.max(1, maxQuantity))
+
   const handleQuantity = (value: number) => {
-    if (Number.isSafeInteger(value) && value > 0 && value <= Math.min(999, selectedVariant?.stock ?? 999)) setQuantity(value)
+    if (Number.isSafeInteger(value) && value > 0 && value <= maxQuantity) setQuantity(value)
   }
+
   const submit = (buyNow: boolean) => {
-    if (!selectedVariant || pendingAction) return
+    if (!selectedVariant || selectedVariant.stock < 1 || pendingAction) return
 
     const action = buyNow ? 'buy' : 'add'
     const canOptimisticallyAddBadge = count === 0
@@ -30,7 +34,7 @@ const AddToCartSection: FC<{product: Pick<OmittedProductFields, 'id'>; selectedV
 
     void (async () => {
       try {
-        const result = await addToCart(selectedVariant.id, quantity)
+        const result = await addToCart(selectedVariant.id, safeQuantity)
         if (!result.success) {
           if (canOptimisticallyAddBadge) setCount(value => Math.max(0, value - 1))
           toast.error(result.message)
@@ -55,75 +59,72 @@ const AddToCartSection: FC<{product: Pick<OmittedProductFields, 'id'>; selectedV
   }
 
   return (
-    <div className='flex flex-col gap-6 mt-8'>
-      <div className='flex gap-2'>
-        <input
-          type='number'
-          min={1}
-          max={999}
-          value={quantity}
-          onChange={e => handleQuantity(Number(e.target.value) || 1)}
-          className='flex-1 h-12 text-center border border-border rounded-lg bg-background text-foreground font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all'
-        />
+    <div className='mt-8 flex flex-col gap-5'>
+      {selectedVariant ? (
+        <>
+          <div className='flex max-w-xs items-center gap-2'>
+            <span className='text-sm text-muted-foreground'>Quantity</span>
+            <button
+              type='button'
+              onClick={() => handleQuantity(safeQuantity - 1)}
+              disabled={safeQuantity === 1 || maxQuantity === 0}
+              aria-label='Decrease quantity'
+              className='flex h-10 w-10 items-center justify-center rounded-md border border-border text-lg hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50'
+            >
+              −
+            </button>
+            <input
+              type='number'
+              min={1}
+              max={maxQuantity}
+              value={safeQuantity}
+              onChange={event => handleQuantity(Number(event.target.value) || 1)}
+              aria-label='Quantity'
+              className='h-10 w-16 rounded-md border border-border bg-background text-center font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50'
+            />
+            <button
+              type='button'
+              aria-label='Increase quantity'
+              onClick={() => handleQuantity(safeQuantity + 1)}
+              disabled={safeQuantity >= maxQuantity || maxQuantity === 0}
+              className='flex h-10 w-10 items-center justify-center rounded-md border border-border text-lg hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50'
+            >
+              +
+            </button>
+          </div>
 
-        <button
-          onClick={() => handleQuantity(quantity - 1)}
-          disabled={quantity === 1}
-          aria-label='Decrease quantity'
-          className='w-12 h-12 flex items-center justify-center rounded-lg border border-border font-semibold hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
-        >
-          −
-        </button>
-
-        <button
-          aria-label='Increase quantity'
-          onClick={() => handleQuantity(quantity + 1)}
-          className='w-12 h-12 flex items-center justify-center rounded-lg border border-border font-semibold hover:bg-muted transition-colors'
-        >
-          +
-        </button>
-      </div>
-
-      {/* Add to Cart / Buy Now */}
-      <div className='flex flex-col gap-3 sm:flex-row'>
-        <Button size='lg' className='flex-1 gap-2 h-12' onClick={handleAddToCart} disabled={pendingAction !== null}>
-          <ShoppingCart size={20} />
-          {pendingAction === 'add' ? 'Adding...' : 'Add to Cart'}
-        </Button>
-
-        <Button
-          size='lg'
-          variant='outline'
-          className='flex-1 h-12'
-          onClick={handleBuyNow}
-          onMouseEnter={prefetchCheckout}
-          onFocus={prefetchCheckout}
-          disabled={pendingAction !== null}
-        >
-          {pendingAction === 'buy' ? 'Preparing checkout...' : 'Buy Now'}
-        </Button>
-      </div>
-
-      {/* Wishlist */}
-      {selectedVariant?.stock === 0 && (
-        <Button variant='outline' className='w-full gap-2 h-11' disabled={wishlist.isPending(product.id)} onClick={() => wishlist.toggle(product.id)}>
-          <Heart size={20} className={isWishlisted ? 'fill-destructive text-destructive' : ''} />
-          {isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
-        </Button>
+          <div className='flex flex-col gap-3 sm:flex-row'>
+            <Button size='lg' className='h-12 flex-1' onClick={handleAddToCart} disabled={pendingAction !== null || maxQuantity === 0}>
+              <ShoppingCart size={18} />
+              {pendingAction === 'add' ? 'Adding...' : 'Add to Cart'}
+            </Button>
+            <Button
+              size='lg'
+              variant='outline'
+              className='h-12 flex-1'
+              onClick={handleBuyNow}
+              onMouseEnter={prefetchCheckout}
+              onFocus={prefetchCheckout}
+              disabled={pendingAction !== null || maxQuantity === 0}
+            >
+              {pendingAction === 'buy' ? 'Preparing checkout...' : 'Buy Now'}
+            </Button>
+          </div>
+        </>
+      ) : (
+        <p className='rounded-md border border-border bg-muted/30 p-4 text-sm text-muted-foreground'>This product is unavailable for purchase.</p>
       )}
 
-      {/* Trust Badges */}
-      <div className='flex flex-col gap-2 rounded-lg border border-border bg-muted/30 p-4 text-sm text-muted-foreground'>
-        <p className='flex items-center gap-2'>
-          <span className='text-primary'>✓</span> Free shipping on orders over $50
-        </p>
-        <p className='flex items-center gap-2'>
-          <span className='text-primary'>✓</span> 30-day money-back guarantee
-        </p>
-        <p className='flex items-center gap-2'>
-          <span className='text-primary'>✓</span> 2-year warranty included
-        </p>
-      </div>
+      <Button
+        variant='outline'
+        className='h-11 w-full'
+        disabled={wishlist.isPending(product.id)}
+        onClick={() => wishlist.toggle(product.id)}
+        aria-pressed={isWishlisted}
+      >
+        <Heart size={18} className={isWishlisted ? 'fill-destructive text-destructive' : ''} />
+        {isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
+      </Button>
     </div>
   )
 }
