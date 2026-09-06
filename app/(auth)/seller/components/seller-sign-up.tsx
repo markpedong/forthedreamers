@@ -15,8 +15,6 @@ import Input from '@/components/reusable/input';
 import Divider from '@/components/reusable/divider';
 import { useRouter } from 'next/navigation';
 import { sellerSignup } from '@/lib/actions/seller';
-import { tryWithToast } from '@/utils/helper';
-import { signUp } from '@/lib/server-actions';
 import { toast } from 'sonner';
 import Link from 'next/link';
 

@@ -1,12 +1,14 @@
-import { defineConfig } from "prisma/config";
-import { normalizeDatabaseUrl } from "./lib/database-url";
+import { defineConfig } from 'prisma/config'
+import { normalizeDatabaseUrl } from './lib/database-url'
+
+process.loadEnvFile()
 
 export default defineConfig({
-  schema: "prisma/schema.prisma",
+  schema: 'prisma/schema.prisma',
   migrations: {
-    path: "prisma/migrations",
+    path: 'prisma/migrations'
   },
   datasource: {
-    url: normalizeDatabaseUrl(process.env.DIRECT_URL ?? process.env.DATABASE_URL),
-  },
-});
+    url: normalizeDatabaseUrl(process.env.DIRECT_URL ?? process.env.DATABASE_URL)
+  }
+})

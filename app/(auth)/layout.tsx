@@ -10,13 +10,12 @@ export const metadata: Metadata = {
   description: 'Curated finds, secure checkout.'
 }
 
-export default async function AuthLayout({children}: LayoutProps<'/'>) {
+const AuthLayout = async ({children}: LayoutProps<'/'>) => {
   const session = await getSession()
 
-  if (!!session) {
-    redirect('/profile')
-    return
-  }
+  if (session) redirect(session.user.role === 'SELLER' || session.user.role === 'ADMIN' ? '/dashboard' : '/profile')
 
   return children
 }
+
+export default AuthLayout
