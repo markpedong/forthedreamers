@@ -1,0 +1,113 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getSession } from "@/lib/server-actions";
+import { successResponse, errorResponse } from "@/lib/server-helper";
+import { prisma } from "@/lib/prisma";
+
+/**
+ * POST /api/notify/email
+ * Send email notification (placeholder for email service).
+ */
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getSession();
+    if (!session?.user) {
+      return errorResponse("Unauthorized");
+    }
+
+    const body = await request.json();
+    const { to, subject, template, data } = body;
+
+    if (!to || !subject) {
+      return errorResponse("Recipient and subject are required");
+    }
+
+    // In production, this would integrate with an email service (SendGrid, AWS SES, etc.)
+    // For now, we log the notification request
+    console.log("Email notification requested:", {
+      to,
+      subject,
+      template,
+      data,
+      requestedBy: session.user.id,
+    });
+
+    // Simulate sending email (in production, replace with actual email service call)
+    // await emailService.send({ to, subject, template, data });
+
+    return successResponse(
+      { sent: true, to, subject },
+      "Email notification queued for delivery"
+    );
+  } catch (error) {
+    console.error("Send email notification error:", error);
+    return errorResponse("Internal server error");
+  }
+}
+
+/**
+ * GET /api/notify/preferences
+ * Get user's notification preferences.
+ */
+export async function GET(request: NextRequest) {
+  try {
+    const session = await getSession();
+    if (!session?.user) {
+      return errorResponse("Unauthorized");
+    }
+
+    // Get user's notification preferences from database
+    const preferences = await prisma.notificationPreference.findFirst({
+      where: { userId: session.user.id },
+    });
+
+    return successResponse({
+      preferences: preferences || {
+        orderUpdates: true,
+        marketingEmails: false,
+        lowStockAlerts: true,
+        priceDropAlerts: true,
+      },
+    });
+  } catch (error) {
+    console.error("Get notification preferences error:", error);
+    return errorResponse("Internal server error");
+  }
+}
+
+/**
+ * PUT /api/notify/preferences
+ * Update user's notification preferences.
+ */
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await getSession();
+    if (!session?.user) {
+      return errorResponse("Unauthorized");
+    }
+
+    const body = await request.json();
+    const { orderUpdates, marketingEmails, lowStockAlerts, priceDropAlerts } = body;
+
+    const preferences = await prisma.notificationPreference.upsert({
+      where: { userId: session.user.id },
+      update: {
+        orderUpdates: orderUpdates !== undefined ? orderUpdates : true,
+        marketingEmails: marketingEmails !== undefined ? marketingEmails : false,
+        lowStockAlerts: lowStockAlerts !== undefined ? lowStockAlerts : true,
+        priceDropAlerts: priceDropAlerts !== undefined ? priceDropAlerts : true,
+      },
+      create: {
+        userId: session.user.id,
+        orderUpdates: orderUpdates !== undefined ? orderUpdates : true,
+        marketingEmails: marketingEmails !== undefined ? marketingEmails : false,
+        lowStockAlerts: lowStockAlerts !== undefined ? lowStockAlerts : true,
+        priceDropAlerts: priceDropAlerts !== undefined ? priceDropAlerts : true,
+      },
+    });
+
+    return successResponse(preferences, "Notification preferences updated");
+  } catch (error) {
+    console.error("Update notification preferences error:", error);
+    return errorResponse("Internal server error");
+  }
+}

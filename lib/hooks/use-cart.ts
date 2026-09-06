@@ -30,6 +30,26 @@ export const useRemoveCartItem = () => {
   });
 };
 
+export const useAddCartItem = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ variantId, quantity }: { variantId: string; quantity: number }) => {
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ variantId, quantity }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
+  });
+};
+
 export const useUpdateCartQuantity = () => {
   const queryClient = useQueryClient();
 

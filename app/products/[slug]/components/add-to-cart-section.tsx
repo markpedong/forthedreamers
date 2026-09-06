@@ -5,61 +5,45 @@ import { ShoppingCart, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { OmittedProductFields, TVariant } from '@/lib/types'
+import { useAddCartItem } from '@/lib/hooks/use-cart'
 
 const AddToCartSection: FC<{product: OmittedProductFields; selectedVariant?: TVariant | null}> = ({product, selectedVariant}) => {
   const [quantity, setQuantity] = useState(1)
   const [isWishlisted, setIsWishlisted] = useState(false)
-  const [adding, setAdding] = useState(false)
+  const { mutate: addToCart, isPending: adding } = useAddCartItem()
+  const { mutate: executeBuyNow, isPending: buying } = useAddCartItem()
 
   const handleQuantity = (value: number) => {
     if (value > 0) setQuantity(value)
   }
 
-  const addToCart = async () => {
+  const handleAddToCart = () => {
     if (!selectedVariant) return;
-    setAdding(true);
-    try {
-      const res = await fetch('/api/cart', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ variantId: selectedVariant.id, quantity })
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        toast.error(data.message || 'Failed to add to cart');
-        return;
+    addToCart(
+      { variantId: selectedVariant.id, quantity },
+      {
+        onError: (err: unknown) => {
+          const message = err instanceof Error ? err.message : 'Failed to add to cart';
+          toast.error(message);
+        }
       }
-      toast.success('Added to cart', {
-        description: `${quantity} × ${product.name} added to your cart`
-      });
-    } catch {
-      toast.error('Network error. Please try again.');
-    } finally {
-      setAdding(false);
-    }
+    );
   }
 
-  const buyNow = async () => {
+  const handleBuyNow = () => {
     if (!selectedVariant) return;
-    setAdding(true);
-    try {
-      const res = await fetch('/api/cart', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ variantId: selectedVariant.id, quantity })
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        toast.error(data.message || 'Failed to add to cart');
-        return;
+    executeBuyNow(
+      { variantId: selectedVariant.id, quantity },
+      {
+        onSuccess: () => {
+          window.location.href = '/checkout';
+        },
+        onError: (err: unknown) => {
+          const message = err instanceof Error ? err.message : 'Failed to add to cart';
+          toast.error(message);
+        }
       }
-      toast.success('Added to cart');
-      window.location.href = '/checkout';
-    } catch {
-      toast.error('Network error. Please try again.');
-    } finally {
-      setAdding(false);
-    }
+    );
   }
 
   return (
@@ -94,12 +78,12 @@ const AddToCartSection: FC<{product: OmittedProductFields; selectedVariant?: TVa
 
       {/* Add to Cart / Buy Now */}
       <div className='flex flex-col gap-3 sm:flex-row'>
-        <Button size='lg' className='flex-1 gap-2 h-12' onClick={addToCart} disabled={adding}>
+        <Button size='lg' className='flex-1 gap-2 h-12' onClick={handleAddToCart} disabled={adding}>
           <ShoppingCart size={20} />
           {adding ? 'Adding...' : 'Add to Cart'}
         </Button>
 
-        <Button size='lg' variant='outline' className='flex-1 h-12' onClick={buyNow} disabled={adding}>
+        <Button size='lg' variant='outline' className='flex-1 h-12' onClick={handleBuyNow} disabled={buying}>
           Buy Now
         </Button>
       </div>

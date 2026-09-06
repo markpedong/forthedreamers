@@ -6,11 +6,14 @@ import { useCartItems } from '@/lib/hooks/use-cart';
 const CartItemCount: FC = () => {
   const { data } = useCartItems();
 
-  if (data === undefined || data === 0) return null;
+  if (data === undefined) return null;
+
+  const count = Array.isArray(data) ? data.length : data;
+  if (count === 0) return null;
 
   return (
     <span className='absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center'>
-      {data > 99 ? '99+' : data}
+      {count > 99 ? '99+' : count}
     </span>
   );
 };

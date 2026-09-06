@@ -64,6 +64,8 @@ model User {
   wishlistItems    Wishlist[]
   orderGroups      OrderGroup[]
   reviews          Review[]
+  supportTickets   SupportTicket[]
+  returnRequests   ReturnRequest[]
   seller           Seller?      @relation("UserSeller")
   orders           Order[]
 
@@ -198,10 +200,13 @@ model Product {
 
   specs         Spec[]
   variants      Variant[]
-  reviews       Review[]
-  orderItems    OrderItem[]
-  cartItems     CartItem[]
-  wishlistItems Wishlist[]
+  reviews         Review[]
+  supportMessages SupportMessage[]
+  orderItems      OrderItem[]
+  cartItems       CartItem[]
+  wishlistItems   Wishlist[]
+  supportTickets  SupportTicket[]
+  returnRequests  ReturnRequest[]
 
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -237,6 +242,8 @@ model Variant {
   cartItems       CartItem[]
   orderItems      OrderItem[]
   reviews         Review[]
+  supportMessages SupportMessage[]
+  returnItems     ReturnItem[]
 
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
@@ -409,6 +416,8 @@ model Order {
   orderGroup   OrderGroup? @relation(fields: [orderGroupId], references: [id])
 
   orderItems   OrderItem[]
+  returnRequests ReturnRequest[]
+  supportMessages SupportMessage[]
 
   total        Float
   discount     Float?
@@ -455,4 +464,126 @@ model OrderItem {
   @@index([couponUsed])
 
   @@map("order_item")
+}
+
+enum SUPPORT_CATEGORY {
+  ORDER
+  PRODUCT
+  SHIPPING
+  ACCOUNT
+  OTHER
+}
+
+enum SUPPORT_PRIORITY {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum SUPPORT_STATUS {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+  CANCELLED
+}
+
+enum RETURN_REASON {
+  DEFECTIVE
+  WRONG_ITEM
+  NOT_AS_DESCRIBED
+  CHANGED_MIND
+  OTHER
+}
+
+enum RETURN_STATUS {
+  PENDING
+  APPROVED
+  REJECTED
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+model SupportTicket {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   String
+  message   String
+  category  SUPPORT_CATEGORY @default(OTHER)
+  priority  SUPPORT_PRIORITY @default(MEDIUM)
+  status    SUPPORT_STATUS   @default(OPEN)
+  orderId   String?
+  productId String?
+
+  messages  SupportMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([updatedAt])
+
+  @@map("support_ticket")
+}
+
+model SupportMessage {
+  id        String       @id @default(uuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String
+  isStaff   Boolean      @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ticketId])
+  @@index([userId])
+  @@index([createdAt])
+
+  @@map("support_message")
+}
+
+model ReturnRequest {
+  id          String     @id @default(uuid())
+  orderId     String
+  order       Order      @relation(fields: [orderId], references: [id])
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reason      RETURN_REASON
+  description String
+  status      RETURN_STATUS @default(PENDING)
+  refundAmount Float
+  items       ReturnItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+
+  @@map("return_request")
+}
+
+model ReturnItem {
+  id           String   @id @default(uuid())
+  returnId     String
+  returnRequest ReturnRequest @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  variantId    String
+  variant      Variant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  productId    String?
+  product      Product? @relation(fields: [productId], references: [id])
+  quantity     Int
+  priceAtPurchase Float
+
+  @@index([returnId])
+  @@index([variantId])
+
+  @@map("return_item")
 }
