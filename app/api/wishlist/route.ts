@@ -1,8 +1,7 @@
+import { setWishlist } from '@/lib/actions/wishlist';
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/server-actions";
 import { successResponse, errorResponse, getPaginatedData } from "@/lib/server-helper";
-import { prisma } from "@/lib/prisma";
-import { z } from "zod";
 
 /**
  * GET /api/wishlist
@@ -22,6 +21,7 @@ export async function GET(request: NextRequest) {
     const result = await getPaginatedData({
       model: "wishlist",
       where: { userId: session.user.id, page, pageSize: limit },
+      orderBy: { addedAt: 'desc' },
       include: {
         product: {
           include: {
@@ -49,103 +49,12 @@ export async function GET(request: NextRequest) {
  * POST /api/wishlist
  * Add a product to wishlist.
  */
-const wishlistSchema = z.object({
-  productId: z.string(),
-});
-
 export async function POST(request: NextRequest) {
-  try {
-    const session = await getSession();
-    if (!session?.user) {
-      return errorResponse("Unauthorized");
-    }
-
-    const body = await request.json();
-    const validated = wishlistSchema.parse(body);
-
-    const product = await prisma.product.findUnique({
-      where: { id: validated.productId },
-    });
-
-    if (!product) {
-      return errorResponse("Product not found");
-    }
-
-    // Check if already in wishlist
-    const existing = await prisma.wishlist.findFirst({
-      where: {
-        userId: session.user.id,
-        productId: validated.productId,
-      },
-    });
-
-    if (existing) {
-      return errorResponse("Product already in wishlist");
-    }
-
-    const wishlistItem = await prisma.wishlist.create({
-      data: {
-        userId: session.user.id,
-        productId: validated.productId,
-      },
-      include: {
-        product: {
-          include: {
-            category: true,
-            seller: true,
-            variants: true,
-          },
-        },
-      },
-    });
-
-    return successResponse(wishlistItem, "Added to wishlist", 201);
-  } catch (error) {
-    console.error("Add to wishlist error:", error);
-    if (error instanceof z.ZodError) {
-      return errorResponse("Invalid input data");
-    }
-    return errorResponse("Internal server error");
-  }
+  const result = await setWishlist((await request.json()).productId, true);
+  return NextResponse.json(result, { status: result.success ? 200 : 400 });
 }
-
-/**
- * DELETE /api/wishlist/[id]
- * Remove a product from wishlist.
- */
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id?: string }> }
-) {
-  try {
-    const session = await getSession();
-    if (!session?.user) {
-      return errorResponse("Unauthorized");
-    }
-
-    const { id } = await params;
-    if (!id) {
-      return errorResponse("Wishlist item ID is required");
-    }
-
-    const wishlistItem = await prisma.wishlist.findFirst({
-      where: {
-        id,
-        userId: session.user.id,
-      },
-    });
-
-    if (!wishlistItem) {
-      return errorResponse("Wishlist item not found");
-    }
-
-    await prisma.wishlist.delete({
-      where: { id },
-    });
-
-    return successResponse(null, "Removed from wishlist");
-  } catch (error) {
-    console.error("Remove from wishlist error:", error);
-    return errorResponse("Internal server error");
-  }
+// Explicit productId query parameter; this route has no dynamic [id] segment.
+export async function DELETE(request: NextRequest) {
+  const result = await setWishlist(request.nextUrl.searchParams.get('productId') ?? '', false);
+  return NextResponse.json(result, { status: result.success ? 200 : 400 });
 }

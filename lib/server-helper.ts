@@ -86,8 +86,10 @@ export const buildServerQuery = (url: URL) => {
     if (!isNaN(+start) && !isNaN(+end)) where.createdAt = { gte: start, lte: end };
   }
 
+  const allowed = new Set(["name", "brand", "description", "status", "categoryId", "sellerId"]);
   Object.entries(params).forEach(([key, value]) => {
     if (!value || key === "dateRange") return;
+    if (!allowed.has(key)) return;
     where[key] = key === "status" ? value : { contains: value, mode: "insensitive" };
   });
 

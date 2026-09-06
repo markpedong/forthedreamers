@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getSession } from "@/lib/server-actions";
-import { successResponse, errorResponse, getPaginatedData, buildServerQuery } from "@/lib/server-helper";
+import { successResponse, errorResponse, getPaginatedData } from "@/lib/server-helper";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20");
 
     // Build filters
-    const where: any = { status: "ACTIVE" };
+    const where: Record<string, unknown> = { status: "ACTIVE" };
 
     // Full-text search on name and description
     if (query) {
@@ -57,11 +57,9 @@ export async function GET(request: NextRequest) {
       where.brand = { contains: brand, mode: "insensitive" };
     }
 
-    // Price range
-    where.OR = where.OR || [];
-    where.OR.push({
-      basePrice: { gte: minPrice, lte: maxPrice },
-    });
+    // Price is an AND constraint; putting it in the search OR made unrelated
+    // products match every price filter.
+    where.basePrice = { gte: minPrice, lte: maxPrice };
 
     // Rating range
     where.rating = { gte: minRating, lte: maxRating };
@@ -74,8 +72,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build sort
-    const orderBy: any = {};
-    orderBy[sortBy] = order;
+    const allowedSorts = new Set(["name", "basePrice", "rating", "sold", "createdAt"]);
+    const orderBy: Record<string, 'asc' | 'desc'> = { [allowedSorts.has(sortBy) ? sortBy : "createdAt"]: order === "asc" ? "asc" : "desc" };
 
     // Get products with pagination
     const result = await getPaginatedData({

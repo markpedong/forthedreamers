@@ -1,35 +1,6 @@
-import prisma from "@/lib/prisma";
-import { buildServerQuery, errorResponse, successResponse } from "@/lib/server-helper";
-import { NextRequest } from "next/server";
-
-export async function GET(req: NextRequest) {
-  const url = new URL(req.url);
-  const where = buildServerQuery(url);
-
-  const categories = await prisma.category.findMany({
-    ...(where.isForProducts && { select: { name: true, id: true } })
-  })
-
-  return successResponse({ data: categories });
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const { name } = await request.json();
-    const category = await prisma.category.create({ data: { name } });
-
-    return successResponse({ data: category });
-  } catch (err: unknown) {
-    return errorResponse(err);
-  }
-}
-
-export async function PUT(request: NextRequest) {
-  try {
-    const { id, name } = await request.json();
-    const category = await prisma.category.update({ where: { id }, data: { name } });
-    return successResponse({ data: category });
-  } catch (err: unknown) {
-    return errorResponse(err);
-  }
-}
+import { NextRequest, NextResponse } from 'next/server';
+import { publicCategories } from '@/lib/services/catalog';
+import { addCategory, updateCategory } from '@/lib/actions/admin-catalog';
+export async function GET() { return NextResponse.json({ success: true, data: await publicCategories() }); }
+export async function POST(req: NextRequest) { const result = await addCategory((await req.json()).name); return NextResponse.json(result, { status: result.success ? 200 : 400 }); }
+export async function PUT(req: NextRequest) { const result = await updateCategory(await req.json()); return NextResponse.json(result, { status: result.success ? 200 : 400 }); }
