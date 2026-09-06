@@ -56,11 +56,7 @@ const ProfileHeader: FC = () => {
             <Button
               variant='destructive'
               size='sm'
-              onClick={() => {
-                localStorage.clear();
-                sessionStorage.clear();
-                signOut();
-              }}
+              onClick={() => void signOut()}
               className='w-full md:w-auto gap-2 whitespace-nowrap bg-transparent'
             >
               <LogOut className='h-4 w-4' /> Logout
