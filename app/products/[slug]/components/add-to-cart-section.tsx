@@ -9,20 +9,58 @@ import { OmittedProductFields, TVariant } from '@/lib/types'
 const AddToCartSection: FC<{product: OmittedProductFields; selectedVariant?: TVariant | null}> = ({product, selectedVariant}) => {
   const [quantity, setQuantity] = useState(1)
   const [isWishlisted, setIsWishlisted] = useState(false)
+  const [adding, setAdding] = useState(false)
 
   const handleQuantity = (value: number) => {
     if (value > 0) setQuantity(value)
   }
 
-  const addToCart = () =>
-    toast.success('Added to cart', {
-      description: `${quantity} × ${product.name} added to your cart`
-    })
+  const addToCart = async () => {
+    if (!selectedVariant) return;
+    setAdding(true);
+    try {
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ variantId: selectedVariant.id, quantity })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        toast.error(data.message || 'Failed to add to cart');
+        return;
+      }
+      toast.success('Added to cart', {
+        description: `${quantity} × ${product.name} added to your cart`
+      });
+    } catch {
+      toast.error('Network error. Please try again.');
+    } finally {
+      setAdding(false);
+    }
+  }
 
-  const buyNow = () =>
-    toast.info('Proceeding to checkout', {
-      description: `${quantity} × ${product.name}`
-    })
+  const buyNow = async () => {
+    if (!selectedVariant) return;
+    setAdding(true);
+    try {
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ variantId: selectedVariant.id, quantity })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        toast.error(data.message || 'Failed to add to cart');
+        return;
+      }
+      toast.success('Added to cart');
+      window.location.href = '/checkout';
+    } catch {
+      toast.error('Network error. Please try again.');
+    } finally {
+      setAdding(false);
+    }
+  }
 
   return (
     <div className='flex flex-col gap-6 mt-8'>
@@ -56,12 +94,12 @@ const AddToCartSection: FC<{product: OmittedProductFields; selectedVariant?: TVa
 
       {/* Add to Cart / Buy Now */}
       <div className='flex flex-col gap-3 sm:flex-row'>
-        <Button size='lg' className='flex-1 gap-2 h-12' onClick={addToCart}>
+        <Button size='lg' className='flex-1 gap-2 h-12' onClick={addToCart} disabled={adding}>
           <ShoppingCart size={20} />
-          Add to Cart
+          {adding ? 'Adding...' : 'Add to Cart'}
         </Button>
 
-        <Button size='lg' variant='outline' className='flex-1 h-12' onClick={buyNow}>
+        <Button size='lg' variant='outline' className='flex-1 h-12' onClick={buyNow} disabled={adding}>
           Buy Now
         </Button>
       </div>

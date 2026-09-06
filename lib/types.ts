@@ -259,3 +259,13 @@ export type TagsInputProps = {
   tags: string[];
   onTagsChange: (tags: string[]) => void;
 }
+
+import { CartItem, Order, OrderItem, OrderGroup } from "@/generated/prisma";
+
+export type TCartItem = Omit<CartItem, 'createdAt' | 'updatedAt'> & {
+  variant: TVariant & { product: TProduct };
+};
+
+export type TOrder = Omit<Order, 'createdAt' | 'updatedAt'>;
+export type TOrderItem = Omit<OrderItem, 'createdAt' | 'updatedAt'>;
+export type TOrderGroup = Omit<OrderGroup, 'createdAt'>;

@@ -8,6 +8,7 @@ import ImpesonationIndicator from './impersonation-indicator'
 import Navbar from '../navigation/navbar'
 import BottomNav from '../navigation/bottom-nav'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { AppProgressProvider } from '@bprogress/next'
 import Footer from '../navigation/footer'
 import { AuthProvider, useAuthSession, type AuthSession } from '@/lib/supabase/auth-context'
 
@@ -28,20 +29,22 @@ const MainProvider: FC<MainProviderProps> = ({ children, initialSession }) => {
   }))
 
   return (
-    <AuthProvider initialSession={initialSession}>
-      <Navbar />
-        <Suspense fallback={null}>
-          <ToastListener />
-        </Suspense>
+    <AppProgressProvider>
+      <AuthProvider initialSession={initialSession}>
         <QueryClientProvider client={queryClient}>
+          <Navbar />
+          <Suspense fallback={null}>
+            <ToastListener />
+          </Suspense>
           {children}
+          <Toaster />
+          <ThemeToggleButton />
+          <ImpesonationIndicator />
+          <Footer />
+          <BottomNav />
         </QueryClientProvider>
-        <Toaster />
-        <ThemeToggleButton />
-        <ImpesonationIndicator />
-      <Footer />
-      <BottomNav />
-    </AuthProvider>
+      </AuthProvider>
+    </AppProgressProvider>
   )
 }
 

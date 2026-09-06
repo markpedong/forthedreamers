@@ -1,0 +1,187 @@
+import { getSession } from "@/lib/server-actions";
+import { redirect } from "next/navigation";
+import prisma from "@/lib/prisma";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Package } from "lucide-react";
+import Link from "next/link";
+import PlaceOrderButton from "./place-order-button";
+import CartBackLink from "./cart-back-link";
+
+const CheckoutPage = async () => {
+  const session = await getSession();
+  if (!session) redirect("/sign-in?next=/checkout");
+
+  const cartItems = await prisma.cartItem.findMany({
+    where: { userId: session.user.id },
+    include: {
+      variant: {
+        include: {
+          product: {
+            include: {
+              seller: true,
+            },
+          },
+        },
+      },
+      product: true,
+    },
+  });
+
+  if (cartItems.length === 0) {
+    return (
+      <main className="max-w-4xl mx-auto py-12 px-4 text-center">
+        <Package className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+        <h1 className="text-2xl font-bold mb-2">Nothing to checkout</h1>
+        <p className="text-muted-foreground mb-6">
+          Your cart is empty. Add some products and come back.
+        </p>
+        <Link href="/">
+          <Button>Continue Shopping</Button>
+        </Link>
+      </main>
+    );
+  }
+
+  const total = cartItems.reduce((sum, item) => {
+    const price = item.variant.discountedPrice ?? item.variant.price;
+    return sum + price * item.quantity;
+  }, 0);
+
+  // Group by seller
+  const sellerGroups = new Map<string, typeof cartItems>();
+  for (const item of cartItems) {
+    const sellerId = item.variant.product.sellerId;
+    if (!sellerGroups.has(sellerId)) {
+      sellerGroups.set(sellerId, []);
+    }
+    sellerGroups.get(sellerId)!.push(item);
+  }
+
+  return (
+    <main className="max-w-6xl mx-auto py-8 px-4">
+      <CartBackLink />
+
+      <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Order Items */}
+          <div className="border rounded-lg p-6 bg-card space-y-4">
+            <h2 className="text-xl font-bold mb-4">Order Summary</h2>
+            {cartItems.map((item) => {
+              const price = item.variant.discountedPrice ?? item.variant.price;
+              return (
+                <div key={item.id} className="flex justify-between items-center py-2 border-b last:border-0">
+                  <div>
+                    <p className="font-medium">
+                      {item.variant.product.name} — {item.variant.name}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Qty: {item.quantity}
+                    </p>
+                  </div>
+                  <p className="font-semibold">
+                    ${(price * item.quantity).toFixed(2)}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Shipping Address */}
+          <ShippingAddressForm userId={session.user.id} />
+
+          {/* Place Order Button */}
+          <PlaceOrderButton total={total} />
+        </div>
+
+        {/* Order Summary Sidebar */}
+        <div className="order-first lg:order-last">
+          <div className="p-6 border rounded-lg bg-card space-y-4">
+            <h2 className="text-xl font-bold">Total</h2>
+            <div className="space-y-2 text-sm">
+              {Array.from(sellerGroups.entries()).map(([sellerId, items]) => {
+                const sellerTotal = items.reduce((sum, item) => {
+                  const price = item.variant.discountedPrice ?? item.variant.price;
+                  return sum + price * item.quantity;
+                }, 0);
+                return (
+                  <div key={sellerId} className="flex justify-between">
+                    <span>
+                      {items[0].variant.product.seller?.storeName || "Seller"}
+                    </span>
+                    <span>${sellerTotal.toFixed(2)}</span>
+                  </div>
+                );
+              })}
+              <div className="border-t pt-2 flex justify-between font-bold text-lg">
+                <span>Total</span>
+                <span>${total.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+};
+
+// Server component that fetches user addresses
+async function ShippingAddressForm({ userId }: { userId: string }) {
+  const addresses = await prisma.address.findMany({
+    where: { userId },
+    orderBy: { isDefault: "desc" },
+  });
+
+  const defaultAddress = addresses.find((a) => a.isDefault);
+  const selectedAddressId = defaultAddress?.id || addresses[0]?.id;
+
+  return (
+    <div className="border rounded-lg p-6 bg-card space-y-4">
+      <h2 className="text-xl font-bold">Shipping Address</h2>
+
+      {addresses.length > 0 ? (
+        <div className="space-y-3">
+          {addresses.map((addr) => (
+            <label
+              key={addr.id}
+              className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
+                addr.id === selectedAddressId
+                  ? "border-primary bg-primary/5"
+                  : "hover:bg-muted"
+              }`}
+            >
+              <input
+                type="radio"
+                name="address"
+                value={addr.id}
+                defaultChecked={addr.id === selectedAddressId}
+                className="mt-1"
+              />
+              <div>
+                <p className="font-medium">{addr.fullName}</p>
+                <p className="text-sm text-muted-foreground">
+                  {addr.street}, {addr.city}, {addr.region} {addr.postalCode}
+                </p>
+                <p className="text-sm text-muted-foreground">{addr.phoneNumber}</p>
+                {addr.isDefault && (
+                  <span className="text-xs text-primary font-medium ml-2">Default</span>
+                )}
+              </div>
+            </label>
+          ))}
+        </div>
+      ) : (
+        <p className="text-muted-foreground">No saved addresses. Please add one.</p>
+      )}
+
+      <Link href="/profile">
+        <Button variant="outline" className="w-full">
+          {addresses.length > 0 ? "Manage Addresses" : "Add Address"}
+        </Button>
+      </Link>
+    </div>
+  );
+}
+
+export default CheckoutPage;

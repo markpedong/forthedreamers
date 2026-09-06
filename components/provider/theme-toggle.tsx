@@ -1,4 +1,4 @@
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/components/provider/theme-context';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/useIsMobile';
@@ -6,17 +6,17 @@ import classNames from 'classnames';
 import { Moon, Sun } from '../dynamic';
 
 const ThemeToggleButton = () => {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const isMobile = useIsMobile();
 
   const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+    setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
   };
 
   return (
     <AnimatePresence mode='wait' initial={false}>
       <motion.div
-        key={theme}
+        key={resolvedTheme}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
@@ -31,7 +31,7 @@ const ThemeToggleButton = () => {
           onClick={toggleTheme}
           className='rounded-full shadow-md border border-border bg-background hover:bg-accent'
         >
-          {theme === 'light' ? (
+          {resolvedTheme === 'light' ? (
             <Moon className='h-[1.2rem] w-[1.2rem]' />
           ) : (
             <Sun className='h-[1.2rem] w-[1.2rem]' />

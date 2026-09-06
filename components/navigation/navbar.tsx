@@ -19,6 +19,7 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import { useAuthSession } from '@/lib/supabase/auth-context';
 import { DISABLED_NAVBAR } from '@/constants';
+import CartItemCount from './cart-item-count';
 
 const Navbar: FC = () => {
   const { session, signOut } = useAuthSession();
@@ -30,12 +31,13 @@ const Navbar: FC = () => {
   if (DISABLED_NAVBAR.includes(pathname)) return null;
 
   const CartButton = (
-    <Button variant='ghost' size='icon' className='relative'>
+    <button
+      onClick={() => router.push("/cart" as never)}
+      className='relative p-2 hover:bg-muted rounded-full transition-colors'
+    >
       <ShoppingCart className='w-5 h-5' />
-      <span className='absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center'>
-        0
-      </span>
-    </Button>
+      <CartItemCount />
+    </button>
   );
 
   const ProfileButton = !isMobile && (
@@ -49,7 +51,7 @@ const Navbar: FC = () => {
         <DropdownMenuItem className='cursor-pointer' onClick={() => router.push('/profile')}>
           Profile
         </DropdownMenuItem>
-        <DropdownMenuItem>Orders</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => router.push('/profile/orders' as never)}>Orders</DropdownMenuItem>
         {pathname !== '/profile' && (
           <>
             <DropdownMenuSeparator />
