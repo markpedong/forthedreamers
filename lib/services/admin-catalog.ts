@@ -5,17 +5,21 @@ import { getSession } from '@/lib/server-actions';
 import { regenerateSlug } from '@/utils/helper';
 import { invalidateCatalog } from '@/lib/cache';
 import { revalidatePath } from 'next/cache';
+
 export async function requireAdmin() {
   const session = await getSession();
   if (!session || session.user.role !== 'ADMIN') throw new Error('Administrator access required');
   return session.user;
 }
+
 const idSchema = z.string().min(1).max(100);
+
 const variantSchema = z.object({
   id: idSchema.optional(), name: z.string().min(1).max(200), price: z.number().finite().nonnegative(),
   discountedPrice: z.number().finite().nonnegative().nullable().optional(), stock: z.number().int().nonnegative(),
   image: z.string().nullable().optional(), coupon: z.string().nullable().optional(), attributes: z.record(z.string(), z.string()),
 }).refine(v => v.discountedPrice == null || v.discountedPrice <= v.price, 'Invalid discount');
+
 const productSchema = z.object({
   id: idSchema.optional(), name: z.string().trim().min(1).max(200), categoryId: idSchema,
   brand: z.string().nullable().optional(), basePrice: z.number().finite().nonnegative().nullable().optional(),
@@ -24,13 +28,23 @@ const productSchema = z.object({
   specs: z.array(z.object({ id: idSchema.optional(), label: z.string().min(1), value: z.string() })).max(100),
   variants: z.array(variantSchema).max(100),
 });
+
 export async function adminProducts() {
   await requireAdmin();
   const products = await prisma.product.findMany({ include: { category: true, variants: true, specs: true, seller: true }, orderBy: [{ createdAt: 'desc' }, { id: 'asc' }], take: 100 });
   return products.map(p => ({ ...p, variants: p.variants.map(v => ({ ...v, attributes: z.record(z.string(), z.string()).catch({}).parse(v.attributes) })) }));
 }
+
 export async function adminCategories() { await requireAdmin(); return prisma.category.findMany({ orderBy: { name: 'asc' } }); }
-async function invalidate() { await invalidateCatalog(); revalidatePath('/products'); revalidatePath('/categories'); }
+
+const invalidate = async () => {
+  await invalidateCatalog()
+  revalidatePath('/')
+  revalidatePath('/products/[slug]', 'page')
+  revalidatePath('/products')
+  revalidatePath('/categories')
+}
+
 export async function saveProduct(input: unknown, editing: boolean) {
   const user = await requireAdmin();
   const { id, categoryId, variants, specs, ...fields } = productSchema.parse(input);
@@ -40,7 +54,7 @@ export async function saveProduct(input: unknown, editing: boolean) {
       const seller = await tx.seller.findUnique({ where: { userId: user.id }, select: { id: true } });
       if (!seller) throw new Error('A seller profile is required');
       return tx.product.create({ data: { ...fields, slug: regenerateSlug(fields.name), categoryId, sellerId: seller.id,
-        variants: { create: variants.map(({ id: _id, ...v }) => v) }, specs: { create: specs.map(({ id: _id, ...s }) => s) } } });
+        variants: { create: variants.map(v => { const variant = {...v}; delete variant.id; return variant }) }, specs: { create: specs.map(s => { const spec = {...s}; delete spec.id; return spec }) } } });
     }
     if (!id) throw new Error('Product ID required');
     const existing = await tx.product.findUnique({ where: { id }, select: { variants: { select: { id: true } }, specs: { select: { id: true } } } });
@@ -61,12 +75,15 @@ export async function saveProduct(input: unknown, editing: boolean) {
   });
   await invalidate(); return result;
 }
+
 export async function deleteProduct(id: string) { await requireAdmin(); await prisma.product.delete({ where: { id: idSchema.parse(id) } }); await invalidate(); }
+
 export async function setProductStatus(id: string, active: boolean) {
   await requireAdmin(); z.boolean().parse(active);
   const product = await prisma.product.update({ where: { id: idSchema.parse(id) }, data: { status: active ? 'ACTIVE' : 'INACTIVE' } });
   await invalidate(); return product;
 }
+
 export async function saveCategory(name: string, id?: string) {
   await requireAdmin(); const data = { name: z.string().trim().min(1).max(100).parse(name) };
   const result = id ? await prisma.category.update({ where: { id: idSchema.parse(id) }, data }) : await prisma.category.create({ data });
