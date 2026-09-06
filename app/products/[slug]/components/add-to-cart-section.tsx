@@ -3,7 +3,6 @@
 import { FC, useState } from 'react'
 import { ShoppingCart, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
 import { OmittedProductFields, TVariant } from '@/lib/types'
 import { useAddCartItem } from '@/lib/hooks/use-cart'
 
@@ -20,13 +19,7 @@ const AddToCartSection: FC<{product: OmittedProductFields; selectedVariant?: TVa
   const handleAddToCart = () => {
     if (!selectedVariant) return;
     addToCart(
-      { variantId: selectedVariant.id, quantity },
-      {
-        onError: (err: unknown) => {
-          const message = err instanceof Error ? err.message : 'Failed to add to cart';
-          toast.error(message);
-        }
-      }
+      { variantId: selectedVariant.id, quantity }
     );
   }
 
@@ -38,10 +31,6 @@ const AddToCartSection: FC<{product: OmittedProductFields; selectedVariant?: TVa
         onSuccess: () => {
           window.location.href = '/checkout';
         },
-        onError: (err: unknown) => {
-          const message = err instanceof Error ? err.message : 'Failed to add to cart';
-          toast.error(message);
-        }
       }
     );
   }

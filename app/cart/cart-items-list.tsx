@@ -4,7 +4,6 @@ import { FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Trash2, Minus, Plus } from 'lucide-react';
-import { toast } from 'sonner';
 import { useCartItems, useRemoveCartItem, useUpdateCartQuantity } from '@/lib/hooks/use-cart';
 
 interface CartItemWithRelations {
@@ -40,19 +39,12 @@ const CartItemsList: FC<CartItemsListProps> = ({ items }) => {
   const updateMutation = useUpdateCartQuantity();
 
   const handleRemove = (cartItemId: string) => {
-    removeMutation.mutate(cartItemId, {
-      onError: (err) => toast.error(err.message || 'Failed to remove'),
-    });
+    removeMutation.mutate(cartItemId);
   };
 
   const handleQuantityChange = (cartItemId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    updateMutation.mutate(
-      { cartItemId, quantity: newQuantity },
-      {
-        onError: (err) => toast.error(err.message || 'Failed to update'),
-      }
-    );
+    updateMutation.mutate({ cartItemId, quantity: newQuantity });
   };
 
   return (

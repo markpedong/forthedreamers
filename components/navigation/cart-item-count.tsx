@@ -8,7 +8,7 @@ const CartItemCount: FC = () => {
 
   if (data === undefined) return null;
 
-  const count = Array.isArray(data) ? data.length : data;
+  const count = data.data?.length ?? 0;
   if (count === 0) return null;
 
   return (

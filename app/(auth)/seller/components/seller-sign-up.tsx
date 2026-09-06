@@ -14,7 +14,7 @@ import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import Divider from '@/components/reusable/divider';
 import { useRouter } from 'next/navigation';
-import { checkStore, createSeller } from '@/lib/http';
+import { useCheckStore, useCreateSeller } from '@/lib/hooks/use-api';
 import { tryWithToast } from '@/utils/helper';
 import { signUp } from '@/lib/server-actions';
 import { toast } from 'sonner';
@@ -22,7 +22,10 @@ import Link from 'next/link';
 
 const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
-  const [isSubmitting, startTransition] = useTransition();
+  const [isSigningUp, startTransition] = useTransition();
+  const checkStore = useCheckStore();
+  const createSeller = useCreateSeller();
+  const isSubmitting = isSigningUp || checkStore.isPending || createSeller.isPending;
   const { createSellerSchema } = useFormSchema();
   const form = useForm<SchemaForm<typeof createSellerSchema>>({
     resolver: zodResolver(createSellerSchema),
@@ -36,24 +39,21 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   });
 
   const onSubmit = (values: SchemaForm<typeof createSellerSchema>) => {
-    startTransition(async () => {
-      const storeErr = await tryWithToast(checkStore(values.storeName));
-      if (!storeErr) return;
+    checkStore.mutate(values.storeName, {
+      onSuccess: () => {
+        startTransition(async () => {
+          const res = await tryWithToast(signUp(values.email, values.password, values.name));
+          if (!res?.user) return;
 
-      const res = await tryWithToast(signUp(values.email, values.password, values.name));
-      if (!res?.user) return;
-
-      const seller = await tryWithToast(
-        createSeller({
-          storeName: values.storeName,
-          userID: res.user.id || '',
-        }),
-      );
-      if (!seller?.success) return;
-
-      // Refresh session from server after successful signup
-      router.refresh();
-      toast.success('Account created successfully!');
+          createSeller.mutate({ storeName: values.storeName, userID: res.user.id }, {
+            onSuccess: (seller) => {
+              if (!seller.success) return;
+              router.refresh();
+              toast.success('Account created successfully!');
+            },
+          });
+        });
+      },
     });
   };
 

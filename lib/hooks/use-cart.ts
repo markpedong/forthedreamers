@@ -1,14 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  getCartItems,
+  removeCartItem,
+  addCartItem,
+  updateCartQuantity,
+  checkoutCart,
+} from '@/lib/http';
 
 export const useCartItems = () => {
   return useQuery({
     queryKey: ['cart'],
-    queryFn: async () => {
-      const res = await fetch('/api/cart');
-      const data = await res.json();
-      if (!data.success) return [];
-      return data.data;
-    },
+    queryFn: () => getCartItems(),
   });
 };
 
@@ -16,14 +18,7 @@ export const useRemoveCartItem = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (cartItemId: string) => {
-      const res = await fetch(`/api/cart?id=${cartItemId}`, {
-        method: 'DELETE',
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message);
-      return data;
-    },
+    mutationFn: (cartItemId: string) => removeCartItem(cartItemId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
@@ -34,16 +29,8 @@ export const useAddCartItem = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ variantId, quantity }: { variantId: string; quantity: number }) => {
-      const res = await fetch('/api/cart', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ variantId, quantity }),
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message);
-      return data;
-    },
+    mutationFn: ({ variantId, quantity }: { variantId: string; quantity: number }) =>
+      addCartItem({ variantId, quantity }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
@@ -54,16 +41,8 @@ export const useUpdateCartQuantity = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ cartItemId, quantity }: { cartItemId: string; quantity: number }) => {
-      const res = await fetch('/api/cart', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cartItemId, quantity }),
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message);
-      return data;
-    },
+    mutationFn: ({ cartItemId, quantity }: { cartItemId: string; quantity: number }) =>
+      updateCartQuantity({ cartItemId, quantity }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
@@ -74,15 +53,7 @@ export const useCheckout = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
-      const res = await fetch('/api/cart/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message);
-      return data;
-    },
+    mutationFn: () => checkoutCart(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },

@@ -1,7 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import {
-  apiFetch,
   checkStore,
   createSeller,
   getProducts,
@@ -14,36 +12,20 @@ import {
   toggleProductStatus,
   getProduct,
 } from '@/lib/http';
-import type { TProduct, TCreateSeller, ApiResponse } from '@/lib/types';
-import type { Category } from '@/generated/prisma';
 
 // ─── Queries ───────────────────────────────────────────────────────────────
 
 export const useProducts = (params: Record<string, any>) => {
   return useQuery({
     queryKey: ['products', params],
-    queryFn: async () => {
-      try {
-        return await getProducts(params);
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Failed to load products');
-        throw err;
-      }
-    },
+    queryFn: () => getProducts(params),
   });
 };
 
 export const useProduct = (slug: string | undefined) => {
   return useQuery({
     queryKey: ['product', slug],
-    queryFn: async () => {
-      try {
-        return await getProduct(slug!);
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Failed to load product');
-        throw err;
-      }
-    },
+    queryFn: () => getProduct(slug!),
     enabled: !!slug,
   });
 };
@@ -51,30 +33,12 @@ export const useProduct = (slug: string | undefined) => {
 export const useCategories = (params?: Record<string, any>) => {
   return useQuery({
     queryKey: ['categories', params],
-    queryFn: async () => {
-      try {
-        return await getCategories(params);
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Failed to load categories');
-        throw err;
-      }
-    },
+    queryFn: () => getCategories(params),
   });
 };
 
-export const useCheckStore = (storeName: string | undefined) => {
-  return useQuery({
-    queryKey: ['storeCheck', storeName],
-    queryFn: async () => {
-      try {
-        return await checkStore(storeName!);
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Failed to check store');
-        throw err;
-      }
-    },
-    enabled: !!storeName,
-  });
+export const useCheckStore = () => {
+  return useMutation({ mutationFn: checkStore });
 };
 
 // ─── Mutations ─────────────────────────────────────────────────────────────

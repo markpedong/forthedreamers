@@ -21,9 +21,6 @@ const PlaceOrderButton: FC<PlaceOrderButtonProps> = ({ total }) => {
         onSuccess: (data) => {
           router.push(`/checkout/success?orderId=${data.data.orderGroupId}` as never);
         },
-        onError: (err) => {
-          alert(err.message || 'Checkout failed');
-        },
       }
     );
   };

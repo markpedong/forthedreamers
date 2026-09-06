@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, useState, useTransition, useEffect } from 'react'
+import { FC, useState, useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -23,12 +23,11 @@ import useFormSchema from '@/hooks/useFormSchema'
 import { useAuthSession } from '@/lib/supabase/auth-context'
 
 const ProductFormModal: FC<ProductFormModalProps> = props => {
-  const {open, setOpen, type, initialProduct, categories, onSubmit} = props
+  const {open, setOpen, type, initialProduct, categories, onSubmit, isSubmitting = false} = props
 
   const { session } = useAuthSession()
   const {productFormSchema} = useFormSchema()
   const [tab, setTab] = useState('basic')
-  const [isSubmitting, startTransition] = useTransition()
   const isEdit = type === 'EDIT'
 
   const form = useForm<SchemaForm<typeof productFormSchema>>({
@@ -68,22 +67,16 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
       return
     }
 
-    startTransition(async () => {
-      try {
-        const currCategory = categories.find(c => c.name === values.category)
-        const { category, ...rest } = values
-        const data: ProductFormData = {
-          ...rest,
-          ...(!isEdit && {sellerId: session?.user?.id ?? ''}),
-          categoryId: `${currCategory?.id}`,
-          variants: values?.variants.map(({id, ...v}) => v) as TVariant[], 
-        }
+    const currCategory = categories.find(c => c.name === values.category)
+    const { category, ...rest } = values
+    const data: ProductFormData = {
+      ...rest,
+      ...(!isEdit && {sellerId: session?.user?.id ?? ''}),
+      categoryId: `${currCategory?.id}`,
+      variants: values?.variants.map(({id, ...v}) => v) as TVariant[],
+    }
 
-        await onSubmit(data, type)
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Failed to save product')
-      }
-    })
+    onSubmit(data, type)
   }
 
   return (

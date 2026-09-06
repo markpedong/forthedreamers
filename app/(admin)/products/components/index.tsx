@@ -1,52 +1,43 @@
 'use client'
 
-import { FC, useRef, useState, useTransition } from 'react'
+import { FC, useState } from 'react'
 import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import ProductFormModal from './product-form-modal'
-import { ActionType, ProColumn, TProduct, ProductFormData, DropdownMenuItemType } from '@/lib/types'
-import { STALE_TIME } from '@/constants'
+import { ProColumn, TProduct, ProductFormData, DropdownMenuItemType } from '@/lib/types'
 import AlertDialog from '@/components/reusable/alert-dialog'
 import Link from 'next/link'
-import { tryWithToast } from '@/utils/helper'
 import DropDown from '@/components/reusable/dropdown'
 import ProTable from '@/components/pro-table'
-import { createProduct, deleteProduct, getCategories, getProducts, toggleProductStatus, updateProduct } from '@/lib/http'
+import { useProducts, useCategories, useCreateProduct, useUpdateProduct, useDeleteProduct, useToggleProductStatus } from '@/lib/hooks/use-api'
 import { Switch } from '@/components/ui/switch'
 
 const Products: FC = () => {
   const [deleteDialog, setDeleteDialog] = useState<{id: string; name: string} | null>(null)
-  const [isPending, startTransition] = useTransition()
   const [open, setOpen] = useState(false)
   const [type, setType] = useState<'EDIT' | 'CREATE'>('CREATE')
   const [product, setProduct] = useState<TProduct>()
-  const actionRef = useRef<ActionType>(null)
-
-  const {data: categories, refetch} = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => await getCategories({ isForProducts: true }),
-    staleTime: STALE_TIME,
-  })
+  const { data: products, isLoading } = useProducts({ page: 1, pageSize: 20, current: 1 })
+  const { data: categories } = useCategories({ isForProducts: true })
+  const { mutate: deleteProduct, isPending } = useDeleteProduct()
+  const { mutate: toggleProductStatus } = useToggleProductStatus()
+  const createProduct = useCreateProduct()
+  const updateProduct = useUpdateProduct()
 
   const handleDelete = () => {
-    startTransition(async () => {
-      const res = await tryWithToast(deleteProduct(deleteDialog!.id))
-
-      if (res?.success) {
-        toast.success(`Deleted "${deleteDialog?.name}"`)
+    if (!deleteDialog) return
+    deleteProduct(deleteDialog.id, {
+      onSuccess: (res) => {
+        if (!res.success) return
+        toast.success(`Deleted "${deleteDialog.name}"`)
         setDeleteDialog(null)
         setProduct(undefined)
-        actionRef.current?.reload()
-      }
+      },
     })
   }
 
-  const toggleStatus = async (id: string) => {
-    const res = await tryWithToast(toggleProductStatus({id}))
-    if (res?.success) actionRef.current?.reload()
-  }
+  const toggleStatus = (id: string) => toggleProductStatus({ id })
 
   const dropdownMenus = (record: TProduct): DropdownMenuItemType[] => [
     {
@@ -149,27 +140,16 @@ const Products: FC = () => {
     }
   ]
 
-  const handleSubmitProduct = async (data: ProductFormData, type: 'CREATE' | 'EDIT') => {
+  const handleSubmitProduct = (data: ProductFormData, type: 'CREATE' | 'EDIT') => {
     const isEdit = type === 'EDIT'
-
-    const res = isEdit ? await tryWithToast(updateProduct(data)) : await tryWithToast(createProduct(data))
-
-    console.log('response from create/edit', res)
-    if (res?.success) {
-      toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`)
-      actionRef.current?.reload()
-      setOpen(false)
-    }
-  }
-
-  const fetchData = async (params: any) => {
-    const res = await tryWithToast(getProducts(params))
-
-    console.log("response from getProducts", res)
-    return {
-      data: res?.data ?? [],
-      total: res?.total ?? 0
-    }
+    const mutation = isEdit ? updateProduct : createProduct
+    mutation.mutate(data, {
+      onSuccess: (res) => {
+        if (!res.success) return
+        toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`)
+        setOpen(false)
+      },
+    })
   }
 
   return (
@@ -194,10 +174,10 @@ const Products: FC = () => {
         </header>
 
         <ProTable<TProduct>
-          actionRef={actionRef}
           rowKey='id'
           columns={columns?.map(item => ({...item, align: 'center'}))}
-          request={fetchData}
+          dataSource={products?.data}
+          isLoading={isLoading}
           toolBarRender={false}
           search={{defaultCollapsed: false}}
         />
@@ -208,6 +188,7 @@ const Products: FC = () => {
         type={type}
         categories={categories?.data ?? []}
         onSubmit={handleSubmitProduct}
+        isSubmitting={createProduct.isPending || updateProduct.isPending}
         initialProduct={type === 'EDIT' ? product : undefined}
       />
       <AlertDialog

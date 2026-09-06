@@ -73,6 +73,7 @@ export type ProductFormData = {
 };
 
 export type ProductFormModalProps = {
+  isSubmitting?: boolean;
   open: boolean;
   setOpen: (open: boolean) => void;
   type: 'CREATE' | 'EDIT';
