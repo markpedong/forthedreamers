@@ -1,42 +1,41 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { TVariant } from '@/lib/types'
-import { useAppDispatch } from '@/redux/store'
-import { setSelectedVariant } from '@/redux/features/appSlice'
 import classNames from 'classnames'
 import styles from './styles.module.scss'
 
 interface VariantSelectorProps {
   variants?: TVariant[]
+  attributeTypes?: string[]
+  selectedAttributes: Record<string, string>
+  setSelectedAttributes: React.Dispatch<React.SetStateAction<Record<string, string>>>
 }
 
-const VariantSelector = ({variants = []}: VariantSelectorProps) => {
-  const dispatch = useAppDispatch()
-  const attributeTypes = useMemo(() => Array.from(new Set(variants.flatMap(v => Object.keys(v.attributes)))), [variants])
-  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({})
-
-  useEffect(() => {
-    const defaultAttrs = Object.fromEntries(attributeTypes.map(type => [type, variants[0]?.attributes[type] || '']))
-    setSelectedAttributes(defaultAttrs)
+const VariantSelector = ({
+  variants = [],
+  attributeTypes,
+  selectedAttributes,
+  setSelectedAttributes
+}: VariantSelectorProps) => {
+  const computedAttributeTypes = useMemo(() => {
+    if (!attributeTypes && variants.length > 0) {
+      return Array.from(new Set(variants.flatMap(v => Object.keys(v.attributes))))
+    }
+    return attributeTypes || []
   }, [variants, attributeTypes])
 
-  const selectedVariant = useMemo(
-    () => variants.find(v => attributeTypes.every(type => v.attributes[type] === selectedAttributes[type])),
-    [variants, selectedAttributes, attributeTypes]
-  )
-
   const allOptions = useMemo(
-    () => Object.fromEntries(attributeTypes.map(type => [type, Array.from(new Set(variants.map(v => v.attributes[type]))).sort()])),
-    [variants, attributeTypes]
+    () => Object.fromEntries(computedAttributeTypes.map(type => [type, Array.from(new Set(variants.map(v => v.attributes[type]))).sort()])),
+    [variants, computedAttributeTypes]
   )
 
   const availableOptions = useMemo(
     () =>
       Object.fromEntries(
-        attributeTypes.map(type => [
+        computedAttributeTypes.map(type => [
           type,
           allOptions[type].map(value => ({
             value,
@@ -46,14 +45,15 @@ const VariantSelector = ({variants = []}: VariantSelectorProps) => {
           }))
         ])
       ),
-    [allOptions, selectedAttributes, variants, attributeTypes]
+    [allOptions, selectedAttributes, variants, computedAttributeTypes]
   )
 
   const handleSelect = (type: string, value: string) => setSelectedAttributes(prev => ({...prev, [type]: value}))
 
-  useEffect(() => {
-    dispatch(setSelectedVariant(selectedVariant || null))
-  }, [dispatch, selectedVariant])
+  const selectedVariant = useMemo(
+    () => variants.find(v => computedAttributeTypes.every(type => v.attributes[type] === selectedAttributes[type])),
+    [variants, selectedAttributes, computedAttributeTypes]
+  )
 
   return (
     <div className='flex flex-col gap-6 mt-8'>
@@ -65,7 +65,7 @@ const VariantSelector = ({variants = []}: VariantSelectorProps) => {
           {selectedVariant ? (selectedVariant.stock > 0 ? `${selectedVariant.stock} Available` : 'Out of Stock') : 'Unavailable'}
         </p>
       </div>
-      {attributeTypes.map(type => (
+      {computedAttributeTypes.map(type => (
         <div key={type} className='flex flex-col gap-1'>
           <div className='flex items-center justify-between'>
             <label className='text-xs uppercase tracking-widest text-primary font-bold'>{type}: </label>

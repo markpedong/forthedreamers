@@ -20,12 +20,12 @@ import { Label } from '@/components/ui/label'
 import { PRODUCT_DEFAULT } from '@/constants'
 import { ProductFormData, ProductFormModalProps, SchemaForm, TVariant } from '@/lib/types'
 import useFormSchema from '@/hooks/useFormSchema'
-import { useAppSelector } from '@/redux/store'
+import { useAuthSession } from '@/lib/supabase/auth-context'
 
 const ProductFormModal: FC<ProductFormModalProps> = props => {
   const {open, setOpen, type, initialProduct, categories, onSubmit} = props
 
-  const session = useAppSelector(state => state.appData.session)
+  const { session } = useAuthSession()
   const {productFormSchema} = useFormSchema()
   const [tab, setTab] = useState('basic')
   const [isSubmitting, startTransition] = useTransition()
@@ -74,7 +74,7 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
         const { category, ...rest } = values
         const data: ProductFormData = {
           ...rest,
-          ...(!isEdit && {sellerId: session?.user.id}),
+          ...(!isEdit && {sellerId: session?.user?.id ?? ''}),
           categoryId: `${currCategory?.id}`,
           variants: values?.variants.map(({id, ...v}) => v) as TVariant[], 
         }

@@ -18,10 +18,10 @@ import Input from '@/components/reusable/input';
 import { AlertCircle, CopyIcon, RefreshCw, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { BackupCodesStep } from './2fa-components';
-import { useAppSelector } from '@/redux/store';
+import { useAuthSession } from '@/lib/supabase/auth-context';
 
 const TwoFactorSection: FC = () => {
-  const session = useAppSelector((state) => state.appData.session);
+  const { session } = useAuthSession();
   const user = session?.user;
   const router = useRouter();
   const is2faEnabled = user?.twoFactorEnabled;

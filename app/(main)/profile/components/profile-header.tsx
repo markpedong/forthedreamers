@@ -7,11 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import AvatarUpload from './avatar-upload';
 import { LayoutDashboard, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useAppSelector } from '@/redux/store';
-import useWithDispatch from '@/hooks/useWithDispatch';
+import { useAuthSession } from '@/lib/supabase/auth-context';
 
 const ProfileHeader: FC = () => {
-  const session = useAppSelector((state) => state.appData.session);
+  const { session, signOut } = useAuthSession();
   const user = session?.user;
   const router = useRouter();
   const initials =
@@ -20,7 +19,6 @@ const ProfileHeader: FC = () => {
       .map((n) => n[0])
       .join('')
       .toUpperCase() || 'U';
-  const { signOut } = useWithDispatch();
 
   return (
     <Card>

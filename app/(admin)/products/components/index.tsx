@@ -2,17 +2,18 @@
 
 import { FC, useRef, useState, useTransition } from 'react'
 import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import ProductFormModal from './product-form-modal'
 import { ActionType, ProColumn, TProduct, ProductFormData, DropdownMenuItemType } from '@/lib/types'
+import { STALE_TIME } from '@/constants'
 import AlertDialog from '@/components/reusable/alert-dialog'
 import Link from 'next/link'
 import { tryWithToast } from '@/utils/helper'
 import DropDown from '@/components/reusable/dropdown'
 import ProTable from '@/components/pro-table'
-import { useQueryCategories } from '@/hooks/useQuery'
-import { createProduct, deleteProduct, getProducts, toggleProductStatus, updateProduct } from '@/lib/http'
+import { createProduct, deleteProduct, getCategories, getProducts, toggleProductStatus, updateProduct } from '@/lib/http'
 import { Switch } from '@/components/ui/switch'
 
 const Products: FC = () => {
@@ -22,7 +23,12 @@ const Products: FC = () => {
   const [type, setType] = useState<'EDIT' | 'CREATE'>('CREATE')
   const [product, setProduct] = useState<TProduct>()
   const actionRef = useRef<ActionType>(null)
-  const {data: categories, refetch} = useQueryCategories()
+
+  const {data: categories, refetch} = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => await getCategories({ isForProducts: true }),
+    staleTime: STALE_TIME,
+  })
 
   const handleDelete = () => {
     startTransition(async () => {

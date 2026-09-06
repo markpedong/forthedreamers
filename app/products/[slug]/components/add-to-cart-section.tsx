@@ -4,11 +4,9 @@ import { FC, useState } from 'react'
 import { ShoppingCart, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import { OmittedProductFields } from '@/lib/types'
-import { useAppSelector } from '@/redux/store'
+import { OmittedProductFields, TVariant } from '@/lib/types'
 
-const AddToCartSection: FC<{product: OmittedProductFields}> = ({product}) => {
-  const selectedVariant = useAppSelector(state => state.appData.selectedVariant)
+const AddToCartSection: FC<{product: OmittedProductFields; selectedVariant?: TVariant | null}> = ({product, selectedVariant}) => {
   const [quantity, setQuantity] = useState(1)
   const [isWishlisted, setIsWishlisted] = useState(false)
 

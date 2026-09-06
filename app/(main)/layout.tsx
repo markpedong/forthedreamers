@@ -1,7 +1,7 @@
 import { getSession } from '@/lib/server-actions'
 import { redirect } from 'next/navigation'
 
-export default async function RootLayout({children}: LayoutProps<'/'>) {
+export default async function MainLayout({children}: LayoutProps<'/'>) {
   const session = await getSession()
 
   if (!session) {
@@ -9,5 +9,14 @@ export default async function RootLayout({children}: LayoutProps<'/'>) {
     return
   }
 
-  return children
+  const authSession = {
+    user: { ...session.user, email: session.user.email ?? null },
+    session: session.session,
+  }
+
+  return (
+    <>
+      {children}
+    </>
+  )
 }

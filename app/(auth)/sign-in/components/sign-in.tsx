@@ -16,15 +16,14 @@ import Link from 'next/link'
 
 import { getUserDB } from '@/lib/server-actions'
 import { USER_ROLE } from '@/generated/prisma'
-import { useAppDispatch } from '@/redux/store'
-import { setSessionData } from '@/redux/features/appSlice'
 
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
+import { useAuthSession } from '@/lib/supabase/auth-context'
 
 const supabase = createSupabaseBrowserClient()
 
 const SignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
-  const dispatch = useAppDispatch()
+  const { session } = useAuthSession()
   const router = useRouter()
   const [isSubmit, startSubmitting] = useTransition()
   const {loginSchema} = useFormSchema()
@@ -69,10 +68,6 @@ const SignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
 
         router.refresh()
         return
-      }
-
-      if (data.session) {
-        dispatch(setSessionData(data.session))
       }
 
       toast.success('Sign in successfully!', {

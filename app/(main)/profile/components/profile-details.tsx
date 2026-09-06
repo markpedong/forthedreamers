@@ -21,10 +21,10 @@ import Input from '@/components/reusable/input';
 import { AlertCircle, Badge, CheckCircle2, Clock, Users } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { tryWithToast } from '@/utils/helper';
-import { useAppSelector } from '@/redux/store';
+import { useAuthSession } from '@/lib/supabase/auth-context';
 
 const ProfileDetails: FC = () => {
-  const session = useAppSelector((state) => state.appData.session);
+  const { session } = useAuthSession();
   const user = session?.user;
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -76,7 +76,7 @@ const ProfileDetails: FC = () => {
                   variant='outline'
                   onClick={() => {
                     setIsEditing(false);
-                    form.reset({ name: user?.name });
+                    form.reset({ name: user?.name ?? undefined });
                   }}
                   disabled={isSubmitting}
                 >
@@ -155,12 +155,12 @@ const ProfileDetails: FC = () => {
                 { label: 'Status', value: 'Active', icon: Users },
                 {
                   label: 'Member Since',
-                  value: user?.createdAt && formatDate(user.createdAt, 'MM/DD/YYYY'),
+                  value: user?.createdAt && formatDate(new Date(user.createdAt), 'MM/DD/YYYY'),
                   icon: Clock,
                 },
                 {
                   label: 'Last Updated',
-                  value: user?.updatedAt && formatDate(user.updatedAt),
+                  value: user?.updatedAt && formatDate(new Date(user.updatedAt)),
                   icon: Clock,
                 },
               ].map(({ label, value, icon: Icon }) => (

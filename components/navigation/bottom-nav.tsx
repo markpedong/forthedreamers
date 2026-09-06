@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/useIsMobile'
-import { useAppSelector } from '@/redux/store'
+import { useAuthSession } from '@/lib/supabase/auth-context'
 import { Route } from 'next'
 
 const navItems = [
@@ -18,7 +18,7 @@ const navItems = [
 ]
 
 const BottomNav: FC = () => {
-  const session = useAppSelector(state => state.appData?.session)
+  const { session } = useAuthSession()
   const pathname = usePathname()
   const isMobile = useIsMobile()
   if (!isMobile) return null

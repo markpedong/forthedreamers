@@ -1,15 +1,14 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
-import { OmittedProductFields } from '@/lib/types'
-import { useAppSelector } from '@/redux/store'
+import { OmittedProductFields, TVariant } from '@/lib/types'
 
 interface ProductOverviewProps {
   product: OmittedProductFields
+  selectedVariant?: TVariant | null
 }
 
-const ProductOverview: React.FC<ProductOverviewProps> = ({product}) => {
-  const selectedVariant = useAppSelector(state => state.appData.selectedVariant)
+const ProductOverview: React.FC<ProductOverviewProps> = ({product, selectedVariant}) => {
   const {name, brand, basePrice, rating, reviewCount} = product
   const price = 399
   const basePriceNum = Number(basePrice)

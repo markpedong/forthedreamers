@@ -18,17 +18,15 @@ import Input from '@/components/reusable/input'
 import { getUserDB } from '@/lib/server-actions'
 import { USER_ROLE } from '@/generated/prisma'
 
-import { useAppDispatch } from '@/redux/store'
-import { setSessionData } from '@/redux/features/appSlice'
-
 import Link from 'next/link'
 
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
+import { useAuthSession } from '@/lib/supabase/auth-context'
 
 const supabase = createSupabaseBrowserClient()
 
 const SellerSignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
-  const dispatch = useAppDispatch()
+  const { session } = useAuthSession()
   const router = useRouter()
   const [isSubmitting, startSubmitting] = useTransition()
   const {loginSchema} = useFormSchema()
@@ -86,10 +84,6 @@ const SellerSignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
         return
       }
 
-      if (data.session) {
-        dispatch(setSessionData(data.session))
-      }
-
       toast.success('Logged in successfully!', {
         duration: 3000
       })
@@ -135,7 +129,7 @@ const SellerSignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
       </Card>
 
       <div className='pt-6 border-t border-border text-center'>
-        <p className='text-sm text-muted-foreground mb-4'>Don’t have an account?</p>
+        <p className='text-sm text-muted-foreground mb-4'>Don't have an account?</p>
 
         <Button
           onClick={() => onNavigate('register')}

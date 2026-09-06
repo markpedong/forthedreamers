@@ -16,11 +16,11 @@ import {
 } from 'lucide-react'
 import { FC } from 'react'
 import { USER_ROLE } from '@/generated/prisma'
-import { useAppSelector } from '@/redux/store'
+import { useAuthSession } from '@/lib/supabase/auth-context'
 import { Route } from 'next'
 
 const Sidebar: FC = () => {
-  const session = useAppSelector(state => state.appData.session)
+  const { session } = useAuthSession()
   const pathname = usePathname()
   const navItems = [
     {label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard},
@@ -28,13 +28,13 @@ const Sidebar: FC = () => {
       label: 'Users',
       href: '/users',
       icon: Users,
-      allowed: session?.user.role === USER_ROLE.ADMIN
+      allowed: session?.user?.role === USER_ROLE.ADMIN
     },
     {
       label: 'Categories',
       href: '/categories',
       icon: ShoppingBag,
-      allowed: session?.user.role === USER_ROLE.ADMIN
+      allowed: session?.user?.role === USER_ROLE.ADMIN
     },
     {label: 'Orders', href: '/orders', icon: ShoppingCart},
     {label: 'Products', href: '/products', icon: Package},

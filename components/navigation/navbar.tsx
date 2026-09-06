@@ -17,13 +17,11 @@ import SearchOverlay from './search-overlay';
 import { usePathname, useRouter } from 'next/navigation';
 import classNames from 'classnames';
 import Link from 'next/link';
-import { useAppSelector } from '@/redux/store';
-import useWithDispatch from '@/hooks/useWithDispatch';
+import { useAuthSession } from '@/lib/supabase/auth-context';
 import { DISABLED_NAVBAR } from '@/constants';
 
 const Navbar: FC = () => {
-  const session = useAppSelector((state) => state.appData?.session);
-  const { signOut } = useWithDispatch();
+  const { session, signOut } = useAuthSession();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const isMobile = useIsMobile();
   const router = useRouter();
@@ -55,7 +53,7 @@ const Navbar: FC = () => {
         {pathname !== '/profile' && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className='cursor-pointer' onClick={signOut} variant='destructive'>
+            <DropdownMenuItem className='cursor-pointer' onClick={() => signOut()} variant='destructive'>
               Logout
             </DropdownMenuItem>
           </>

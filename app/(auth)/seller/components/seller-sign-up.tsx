@@ -19,13 +19,11 @@ import { tryWithToast } from '@/utils/helper';
 import { signUp } from '@/lib/server-actions';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import useWithDispatch from '@/hooks/useWithDispatch';
 
 const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
   const [isSubmitting, startTransition] = useTransition();
   const { createSellerSchema } = useFormSchema();
-  const { updateSession } = useWithDispatch();
   const form = useForm<SchemaForm<typeof createSellerSchema>>({
     resolver: zodResolver(createSellerSchema),
     defaultValues: {
@@ -53,9 +51,9 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       );
       if (!seller?.success) return;
 
-      updateSession();
-      toast.success('Account created successfully!');
+      // Refresh session from server after successful signup
       router.refresh();
+      toast.success('Account created successfully!');
     });
   };
 
