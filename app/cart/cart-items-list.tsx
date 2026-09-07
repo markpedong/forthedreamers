@@ -5,10 +5,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
-import {removeCartItem, updateCartQuantity} from '@/lib/http'
-import {useAppDispatch} from '@/lib/hooks/use-app-store'
+import { removeCartItem, updateCartQuantity } from '@/lib/http'
 import type { CartItem } from '@/lib/services/cart'
-import {setCartCount} from '@/lib/store'
 import CartNavigation from './cart-navigation'
 
 const CartItemsList = ({ items }: { items: CartItem[] }) => {
@@ -17,15 +15,13 @@ const CartItemsList = ({ items }: { items: CartItem[] }) => {
   const versions = useRef(new Map<string, number>())
   const queues = useRef(new Map<string, Promise<void>>())
   const quantityTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>())
-  const dispatch = useAppDispatch()
-
-  useEffect(() => {
-    dispatch(setCartCount(visibleItems.length))
-  }, [dispatch, visibleItems.length])
-
-  useEffect(() => () => {
-    quantityTimers.current.forEach(timer => clearTimeout(timer))
-  }, [])
+  
+  useEffect(
+    () => () => {
+      quantityTimers.current.forEach(timer => clearTimeout(timer))
+    },
+    []
+  )
 
   const reconcileItem = (id: string, item: CartItem | null) => {
     setVisibleItems(state => (item ? state.map(value => (value.id === id ? item : value)) : state.filter(value => value.id !== id)))
@@ -77,9 +73,7 @@ const CartItemsList = ({ items }: { items: CartItem[] }) => {
       .catch(() => undefined)
       .then(async () => {
         try {
-          const result = quantity === undefined
-            ? await removeCartItem(id)
-            : await updateCartQuantity({cartItemId: id, quantity})
+          const result = quantity === undefined ? await removeCartItem(id) : await updateCartQuantity({ cartItemId: id, quantity })
 
           if (!result.success || !result.data) {
             if (versions.current.get(id) === version) restoreItem(id)

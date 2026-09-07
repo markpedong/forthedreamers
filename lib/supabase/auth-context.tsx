@@ -1,8 +1,8 @@
 'use client'
 
-import {createContext, useContext, useEffect, useState, type ReactNode} from 'react'
-import {useRouter} from 'next/navigation'
-import {createSupabaseBrowserClient} from './client'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
+import { createSupabaseBrowserClient } from './client'
 
 type SessionUser = {
   id: string
@@ -18,7 +18,7 @@ type SessionUser = {
 
 export type AuthSession = {
   user: SessionUser | null
-  session?: {token?: string; impersonatedBy?: string | null} | null
+  session?: { token?: string; impersonatedBy?: string | null } | null
 }
 
 type AuthContextType = {
@@ -39,17 +39,17 @@ type AuthProviderProps = {
   initialSession?: AuthSession | null
 }
 
-export const AuthProvider = ({children, initialSession}: AuthProviderProps) => {
+export const AuthProvider = ({ children, initialSession }: AuthProviderProps) => {
   const [session, setSession] = useState<AuthSession | null>(initialSession ?? null)
   const router = useRouter()
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient()
-    const {data: {subscription}} = supabase.auth.onAuthStateChange((_event, currentSession) => {
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
       setSession(
-        currentSession
-          ? {user: currentSession.user, session: {token: currentSession.access_token, impersonatedBy: null}}
-          : null
+        currentSession ? { user: currentSession.user, session: { token: currentSession.access_token, impersonatedBy: null } } : null
       )
     })
 
@@ -60,7 +60,7 @@ export const AuthProvider = ({children, initialSession}: AuthProviderProps) => {
     setSession(null)
 
     try {
-      const {error} = await createSupabaseBrowserClient().auth.signOut()
+      const { error } = await createSupabaseBrowserClient().auth.signOut()
       if (error) console.error('Error signing out:', error)
     } catch (error) {
       console.error('Error signing out:', error)
@@ -69,5 +69,5 @@ export const AuthProvider = ({children, initialSession}: AuthProviderProps) => {
     }
   }
 
-  return <AuthContext.Provider value={{session, signOut}}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ session, signOut }}>{children}</AuthContext.Provider>
 }

@@ -5,10 +5,9 @@ import { useRouter } from 'next/navigation'
 import { Heart, ShoppingCart } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import {addCartItem} from '@/lib/http'
-import {useAppDispatch} from '@/lib/hooks/use-app-store'
-import {useWishlist} from '@/lib/hooks/use-wishlist'
-import {decrementCartCount, incrementCartCount, setCartCount} from '@/lib/store'
+import { addCartItem } from '@/lib/http'
+import { useWishlist } from '@/lib/hooks/use-wishlist'
+import { decrementCartCount, incrementCartCount, setCartCount, useAppDispatch } from '@/redux/store'
 import type { ProductPageVariant, ProductPurchaseData } from './product-types'
 
 const AddToCartSection = ({ product, selectedVariant }: { product: ProductPurchaseData; selectedVariant: ProductPageVariant | null }) => {
