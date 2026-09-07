@@ -1,22 +1,44 @@
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { setWishlistIds } from '@/redux/reducers/wishlistData';
-import { toggleWishlist } from '@/redux/reducers/wishlistData';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getWishlistIds, setWishlist as apiSetWishlist } from '@/lib/http'
 
 export const useWishlist = () => {
-  const dispatch = useAppDispatch();
-  const ids = useAppSelector((state) => state.wishlistData.ids);
-  const pendingIds = useAppSelector((state) => state.wishlistData.ids);
+  const queryClient = useQueryClient()
+
+  const { data: ids } = useQuery({
+    queryKey: ['wishlist-ids'],
+    queryFn: () => getWishlistIds(),
+    select: (data) => data.data?.ids ?? [],
+    staleTime: 1000 * 60,
+  })
+
+  const toggleMutation = useMutation({
+    mutationFn: ({ id, wanted }: { id: string; wanted: boolean }) =>
+      apiSetWishlist(id, wanted),
+    onMutate: async ({ id, wanted }) => {
+      await queryClient.cancelQueries({ queryKey: ['wishlist-ids'] })
+      const previous = queryClient.getQueryData<string[]>(['wishlist-ids'])
+      queryClient.setQueryData<string[]>(['wishlist-ids'], (old) => {
+        if (wanted) return old ? [...old, id] : [id]
+        return old ? old.filter((i) => i !== id) : []
+      })
+      return { previous }
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['wishlist-ids'], context.previous)
+      }
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ['wishlist-ids'] })
+    },
+  })
 
   return {
-    ids,
-    pending: pendingIds.length > 0,
-    isPending: (id: string) => pendingIds.includes(id),
+    ids: ids ?? [],
+    isPending: (id: string) => toggleMutation.isPending,
     toggle: (id: string) => {
-      const wanted = !ids.includes(id);
-      dispatch(toggleWishlist(id));
+      const wanted = !(ids?.includes(id) ?? true)
+      void toggleMutation.mutate({ id, wanted })
     },
-    setIds: (ids: string[]) => {
-      dispatch(setWishlistIds(ids));
-    },
-  };
-};
+  }
+}
