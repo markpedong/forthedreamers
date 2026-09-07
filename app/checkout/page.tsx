@@ -160,7 +160,7 @@ const ShippingAddressForm = ({addresses}: {addresses: Address[]}) => {
         <p className='text-muted-foreground'>No saved addresses. Please add one.</p>
       )}
 
-      <Link href='/profile'>
+      <Link href='/profile?tab=addresses'>
         <Button variant='outline' className='w-full'>
           {addresses.length > 0 ? 'Manage Addresses' : 'Add Address'}
         </Button>

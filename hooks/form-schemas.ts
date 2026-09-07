@@ -1,6 +1,24 @@
 import { PRODUCT_STATUS } from "@/generated/prisma";
 import { z } from "zod";
 
+export const addressSchema = z.object({
+  fullName: z.string().trim().min(2, 'Enter the recipient name').max(100),
+  phoneNumber: z
+    .string()
+    .trim()
+    .regex(/^[+()\d\s-]{7,20}$/, 'Enter a valid phone number'),
+  street: z.string().trim().min(5, 'Enter the street address and barangay').max(200),
+  city: z.string().trim().min(2, 'Enter the city or municipality').max(100),
+  region: z.string().trim().min(2, 'Enter the province or region').max(100),
+  postalCode: z.string().trim().regex(/^\d{4}$/, 'Enter a 4-digit postal code'),
+  label: z.string().trim().max(50, 'Label must be 50 characters or less').optional(),
+  type: z.enum(['HOME', 'WORK', 'OTHER']),
+  isDefault: z.boolean()
+})
+
+export const addressUpdateSchema = addressSchema.extend({ id: z.uuid() })
+export const addressIdSchema = z.uuid()
+
   const emailSchema = z
     .string()
     .email("Invalid email address")
@@ -141,6 +159,8 @@ import { z } from "zod";
     })
 
 const formSchemas = {
+    addressSchema,
+    addressUpdateSchema,
     nameEmailSchema,
     password,
     resetPasswordSchema,

@@ -8,6 +8,7 @@ import { getRandomDefaultAvatarUrl } from "./default-avatars";
 import { createSupabaseAdminClient, createSupabaseServerClient } from "./supabase/server";
 import { upsertAuthUser } from "./auth";
 import type { TUserData } from "@/services/types";
+import { addressIdSchema, addressSchema, addressUpdateSchema } from "@/hooks/form-schemas";
 
 export type TChangePass = { currentPassword: string; newPassword: string };
 
@@ -352,87 +353,114 @@ export const getProductPrisma = async (slug: string) => await prisma.product.fin
 
 // --- Profile-related server actions ---
 
-export const getUserAddresses = async (userId: string) =>
-  prisma.address.findMany({
-    where: { userId },
-    orderBy: { isDefault: 'desc' },
-    omit: { createdAt: true, updatedAt: true, userId: true }
-  })
-
-export const updateAddress = async ({
-  id,
-  type,
-  label,
-  fullName,
-  phoneNumber,
-  region,
-  city,
-  postalCode,
-  street,
-  isDefault
-}: {
-  id: string
-  type?: 'HOME' | 'WORK' | 'OTHER'
-  label?: string | null
-  fullName: string
-  phoneNumber: string
-  region: string
-  city: string
-  postalCode: string
-  street: string
-  isDefault?: boolean
-}) => {
+const requireAddressUserId = async () => {
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Authentication required')
+  return user.id
+}
 
-  const existing = await prisma.address.findUnique({ where: { id } })
-  if (!existing || existing.userId !== user.id) {
-    throw new Error('Address not found or unauthorized')
-  }
-
-  const updated = await prisma.address.update({
-    where: { id },
-    data: { type, label, fullName, phoneNumber, region, city, postalCode, street, isDefault }
+export const getUserAddresses = async () => {
+  const userId = await requireAddressUserId()
+  return prisma.address.findMany({
+    where: { userId },
+    orderBy: [{ isDefault: 'desc' }, { updatedAt: 'desc' }],
+    omit: { createdAt: true, updatedAt: true, userId: true }
   })
-  return updated
+}
+
+export const createAddress = async (input: unknown) => {
+  const userId = await requireAddressUserId()
+  const parsed = addressSchema.safeParse(input)
+  if (!parsed.success) throw new Error('Check your address details')
+
+  return prisma.$transaction(async tx => {
+    const isDefault = parsed.data.isDefault || await tx.address.count({ where: { userId } }) === 0
+    if (isDefault) {
+      await tx.address.updateMany({ where: { userId, isDefault: true }, data: { isDefault: false } })
+    }
+
+    return tx.address.create({
+      data: { ...parsed.data, label: parsed.data.label || null, isDefault, userId },
+      omit: { createdAt: true, updatedAt: true, userId: true }
+    })
+  })
+}
+
+export const updateAddress = async (input: unknown) => {
+  const userId = await requireAddressUserId()
+  const parsed = addressUpdateSchema.safeParse(input)
+  if (!parsed.success) throw new Error('Check your address details')
+
+  return prisma.$transaction(async tx => {
+    const existing = await tx.address.findFirst({ where: { id: parsed.data.id, userId } })
+    if (!existing) throw new Error('Address not found or unauthorized')
+
+    const { id, ...values } = parsed.data
+    const isDefault = values.isDefault || existing.isDefault
+    if (isDefault) {
+      await tx.address.updateMany({
+        where: { userId, isDefault: true, id: { not: id } },
+        data: { isDefault: false }
+      })
+    }
+
+    return tx.address.update({
+      where: { id },
+      data: { ...values, label: values.label || null, isDefault },
+      omit: { createdAt: true, updatedAt: true, userId: true }
+    })
+  })
 }
 
 export const deleteAddress = async (addressId: string) => {
-  const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Authentication required')
+  const userId = await requireAddressUserId()
+  const parsedId = addressIdSchema.safeParse(addressId)
+  if (!parsedId.success) throw new Error('Address not found or unauthorized')
 
-  const existing = await prisma.address.findUnique({ where: { id: addressId } })
-  if (!existing || existing.userId !== user.id) {
-    throw new Error('Address not found or unauthorized')
-  }
+  return prisma.$transaction(async tx => {
+    const existing = await tx.address.findFirst({ where: { id: parsedId.data, userId } })
+    if (!existing) throw new Error('Address not found or unauthorized')
 
-  await prisma.address.delete({ where: { id: addressId } })
-  return { success: true }
+    await tx.address.delete({ where: { id: existing.id } })
+
+    let defaultAddressId: string | null = null
+    if (existing.isDefault) {
+      const replacement = await tx.address.findFirst({
+        where: { userId },
+        orderBy: { updatedAt: 'desc' },
+        select: { id: true }
+      })
+      if (replacement) {
+        await tx.address.update({ where: { id: replacement.id }, data: { isDefault: true } })
+        defaultAddressId = replacement.id
+      }
+    }
+
+    return { success: true, defaultAddressId }
+  })
 }
 
 export const setDefaultAddress = async (addressId: string) => {
-  const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Authentication required')
+  const userId = await requireAddressUserId()
+  const parsedId = addressIdSchema.safeParse(addressId)
+  if (!parsedId.success) throw new Error('Address not found or unauthorized')
 
-  const existing = await prisma.address.findUnique({ where: { id: addressId } })
-  if (!existing || existing.userId !== user.id) {
-    throw new Error('Address not found or unauthorized')
-  }
+  return prisma.$transaction(async tx => {
+    const existing = await tx.address.findFirst({ where: { id: parsedId.data, userId } })
+    if (!existing) throw new Error('Address not found or unauthorized')
 
-  // Unset all other defaults for this user
-  await prisma.address.updateMany({
-    where: { userId: user.id, isDefault: true },
-    data: { isDefault: false }
+    await tx.address.updateMany({
+      where: { userId, isDefault: true, id: { not: existing.id } },
+      data: { isDefault: false }
+    })
+
+    return tx.address.update({
+      where: { id: existing.id },
+      data: { isDefault: true },
+      omit: { createdAt: true, updatedAt: true, userId: true }
+    })
   })
-
-  const updated = await prisma.address.update({
-    where: { id: addressId },
-    data: { isDefault: true }
-  })
-  return updated
 }
 
 export const getUserAccounts = async (userId: string) =>

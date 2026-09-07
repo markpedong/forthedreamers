@@ -37,7 +37,7 @@ const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
   const [accounts, sessions, addresses] = await Promise.all([
     getUserAccounts(userId),
     listAllSessions(),
-    getUserAddresses(userId)
+    getUserAddresses()
   ])
 
   const nonCredentialAccounts = accounts.filter((a) => a.providerId !== 'credential')
