@@ -9,26 +9,47 @@ import OrdersBackLink from "../orders-back-link";
 const CheckoutSuccessPage = async ({
   searchParams,
 }: {
-  searchParams: Promise<{ orderId?: string }>;
+  searchParams: Promise<{ orderId?: string }>
 }) => {
-  const session = await getSession();
-  if (!session) redirect("/sign-in?next=/checkout/success");
+  const session = await getSession()
+  if (!session) redirect('/sign-in?next=/checkout/success')
 
-  const { orderId } = await searchParams;
+  const { orderId } = await searchParams
 
+  // If no orderId, redirect to a fresh success page (user just placed an order)
   if (!orderId) {
-    return (
-      <main className="max-w-4xl mx-auto py-12 px-4 text-center">
-        <Package className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-        <h1 className="text-2xl font-bold mb-2">No order found</h1>
-        <p className="text-muted-foreground mb-6">
-          Could not find the order you&apos;re looking for.
-        </p>
-        <Link href="/">
-          <Button>Continue Shopping</Button>
-        </Link>
-      </main>
-    );
+    const pending = await prisma.orderGroup.findFirst({
+      where: { userId: session.user.id, paymentStatus: 'PAID' },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        orders: {
+          include: {
+            orderItems: {
+              include: {
+                variant: true,
+                product: true,
+              },
+            },
+            seller: true,
+          },
+        },
+      },
+    })
+    if (!pending) {
+      return (
+        <main className="max-w-4xl mx-auto py-12 px-4 text-center">
+          <Package className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+          <h1 className="text-2xl font-bold mb-2">No order found</h1>
+          <p className="text-muted-foreground mb-6">
+            Could not find the order you&apos;re looking for.
+          </p>
+          <Link href="/">
+            <Button>Continue Shopping</Button>
+          </Link>
+        </main>
+      )
+    }
+    return <OrderSummary orderGroup={pending} />
   }
 
   const orderGroup = await prisma.orderGroup.findUnique({
@@ -46,7 +67,7 @@ const CheckoutSuccessPage = async ({
         },
       },
     },
-  });
+  })
 
   if (!orderGroup) {
     return (
@@ -60,15 +81,30 @@ const CheckoutSuccessPage = async ({
           <Button>Continue Shopping</Button>
         </Link>
       </main>
-    );
+    )
   }
 
+  return <OrderSummary orderGroup={orderGroup} />
+}
+
+type OrderGroupWithOrders = Awaited<ReturnType<typeof prisma.orderGroup.findFirst<{
+  include: {
+    orders: {
+      include: {
+        orderItems: { include: { variant: true; product: true } }
+        seller: true
+      }
+    }
+  }
+}>>>
+
+const OrderSummary = ({ orderGroup }: { orderGroup: NonNullable<OrderGroupWithOrders> }) => {
   return (
     <main className="max-w-4xl mx-auto py-12 px-4 text-center">
-      {orderGroup.paymentStatus === 'PAID' && <CheckCircle className="w-16 h-16 mx-auto text-green-500 mb-4" />}
-      <h1 className="text-3xl font-bold mb-2">{orderGroup.paymentStatus === 'PAID' ? 'Order Confirmed!' : 'Payment ' + orderGroup.paymentStatus.toLowerCase()}</h1>
+      <CheckCircle className="w-16 h-16 mx-auto text-green-500 mb-4" />
+      <h1 className="text-3xl font-bold mb-2">Order Confirmed!</h1>
       <p className="text-muted-foreground mb-6">
-        {orderGroup.paymentStatus === 'PAID' ? 'Thank you for your purchase.' : 'Your order is not paid yet.'} Your order ID is <span className="font-mono font-bold">{orderGroup.id}</span>.
+        Thank you for your purchase. Your order ID is <span className="font-mono font-bold">{orderGroup.id}</span>.
       </p>
 
       <div className="border rounded-lg p-6 bg-card text-left max-w-2xl mx-auto mb-8">
@@ -78,7 +114,7 @@ const CheckoutSuccessPage = async ({
             <div key={order.id} className="border-b pb-4 last:border-0 last:pb-0">
               <p className="font-semibold">{order.seller?.storeName || "Seller"}</p>
               <p className="text-sm text-muted-foreground">
-                Status: <span className={`font-medium ${order.status === "PAID" ? "text-green-500" : ""}`}>{order.status}</span>
+                Status: <span className="text-green-500 font-medium">{order.status}</span>
               </p>
               <p className="font-bold mt-1">${order.total.toFixed(2)}</p>
               <div className="mt-2 space-y-1 text-sm">
@@ -107,7 +143,7 @@ const CheckoutSuccessPage = async ({
         <OrdersBackLink />
       </div>
     </main>
-  );
-};
+  )
+}
 
-export default CheckoutSuccessPage;
+export default CheckoutSuccessPage

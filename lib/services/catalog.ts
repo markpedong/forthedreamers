@@ -59,7 +59,7 @@ export const productBySlug = (slug: string) =>
         tags: true,
         stock: true,
         category: {select: {id: true, name: true}},
-        seller: {select: {id: true, storeName: true, description: true, logo: true, createdAt: true}},
+        seller: {select: {id: true, storeName: true, description: true, logo: true, createdAt: true, rating: true, reviewCount: true}},
         specs: {select: {id: true, label: true, value: true}, orderBy: {createdAt: 'asc'}},
         variants: {
           select: {id: true, name: true, stock: true, price: true, discountedPrice: true, coupon: true, image: true, attributes: true},

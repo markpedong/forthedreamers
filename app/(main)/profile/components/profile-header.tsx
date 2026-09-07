@@ -1,24 +1,33 @@
-'use client';
+'use client'
 
-import type { FC } from 'react';
-import { Card, CardAction, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import AvatarUpload from './avatar-upload';
-import { LayoutDashboard, LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useAuthSession } from '@/lib/supabase/auth-context';
+import { FC, useEffect, useState } from 'react'
+import { Card, CardHeader, CardTitle, CardDescription, CardAction } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import AvatarUpload from './avatar-upload'
+import { LayoutDashboard, LogOut } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useAuthSession } from '@/lib/supabase/auth-context'
+
+const isGoogleImage = (url: string | null | undefined) =>
+  url?.includes('googleusercontent.com') || url?.includes('ggpht.com') || false
 
 const ProfileHeader: FC = () => {
-  const { session, signOut } = useAuthSession();
-  const user = session?.user;
-  const router = useRouter();
+  const { session, signOut } = useAuthSession()
+  const user = session?.user
+  const router = useRouter()
+  const [isGoogleAvatar, setIsGoogleAvatar] = useState(false)
+
+  useEffect(() => {
+    setIsGoogleAvatar(isGoogleImage(user?.image))
+  }, [user?.image])
+
   const initials =
     user?.name
       ?.split(' ')
       .map((n) => n[0])
       .join('')
-      .toUpperCase() || 'U';
+      .toUpperCase() || 'U'
 
   return (
     <Card>
@@ -26,7 +35,12 @@ const ProfileHeader: FC = () => {
         <div className='flex flex-col md:flex-row md:items-start md:justify-between gap-4'>
           {/* Avatar and user info section */}
           <div className='flex items-start gap-3 sm:gap-4 flex-1 min-w-0'>
-            <AvatarUpload src={user?.image ?? ''} alt={`${user?.name}`} initials={initials} />
+            <AvatarUpload
+              src={user?.image ?? ''}
+              alt={`${user?.name}`}
+              initials={initials}
+              isGoogleAvatar={isGoogleAvatar}
+            />
             <div className='flex-1 min-w-0'>
               <p className='text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1'>
                 Signed in as
@@ -38,6 +52,14 @@ const ProfileHeader: FC = () => {
                 </Badge>
               </div>
               <CardDescription className='truncate text-sm'>{user?.email}</CardDescription>
+              {user?.createdAt && (
+                <p className='text-xs text-muted-foreground mt-1'>
+                  Member since {new Date(user.createdAt).toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric'
+                  })}
+                </p>
+              )}
             </div>
           </div>
 
@@ -65,7 +87,7 @@ const ProfileHeader: FC = () => {
         </div>
       </CardHeader>
     </Card>
-  );
-};
+  )
+}
 
-export default ProfileHeader;
+export default ProfileHeader

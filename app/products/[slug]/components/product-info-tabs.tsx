@@ -13,6 +13,8 @@ type ProductInfoTabsProps = {
       description: string | null
       logo: string | null
       createdAt: Date | string
+      rating: number
+      reviewCount: number
     }
     sellerProductCount: number
   }

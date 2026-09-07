@@ -7,6 +7,8 @@ type SellerInfoProps = {
     logo: string | null
     createdAt: Date | string
     activeProductCount: number
+    rating: number
+    reviewCount: number
   }
 }
 
@@ -35,6 +37,16 @@ const SellerInfo = ({seller}: SellerInfoProps) => {
           <div>
             <p className='text-muted-foreground'>Member since</p>
             <p className='mt-1 font-medium text-foreground'>{joinedDate}</p>
+          </div>
+          <div>
+            <p className='text-muted-foreground'>Seller rating</p>
+            <p className='mt-1 font-medium text-foreground'>
+              {seller.rating > 0 ? `${seller.rating.toFixed(1)}/5` : 'No ratings yet'}
+            </p>
+          </div>
+          <div>
+            <p className='text-muted-foreground'>Reviews received</p>
+            <p className='mt-1 font-medium text-foreground'>{seller.reviewCount}</p>
           </div>
         </div>
       </div>

@@ -11,14 +11,14 @@ interface PlaceOrderButtonProps {
 }
 
 const PlaceOrderButton: FC<PlaceOrderButtonProps> = ({ total }) => {
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useTransition()
   const handlePlaceOrder = () => startTransition(async () => {
     try {
-      const result = await startCheckout();
-      if (!result.success) { toast.error(result.message); return; }
-      window.location.assign(result.data.url);
-    } catch { toast.error('Unable to start payment'); }
-  });
+      const result = await startCheckout()
+      if (!result.success) { toast.error(result.message); return }
+      window.location.assign(`/checkout/success?orderId=${result.data.orderGroupId}`)
+    } catch { toast.error('Failed to place order. Check stock and retry.') }
+  })
 
   return (
     <Button
@@ -36,7 +36,7 @@ const PlaceOrderButton: FC<PlaceOrderButtonProps> = ({ total }) => {
         `Pay $${total.toFixed(2)}`
       )}
     </Button>
-  );
-};
+  )
+}
 
 export default PlaceOrderButton;

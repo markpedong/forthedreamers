@@ -316,3 +316,110 @@ export const getProductPrisma = async (slug: string) => await prisma.product.fin
     }
   }
 });
+
+
+// --- Profile-related server actions ---
+
+export const getUserAddresses = async (userId: string) =>
+  prisma.address.findMany({
+    where: { userId },
+    orderBy: { isDefault: 'desc' },
+    omit: { createdAt: true, updatedAt: true, userId: true }
+  })
+
+export const updateAddress = async ({
+  id,
+  type,
+  label,
+  fullName,
+  phoneNumber,
+  region,
+  city,
+  postalCode,
+  street,
+  isDefault
+}: {
+  id: string
+  type?: 'HOME' | 'WORK' | 'OTHER'
+  label?: string | null
+  fullName: string
+  phoneNumber: string
+  region: string
+  city: string
+  postalCode: string
+  street: string
+  isDefault?: boolean
+}) => {
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Authentication required')
+
+  const existing = await prisma.address.findUnique({ where: { id } })
+  if (!existing || existing.userId !== user.id) {
+    throw new Error('Address not found or unauthorized')
+  }
+
+  const updated = await prisma.address.update({
+    where: { id },
+    data: { type, label, fullName, phoneNumber, region, city, postalCode, street, isDefault }
+  })
+  return updated
+}
+
+export const deleteAddress = async (addressId: string) => {
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Authentication required')
+
+  const existing = await prisma.address.findUnique({ where: { id: addressId } })
+  if (!existing || existing.userId !== user.id) {
+    throw new Error('Address not found or unauthorized')
+  }
+
+  await prisma.address.delete({ where: { id: addressId } })
+  return { success: true }
+}
+
+export const setDefaultAddress = async (addressId: string) => {
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Authentication required')
+
+  const existing = await prisma.address.findUnique({ where: { id: addressId } })
+  if (!existing || existing.userId !== user.id) {
+    throw new Error('Address not found or unauthorized')
+  }
+
+  // Unset all other defaults for this user
+  await prisma.address.updateMany({
+    where: { userId: user.id, isDefault: true },
+    data: { isDefault: false }
+  })
+
+  const updated = await prisma.address.update({
+    where: { id: addressId },
+    data: { isDefault: true }
+  })
+  return updated
+}
+
+export const getUserStats = async (userId: string) => {
+  const [orderCount, wishlistCount, reviewCount] = await Promise.all([
+    prisma.order.count({ where: { userId } }),
+    prisma.wishlist.count({ where: { userId } }),
+    prisma.review.count({ where: { userId } })
+  ])
+  return { orderCount, wishlistCount, reviewCount }
+}
+
+export const getUserAccounts = async (userId: string) =>
+  prisma.account.findMany({
+    where: { userId },
+    select: { id: true, accountId: true, providerId: true, createdAt: true }
+  })
+
+export const getUserPasskeys = async (userId: string) =>
+  prisma.passkey.findMany({
+    where: { userId },
+    select: { id: true, name: true, createdAt: true }
+  })

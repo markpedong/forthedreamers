@@ -1,25 +1,25 @@
 'use client'
 
-import {addToCart} from '@/lib/actions/cart'
-import {useRef, useState} from 'react'
-import {useRouter} from 'next/navigation'
-import {Heart, ShoppingCart} from 'lucide-react'
-import {toast} from 'sonner'
-import {useCartCount} from '@/components/provider/cart-count-provider'
-import {useWishlist} from '@/components/provider/wishlist-provider'
-import {Button} from '@/components/ui/button'
-import type {ProductPageVariant, ProductPurchaseData} from './product-types'
+import { addToCart } from '@/lib/actions/cart'
+import { useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Heart, ShoppingCart } from 'lucide-react'
+import { toast } from 'sonner'
+import { useCartCount } from '@/components/provider/cart-count-provider'
+import { useWishlist } from '@/components/provider/wishlist-provider'
+import { Button } from '@/components/ui/button'
+import type { ProductPageVariant, ProductPurchaseData } from './product-types'
 
-const AddToCartSection = ({product, selectedVariant}: {product: ProductPurchaseData; selectedVariant: ProductPageVariant | null}) => {
+const AddToCartSection = ({ product, selectedVariant }: { product: ProductPurchaseData; selectedVariant: ProductPageVariant | null }) => {
   const [quantity, setQuantity] = useState(1)
   const requestPending = useRef(false)
   const wishlist = useWishlist()
   const isWishlisted = wishlist.ids.includes(product.id)
-  const [pendingAction, setPendingAction] = useState<'add' | 'buy' | null>(null)
-  const {count, setCount} = useCartCount()
+  const { count, setCount } = useCartCount()
   const router = useRouter()
   const maxQuantity = Math.min(999, selectedVariant?.stock ?? 0)
   const safeQuantity = Math.min(quantity, Math.max(1, maxQuantity))
+  const [isProcessingBuyNow, setIsProcessingBuyNow] = useState(false)
 
   const handleQuantity = (value: number) => {
     if (Number.isSafeInteger(value) && value > 0 && value <= maxQuantity) setQuantity(value)
@@ -28,33 +28,35 @@ const AddToCartSection = ({product, selectedVariant}: {product: ProductPurchaseD
   const submit = (buyNow: boolean) => {
     if (!selectedVariant || selectedVariant.stock < 1 || requestPending.current) return
     requestPending.current = true
+    setIsProcessingBuyNow(buyNow)
 
-    const action = buyNow ? 'buy' : 'add'
-    const canOptimisticallyAddBadge = !buyNow && count === 0
-    setPendingAction(action)
-    if (canOptimisticallyAddBadge) setCount(value => value + 1)
+    // Optimistic: always update the badge count immediately (safe, reversible interaction).
+    setCount(value => value + 1)
 
     void (async () => {
       try {
         const result = await addToCart(selectedVariant.id, safeQuantity)
         if (!result.success) {
-          if (canOptimisticallyAddBadge) setCount(value => Math.max(0, value - 1))
+          // Rollback optimistic update on failure.
+          setCount(value => Math.max(0, value - 1))
           toast.error(result.message)
           return
         }
 
+        // Reconcile with server response (server is source of truth).
         setCount(result.data.count)
-        toast.success(result.message)
         if (buyNow) router.push('/checkout')
       } catch {
-        if (canOptimisticallyAddBadge) setCount(value => Math.max(0, value - 1))
+        // Rollback optimistic update on network error.
+        setCount(value => Math.max(0, value - 1))
         toast.error('Unable to add to cart. Please try again.')
       } finally {
         requestPending.current = false
-        setPendingAction(null)
+        setIsProcessingBuyNow(false)
       }
     })()
   }
+
   const handleAddToCart = () => submit(false)
   const handleBuyNow = () => submit(true)
   const prefetchCheckout = () => {
@@ -98,10 +100,12 @@ const AddToCartSection = ({product, selectedVariant}: {product: ProductPurchaseD
           </div>
 
           <div className='flex flex-col gap-3 sm:flex-row'>
-            <Button size='lg' className='h-12 flex-1' onClick={handleAddToCart} disabled={pendingAction !== null || maxQuantity === 0}>
+            {/* Add to Cart: never blocks the UI (optimistic). */}
+            <Button size='lg' className='h-12 flex-1' onClick={handleAddToCart} disabled={maxQuantity === 0}>
               <ShoppingCart size={18} />
-              {pendingAction === 'add' ? 'Adding...' : 'Add to Cart'}
+              Add to Cart
             </Button>
+            {/* Buy Now: critical action — disable button and show pending feedback (AGENTS.md). */}
             <Button
               size='lg'
               variant='outline'
@@ -109,9 +113,9 @@ const AddToCartSection = ({product, selectedVariant}: {product: ProductPurchaseD
               onClick={handleBuyNow}
               onMouseEnter={prefetchCheckout}
               onFocus={prefetchCheckout}
-              disabled={pendingAction !== null || maxQuantity === 0}
+              disabled={maxQuantity === 0 || requestPending.current}
             >
-              {pendingAction === 'buy' ? 'Preparing checkout...' : 'Buy Now'}
+              {isProcessingBuyNow ? 'Preparing checkout...' : 'Buy Now'}
             </Button>
           </div>
         </>
