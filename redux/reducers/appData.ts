@@ -1,8 +1,9 @@
-import { TAppDataState } from "@/services/types";
-import { createSlice } from "@reduxjs/toolkit";
+import { ProfileTab, TAppDataState } from "@/services/types";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: TAppDataState = {
-  theme: null
+  theme: null,
+  currentProfileTab: null
 }
 
 const appDataSlice = createSlice({
@@ -13,12 +14,16 @@ const appDataSlice = createSlice({
     setTheme: (state, action) => {
       state.theme = action.payload;
     },
+    setCurrentProfileTab: (state, action: PayloadAction<ProfileTab>) => {
+      state.currentProfileTab = action.payload;
+    },
   },
 });
 
 export const {
   resetAppDataState,
-  setTheme
+  setTheme,
+  setCurrentProfileTab
 } = appDataSlice.actions;
 
 export default appDataSlice.reducer;

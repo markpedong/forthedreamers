@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import AvatarUpload from './avatar-upload'
 import { LayoutDashboard, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -34,11 +33,10 @@ const ProfileHeader = () => {
           />
 
           <div className='min-w-0'>
-            <div className='mt-2 flex flex-wrap items-center gap-2'>
+            <div className='mt-2'>
               <h1 className='truncate text-xl font-medium tracking-tight text-foreground sm:text-2xl'>
                 {user?.name || 'Your profile'}
               </h1>
-              {user?.role && <Badge variant='secondary'>{user.role}</Badge>}
             </div>
             <p className='mt-1 truncate text-sm text-muted-foreground'>{user?.email}</p>
             {user?.createdAt && (

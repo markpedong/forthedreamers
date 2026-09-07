@@ -4,7 +4,9 @@ import AccountManagement from './components/account-management'
 import ProfileHeader from './components/profile-header'
 import SessionManagement from './components/session-management'
 import AddressesSection from './components/addresses-section'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import ProfileTabs from './components/profile-tabs'
+import { TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ProfileTab } from '@/services/types'
 
 export const metadata = {
   title: 'Profile',
@@ -39,19 +41,16 @@ const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
   ])
 
   const nonCredentialAccounts = accounts.filter((a) => a.providerId !== 'credential')
-  const hasPassword = accounts.some((a) => a.providerId === 'credential')
 
-  const defaultTab = tab === 'security' ? 'security' : tab === 'addresses' ? 'addresses' : 'profile'
+  const initialTab: ProfileTab | undefined =
+    tab === 'security' || tab === 'addresses' || tab === 'profile' ? tab : undefined
 
   return (
     <main className='min-h-[60vh]'>
-      <div className='mx-auto max-w-3xl px-4 pb-16 pt-10 sm:px-6 sm:pt-12'>
+      <div className='mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6 sm:pt-12'>
         <ProfileHeader />
 
-        <Tabs
-          defaultValue={defaultTab}
-          className='mt-8'
-        >
+        <ProfileTabs initialTab={initialTab}>
           <TabsList className='h-auto w-full justify-start gap-1 overflow-x-auto rounded-lg p-1'>
             <TabsTrigger value='profile' className='min-h-10 flex-none px-4'>
               Personal info
@@ -74,11 +73,11 @@ const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
 
           <TabsContent value='security' className='space-y-6'>
             <div className='grid gap-6 lg:grid-cols-2'>
-              <AccountManagement accounts={nonCredentialAccounts} hasPassword={hasPassword} />
+              <AccountManagement accounts={nonCredentialAccounts} hasPassword={session.hasPassword} />
               <SessionManagement currentSessionToken={session.session.token} sessions={sessions} />
             </div>
           </TabsContent>
-        </Tabs>
+        </ProfileTabs>
       </div>
     </main>
   )
