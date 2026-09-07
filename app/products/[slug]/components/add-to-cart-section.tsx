@@ -9,8 +9,10 @@ import { addCartItem } from '@/lib/http'
 import type { ProductPageVariant, ProductPurchaseData } from './product-types'
 import { useAppDispatch } from '@/redux/store'
 import { decrementCartCount, incrementCartCount, setCartCount } from '@/redux/reducers/cartData'
+import { useWishlist } from '@/lib/hooks/use-wishlist'
 
 const AddToCartSection = ({ product, selectedVariant }: { product: ProductPurchaseData; selectedVariant: ProductPageVariant | null }) => {
+  const wishlist = useWishlist()
   const [quantity, setQuantity] = useState(1)
   const requestPending = useRef(false)
   const isWishlisted = wishlist.ids.includes(product.id)
@@ -33,7 +35,7 @@ const AddToCartSection = ({ product, selectedVariant }: { product: ProductPurcha
 
     void (async () => {
       try {
-        const result = await addCartItem({variantId: selectedVariant.id, quantity: safeQuantity})
+        const result = await addCartItem({ variantId: selectedVariant.id, quantity: safeQuantity })
         if (!result.success || !result.data) {
           dispatch(decrementCartCount())
           toast.error(result.message)
