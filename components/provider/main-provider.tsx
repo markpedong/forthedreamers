@@ -23,8 +23,8 @@ const MainProvider = ({ children, initialSession }: MainProviderProps) => {
 
   return (
     <AppProgressProvider>
-      <AuthProvider initialSession={initialSession}>
-        <Provider store={store}>
+      <Provider store={store}>
+        <AuthProvider initialSession={initialSession}>
           <QueryClientProvider client={queryClient}>
             <Navbar />
             <Suspense fallback={null}>
@@ -37,8 +37,8 @@ const MainProvider = ({ children, initialSession }: MainProviderProps) => {
             <Footer />
             <BottomNav />
           </QueryClientProvider>
-        </Provider>
-      </AuthProvider>
+        </AuthProvider>
+      </Provider>
     </AppProgressProvider>
   )
 }

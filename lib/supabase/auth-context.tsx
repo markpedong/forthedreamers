@@ -1,8 +1,11 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from './client'
+import { getCurrentUserData } from '@/lib/server-actions'
+import { clearUserData, setUserData } from '@/redux/reducers/userData'
+import { useAppDispatch } from '@/redux/store'
 
 type SessionUser = {
   id: string
@@ -41,6 +44,8 @@ type AuthProviderProps = {
 
 export const AuthProvider = ({ children, initialSession }: AuthProviderProps) => {
   const [session, setSession] = useState<AuthSession | null>(initialSession ?? null)
+  const loadedUserId = useRef<string | null>(null)
+  const dispatch = useAppDispatch()
   const router = useRouter()
 
   useEffect(() => {
@@ -48,23 +53,59 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
     const {
       data: { subscription }
     } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      const metadata = currentSession?.user.user_metadata
+
       setSession((previousSession) =>
         currentSession
           ? {
               user: {
                 ...currentSession.user,
-                ...(previousSession?.user?.id === currentSession.user.id ? previousSession.user : {})
+                ...(previousSession?.user?.id === currentSession.user.id ? previousSession.user : {}),
+                name:
+                  (typeof metadata?.name === 'string' && metadata.name) ||
+                  (typeof metadata?.full_name === 'string' && metadata.full_name) ||
+                  previousSession?.user?.name,
+                image:
+                  (typeof metadata?.avatar_url === 'string' && metadata.avatar_url) ||
+                  previousSession?.user?.image
               },
               session: { token: currentSession.access_token, impersonatedBy: null }
             }
           : null
       )
+
+      if (!currentSession) {
+        loadedUserId.current = null
+        dispatch(clearUserData())
+        return
+      }
+
+      const userId = currentSession.user.id
+      if (loadedUserId.current === userId) return
+      loadedUserId.current = userId
+
+      void getCurrentUserData()
+        .then(user => {
+          if (loadedUserId.current !== userId) return
+          if (user?.id === userId) dispatch(setUserData(user))
+          else {
+            loadedUserId.current = null
+            dispatch(clearUserData())
+          }
+        })
+        .catch(() => {
+          if (loadedUserId.current !== userId) return
+          loadedUserId.current = null
+          dispatch(clearUserData())
+        })
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [dispatch])
 
   const signOut = async () => {
+    loadedUserId.current = null
+    dispatch(clearUserData())
     setSession(null)
 
     try {

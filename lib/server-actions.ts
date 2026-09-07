@@ -7,6 +7,7 @@ import prisma from "./prisma";
 import { getRandomDefaultAvatarUrl } from "./default-avatars";
 import { createSupabaseAdminClient, createSupabaseServerClient } from "./supabase/server";
 import { upsertAuthUser } from "./auth";
+import type { TUserData } from "@/services/types";
 
 export type TChangePass = { currentPassword: string; newPassword: string };
 
@@ -54,6 +55,23 @@ export const getSession = async () => {
       token: sessionData.session?.access_token ?? "",
       impersonatedBy: null as string | null,
     },
+  };
+};
+
+export const getCurrentUserData = async (): Promise<TUserData | null> => {
+  const session = await getSession();
+  if (!session?.user) return null;
+
+  return {
+    id: session.user.id,
+    name: session.user.name,
+    email: session.user.email ?? "",
+    image: session.user.image,
+    role: session.user.role,
+    emailVerified: session.user.emailVerified,
+    twoFactorEnabled: session.user.twoFactorEnabled,
+    createdAt: new Date(session.user.createdAt).toISOString(),
+    updatedAt: new Date(session.user.updatedAt).toISOString(),
   };
 };
 
@@ -215,7 +233,7 @@ export const updateUser = async ({ name }: { name: string }) => {
 
   if (error) throw new Error(error.message);
   if (user) await prisma.user.update({ where: { id: user.id }, data: { name } });
-  return { user };
+  return { user: user ? await getCurrentUserData() : null };
 };
 
 export const updateUserImage = async ({ image }: { image: string }) => {
@@ -227,7 +245,7 @@ export const updateUserImage = async ({ image }: { image: string }) => {
 
   if (error) throw new Error(error.message);
   if (user) await prisma.user.update({ where: { id: user.id }, data: { image } });
-  return { user };
+  return { user: user ? await getCurrentUserData() : null };
 };
 
 // Supabase password reset (server action - uses admin client)

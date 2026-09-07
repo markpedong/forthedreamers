@@ -8,16 +8,19 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 // Import your reducers here
 import appDataReducer from '../reducers/appData';
 import cartDataReducer from '../reducers/cartData';
+import userDataReducer from '../reducers/userData';
 
 // Define the root state
 export type RootState = {
   appData: ReturnType<typeof appDataReducer>;
   cartData: ReturnType<typeof cartDataReducer>;
+  userData: ReturnType<typeof userDataReducer>;
 };
 
 const rootReducer = combineReducers({
   appData: appDataReducer,
   cartData: cartDataReducer,
+  userData: userDataReducer,
 });
 
 const createNoopStorage = () => {
@@ -40,6 +43,7 @@ const persistConfig = {
   key: 'root',
   version: 2,
   storage,
+  blacklist: ['userData'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
