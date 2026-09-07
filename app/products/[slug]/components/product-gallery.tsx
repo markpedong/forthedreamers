@@ -1,12 +1,12 @@
 'use client'
 
+import {cn} from '@/lib/utils'
 import {useState} from 'react'
 import Image from 'next/image'
 import {ChevronLeft, ChevronRight} from 'lucide-react'
+import ImagePlaceholder from '@/components/reusable/image-placeholder'
 import {Button} from '@/components/ui/button'
 import {Skeleton} from '@/components/ui/skeleton'
-import ImagePlaceholder from '@/components/reusable/image-placeholder'
-import {cn} from '@/lib/utils'
 
 interface ProductGalleryProps {
   images: string[]
@@ -17,7 +17,7 @@ const ProductGallery = ({images, alt}: ProductGalleryProps) => {
   const validImages = images.filter(Boolean)
   const hasMultiple = validImages.length > 1
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const [loading, setLoading] = useState(true)
+  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set())
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set())
 
   const currentImage = validImages[selectedIndex]
@@ -26,9 +26,8 @@ const ProductGallery = ({images, alt}: ProductGalleryProps) => {
   const handlePrev = () => setSelectedIndex(prev => (prev === 0 ? validImages.length - 1 : prev - 1))
   const handleNext = () => setSelectedIndex(prev => (prev === validImages.length - 1 ? 0 : prev + 1))
 
-  const handleImageLoad = () => setLoading(false)
+  const handleImageLoad = () => setLoadedImages(prev => new Set(prev).add(selectedIndex))
   const handleImageError = () => {
-    setLoading(false)
     setImageErrors(prev => new Set(prev).add(selectedIndex))
   }
 
@@ -57,7 +56,6 @@ const ProductGallery = ({images, alt}: ProductGalleryProps) => {
           key={idx}
           onClick={() => {
             setSelectedIndex(idx)
-            setLoading(true)
           }}
           className={cn(
             'relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all duration-200',
@@ -87,7 +85,7 @@ const ProductGallery = ({images, alt}: ProductGalleryProps) => {
   return (
     <div className='flex flex-col gap-4' role='region' aria-label={`${alt} image gallery`}>
       <div className='group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted/20'>
-        {loading && currentImage && !hasError && <Skeleton className='absolute inset-0 z-10' />}
+        {!loadedImages.has(selectedIndex) && currentImage && !hasError && <Skeleton className='absolute inset-0 z-10' />}
         {renderMainImage()}
 
         {hasMultiple && (

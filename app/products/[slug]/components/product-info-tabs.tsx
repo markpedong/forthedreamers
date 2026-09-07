@@ -30,7 +30,9 @@ const ProductInfoTabs = ({product}: ProductInfoTabsProps) => {
           <p className='text-xs uppercase tracking-widest text-muted-foreground'>About the product</p>
           <h2 className='mt-2 text-2xl font-semibold text-foreground'>Description</h2>
           {product.description.trim() ? (
-            <div className='mt-4 space-y-3 whitespace-pre-line leading-relaxed text-muted-foreground'>{product.description}</div>
+            <div className='mt-4 space-y-3 whitespace-pre-line break-words leading-relaxed text-muted-foreground'>
+              {product.description}
+            </div>
           ) : (
             <p className='mt-4 text-muted-foreground'>The seller has not added a description yet.</p>
           )}
@@ -50,12 +52,14 @@ const ProductInfoTabs = ({product}: ProductInfoTabsProps) => {
                 <dd className='text-right font-medium text-foreground'>{product.brand}</dd>
               </div>
             )}
-            {product.specs.filter(spec => spec.label.trim() && spec.value.trim()).map(spec => (
-              <div key={spec.id} className='grid grid-cols-2 gap-4 p-3 text-sm'>
-                <dt className='text-muted-foreground'>{spec.label}</dt>
-                <dd className='text-right font-medium text-foreground'>{spec.value}</dd>
-              </div>
-            ))}
+            {product.specs
+              .filter(spec => spec.label.trim() && spec.value.trim())
+              .map(spec => (
+                <div key={spec.id} className='grid grid-cols-2 gap-4 p-3 text-sm'>
+                  <dt className='text-muted-foreground'>{spec.label}</dt>
+                  <dd className='text-right font-medium text-foreground'>{spec.value}</dd>
+                </div>
+              ))}
             {attributes.length > 0 && (
               <div className='grid grid-cols-2 gap-4 p-3 text-sm'>
                 <dt className='text-muted-foreground'>Options</dt>

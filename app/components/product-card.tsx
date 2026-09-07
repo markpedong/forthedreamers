@@ -1,10 +1,11 @@
 'use client'
-import { FC, useState } from 'react'
+import {FC, useState} from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { AspectRatio } from '@/components/ui/aspect-ratio'
 import ImagePlaceholder from '@/components/reusable/image-placeholder'
-import type { LandingProduct } from './index'
+import {AspectRatio} from '@/components/ui/aspect-ratio'
+import type {LandingProduct} from './index'
+
 type ProductCardProps = LandingProduct & {rating?: number; reviewCount?: number}
 
 const ProductCard: FC<ProductCardProps> = ({name, images, basePrice, variants, slug, rating = 0, reviewCount = 0}) => {
@@ -30,9 +31,13 @@ const ProductCard: FC<ProductCardProps> = ({name, images, basePrice, variants, s
       <div>
         <h3 className='font-medium'>{name}</h3>
         {reviewCount > 0 && (
-          <p className='mt-1 text-xs text-muted-foreground'>★ {rating.toFixed(1)} · {reviewCount} reviews</p>
+          <p className='mt-1 text-xs text-muted-foreground'>
+            ★ {rating.toFixed(1)} · {reviewCount} reviews
+          </p>
         )}
-        <p className='text-sm text-neutral-500'>$ {basePrice ?? variants?.[0].price}</p>
+        <p className='text-sm text-muted-foreground'>
+          {basePrice != null || variants[0] ? `$ ${(basePrice ?? variants[0].price).toFixed(2)}` : 'Price unavailable'}
+        </p>
       </div>
     </Link>
   )

@@ -28,8 +28,13 @@ export type ProductReview = {
   title: string | null
   comment: string | null
   createdAt: string
-  user: {name: string; image: string | null}
-  variant: {name: string} | null
+  user: {
+    name: string | null
+    image: string | null
+  }
+  variant: {
+    name: string | null
+  } | null
 }
 
 export type ReviewSummary = {

@@ -3,8 +3,8 @@
 import {useState} from 'react'
 import {ChevronLeft, ChevronRight, Star} from 'lucide-react'
 import {toast} from 'sonner'
-import {Button} from '@/components/ui/button'
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
+import {Button} from '@/components/ui/button'
 import type {ProductReview, ReviewSummary} from './product-types'
 
 type ProductReviewsProps = {
@@ -29,11 +29,13 @@ const ProductReviews = ({slug, initialReviews, summary}: ProductReviewsProps) =>
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(summary.count)
   const [loading, setLoading] = useState(false)
+  const [failed, setFailed] = useState(false)
   const pageSize = 6
   const pageCount = Math.max(1, Math.ceil(total / pageSize))
 
   const loadReviews = async (rating: number | null, nextPage: number) => {
     setLoading(true)
+    setFailed(false)
     const params = new URLSearchParams({page: String(nextPage), limit: String(pageSize)})
     if (rating) params.set('rating', String(rating))
 
@@ -45,6 +47,7 @@ const ProductReviews = ({slug, initialReviews, summary}: ProductReviewsProps) =>
       setTotal(result.total ?? 0)
       setPage(nextPage)
     } catch (error) {
+      setFailed(true)
       toast.error(error instanceof Error ? error.message : 'Unable to load reviews')
     } finally {
       setLoading(false)
@@ -52,6 +55,7 @@ const ProductReviews = ({slug, initialReviews, summary}: ProductReviewsProps) =>
   }
 
   const selectRating = (rating: number | null) => {
+    setFailed(false)
     setSelectedRating(rating)
     if (rating === null) {
       setReviews(initialReviews)
@@ -111,6 +115,13 @@ const ProductReviews = ({slug, initialReviews, summary}: ProductReviewsProps) =>
 
       {loading ? (
         <div className='rounded-xl border border-border p-8 text-center text-sm text-muted-foreground'>Loading reviews...</div>
+      ) : failed ? (
+        <div role='alert' className='rounded-xl border p-6'>
+          Unable to load reviews.{' '}
+          <Button variant='outline' onClick={() => void loadReviews(selectedRating, 1)}>
+            Retry
+          </Button>
+        </div>
       ) : reviews.length ? (
         <div className='divide-y divide-border rounded-xl border border-border bg-card'>
           {reviews.map(review => (
@@ -119,7 +130,7 @@ const ProductReviews = ({slug, initialReviews, summary}: ProductReviewsProps) =>
                 <div className='flex items-center gap-3'>
                   <Avatar>
                     <AvatarImage src={review.user.image ?? undefined} alt='' />
-                    <AvatarFallback>{review.user.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+                    <AvatarFallback>{(review.user.name ?? 'U').slice(0, 1).toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div>
                     <p className='font-medium text-foreground'>{review.user.name}</p>
@@ -130,7 +141,7 @@ const ProductReviews = ({slug, initialReviews, summary}: ProductReviewsProps) =>
               </div>
               {review.title && <h3 className='font-medium text-foreground'>{review.title}</h3>}
               {review.comment && <p className='whitespace-pre-line leading-relaxed text-muted-foreground'>{review.comment}</p>}
-              {review.variant && <p className='text-xs text-muted-foreground'>Purchased: {review.variant.name}</p>}
+              {review.variant && <p className='text-xs text-muted-foreground'>Option: {review.variant.name}</p>}
             </article>
           ))}
         </div>
@@ -142,7 +153,9 @@ const ProductReviews = ({slug, initialReviews, summary}: ProductReviewsProps) =>
 
       {pageCount > 1 && (
         <div className='flex items-center justify-between'>
-          <p className='text-sm text-muted-foreground'>Page {page} of {pageCount}</p>
+          <p className='text-sm text-muted-foreground'>
+            Page {page} of {pageCount}
+          </p>
           <div className='flex gap-2'>
             <Button
               size='icon'

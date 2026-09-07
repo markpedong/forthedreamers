@@ -1,17 +1,18 @@
 'use client'
 
-import {useState} from 'react'
+import {addToCart} from '@/lib/actions/cart'
+import {useRef, useState} from 'react'
 import {useRouter} from 'next/navigation'
 import {Heart, ShoppingCart} from 'lucide-react'
 import {toast} from 'sonner'
-import {Button} from '@/components/ui/button'
 import {useCartCount} from '@/components/provider/cart-count-provider'
 import {useWishlist} from '@/components/provider/wishlist-provider'
-import {addToCart} from '@/lib/actions/cart'
+import {Button} from '@/components/ui/button'
 import type {ProductPageVariant, ProductPurchaseData} from './product-types'
 
 const AddToCartSection = ({product, selectedVariant}: {product: ProductPurchaseData; selectedVariant: ProductPageVariant | null}) => {
   const [quantity, setQuantity] = useState(1)
+  const requestPending = useRef(false)
   const wishlist = useWishlist()
   const isWishlisted = wishlist.ids.includes(product.id)
   const [pendingAction, setPendingAction] = useState<'add' | 'buy' | null>(null)
@@ -25,10 +26,11 @@ const AddToCartSection = ({product, selectedVariant}: {product: ProductPurchaseD
   }
 
   const submit = (buyNow: boolean) => {
-    if (!selectedVariant || selectedVariant.stock < 1 || pendingAction) return
+    if (!selectedVariant || selectedVariant.stock < 1 || requestPending.current) return
+    requestPending.current = true
 
     const action = buyNow ? 'buy' : 'add'
-    const canOptimisticallyAddBadge = count === 0
+    const canOptimisticallyAddBadge = !buyNow && count === 0
     setPendingAction(action)
     if (canOptimisticallyAddBadge) setCount(value => value + 1)
 
@@ -48,6 +50,7 @@ const AddToCartSection = ({product, selectedVariant}: {product: ProductPurchaseD
         if (canOptimisticallyAddBadge) setCount(value => Math.max(0, value - 1))
         toast.error('Unable to add to cart. Please try again.')
       } finally {
+        requestPending.current = false
         setPendingAction(null)
       }
     })()
@@ -76,7 +79,8 @@ const AddToCartSection = ({product, selectedVariant}: {product: ProductPurchaseD
             <input
               type='number'
               min={1}
-              max={maxQuantity}
+              max={Math.max(1, maxQuantity)}
+              disabled={maxQuantity === 0}
               value={safeQuantity}
               onChange={event => handleQuantity(Number(event.target.value) || 1)}
               aria-label='Quantity'
@@ -112,7 +116,9 @@ const AddToCartSection = ({product, selectedVariant}: {product: ProductPurchaseD
           </div>
         </>
       ) : (
-        <p className='rounded-md border border-border bg-muted/30 p-4 text-sm text-muted-foreground'>This product is unavailable for purchase.</p>
+        <p className='rounded-md border border-border bg-muted/30 p-4 text-sm text-muted-foreground'>
+          This product is unavailable for purchase.
+        </p>
       )}
 
       <Button

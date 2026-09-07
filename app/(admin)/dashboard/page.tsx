@@ -1,5 +1,5 @@
 import {USER_ROLE} from '@/generated/prisma'
-import {getSession} from '@/lib/server-actions'
+import {getSessionUser} from '@/lib/auth'
 import {getAdminDashboardData, getDashboardRange, getSellerDashboardData} from '@/lib/services/dashboard'
 import {redirect} from 'next/navigation'
 import DashboardView from './dashboard-view'
@@ -11,19 +11,19 @@ type DashboardPageProps = {
 }
 
 const DashboardPage = async ({searchParams}: DashboardPageProps) => {
-  const session = await getSession()
+  const user = await getSessionUser()
 
-  if (!session) redirect('/sign-in?isSignedIn=false')
-  if (!session.user.emailVerified) redirect('/profile?emailVerified=false')
+  if (!user) redirect('/sign-in?isSignedIn=false')
+  if (!user.emailVerified) redirect('/profile?emailVerified=false')
 
   const {range} = await searchParams
   const selectedRange = getDashboardRange(range)
 
-  if (session.user.role === USER_ROLE.ADMIN) {
+  if (user.role === USER_ROLE.ADMIN) {
     return <DashboardView data={await getAdminDashboardData(selectedRange)} />
   }
 
-  if (session.user.role === USER_ROLE.SELLER) {
+  if (user.role === USER_ROLE.SELLER) {
     return <DashboardView data={await getSellerDashboardData(selectedRange)} />
   }
 

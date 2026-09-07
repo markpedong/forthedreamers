@@ -39,7 +39,9 @@ const SellerInfo = ({seller}: SellerInfoProps) => {
         </div>
       </div>
 
-      {seller.description && <p className='mt-6 max-w-3xl border-t border-border pt-6 leading-relaxed text-muted-foreground'>{seller.description}</p>}
+      {seller.description && (
+        <p className='mt-6 max-w-3xl border-t border-border pt-6 leading-relaxed text-muted-foreground'>{seller.description}</p>
+      )}
     </section>
   )
 }

@@ -1,10 +1,11 @@
-import {notFound} from 'next/navigation'
 import {productBySlug, productSlugs} from '@/lib/services/catalog'
+import {notFound} from 'next/navigation'
 import ProductGallery from './components/product-gallery'
 import ProductInfoTabs from './components/product-info-tabs'
 import ProductPageClient from './components/product-page-client'
 import ProductReviews from './components/product-reviews'
 import RelatedProducts from './components/related-products'
+import ReviewForm from './components/review-form'
 
 const ProductPage = async (props: PageProps<'/products/[slug]'>) => {
   const {slug} = await props.params
@@ -27,7 +28,9 @@ const ProductPage = async (props: PageProps<'/products/[slug]'>) => {
   return (
     <main className='min-h-screen'>
       <div className='mx-auto max-w-7xl space-y-16 px-4 pb-20 pt-12 sm:px-6 lg:px-8'>
-        <div className='text-xs uppercase tracking-widest text-muted-foreground'>Home / {product.category.name} / {product.name}</div>
+        <div className='text-xs uppercase tracking-widest text-muted-foreground'>
+          Home / {product.category.name} / {product.name}
+        </div>
 
         <section className='grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:gap-16'>
           <ProductGallery images={product.images} alt={product.name} />
@@ -47,7 +50,13 @@ const ProductPage = async (props: PageProps<'/products/[slug]'>) => {
           }}
         />
 
-        <ProductReviews slug={slug} initialReviews={product.reviews} summary={product.reviewSummary} />
+        <ProductReviews
+          key={JSON.stringify(product.reviewSummary)}
+          slug={slug}
+          initialReviews={product.reviews}
+          summary={product.reviewSummary}
+        />
+        <ReviewForm slug={slug} />
 
         <RelatedProducts
           title='More from this seller'

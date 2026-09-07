@@ -2,13 +2,11 @@
 import { FC } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { ArrowRight } from 'lucide-react'
 import { TProduct } from '@/lib/types'
 import ProductCard from './product-card'
-import ImagePlaceholder from '@/components/reusable/image-placeholder'
 
 export type LandingProduct = Pick<TProduct, 'id' | 'name' | 'images' | 'basePrice' | 'slug'> & {
   variants: {price: number}[]
@@ -90,7 +88,7 @@ const LandingPage: FC<{products: LandingProduct[]}> = ({products = []}) => (
           <p className='text-neutral-500'>Timeless pieces for your everyday wardrobe.</p>
         </div>
 
-        <Button variant='link' className='p-0 h-auto text-neutral-900 group'>
+        <Button variant='link' className='p-0 h-auto text-neutral-500 group'>
           View All Products
           <ArrowRight className='ml-2 w-4 h-4 transition-transform group-hover:translate-x-1' />
         </Button>

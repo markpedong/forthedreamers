@@ -11,8 +11,11 @@ const formatPrice = (value: number) => `$${value.toFixed(2)}`
 
 const ProductOverview = ({product, selectedVariant}: ProductOverviewProps) => {
   const currentPrice = selectedVariant?.discountedPrice ?? selectedVariant?.price ?? product.basePrice
-  const originalPrice = selectedVariant?.discountedPrice ? selectedVariant.price : null
-  const discount = originalPrice && currentPrice ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : 0
+  const originalPrice =
+    selectedVariant && selectedVariant.discountedPrice !== null && selectedVariant.discountedPrice < selectedVariant.price
+      ? selectedVariant.price
+      : null
+  const discount = originalPrice && currentPrice !== null ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : 0
   const rating = product.rating || 0
 
   return (
