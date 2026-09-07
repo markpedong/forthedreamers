@@ -8,14 +8,17 @@ import { thunk } from 'redux-thunk';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 // Import your reducers here
 import appDataReducer from '../reducers/appData';
+import cartDataReducer from '../reducers/cartData';
 
 // Define the root state
 export type RootState = {
   appData: ReturnType<typeof appDataReducer>;
+  cartData: ReturnType<typeof cartDataReducer>;
 };
 
 const rootReducer = combineReducers({
   appData: appDataReducer,
+  cartData: cartDataReducer,
 });
 
 const createNoopStorage = () => {

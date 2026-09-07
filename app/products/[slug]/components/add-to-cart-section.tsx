@@ -6,14 +6,13 @@ import { Heart, ShoppingCart } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { addCartItem } from '@/lib/http'
-import { useWishlist } from '@/lib/hooks/use-wishlist'
-import { decrementCartCount, incrementCartCount, setCartCount, useAppDispatch } from '@/redux/store'
 import type { ProductPageVariant, ProductPurchaseData } from './product-types'
+import { useAppDispatch } from '@/redux/store'
+import { decrementCartCount, incrementCartCount, setCartCount } from '@/redux/reducers/cartData'
 
 const AddToCartSection = ({ product, selectedVariant }: { product: ProductPurchaseData; selectedVariant: ProductPageVariant | null }) => {
   const [quantity, setQuantity] = useState(1)
   const requestPending = useRef(false)
-  const wishlist = useWishlist()
   const isWishlisted = wishlist.ids.includes(product.id)
   const dispatch = useAppDispatch()
   const router = useRouter()
@@ -30,20 +29,17 @@ const AddToCartSection = ({ product, selectedVariant }: { product: ProductPurcha
     requestPending.current = true
     setIsProcessingBuyNow(buyNow)
 
-    // Optimistic: always update the badge count immediately (safe, reversible interaction).
     dispatch(incrementCartCount())
 
     void (async () => {
       try {
         const result = await addCartItem({variantId: selectedVariant.id, quantity: safeQuantity})
         if (!result.success || !result.data) {
-          // Rollback optimistic update on failure.
           dispatch(decrementCartCount())
           toast.error(result.message)
           return
         }
 
-        // Reconcile with server response (server is source of truth).
         dispatch(setCartCount(result.data.count))
         if (buyNow) router.push('/checkout')
       } catch {
