@@ -28,6 +28,9 @@ export const getSession = async () => {
   const profile = await upsertAuthUser(data.user);
 
   return {
+    hasPassword:
+      data.user.app_metadata.provider === "email" ||
+      data.user.identities?.some((identity) => identity.provider === "email") === true,
     user: {
       id: data.user.id,
       email: data.user.email,
@@ -239,7 +242,27 @@ export const requestPasswordReset = async ({ email, redirectTo }: { email: strin
   return { success: true };
 };
 
-export const listAllSessions = async () => [];
+export const listAllSessions = async () => {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) return [];
+
+  const headerStore = await headers();
+  const forwardedFor = headerStore.get("x-forwarded-for");
+
+  return [
+    {
+      id: session.access_token,
+      token: session.access_token,
+      userAgent: headerStore.get("user-agent"),
+      ipAddress: forwardedFor?.split(",")[0]?.trim() ?? headerStore.get("x-real-ip"),
+      createdAt: session.user.last_sign_in_at ?? session.user.created_at,
+    },
+  ];
+};
 
 export const permissionListUsers = async () => ({ success: true });
 

@@ -48,8 +48,16 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
     const {
       data: { subscription }
     } = supabase.auth.onAuthStateChange((_event, currentSession) => {
-      setSession(
-        currentSession ? { user: currentSession.user, session: { token: currentSession.access_token, impersonatedBy: null } } : null
+      setSession((previousSession) =>
+        currentSession
+          ? {
+              user: {
+                ...currentSession.user,
+                ...(previousSession?.user?.id === currentSession.user.id ? previousSession.user : {})
+              },
+              session: { token: currentSession.access_token, impersonatedBy: null }
+            }
+          : null
       )
     })
 
