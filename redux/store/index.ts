@@ -4,7 +4,6 @@ import { TypedUseSelectorHook } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
-import { thunk } from 'redux-thunk';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 // Import your reducers here
 import appDataReducer from '../reducers/appData';
@@ -53,7 +52,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST'],
       },
-    }).concat(thunk);
+    });
   },
 });
 
