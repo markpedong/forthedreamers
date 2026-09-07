@@ -1,9 +1,9 @@
 'use client'
 
-import {useAppSelector} from '@/lib/hooks/use-app-store'
+import { useAppSelector } from '@/redux/store'
 
 const CartItemCount = () => {
-  const count = useAppSelector(state => state.app.cartCount)
+  const count = useAppSelector(state => state.cartData.cartCount)
   if (count === 0) return null
 
   return (
