@@ -113,7 +113,7 @@ const AddressesSection: FC<AddressesSectionProps> = ({ addresses }) => {
     })
   }
 
-  const handleSubmit = (values: AddressFormValues) => {
+  const handleSubmit = () => {
     toast.info('Address management is not available yet')
     setIsDialogOpen(false)
   }

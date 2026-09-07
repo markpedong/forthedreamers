@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getSession } from "@/lib/server-actions";
 import { successResponse, errorResponse } from "@/lib/server-helper";
-import { prisma } from "@/lib/prisma";
 
 /**
  * POST /api/notify/email
@@ -48,7 +47,7 @@ export async function POST(request: NextRequest) {
  * GET /api/notify/preferences
  * Get user's notification preferences.
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getSession();
     if (!session?.user) {
@@ -84,8 +83,7 @@ export async function PUT(request: NextRequest) {
       return errorResponse("Unauthorized");
     }
 
-    const body = await request.json();
-    const { orderUpdates, marketingEmails, lowStockAlerts, priceDropAlerts } = body;
+    await request.json();
 
     // Note: notificationPreference model may not exist in schema yet
     const preferences = null;

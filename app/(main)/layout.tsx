@@ -9,14 +9,5 @@ export default async function MainLayout({children}: LayoutProps<'/'>) {
     return
   }
 
-  const authSession = {
-    user: { ...session.user, email: session.user.email ?? null },
-    session: session.session,
-  }
-
-  return (
-    <>
-      {children}
-    </>
-  )
+  return children
 }

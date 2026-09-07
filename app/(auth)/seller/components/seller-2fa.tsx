@@ -2,7 +2,7 @@
 
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
-import useFormSchema from '@/hooks/useFormSchema';
+import formSchemas from '@/hooks/form-schemas';
 import { SchemaForm, TOnNavigate } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -14,7 +14,7 @@ import { tryWithToast } from '@/utils/helper';
 const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
   const router = useRouter();
   const [useBackup, setUseBackup] = useState(false);
-  const { twoFactorSchema } = useFormSchema();
+  const { twoFactorSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof twoFactorSchema>>({
     resolver: zodResolver(twoFactorSchema),
     defaultValues: { otp: '' },

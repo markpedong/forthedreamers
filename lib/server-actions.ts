@@ -10,11 +10,6 @@ import { upsertAuthUser } from "./auth";
 
 export type TChangePass = { currentPassword: string; newPassword: string };
 
-const unsupported = (feature: string) => ({
-  error: `${feature} is not supported by the Supabase auth setup yet.`,
-  success: false,
-});
-
 export const revalidatePath = async (path: string) => revalidatePathNext(path);
 
 const appOrigin = async () => {
@@ -140,10 +135,6 @@ export async function sendVerificationEmailAction(email: string) {
 
 export const sendForgotPasswordEmail = async (email: string) => {
   // Rate limiting: simple in-memory throttle to prevent email spam/enumeration
-  const now = Date.now();
-  const key = `forgot_${email.toLowerCase()}`;
-  // Use a simple approach: check if we have a recent request in Redis/DB, fallback to memory
-  // For now, we'll add a basic check that the email format is valid before proceeding
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     throw new Error('Invalid email format');

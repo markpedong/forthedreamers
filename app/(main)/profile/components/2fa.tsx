@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SchemaForm, SetupStep } from '@/lib/types';
 import { useForm } from 'react-hook-form';
-import useFormSchema from '@/hooks/useFormSchema';
+import formSchemas from '@/hooks/form-schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TWOFACTOR_DEFAULT } from '@/constants';
 import { twoFactor } from '@/lib/auth-client';
@@ -25,15 +25,15 @@ const TwoFactorSection: FC = () => {
   const user = session?.user;
   const router = useRouter();
   const is2faEnabled = user?.twoFactorEnabled;
-  const { twoFactorSchema } = useFormSchema();
+  const { twoFactorSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof twoFactorSchema>>({
     resolver: zodResolver(twoFactorSchema),
     defaultValues: TWOFACTOR_DEFAULT,
   });
 
   const [setupStep, setSetupStep] = useState<SetupStep>('');
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
-  const [backupCodes, setBackupCodes] = useState<string[]>([]);
+  const qrCodeUrl: string | null = null;
+  const backupCodes: string[] = [];
   const [showVerificationSuccess, setShowVerificationSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
 

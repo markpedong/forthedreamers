@@ -4,7 +4,6 @@ import { getBrowserInfo } from '@/lib/utils';
 import { Button } from '../ui/button';
 import { FC } from 'react';
 import { LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 type Props = {
@@ -21,8 +20,6 @@ type Session = {
 };
 
 const SessionItem: FC<Props> = ({ session, isCurrent }) => {
-  const router = useRouter();
-
   const handleAction = () => {
     toast.info('Session revocation is not available yet');
   };

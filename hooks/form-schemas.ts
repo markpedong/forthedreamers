@@ -1,7 +1,6 @@
 import { PRODUCT_STATUS } from "@/generated/prisma";
 import { z } from "zod";
 
-const useFormSchema = () => {
   const emailSchema = z
     .string()
     .email("Invalid email address")
@@ -141,7 +140,7 @@ const useFormSchema = () => {
       }
     })
 
-  return {
+const formSchemas = {
     nameEmailSchema,
     password,
     resetPasswordSchema,
@@ -158,7 +157,6 @@ const useFormSchema = () => {
     specFormSchema,
     variantFormSchema,
     attributeSchema
-  }
 }
 
-export default useFormSchema
+export default formSchemas

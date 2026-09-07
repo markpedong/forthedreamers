@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getSession } from "@/lib/server-actions";
 import { successResponse, errorResponse, getPaginatedData } from "@/lib/server-helper";
 import { prisma } from "@/lib/prisma";
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
  * Get a specific support ticket.
  */
 export async function GET_BY_ID(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {

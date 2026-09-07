@@ -4,23 +4,21 @@ import AlertDialog from '@/components/reusable/alert-dialog';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import { Button } from '@/components/ui/button';
-import useFormSchema from '@/hooks/useFormSchema';
+import formSchemas from '@/hooks/form-schemas';
 import { twoFactor } from '@/lib/auth-client';
 import { SchemaForm } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { FC, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-type Props = {};
-
-const DeleteAccount: FC = (props: Props) => {
+const DeleteAccount = () => {
   const router = useRouter();
   const [isSubmitting, startSubmitting] = useTransition();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const { twoFactorSchema } = useFormSchema();
+  const { twoFactorSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof twoFactorSchema>>({
     resolver: zodResolver(twoFactorSchema),
     defaultValues: { otp: '' },

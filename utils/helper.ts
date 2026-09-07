@@ -167,30 +167,6 @@ export const buildQueryParams = (params?: BaseQueryParams) => {
 };
 
 
-export const buildDateParams = (where: Record<string, any>): Record<string, any> => {
-  const newWhere = { ...where }; // clone to avoid mutation
-
-  if (newWhere.dateRange && typeof newWhere.dateRange === "string") {
-    const [startRaw, endRaw] = newWhere.dateRange.split(",");
-
-    const start = startRaw.includes("T") ? startRaw : startRaw.replace(" ", "T");
-    const end = endRaw.includes("T") ? endRaw : endRaw.replace(" ", "T");
-
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-
-    if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
-      newWhere.createdAt = { gte: startDate, lte: endDate };
-    }
-
-    delete newWhere.dateRange; // remove original
-  }
-
-  return newWhere;
-};
-
-// export const filterImageSrc = (str: string) => /\.(?:jpe?g|png|gif|jfif|bmp|tiff?|webp)$/i.test(str) ? str : undefined;
-
 export const fileToBase64 = (file: File) =>
   new Promise<string>((resolve, reject) => {
     const reader = new FileReader()

@@ -11,7 +11,7 @@ import type { SchemaForm, TOnNavigate } from '@/lib/types'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
-import useFormSchema from '@/hooks/useFormSchema'
+import formSchemas from '@/hooks/form-schemas'
 import Form from '@/components/reusable/form'
 import Input from '@/components/reusable/input'
 
@@ -21,15 +21,13 @@ import { USER_ROLE } from '@/generated/prisma'
 import Link from 'next/link'
 
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { useAuthSession } from '@/lib/supabase/auth-context'
 
 const supabase = createSupabaseBrowserClient()
 
 const SellerSignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
-  const { session } = useAuthSession()
   const router = useRouter()
   const [isSubmitting, startSubmitting] = useTransition()
-  const {loginSchema} = useFormSchema()
+  const {loginSchema} = formSchemas
 
   const form = useForm<SchemaForm<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),

@@ -10,9 +10,8 @@ import {
   DialogClose
 } from '@/components/ui/dialog'
 import { ReactNode } from 'react'
-import { FieldValues } from 'react-hook-form'
 
-interface ReusableDialogProps<T extends FieldValues> {
+interface ReusableDialogProps {
   title: string
   description?: string
   confirmText?: string
@@ -31,7 +30,7 @@ interface ReusableDialogProps<T extends FieldValues> {
   contentClassname?: string
 }
 
-const Dialog = <T extends FieldValues>({
+const Dialog = ({
   title,
   description,
   // form: formProps,
@@ -47,7 +46,7 @@ const Dialog = <T extends FieldValues>({
   onOpenChange,
   contentClassname,
   onConfirm
-}: ReusableDialogProps<T>) => {
+}: ReusableDialogProps) => {
   return (
     <DialogUI open={open} onOpenChange={onOpenChange}>
       {triggerText && (

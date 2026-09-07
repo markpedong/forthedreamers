@@ -2,7 +2,7 @@ import { getProductPrisma } from '@/lib/server-actions';
 import { errorResponse, successResponse } from '@/lib/server-helper';
 import { NextRequest } from 'next/server';
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string; }> }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ slug: string; }> }) {
   const { slug } = await params;
 
   try {

@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import useFormSchema from '@/hooks/useFormSchema';
+import formSchemas from '@/hooks/form-schemas';
 import { SchemaForm } from '@/lib/types';
 import { sendVerificationEmailAction, updateUser } from '@/lib/server-actions';
 import { useForm } from 'react-hook-form';
@@ -29,7 +29,7 @@ const ProfileDetails: FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [isSubmitting, startSubmitting] = useTransition();
-  const { nameEmailSchema } = useFormSchema();
+  const { nameEmailSchema } = formSchemas;
 
   const form = useForm<SchemaForm<typeof nameEmailSchema>>({
     resolver: zodResolver(nameEmailSchema),

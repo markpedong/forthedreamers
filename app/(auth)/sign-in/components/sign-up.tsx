@@ -1,7 +1,7 @@
 import { SchemaForm, TOnNavigate } from '@/lib/types'
 import PageWrapper from './page-wrapper'
 import OauthButtons from './oauth-buttons'
-import useFormSchema from '@/hooks/useFormSchema'
+import formSchemas from '@/hooks/form-schemas'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Input from '@/components/reusable/input'
@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation'
 const SignUp = ({onNavigate}: {onNavigate: TOnNavigate}) => {
   const router = useRouter()
   const [isSigningUp, startSigningUp] = useTransition()
-  const {registrationSchema} = useFormSchema()
+  const {registrationSchema} = formSchemas
 
   const form = useForm<SchemaForm<typeof registrationSchema>>({
     resolver: zodResolver(registrationSchema),

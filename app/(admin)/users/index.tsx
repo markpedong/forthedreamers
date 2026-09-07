@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import classNames from 'classnames';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
-import useFormSchema from '@/hooks/useFormSchema';
+import formSchemas from '@/hooks/form-schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { twoFactor } from '@/lib/auth-client';
@@ -39,7 +39,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
   const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [showDeleteUser, setShowDeleteUser] = useState(false);
-  const { twoFactorSchema } = useFormSchema();
+  const { twoFactorSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof twoFactorSchema>>({
     resolver: zodResolver(twoFactorSchema),
     defaultValues: { otp: '' },
@@ -75,14 +75,6 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
       toast.success(`User ${user.name} has been ${user.banned ? 'unbanned' : 'banned'}`);
       router.refresh();
     });
-  };
-
-  const handleImpersonateUser = (_userId: string) => {
-    toast.info('Impersonation is not available');
-  };
-
-  const handleRevokeSession = (_user: UserWithRole) => {
-    toast.info('Session revocation is not available');
   };
 
   const onSubmit = async ({ otp }: SchemaForm<typeof twoFactorSchema>) => {

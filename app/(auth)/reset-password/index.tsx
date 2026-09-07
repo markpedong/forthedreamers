@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Form from '@/components/reusable/form';
-import useFormSchema from '@/hooks/useFormSchema';
+import formSchemas from '@/hooks/form-schemas';
 import Input from '@/components/reusable/input';
 import { SchemaForm } from '@/lib/types';
 import { resetPassword } from '@/lib/server-actions';
@@ -15,7 +15,7 @@ import { tryWithToast } from '@/utils/helper';
 
 const ResetPassword: FC<{ token: string }> = ({ token }) => {
   const router = useRouter();
-  const { resetPasswordSchema } = useFormSchema();
+  const { resetPasswordSchema } = formSchemas;
   const [isLoading, startTransition] = useTransition();
   const form = useForm<SchemaForm<typeof resetPasswordSchema>>({
     resolver: zodResolver(resetPasswordSchema),

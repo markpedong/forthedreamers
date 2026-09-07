@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, type KeyboardEvent, FC } from 'react'
+import { useState, type KeyboardEvent, FC } from 'react'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,7 +9,7 @@ import { TagsInputProps } from '@/lib/types'
 const TagsInput: FC<TagsInputProps> = ({tags, onTagsChange}) => {
   const [input, setInput] = useState('')
 
-  const addTag = useCallback(() => {
+  const addTag = () => {
     const tag = input.trim()
     if (!tag) return
 
@@ -17,19 +17,16 @@ const TagsInput: FC<TagsInputProps> = ({tags, onTagsChange}) => {
       onTagsChange([...tags, tag])
     }
     setInput('')
-  }, [input, tags, onTagsChange])
+  }
 
-  const removeTag = useCallback((tag: string) => onTagsChange(tags.filter(t => t !== tag)), [tags, onTagsChange])
+  const removeTag = (tag: string) => onTagsChange(tags.filter(value => value !== tag))
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        e.preventDefault()
-        addTag()
-      }
-    },
-    [addTag]
-  )
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      addTag()
+    }
+  }
 
   return (
     <div className='space-y-3'>

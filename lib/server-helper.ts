@@ -76,25 +76,3 @@ export const getPaginatedData = async <T extends object>({ model, where, include
 
   return { data, total, page, pageSize, success: true };
 }
-
-export const buildServerQuery = (url: URL) => {
-  const params = Object.fromEntries(url.searchParams.entries());
-  const where: Record<string, any> = {};
-
-  if (params.dateRange) {
-    const [start, end] = params.dateRange.split(",").map((d) => new Date(d.replace(" ", "T")));
-    if (!isNaN(+start) && !isNaN(+end)) where.createdAt = { gte: start, lte: end };
-  }
-
-  const allowed = new Set(["name", "brand", "description", "status", "categoryId", "sellerId"]);
-  Object.entries(params).forEach(([key, value]) => {
-    if (!value || key === "dateRange") return;
-    if (!allowed.has(key)) return;
-    where[key] = key === "status" ? value : { contains: value, mode: "insensitive" };
-  });
-
-  if (params.page) where.page = params.page;
-  if (params.pageSize) where.pageSize = params.pageSize;
-
-  return where;
-};

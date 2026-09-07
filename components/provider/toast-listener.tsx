@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 import { toast } from 'sonner'
 
 const ToastListener = () => {
-  const { session, signOut } = useAuthSession()
+  const { signOut } = useAuthSession()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()

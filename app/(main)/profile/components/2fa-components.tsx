@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 type TBackUpCodeStep = { step: 'backup-codes' | 'backup-codes-regenerated'; backupCodes: string[] };
 
-const BackupCodesStep: FC<TBackUpCodeStep> = ({ step, backupCodes }) => (
+const BackupCodesStep: FC<TBackUpCodeStep> = ({ backupCodes }) => (
   <>
     <div className='flex items-center gap-2 rounded-lg bg-green-50 border border-green-200 p-3 my-6'>
       <CheckCircle2 className='h-5 w-5 text-green-600 flex-shrink-0' />

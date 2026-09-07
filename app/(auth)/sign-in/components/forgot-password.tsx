@@ -1,7 +1,7 @@
 import Input from '@/components/reusable/input';
 import { SchemaForm, TOnNavigate } from '@/lib/types';
 import PageWrapper from './page-wrapper';
-import useFormSchema from '@/hooks/useFormSchema';
+import formSchemas from '@/hooks/form-schemas';
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,7 +11,7 @@ import Form from '@/components/reusable/form';
 import { tryWithToast } from '@/utils/helper';
 
 const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
-  const { forgotPasswordSchema } = useFormSchema();
+  const { forgotPasswordSchema } = formSchemas;
   const [isSending, startSending] = useTransition();
   const form = useForm<SchemaForm<typeof forgotPasswordSchema>>({
     resolver: zodResolver(forgotPasswordSchema),

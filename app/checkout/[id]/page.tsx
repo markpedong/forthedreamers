@@ -2,7 +2,7 @@ import { getSession } from "@/lib/server-actions";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Package, Truck } from "lucide-react";
+import { Package, Truck } from "lucide-react";
 import Link from "next/link";
 import OrdersBackLink from "../orders-back-link";
 

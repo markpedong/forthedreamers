@@ -6,7 +6,7 @@ import OauthButtons from './oauth-buttons'
 import Form from '@/components/reusable/form'
 import Input from '@/components/reusable/input'
 import { useForm } from 'react-hook-form'
-import useFormSchema from '@/hooks/useFormSchema'
+import formSchemas from '@/hooks/form-schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
@@ -18,15 +18,13 @@ import { getUserDB } from '@/lib/server-actions'
 import { USER_ROLE } from '@/generated/prisma'
 
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { useAuthSession } from '@/lib/supabase/auth-context'
 
 const supabase = createSupabaseBrowserClient()
 
 const SignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
-  const { session } = useAuthSession()
   const router = useRouter()
   const [isSubmit, startSubmitting] = useTransition()
-  const {loginSchema} = useFormSchema()
+  const {loginSchema} = formSchemas
 
   const form = useForm<SchemaForm<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),

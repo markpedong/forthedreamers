@@ -1,13 +1,12 @@
 'use client';
 
-import { FC, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { FC } from 'react';
+import { usePathname } from 'next/navigation';
 import { LogOut, User } from 'lucide-react';
 import { useAuthSession } from '@/lib/supabase/auth-context';
 
 const AdminHeader: FC = () => {
   const { session, signOut } = useAuthSession();
-  const router = useRouter();
   const pathname = usePathname();
 
   return (

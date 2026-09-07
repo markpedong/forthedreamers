@@ -9,13 +9,13 @@ import Dialog from '@/components/reusable/dialog'
 import Input from '@/components/reusable/input'
 import Form from '@/components/reusable/form'
 import { useForm } from 'react-hook-form'
-import useFormSchema from '@/hooks/useFormSchema'
+import formSchemas from '@/hooks/form-schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input as InputUI } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 const VariantEditor: FC<VariantEditorProps> = ({variants, onVariantsChange}) => {
-  const {attributeSchema} = useFormSchema()
+  const {attributeSchema} = formSchemas
   const form = useForm<SchemaForm<typeof attributeSchema>>({
     resolver: zodResolver(attributeSchema),
     defaultValues: {label: '', value: ''}

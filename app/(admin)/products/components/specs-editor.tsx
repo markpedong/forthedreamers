@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import Input from '@/components/reusable/input';
 import Dialog from '@/components/reusable/dialog';
 import Form from '@/components/reusable/form';
-import useFormSchema from '@/hooks/useFormSchema';
+import formSchemas from '@/hooks/form-schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LABEL_VALUE_DEFAULT } from '@/constants';
@@ -14,7 +14,7 @@ import { SchemaForm, SpecsEditorProps } from '@/lib/types';
 
 const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
   const [isPending, startTransition] = useTransition();
-  const { specFormSchema } = useFormSchema();
+  const { specFormSchema } = formSchemas;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 

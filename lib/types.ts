@@ -8,8 +8,6 @@ export type TOnNavigate = (page: string) => void;
 
 export type Session = Awaited<ReturnType<typeof getSession>>
 
-export type SessionUser = NonNullable<Session>["user"];
-
 export type ProfileLayoutProps = {
   sections: Array<{
     id: string;
@@ -35,25 +33,6 @@ export type SetupStep =
 export type ValueEnumItem = { label: string; value: string | number };
 
 export type ValueEnum = ValueEnumItem[] | (() => Promise<ValueEnumItem[]>);
-
-export type SearchType = 'text' | 'select' | 'number' | 'date';
-
-export type RequestParams = { page: number; pageSize: number; filters?: Record<string, any> };
-
-export type SorterInfo = { field?: string; order?: 'asc' | 'desc' };
-
-export type RequestFn<T> = (
-  params: RequestParams,
-  sorter?: SorterInfo,
-) => Promise<{ data: T[]; total: number }>;
-
-export type PaginationProps = {
-  current?: number;
-  pageSize?: 10 | 20 | 50;
-  total?: number;
-  pageSizeOptions?: (10 | 20 | 50)[];
-  onChange?: (page: number, pageSize: 10 | 20 | 50) => void;
-};
 
 export type TCreateSeller = { storeName: string, userID: string }
 
@@ -140,8 +119,6 @@ export type FormVariant = {
   name: string;
   isRequired: boolean;
 };
-
-export type TSpec = Omit<Spec, "createdAt" | "updatedAt">;
 
 export type OmittedProductFields = Omit<Product, "createdAt" | "updatedAt" | "categoryId">
 
@@ -243,30 +220,7 @@ export type VariantEditorProps = {
   onVariantsChange: (variants: Partial<TVariant>[]) => void;
 }
 
-export type VariantOptionEditorProps = {
-  variantName: string
-  onOptionsChange: (options: []) => void
-}
-
-export type OptionForm = {
-  variantOptionName: string
-  price: string
-  discountedPrice: string
-  stock: string
-  coupon: string
-}
-
 export type TagsInputProps = {
   tags: string[];
   onTagsChange: (tags: string[]) => void;
 }
-
-import { CartItem, Order, OrderItem, OrderGroup } from "@/generated/prisma";
-
-export type TCartItem = Omit<CartItem, 'createdAt' | 'updatedAt'> & {
-  variant: TVariant & { product: TProduct };
-};
-
-export type TOrder = Omit<Order, 'createdAt' | 'updatedAt'>;
-export type TOrderItem = Omit<OrderItem, 'createdAt' | 'updatedAt'>;
-export type TOrderGroup = Omit<OrderGroup, 'createdAt'>;

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import useFormSchema from '@/hooks/useFormSchema';
+import formSchemas from '@/hooks/form-schemas';
 import { SchemaForm } from '@/lib/types';
 import Form from '../reusable/form';
 
@@ -22,7 +22,7 @@ const SUGGESTIONS = [
 
 const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const [filtered, setFiltered] = useState(SUGGESTIONS.slice(0, 4));
-  const { searchSchema } = useFormSchema();
+  const { searchSchema } = formSchemas;
 
   const form = useForm<SchemaForm<typeof searchSchema>>({
     resolver: zodResolver(searchSchema),

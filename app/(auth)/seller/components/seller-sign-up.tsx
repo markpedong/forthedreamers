@@ -9,7 +9,7 @@ import { ArrowLeft, CheckCircle } from 'lucide-react';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import useFormSchema from '@/hooks/useFormSchema';
+import formSchemas from '@/hooks/form-schemas';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import Divider from '@/components/reusable/divider';
@@ -22,7 +22,7 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
   const [isSigningUp, startTransition] = useTransition();
   const isSubmitting = isSigningUp;
-  const { createSellerSchema } = useFormSchema();
+  const { createSellerSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof createSellerSchema>>({
     resolver: zodResolver(createSellerSchema),
     defaultValues: {

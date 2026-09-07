@@ -1,6 +1,5 @@
 'use client'
 
-import {useMemo} from 'react'
 import {TProduct} from '@/lib/types'
 import {LandingProductCard} from './landing-product-card'
 
@@ -11,37 +10,19 @@ interface LandingProductGridProps {
 }
 
 export const LandingProductGrid = ({products, selectedCategory, sortBy = 'newest'}: LandingProductGridProps) => {
-  const filteredAndSortedProducts = useMemo(() => {
-    let result = [...products]
+  const filteredAndSortedProducts = selectedCategory
+    ? products.filter(product => product.category.name === selectedCategory)
+    : [...products]
 
-    // Filter by category
-    if (selectedCategory) {
-      result = result.filter(p => p.category.name === selectedCategory)
-    }
-
-    // Sort
-    switch (sortBy) {
-      case 'price-low':
-        result.sort((a, b) => Number(a.basePrice) - Number(b.basePrice))
-        break
-      case 'price-high':
-        result.sort((a, b) => Number(b.basePrice) - Number(a.basePrice))
-        break
-      case 'popular':
-        result.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0))
-        break
-      case 'rating':
-        result.sort((a, b) => (b.rating || 0) - (a.rating || 0))
-        break
-      case 'newest':
-      default:
-        // Newest first (isNew flag takes priority)
-        // result.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0))
-        break
-    }
-
-    return result
-  }, [products, selectedCategory, sortBy])
+  if (sortBy === 'price-low') {
+    filteredAndSortedProducts.sort((a, b) => Number(a.basePrice) - Number(b.basePrice))
+  } else if (sortBy === 'price-high') {
+    filteredAndSortedProducts.sort((a, b) => Number(b.basePrice) - Number(a.basePrice))
+  } else if (sortBy === 'popular') {
+    filteredAndSortedProducts.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0))
+  } else if (sortBy === 'rating') {
+    filteredAndSortedProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0))
+  }
 
   return (
     <div className='max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8'>

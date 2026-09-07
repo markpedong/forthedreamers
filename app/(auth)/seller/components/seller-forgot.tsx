@@ -7,21 +7,21 @@ import { useTransition } from 'react';
 import { toast } from 'sonner';
 import Input from '@/components/reusable/input';
 import Form from '@/components/reusable/form';
-import useFormSchema from '@/hooks/useFormSchema';
+import formSchemas from '@/hooks/form-schemas';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
 const SellerForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
-  const { forgotPasswordSchema } = useFormSchema();
+  const { forgotPasswordSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof forgotPasswordSchema>>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: { email: '' },
   });
   const [isPending, startTransition] = useTransition();
 
-  const onSubmit = async (values: SchemaForm<typeof forgotPasswordSchema>) => {
+  const onSubmit = async () => {
     startTransition(async () => {
       toast.success('Check your email for reset link', { duration: 2000 });
       setTimeout(() => onNavigate('login'), 1500);

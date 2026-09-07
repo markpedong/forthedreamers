@@ -1,7 +1,7 @@
 import { SchemaForm, TOnNavigate } from '@/lib/types';
 import { useState, useTransition } from 'react';
 import PageWrapper from './page-wrapper';
-import useFormSchema from '@/hooks/useFormSchema';
+import formSchemas from '@/hooks/form-schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Form from '@/components/reusable/form';
@@ -14,7 +14,7 @@ import { tryWithToast } from '@/utils/helper';
 const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
   const [useBackup, setUseBackup] = useState(false);
-  const { twoFactorSchema } = useFormSchema();
+  const { twoFactorSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof twoFactorSchema>>({
     resolver: zodResolver(twoFactorSchema),
     defaultValues: { otp: '' },

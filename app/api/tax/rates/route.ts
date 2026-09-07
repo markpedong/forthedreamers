@@ -1,8 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getSession } from "@/lib/server-actions";
 import { successResponse, errorResponse } from "@/lib/server-helper";
-import { prisma } from "@/lib/prisma";
-import { z } from "zod";
 
 /**
  * GET /api/tax/rates

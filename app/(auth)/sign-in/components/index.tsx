@@ -6,13 +6,8 @@ import TwoFactorPage from './2fa';
 import ForgotPasswordPage from './forgot-password';
 import SignIn from './sign-in';
 import SignUp from './sign-up';
-import { useSearchParams } from 'next/navigation';
 
 export default function AuthInterface() {
-  const params = useSearchParams();
-  const social = params.get('social');
-
-
   const [currentPage, setCurrentPage] = useState('login');
   const pages = {
     login: <SignIn onNavigate={setCurrentPage} />,

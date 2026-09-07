@@ -19,14 +19,12 @@ import { Label } from '@/components/ui/label'
 
 import { PRODUCT_DEFAULT } from '@/constants'
 import { ProductFormData, ProductFormModalProps, SchemaForm, TVariant } from '@/lib/types'
-import useFormSchema from '@/hooks/useFormSchema'
-import { useAuthSession } from '@/lib/supabase/auth-context'
+import formSchemas from '@/hooks/form-schemas'
 
 const ProductFormModal: FC<ProductFormModalProps> = props => {
   const {open, setOpen, type, initialProduct, categories, onSubmit, isSubmitting = false} = props
 
-  const { session } = useAuthSession()
-  const {productFormSchema} = useFormSchema()
+  const {productFormSchema} = formSchemas
   const [tab, setTab] = useState('basic')
   const isEdit = type === 'EDIT'
 

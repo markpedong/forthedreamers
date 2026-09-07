@@ -1,13 +1,12 @@
 'use client';
 
 import { FC, useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { CHANGE_PASSWORD_DEFAULT, OAUTH_PROVIDERS } from '@/constants';
-import useFormSchema from '@/hooks/useFormSchema';
+import formSchemas from '@/hooks/form-schemas';
 import { requestPasswordReset, linkSocial } from '@/lib/auth-client';
 import { changePassword } from '@/lib/server-actions';
 import { Account, SchemaForm } from '@/lib/types';
@@ -28,8 +27,7 @@ interface AccountManagementProps {
 const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }) => {
   const { session } = useAuthSession();
   const user = session?.user;
-  const router = useRouter();
-  const { changePasswordSchema } = useFormSchema();
+  const { changePasswordSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof changePasswordSchema>>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: CHANGE_PASSWORD_DEFAULT,
@@ -74,7 +72,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
     });
   };
 
-  const handleUnlinkAccount = (accountId: string, providerId: string) => {
+  const handleUnlinkAccount = (providerId: string) => {
     toast.info(`Unlinking ${providerId} account is not available yet`);
   };
 
@@ -97,7 +95,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
                     provider={account.providerId}
                     account={account}
                     loading={isSubmitting}
-                    onClick={(provider) => handleUnlinkAccount(account.accountId, provider)}
+                    onClick={handleUnlinkAccount}
                   />
                 ))}
               </div>

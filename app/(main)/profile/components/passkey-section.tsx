@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Trash2 } from 'lucide-react'
 import AlertDialog from '@/components/reusable/alert-dialog'
-import useFormSchema from '@/hooks/useFormSchema'
+import formSchemas from '@/hooks/form-schemas'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -27,7 +27,7 @@ type PasskeysSectionProps = {
 
 const PasskeysSection: FC<PasskeysSectionProps> = ({ passkeys }) => {
   const router = useRouter()
-  const { passkeySchema } = useFormSchema()
+  const { passkeySchema } = formSchemas
 
   const form = useForm<z.infer<typeof passkeySchema>>({
     resolver: zodResolver(passkeySchema),

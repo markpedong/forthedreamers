@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import SessionItem from '@/components/reusable/session-item';
 
 interface SessionsSectionProps {
@@ -22,7 +21,6 @@ type Session = {
 };
 
 const SessionManagement: FC<SessionsSectionProps> = ({ sessions, currentSessionToken }) => {
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const currentSession = sessions.find((s) => s.token === currentSessionToken);
   const otherSessions = sessions.filter((s) => s.token !== currentSessionToken);

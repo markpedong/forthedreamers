@@ -103,7 +103,6 @@ export default function OrdersPage() {
   });
 
   const handleUpdateStatus = (orderId: string, newStatus: string) => {
-    const order = orders.find((o) => o.id === orderId);
     setOrders(orders.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o)));
     showNotification(`Order ${orderId} status updated to ${newStatus}`);
   };
