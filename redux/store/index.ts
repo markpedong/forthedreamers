@@ -9,19 +9,16 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 // Import your reducers here
 import appDataReducer from '../reducers/appData';
 import cartDataReducer from '../reducers/cartData';
-import wishlistReducer from '../reducers/wishlistData';
 
 // Define the root state
 export type RootState = {
   appData: ReturnType<typeof appDataReducer>;
   cartData: ReturnType<typeof cartDataReducer>;
-  wishlistData: ReturnType<typeof wishlistReducer>;
 };
 
 const rootReducer = combineReducers({
   appData: appDataReducer,
   cartData: cartDataReducer,
-  wishlistData: wishlistReducer,
 });
 
 const createNoopStorage = () => {
