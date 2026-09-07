@@ -2,6 +2,7 @@
 
 import { FC } from 'react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import type { Account as AccountType } from '@/lib/types';
 import { OAUTH_PROVIDER_DETAILS } from '@/constants';
 
@@ -9,7 +10,7 @@ type AccountCardProps = {
   provider: string;
   account: AccountType | null;
   loading?: boolean;
-  onClick: (provider: string) => void;
+  onClick?: (provider: string) => void;
 };
 
 const AccountCard: FC<AccountCardProps> = ({ provider, account, loading, onClick }) => {
@@ -47,14 +48,18 @@ const AccountCard: FC<AccountCardProps> = ({ provider, account, loading, onClick
         </div>
       </div>
 
-      <Button
-        variant={isLinked ? 'destructive' : 'outline'}
-        size='sm'
-        onClick={() => onClick(provider)}
-        disabled={loading}
-      >
-        {isLinked ? 'Unlink' : 'Link'}
-      </Button>
+      {isLinked ? (
+        <Badge variant='secondary'>Connected</Badge>
+      ) : (
+        <Button
+          variant='outline'
+          size='sm'
+          onClick={() => onClick?.(provider)}
+          disabled={loading}
+        >
+          Link
+        </Button>
+      )}
     </div>
   );
 };

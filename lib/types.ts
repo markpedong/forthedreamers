@@ -8,27 +8,9 @@ export type TOnNavigate = (page: string) => void;
 
 export type Session = Awaited<ReturnType<typeof getSession>>
 
-export type ProfileLayoutProps = {
-  sections: Array<{
-    id: string;
-    label: string;
-    icon: React.ReactNode;
-    content?: React.ReactNode;
-  }>;
-  hasPassword: boolean;
-}
-
 export type SchemaForm<T extends ZodTypeAny> = z.infer<T>;
 
 export type Account = { id: string; accountId: string; providerId: string; createdAt: Date | null };
-
-export type SetupStep =
-  | 'password'
-  | 'qr-code'
-  | 'backup-codes'
-  | 'regenerate'
-  | 'backup-codes-regenerated'
-  | '';
 
 export type ValueEnumItem = { label: string; value: string | number };
 

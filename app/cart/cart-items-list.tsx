@@ -5,9 +5,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useCartCount } from '@/components/provider/cart-count-provider'
-import { removeCartItem, updateCartQuantity } from '@/lib/actions/cart'
+import {removeCartItem, updateCartQuantity} from '@/lib/http'
+import {useAppDispatch} from '@/lib/hooks/use-app-store'
 import type { CartItem } from '@/lib/services/cart'
+import {setCartCount} from '@/lib/store'
 import CartNavigation from './cart-navigation'
 
 const CartItemsList = ({ items }: { items: CartItem[] }) => {
@@ -16,11 +17,11 @@ const CartItemsList = ({ items }: { items: CartItem[] }) => {
   const versions = useRef(new Map<string, number>())
   const queues = useRef(new Map<string, Promise<void>>())
   const quantityTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>())
-  const { setCount } = useCartCount()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
-    setCount(visibleItems.length)
-  }, [setCount, visibleItems.length])
+    dispatch(setCartCount(visibleItems.length))
+  }, [dispatch, visibleItems.length])
 
   useEffect(() => () => {
     quantityTimers.current.forEach(timer => clearTimeout(timer))
@@ -76,9 +77,11 @@ const CartItemsList = ({ items }: { items: CartItem[] }) => {
       .catch(() => undefined)
       .then(async () => {
         try {
-          const result = quantity === undefined ? await removeCartItem(id) : await updateCartQuantity(id, quantity)
+          const result = quantity === undefined
+            ? await removeCartItem(id)
+            : await updateCartQuantity({cartItemId: id, quantity})
 
-          if (!result.success) {
+          if (!result.success || !result.data) {
             if (versions.current.get(id) === version) restoreItem(id)
             toast.error(result.message)
             return

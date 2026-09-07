@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import './globals.css'
 import MainProvider from '@/components/provider/main-provider'
 import localFont from 'next/font/local'
-import { ThemeProvider } from '@/components/provider/theme-context'
 
 const geist = localFont({
   src: [
@@ -32,9 +31,7 @@ const RootLayout = ({children}: LayoutProps<'/'>) => {
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={`${geist.className}  antialiased`}>
-        <ThemeProvider>
-          <MainProvider>{children}</MainProvider>
-        </ThemeProvider>
+        <MainProvider>{children}</MainProvider>
       </body>
     </html>
   )

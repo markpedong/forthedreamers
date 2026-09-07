@@ -33,10 +33,10 @@ const SessionManagement: FC<SessionsSectionProps> = ({ sessions, currentSessionT
 
   if (!sessions.length) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Active Sessions</CardTitle>
-          <CardDescription>Manage your active sessions across devices</CardDescription>
+      <Card className='shadow-none'>
+        <CardHeader className='border-b'>
+          <CardTitle className='text-xl'>Active sessions</CardTitle>
+          <CardDescription>Devices currently signed in to your account.</CardDescription>
         </CardHeader>
         <CardContent className='text-center py-8 text-muted-foreground'>
           No active sessions
@@ -46,10 +46,10 @@ const SessionManagement: FC<SessionsSectionProps> = ({ sessions, currentSessionT
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Active Sessions</CardTitle>
-        <CardDescription>Manage your active sessions across devices</CardDescription>
+    <Card className='shadow-none'>
+      <CardHeader className='border-b'>
+        <CardTitle className='text-xl'>Active sessions</CardTitle>
+        <CardDescription>Devices currently signed in to your account.</CardDescription>
       </CardHeader>
 
       <CardContent className='space-y-6'>

@@ -1,13 +1,14 @@
 'use client'
 
-import { addToCart } from '@/lib/actions/cart'
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Heart, ShoppingCart } from 'lucide-react'
 import { toast } from 'sonner'
-import { useCartCount } from '@/components/provider/cart-count-provider'
-import { useWishlist } from '@/components/provider/wishlist-provider'
 import { Button } from '@/components/ui/button'
+import {addCartItem} from '@/lib/http'
+import {useAppDispatch} from '@/lib/hooks/use-app-store'
+import {useWishlist} from '@/lib/hooks/use-wishlist'
+import {decrementCartCount, incrementCartCount, setCartCount} from '@/lib/store'
 import type { ProductPageVariant, ProductPurchaseData } from './product-types'
 
 const AddToCartSection = ({ product, selectedVariant }: { product: ProductPurchaseData; selectedVariant: ProductPageVariant | null }) => {
@@ -15,7 +16,7 @@ const AddToCartSection = ({ product, selectedVariant }: { product: ProductPurcha
   const requestPending = useRef(false)
   const wishlist = useWishlist()
   const isWishlisted = wishlist.ids.includes(product.id)
-  const { setCount } = useCartCount()
+  const dispatch = useAppDispatch()
   const router = useRouter()
   const maxQuantity = Math.min(999, selectedVariant?.stock ?? 0)
   const safeQuantity = Math.min(quantity, Math.max(1, maxQuantity))
@@ -31,24 +32,24 @@ const AddToCartSection = ({ product, selectedVariant }: { product: ProductPurcha
     setIsProcessingBuyNow(buyNow)
 
     // Optimistic: always update the badge count immediately (safe, reversible interaction).
-    setCount(value => value + 1)
+    dispatch(incrementCartCount())
 
     void (async () => {
       try {
-        const result = await addToCart(selectedVariant.id, safeQuantity)
-        if (!result.success) {
+        const result = await addCartItem({variantId: selectedVariant.id, quantity: safeQuantity})
+        if (!result.success || !result.data) {
           // Rollback optimistic update on failure.
-          setCount(value => Math.max(0, value - 1))
+          dispatch(decrementCartCount())
           toast.error(result.message)
           return
         }
 
         // Reconcile with server response (server is source of truth).
-        setCount(result.data.count)
+        dispatch(setCartCount(result.data.count))
         if (buyNow) router.push('/checkout')
       } catch {
         // Rollback optimistic update on network error.
-        setCount(value => Math.max(0, value - 1))
+        dispatch(decrementCartCount())
         toast.error('Unable to add to cart. Please try again.')
       } finally {
         requestPending.current = false
@@ -113,7 +114,7 @@ const AddToCartSection = ({ product, selectedVariant }: { product: ProductPurcha
               onClick={handleBuyNow}
               onMouseEnter={prefetchCheckout}
               onFocus={prefetchCheckout}
-              disabled={maxQuantity === 0 || requestPending.current}
+              disabled={maxQuantity === 0 || isProcessingBuyNow}
             >
               {isProcessingBuyNow ? 'Preparing checkout...' : 'Buy Now'}
             </Button>

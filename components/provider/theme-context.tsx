@@ -1,58 +1,16 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import {useAppDispatch, useAppSelector} from '@/lib/hooks/use-app-store'
+import {setTheme} from '@/lib/store'
 
-type Theme = 'dark' | 'light' | 'system'
+export const useTheme = () => {
+  const dispatch = useAppDispatch()
+  const theme = useAppSelector(state => state.app.theme)
+  const resolvedTheme = useAppSelector(state => state.app.resolvedTheme)
 
-interface ThemeContextType {
-  theme: Theme
-  resolvedTheme: 'dark' | 'light'
-  setTheme: (theme: Theme) => void
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
-
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('system')
-  const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>('light')
-
-  useEffect(() => {
-    const mql = window.matchMedia('(prefers-color-scheme: dark)')
-    const stored = localStorage.getItem('theme') as Theme | null
-    
-    if (stored) {
-      setTheme(stored)
-    }
-
-    const updateResolvedTheme = () => {
-      const newTheme = theme === 'system' 
-        ? (mql.matches ? 'dark' : 'light')
-        : theme
-      setResolvedTheme(newTheme)
-      document.documentElement.classList.toggle('dark', newTheme === 'dark')
-    }
-
-    updateResolvedTheme()
-    mql.addEventListener('change', updateResolvedTheme)
-    return () => mql.removeEventListener('change', updateResolvedTheme)
-  }, [theme])
-
-  const handleSetTheme = (newTheme: Theme) => {
-    setTheme(newTheme)
-    localStorage.setItem('theme', newTheme)
+  return {
+    theme,
+    resolvedTheme,
+    setTheme: (value: typeof theme) => dispatch(setTheme(value))
   }
-
-  return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme: handleSetTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  )
-}
-
-export function useTheme() {
-  const context = useContext(ThemeContext)
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider')
-  }
-  return context
 }

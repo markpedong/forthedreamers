@@ -19,45 +19,39 @@ const AccountStats: FC<AccountStatsProps> = ({ stats }) => {
     {
       label: 'Total Orders',
       value: stats.orderCount,
-      icon: Package,
-      color: 'text-blue-600 dark:text-blue-400',
-      bgColor: 'bg-blue-100 dark:bg-blue-900/30'
+      icon: Package
     },
     {
       label: 'Wishlist Items',
       value: stats.wishlistCount,
-      icon: Heart,
-      color: 'text-pink-600 dark:text-pink-400',
-      bgColor: 'bg-pink-100 dark:bg-pink-900/30'
+      icon: Heart
     },
     {
       label: 'Reviews Written',
       value: stats.reviewCount,
-      icon: Star,
-      color: 'text-amber-600 dark:text-amber-400',
-      bgColor: 'bg-amber-100 dark:bg-amber-900/30'
+      icon: Star
     }
   ]
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Account Overview</CardTitle>
-        <CardDescription>Your account activity at a glance</CardDescription>
+    <Card className='shadow-none'>
+      <CardHeader className='border-b'>
+        <CardTitle className='text-xl'>Account overview</CardTitle>
+        <CardDescription>Real activity from your account.</CardDescription>
       </CardHeader>
 
       <CardContent>
-        <div className='grid gap-4 sm:grid-cols-3'>
-          {statItems.map(({ label, value, icon: Icon, color, bgColor }) => (
+        <div className='grid divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0'>
+          {statItems.map(({ label, value, icon: Icon }) => (
             <div
               key={label}
-              className='flex flex-col items-center gap-3 rounded-lg border border-border bg-card p-6 text-center'
+              className='flex items-center gap-4 py-5 first:pt-0 last:pb-0 sm:flex-col sm:px-6 sm:py-3 sm:text-center sm:first:pt-3 sm:last:pb-3'
             >
-              <div className={`rounded-full p-3 ${bgColor}`}>
-                <Icon className={`h-6 w-6 ${color}`} />
+              <div className='rounded-full bg-primary/10 p-3'>
+                <Icon className='h-5 w-5 text-primary' />
               </div>
               <div>
-                <p className='text-2xl font-bold text-foreground'>{value}</p>
+                <p className='text-3xl font-semibold tracking-tight text-foreground'>{value}</p>
                 <p className='text-sm text-muted-foreground'>{label}</p>
               </div>
             </div>
@@ -65,11 +59,9 @@ const AccountStats: FC<AccountStatsProps> = ({ stats }) => {
         </div>
 
         {stats.orderCount === 0 && stats.wishlistCount === 0 && stats.reviewCount === 0 && (
-          <div className='mt-6 text-center text-muted-foreground'>
+          <div className='mt-6 border-t border-border pt-6 text-center text-muted-foreground'>
             <p className='font-medium'>No activity yet</p>
-            <p className='text-sm mt-1'>
-              Start shopping to see your activity here!
-            </p>
+            <p className='mt-1 text-sm'>Start shopping to see your activity here.</p>
           </div>
         )}
       </CardContent>

@@ -16,7 +16,6 @@ interface AvatarUploadProps {
 }
 
 const AvatarUpload: FC<AvatarUploadProps> = ({ src, alt, initials, isGoogleAvatar = false }) => {
-  const [isHovering, setIsHovering] = useState(false)
   const [preview, setPreview] = useState<string | undefined>(src)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isPending, startTransition] = useTransition()
@@ -38,27 +37,21 @@ const AvatarUpload: FC<AvatarUploadProps> = ({ src, alt, initials, isGoogleAvata
 
   return (
     <div
-      className='relative h-16 w-16 cursor-pointer'
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
+      className='group relative h-20 w-20 shrink-0 cursor-pointer sm:h-24 sm:w-24'
       onClick={() => fileInputRef.current?.click()}
     >
-      <Avatar className='h-16 w-16'>
+      <Avatar className='h-20 w-20 border border-border sm:h-24 sm:w-24'>
         <AvatarImage src={preview} alt={alt} />
         <AvatarFallback>{initials}</AvatarFallback>
       </Avatar>
 
       {!isGoogleAvatar && (
         <div
-          className={`absolute inset-0 flex items-center justify-center rounded-full border-2 border-dashed border-primary bg-black/40 transition-all duration-200 ${
-            isHovering && !isPending
-              ? 'opacity-100 scale-105'
-              : 'opacity-0 scale-100 pointer-events-none'
-          }`}
+          className='absolute inset-0 flex items-center justify-center rounded-full bg-black/45 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100'
         >
           <div className='flex flex-col items-center gap-1'>
             <Plus className='h-5 w-5 text-white' />
-            <span className='text-xs font-medium text-white text-center px-1'>
+            <span className='px-1 text-center text-xs font-medium text-white'>
               {preview ? 'Change Photo' : 'Upload Photo'}
             </span>
           </div>

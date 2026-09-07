@@ -4,7 +4,7 @@ import {useState} from 'react'
 import Image from 'next/image'
 import {Heart} from 'lucide-react'
 import {IMG_FALLBACK} from '@/constants'
-import {useWishlist} from '@/components/provider/wishlist-provider'
+import {useWishlist} from '@/lib/hooks/use-wishlist'
 
 interface LandingProductCardProps {
   id: string

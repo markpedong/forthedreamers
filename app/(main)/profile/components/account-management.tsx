@@ -62,9 +62,8 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
         email: `${user?.email}`,
         redirectTo: '/reset-password',
       });
-      if ((result as any).error) {
-        const message = (result as any).error?.message || 'Something went wrong';
-        toast.error(message);
+      if (result.error) {
+        toast.error(result.error.message || 'Something went wrong');
         return;
       }
 
@@ -72,21 +71,17 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
     });
   };
 
-  const handleUnlinkAccount = (providerId: string) => {
-    toast.info(`Unlinking ${providerId} account is not available yet`);
-  };
-
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Account Management</CardTitle>
-          <CardDescription>Manage your account security and linked accounts</CardDescription>
+      <Card className='shadow-none'>
+        <CardHeader className='border-b'>
+          <CardTitle className='text-xl'>Sign-in methods</CardTitle>
+          <CardDescription>Manage your password and linked accounts.</CardDescription>
         </CardHeader>
 
         <CardContent className='space-y-6'>
           <section>
-            <p className='mb-2 font-semibold text-foreground'>Linked Accounts</p>
+            <p className='mb-3 text-sm font-medium text-foreground'>Linked accounts</p>
             {accounts.length ? (
               <div className='space-y-2'>
                 {accounts.map((account) => (
@@ -95,7 +90,6 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
                     provider={account.providerId}
                     account={account}
                     loading={isSubmitting}
-                    onClick={handleUnlinkAccount}
                   />
                 ))}
               </div>
@@ -105,7 +99,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
           </section>
 
           <section>
-            <p className='mb-2 font-semibold text-foreground'>Available for Linking</p>
+            <p className='mb-3 text-sm font-medium text-foreground'>Available to link</p>
             <div className='grid gap-3'>
               {OAUTH_PROVIDERS.filter(
                 (provider) => !accounts.some((a) => a.providerId === provider),
@@ -118,7 +112,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
                   onClick={(provider) =>
                     linkSocial({
                       provider,
-                      callbackURL: '/profile?accountLinked=true&tab=account',
+                      callbackURL: '/profile?accountLinked=true&tab=security',
                     })
                   }
                 />
