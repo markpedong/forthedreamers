@@ -394,15 +394,6 @@ export const setDefaultAddress = async (addressId: string) => {
   return updated
 }
 
-export const getUserStats = async (userId: string) => {
-  const [orderCount, wishlistCount, reviewCount] = await Promise.all([
-    prisma.order.count({ where: { userId } }),
-    prisma.wishlist.count({ where: { userId } }),
-    prisma.review.count({ where: { userId } })
-  ])
-  return { orderCount, wishlistCount, reviewCount }
-}
-
 export const getUserAccounts = async (userId: string) =>
   prisma.account.findMany({
     where: { userId },
