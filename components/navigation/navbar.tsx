@@ -20,9 +20,11 @@ import Link from 'next/link';
 import { useAuthSession } from '@/lib/supabase/auth-context';
 import { DISABLED_NAVBAR } from '@/constants';
 import CartItemCount from './cart-item-count';
+import { useAppSelector } from '@/redux/store';
 
 const Navbar: FC = () => {
-  const { session, signOut } = useAuthSession();
+  const { signOut } = useAuthSession();
+  const user = useAppSelector((state) => state.userData.data);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const isMobile = useIsMobile();
   const pathname = usePathname();
@@ -120,7 +122,7 @@ const Navbar: FC = () => {
           </Link>
           {SearchBar}
           <div className='flex items-center gap-2'>
-            {!!session ? (
+            {!!user ? (
               <>
                 {CartButton}
                 {ProfileButton}

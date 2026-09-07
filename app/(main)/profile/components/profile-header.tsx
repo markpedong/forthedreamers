@@ -5,19 +5,19 @@ import AvatarUpload from './avatar-upload'
 import { LayoutDashboard, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useAuthSession } from '@/lib/supabase/auth-context'
+import { useAppSelector } from '@/redux/store'
 
-const isGoogleImage = (url: string | null | undefined) =>
-  url?.includes('googleusercontent.com') || url?.includes('ggpht.com') || false
+const isGoogleImage = (url: string | null | undefined) => url?.includes('googleusercontent.com') || url?.includes('ggpht.com') || false
 
 const ProfileHeader = () => {
-  const { session, signOut } = useAuthSession()
-  const user = session?.user
+  const { signOut } = useAuthSession()
+  const user = useAppSelector(state => state.userData.data)
   const router = useRouter()
 
   const initials =
     user?.name
       ?.split(' ')
-      .map((n) => n[0])
+      .map(n => n[0])
       .join('')
       .toUpperCase() || 'U'
 
@@ -34,9 +34,7 @@ const ProfileHeader = () => {
 
           <div className='min-w-0'>
             <div className='mt-2'>
-              <h1 className='truncate text-xl font-medium tracking-tight text-foreground sm:text-2xl'>
-                {user?.name || 'Your profile'}
-              </h1>
+              <h1 className='truncate text-xl font-medium tracking-tight text-foreground sm:text-2xl'>{user?.name || 'Your profile'}</h1>
             </div>
             <p className='mt-1 truncate text-sm text-muted-foreground'>{user?.email}</p>
             {user?.createdAt && (

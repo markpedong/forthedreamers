@@ -4,9 +4,11 @@ import { FC } from 'react';
 import { usePathname } from 'next/navigation';
 import { LogOut, User } from 'lucide-react';
 import { useAuthSession } from '@/lib/supabase/auth-context';
+import { useAppSelector } from '@/redux/store';
 
 const AdminHeader: FC = () => {
-  const { session, signOut } = useAuthSession();
+  const { signOut } = useAuthSession();
+  const user = useAppSelector((state) => state.userData.data);
   const pathname = usePathname();
 
   return (
@@ -15,10 +17,10 @@ const AdminHeader: FC = () => {
         {pathname === '/dashboard' ? 'Dashboard' : pathname.split('/').pop()?.charAt(0).toUpperCase() + pathname.split('/').slice(-1)[0].replace(/-/g, ' ') || 'Admin'}
       </h2>
       <div className='flex items-center gap-4'>
-        {session?.user && (
+        {user && (
           <div className='flex items-center gap-2 text-sm text-sidebar-foreground/80'>
             <User className='w-4 h-4' />
-            <span>{session.user.email}</span>
+            <span>{user.email}</span>
           </div>
         )}
         <button

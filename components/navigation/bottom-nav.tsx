@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/useIsMobile'
-import { useAuthSession } from '@/lib/supabase/auth-context'
+import { useAppSelector } from '@/redux/store'
 import { Route } from 'next'
 
 const navItems = [
@@ -18,7 +18,7 @@ const navItems = [
 ]
 
 const BottomNav: FC = () => {
-  const { session } = useAuthSession()
+  const user = useAppSelector(state => state.userData.data)
   const pathname = usePathname()
   const isMobile = useIsMobile()
   if (!isMobile) return null
@@ -28,7 +28,7 @@ const BottomNav: FC = () => {
       <div className='absolute inset-0 bg-background/80 backdrop-blur-md border-t border-border' />
       <div className='relative flex items-center justify-around px-2 py-3'>
         {navItems
-          .filter(item => !item.protected || !!session)
+          .filter(item => !item.protected || !!user)
           .map(({icon: Icon, label, href}) => {
             const isActive = pathname === href
             return (

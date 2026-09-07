@@ -1,6 +1,6 @@
 'use client'
 
-import {useAuthSession} from '@/lib/supabase/auth-context'
+import {useAppSelector} from '@/redux/store'
 import {type FormEvent, useState} from 'react'
 import Link from 'next/link'
 import {useRouter} from 'next/navigation'
@@ -8,7 +8,7 @@ import {toast} from 'sonner'
 import {Button} from '@/components/ui/button'
 
 const ReviewForm = ({slug}: {slug: string}) => {
-  const {session} = useAuthSession()
+  const user = useAppSelector(state => state.userData.data)
   const router = useRouter()
   const [pending, setPending] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -36,7 +36,7 @@ const ReviewForm = ({slug}: {slug: string}) => {
     }
   }
 
-  if (!session?.user)
+  if (!user)
     return (
       <p className='text-sm text-muted-foreground'>
         <Link className='underline' href='/sign-in'>

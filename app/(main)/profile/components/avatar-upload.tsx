@@ -7,6 +7,8 @@ import { toast } from 'sonner'
 import { updateUserImage } from '@/lib/server-actions'
 import { toBase64 } from '@/lib/utils'
 import { tryWithToast } from '@/utils/helper'
+import { setUserData } from '@/redux/reducers/userData'
+import { useAppDispatch } from '@/redux/store'
 
 interface AvatarUploadProps {
   src?: string
@@ -16,7 +18,8 @@ interface AvatarUploadProps {
 }
 
 const AvatarUpload: FC<AvatarUploadProps> = ({ src, alt, initials, isGoogleAvatar = false }) => {
-  const [preview, setPreview] = useState<string | undefined>(src)
+  const dispatch = useAppDispatch()
+  const [preview, setPreview] = useState<string>()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isPending, startTransition] = useTransition()
 
@@ -31,6 +34,8 @@ const AvatarUpload: FC<AvatarUploadProps> = ({ src, alt, initials, isGoogleAvata
       const result = await tryWithToast(updateUserImage({ image: base64 as string }))
       if (!result) return
 
+      if (result.user) dispatch(setUserData(result.user))
+
       toast.success('Profile image updated')
     })
   }
@@ -41,7 +46,7 @@ const AvatarUpload: FC<AvatarUploadProps> = ({ src, alt, initials, isGoogleAvata
       onClick={() => fileInputRef.current?.click()}
     >
       <Avatar className='h-20 w-20 border border-border sm:h-24 sm:w-24'>
-        <AvatarImage src={preview} alt={alt} />
+        <AvatarImage src={preview ?? src} alt={alt} />
         <AvatarFallback>{initials}</AvatarFallback>
       </Avatar>
 
@@ -52,7 +57,7 @@ const AvatarUpload: FC<AvatarUploadProps> = ({ src, alt, initials, isGoogleAvata
           <div className='flex flex-col items-center gap-1'>
             <Plus className='h-5 w-5 text-white' />
             <span className='px-1 text-center text-xs font-medium text-white'>
-              {preview ? 'Change Photo' : 'Upload Photo'}
+              {preview || src ? 'Change Photo' : 'Upload Photo'}
             </span>
           </div>
         </div>

@@ -9,22 +9,23 @@ import { SchemaForm } from '@/lib/types'
 import { sendVerificationEmailAction, updateUser } from '@/lib/server-actions'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CalendarDays, CheckCircle2, AlertCircle } from 'lucide-react'
+import { CheckCircle2, AlertCircle } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { tryWithToast } from '@/utils/helper'
-import { useAuthSession } from '@/lib/supabase/auth-context'
+import { setUserData } from '@/redux/reducers/userData'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
 
 const ProfileDetails = () => {
-  const { session } = useAuthSession()
-  const user = session?.user
+  const dispatch = useAppDispatch()
+  const user = useAppSelector(state => state.userData.data)
   const [isEditing, setIsEditing] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [isSubmitting, startSubmitting] = useTransition()
   const { nameEmailSchema } = formSchemas
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting: formSubmitting } } = useForm<SchemaForm<typeof nameEmailSchema>>({
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<SchemaForm<typeof nameEmailSchema>>({
     resolver: zodResolver(nameEmailSchema),
-    defaultValues: { name: user?.name ?? '', email: user?.email ?? '' },
+    values: { name: user?.name ?? '', email: user?.email ?? '' },
   })
 
   const handleResendVerification = () => {
@@ -40,6 +41,8 @@ const ProfileDetails = () => {
     startSubmitting(async () => {
       const result = await tryWithToast(updateUser({ name }))
       if (!result) return
+
+      if (result.user) dispatch(setUserData(result.user))
 
       toast.success('Success', { description: 'Profile updated' })
       setIsEditing(false)

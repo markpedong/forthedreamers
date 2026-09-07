@@ -17,7 +17,7 @@ import AccountCard from '@/components/reusable/account-card';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuthSession } from '@/lib/supabase/auth-context';
+import { useAppSelector } from '@/redux/store';
 
 interface AccountManagementProps {
   accounts: Account[];
@@ -25,8 +25,7 @@ interface AccountManagementProps {
 }
 
 const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }) => {
-  const { session } = useAuthSession();
-  const user = session?.user;
+  const user = useAppSelector((state) => state.userData.data);
   const { changePasswordSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof changePasswordSchema>>({
     resolver: zodResolver(changePasswordSchema),
