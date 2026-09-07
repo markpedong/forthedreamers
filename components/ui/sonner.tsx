@@ -7,11 +7,12 @@ import {
   OctagonXIcon,
   TriangleAlertIcon,
 } from "lucide-react"
-import { useTheme } from "@/components/provider/theme-context"
-import { Toaster as Sonner, type ToasterProps } from "sonner"
+import { useAppSelector } from '@/redux/store'
+import { Toaster as Sonner, type ToasterProps } from 'sonner'
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { resolvedTheme } = useTheme()
+  const theme = useAppSelector(state => state.appData.theme)
+  const resolvedTheme = (theme === 'system' ? 'light' : theme) as ToasterProps['theme']
 
   return (
     <Sonner
