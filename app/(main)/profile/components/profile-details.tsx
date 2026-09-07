@@ -1,131 +1,123 @@
-'use client';
+'use client'
 
-import { FC, useState, useTransition } from 'react';
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import formSchemas from '@/hooks/form-schemas';
-import { SchemaForm } from '@/lib/types';
-import { sendVerificationEmailAction, updateUser } from '@/lib/server-actions';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import Form from '@/components/reusable/form';
-import Input from '@/components/reusable/input';
-import { AlertCircle, CalendarDays, CheckCircle2 } from 'lucide-react';
-import { formatDate } from '@/lib/utils';
-import { tryWithToast } from '@/utils/helper';
-import { useAuthSession } from '@/lib/supabase/auth-context';
+import { useState, useTransition } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
+import formSchemas from '@/hooks/form-schemas'
+import { SchemaForm } from '@/lib/types'
+import { sendVerificationEmailAction, updateUser } from '@/lib/server-actions'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CalendarDays, CheckCircle2, AlertCircle } from 'lucide-react'
+import { formatDate } from '@/lib/utils'
+import { tryWithToast } from '@/utils/helper'
+import { useAuthSession } from '@/lib/supabase/auth-context'
 
-const ProfileDetails: FC = () => {
-  const { session } = useAuthSession();
-  const user = session?.user;
-  const [isEditing, setIsEditing] = useState(false);
-  const [isPending, startTransition] = useTransition();
-  const [isSubmitting, startSubmitting] = useTransition();
-  const { nameEmailSchema } = formSchemas;
+const ProfileDetails = () => {
+  const { session } = useAuthSession()
+  const user = session?.user
+  const [isEditing, setIsEditing] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const [isSubmitting, startSubmitting] = useTransition()
+  const { nameEmailSchema } = formSchemas
 
-  const form = useForm<SchemaForm<typeof nameEmailSchema>>({
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting: formSubmitting } } = useForm<SchemaForm<typeof nameEmailSchema>>({
     resolver: zodResolver(nameEmailSchema),
     defaultValues: { name: user?.name ?? '', email: user?.email ?? '' },
-  });
+  })
 
   const handleResendVerification = () => {
     startTransition(async () => {
-      const result = await tryWithToast(sendVerificationEmailAction(`${user?.email}`));
-      if (!result?.status) return;
+      const result = await tryWithToast(sendVerificationEmailAction(`${user?.email}`))
+      if (!result?.status) return
 
-      toast.success('Success', { description: 'Verification email sent' });
-    });
-  };
+      toast.success('Success', { description: 'Verification email sent' })
+    })
+  }
 
   const onSubmit = async ({ name }: SchemaForm<typeof nameEmailSchema>) => {
     startSubmitting(async () => {
-      const result = await tryWithToast(updateUser({ name }));
-      if (!result) return;
+      const result = await tryWithToast(updateUser({ name }))
+      if (!result) return
 
-      toast.success('Success', { description: 'Profile updated' });
-      setIsEditing(false);
-    });
-  };
+      toast.success('Success', { description: 'Profile updated' })
+      setIsEditing(false)
+    })
+  }
 
   return (
     <Card id='personal-information' className='scroll-mt-24 shadow-none'>
       <CardHeader className='border-b'>
-        <CardTitle className='text-xl'>Personal information</CardTitle>
-        <CardDescription>Your name and primary account email.</CardDescription>
-        <CardAction className='max-sm:relative max-sm:col-span-2 max-sm:col-start-1 max-sm:row-start-3 max-sm:w-full'>
-          <div className='flex flex-wrap items-center gap-2 max-sm:mt-2'>
-            {!isEditing ? (
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => setIsEditing(true)}
-                disabled={isSubmitting}
-              >
-                Edit Profile
-              </Button>
-            ) : (
-              <>
-                <Button type='button' disabled={isSubmitting} onClick={form.handleSubmit(onSubmit)}>
-                  {isSubmitting ? 'Saving...' : 'Save Changes'}
+        <CardTitle className='text-lg'>Personal information</CardTitle>
+      </CardHeader>
+
+      <CardContent className='space-y-6'>
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+          <div>
+            <label className='text-sm font-medium text-foreground'>Full name</label>
+            <p className='text-sm text-muted-foreground'>Shown on your account and reviews.</p>
+            {isEditing ? (
+              <div className='mt-2 flex gap-2'>
+                <input
+                  {...register('name')}
+                  className='flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50'
+                  disabled={isSubmitting}
+                />
+                <Button type='submit' disabled={isSubmitting} size='sm'>
+                  {isSubmitting ? 'Saving...' : 'Save'}
                 </Button>
                 <Button
                   type='button'
                   variant='outline'
+                  size='sm'
                   onClick={() => {
-                    setIsEditing(false);
-                    form.reset({ name: user?.name ?? '', email: user?.email ?? '' });
+                    setIsEditing(false)
+                    reset({ name: user?.name ?? '', email: user?.email ?? '' })
                   }}
                   disabled={isSubmitting}
                 >
                   Cancel
                 </Button>
-              </>
+              </div>
+            ) : (
+              <div className='mt-2 flex items-center gap-2'>
+                <span className='text-sm text-foreground'>{user?.name}</span>
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='sm'
+                  onClick={() => setIsEditing(true)}
+                  disabled={isSubmitting}
+                  className='h-6 px-2'
+                >
+                  Edit
+                </Button>
+              </div>
             )}
-          </div>
-        </CardAction>
-      </CardHeader>
-
-      <CardContent className='space-y-6'>
-        <Form form={form} customSubmitButton>
-          <div className='grid gap-5 sm:grid-cols-2'>
-            <Input
-              name='name'
-              label='Full name'
-              description='Shown on your account and reviews.'
-              disabled={!isEditing || isSubmitting}
-            />
-            <Input
-              name='email'
-              label='Email'
-              disabled
-              description='Email changes are not currently supported.'
-            />
+            {errors.name && <p className='mt-1 text-xs text-destructive'>{errors.name.message}</p>}
           </div>
 
-          <div className='mt-6 flex flex-col gap-4 rounded-lg border border-border bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between'>
+          <div>
+            <label className='text-sm font-medium text-foreground'>Email</label>
+            <p className='text-sm text-muted-foreground'>Email changes are not currently supported.</p>
+            <p className='mt-2 text-sm text-foreground'>{user?.email}</p>
+          </div>
+
+          <div className='rounded-lg border border-border bg-muted/30 p-4'>
             <div className='flex items-start gap-3'>
-              <div
-                className={`mt-0.5 flex h-8 w-8 items-center justify-center rounded-full ${
-                  user?.emailVerified
-                    ? 'bg-green-100 dark:bg-green-900/30'
-                    : 'bg-amber-100 dark:bg-amber-900/30'
-                }`}
-              >
+              <div className={`mt-0.5 flex h-8 w-8 items-center justify-center rounded-full ${
+                user?.emailVerified
+                  ? 'bg-green-100 dark:bg-green-900/30'
+                  : 'bg-amber-100 dark:bg-amber-900/30'
+              }`}>
                 {user?.emailVerified ? (
                   <CheckCircle2 className='h-5 w-5 text-green-600 dark:text-green-400' />
                 ) : (
                   <AlertCircle className='h-5 w-5 text-amber-600 dark:text-amber-400' />
                 )}
               </div>
-              <div>
+              <div className='flex-1'>
                 <p className='font-medium text-foreground'>Email verification</p>
                 <p className='text-sm text-muted-foreground'>
                   {user?.emailVerified
@@ -142,43 +134,39 @@ const ProfileDetails: FC = () => {
                 size='sm'
                 onClick={handleResendVerification}
                 disabled={isPending}
-                className='self-start whitespace-nowrap sm:self-center'
+                className='mt-3'
               >
                 Resend Email
               </Button>
             )}
           </div>
 
-          <dl className='divide-y divide-border rounded-lg border border-border'>
-            <div className='grid grid-cols-2 gap-4 p-3 text-sm'>
-              <dt className='text-muted-foreground'>Account role</dt>
-              <dd className='text-right font-medium capitalize text-foreground'>
-                {user?.role?.toLowerCase() || 'User'}
-              </dd>
-            </div>
+          <dl className='grid grid-cols-2 gap-x-4 gap-y-3 text-sm'>
+            <dt className='text-muted-foreground'>Account role</dt>
+            <dd className='text-right font-medium capitalize text-foreground'>
+              {user?.role?.toLowerCase() || 'User'}
+            </dd>
             {user?.createdAt && (
-              <div className='grid grid-cols-2 gap-4 p-3 text-sm'>
-                <dt className='flex items-center gap-2 text-muted-foreground'>
-                  <CalendarDays className='h-4 w-4' /> Member since
-                </dt>
+              <>
+                <dt className='flex items-center gap-2 text-muted-foreground'>Member since</dt>
                 <dd className='text-right font-medium text-foreground'>
                   {formatDate(new Date(user.createdAt), 'MM/DD/YYYY')}
                 </dd>
-              </div>
+              </>
             )}
             {user?.updatedAt && (
-              <div className='grid grid-cols-2 gap-4 p-3 text-sm'>
+              <>
                 <dt className='text-muted-foreground'>Last updated</dt>
                 <dd className='text-right font-medium text-foreground'>
                   {formatDate(new Date(user.updatedAt))}
                 </dd>
-              </div>
+              </>
             )}
           </dl>
-        </Form>
+        </form>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default ProfileDetails;
+export default ProfileDetails
