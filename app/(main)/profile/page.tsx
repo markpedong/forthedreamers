@@ -1,10 +1,9 @@
-import { getSession, listAllSessions, getUserAccounts, getUserAddresses, getUserStats } from '@/lib/server-actions'
+import { getSession, listAllSessions, getUserAccounts, getUserAddresses } from '@/lib/server-actions'
 import ProfileDetails from './components/profile-details'
 import AccountManagement from './components/account-management'
 import ProfileHeader from './components/profile-header'
 import SessionManagement from './components/session-management'
 import AddressesSection from './components/addresses-section'
-import AccountStats from './components/account-stats'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export const metadata = {
@@ -23,9 +22,9 @@ const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
 
   if (!userId) {
     return (
-      <main className='min-h-screen'>
-        <div className='mx-auto max-w-7xl px-4 pb-20 pt-12 sm:px-6 lg:px-8'>
-          <div className='rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground'>
+      <main className='min-h-[60vh]'>
+        <div className='mx-auto max-w-3xl px-4 py-16 sm:px-6'>
+          <div className='rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground'>
             Please sign in to view your profile.
           </div>
         </div>
@@ -33,30 +32,25 @@ const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
     )
   }
 
-  const [accounts, sessions, addresses, stats] = await Promise.all([
+  const [accounts, sessions, addresses] = await Promise.all([
     getUserAccounts(userId),
     listAllSessions(),
-    getUserAddresses(userId),
-    getUserStats(userId)
+    getUserAddresses(userId)
   ])
 
   const nonCredentialAccounts = accounts.filter((a) => a.providerId !== 'credential')
   const hasPassword = accounts.some((a) => a.providerId === 'credential')
 
-  const defaultTab = tab === 'account' ? 'security' : tab
+  const defaultTab = tab === 'security' ? 'security' : tab === 'addresses' ? 'addresses' : 'profile'
 
   return (
-    <main className='min-h-screen'>
-      <div className='mx-auto max-w-7xl space-y-16 px-4 pb-20 pt-12 sm:px-6 lg:px-8'>
-        <div className='text-xs uppercase tracking-widest text-muted-foreground'>
-          Account / Profile
-        </div>
-
+    <main className='min-h-[60vh]'>
+      <div className='mx-auto max-w-3xl px-4 pb-16 pt-10 sm:px-6 sm:pt-12'>
         <ProfileHeader />
 
         <Tabs
-          defaultValue={['profile', 'addresses', 'security', 'overview'].includes(defaultTab ?? '') ? defaultTab : 'profile'}
-          className='gap-8'
+          defaultValue={defaultTab}
+          className='mt-8'
         >
           <TabsList className='h-auto w-full justify-start gap-1 overflow-x-auto rounded-lg p-1'>
             <TabsTrigger value='profile' className='min-h-10 flex-none px-4'>
@@ -68,9 +62,6 @@ const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
             <TabsTrigger value='security' className='min-h-10 flex-none px-4'>
               Security
             </TabsTrigger>
-            <TabsTrigger value='overview' className='min-h-10 flex-none px-4'>
-              Overview
-            </TabsTrigger>
           </TabsList>
 
           <TabsContent value='profile'>
@@ -81,15 +72,11 @@ const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
             <AddressesSection addresses={addresses} />
           </TabsContent>
 
-          <TabsContent value='security' className='space-y-8'>
-            <div className='grid items-start gap-8 lg:grid-cols-2'>
+          <TabsContent value='security' className='space-y-6'>
+            <div className='grid gap-6 lg:grid-cols-2'>
               <AccountManagement accounts={nonCredentialAccounts} hasPassword={hasPassword} />
               <SessionManagement currentSessionToken={session.session.token} sessions={sessions} />
             </div>
-          </TabsContent>
-
-          <TabsContent value='overview'>
-            <AccountStats stats={stats} />
           </TabsContent>
         </Tabs>
       </div>
