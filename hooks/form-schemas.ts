@@ -68,8 +68,6 @@ const registrationSchema = nameEmailSchema
     path: ['confirmPassword'],
   });
 
-const loginSchema = z.object({ email: emailSchema, password });
-
 const changePasswordSchema = z
   .object({ currentPassword: password, newPassword: password, confirmPassword: password })
   .superRefine((data, ctx) => {
@@ -171,7 +169,6 @@ const formSchemas = {
   emailSchema,
   registrationSchema,
   forgotPasswordSchema,
-  loginSchema,
   changePasswordSchema,
   twoFactorSchema,
   passkeySchema,
