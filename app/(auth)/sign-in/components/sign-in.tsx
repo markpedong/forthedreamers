@@ -8,28 +8,13 @@ import Input from '@/components/reusable/input';
 import { useForm } from 'react-hook-form';
 import formSchemas from '@/hooks/form-schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
 import Divider from '@/components/reusable/divider';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-import { signIn } from '@/lib/http';
-import { useMutation } from '@tanstack/react-query';
-import { setUserData } from '@/redux/reducers/userData';
-import { store } from '@/redux/store';
+import { useSignInMutation } from '@/services/useMutation';
 
 const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
-  const router = useRouter();
-  const mutation = useMutation({
-    mutationFn: signIn,
-    onSuccess: result => {
-      (store.dispatch as any)(setUserData(result.data!));
-      toast.success('Sign in successfully!', { duration: 2000 });
-      router.replace('/profile');
-      router.refresh();
-    },
-    onError: error => toast.error(error.message, { duration: 5000 }),
-  });
+  const mutation = useSignInMutation('user');
   const isSubmit = mutation.isPending;
   const { loginSchema } = formSchemas;
 
@@ -42,7 +27,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   });
 
   const onSubmit = (values: SchemaForm<typeof loginSchema>) => {
-    mutation.mutate({ email: values.email, password: values.password, audience: 'user' });
+    mutation.mutate({ email: values.email, password: values.password });
   };
 
   return (

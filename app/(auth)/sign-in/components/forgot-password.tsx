@@ -4,21 +4,12 @@ import PageWrapper from './page-wrapper';
 import formSchemas from '@/hooks/form-schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { sendForgotPassword } from '@/lib/http';
-import { useMutation } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { useForgotPasswordMutation } from '@/services/useMutation';
 import Form from '@/components/reusable/form';
 
 const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const { forgotPasswordSchema } = formSchemas;
-  const mutation = useMutation({
-    mutationFn: (email: string) => sendForgotPassword(email),
-    onSuccess: () => {
-      toast.success('Reset link sent successfully!', { duration: 2000 });
-      onNavigate('login');
-    },
-    onError: error => toast.error(error.message),
-  });
+  const mutation = useForgotPasswordMutation({ onSuccess: () => onNavigate('login'), duration: 2000 });
   const isSending = mutation.isPending;
   const form = useForm<SchemaForm<typeof forgotPasswordSchema>>({
     resolver: zodResolver(forgotPasswordSchema),

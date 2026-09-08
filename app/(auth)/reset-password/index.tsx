@@ -1,29 +1,18 @@
 'use client';
 
 import { FC } from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Form from '@/components/reusable/form';
 import formSchemas from '@/hooks/form-schemas';
 import Input from '@/components/reusable/input';
 import { SchemaForm } from '@/lib/types';
-import { resetPassword } from '@/lib/http';
-import { useMutation } from '@tanstack/react-query';
+import { useResetPasswordMutation } from '@/services/useMutation';
 
 const ResetPassword: FC<{ token: string }> = ({ token }) => {
-  const router = useRouter();
   const { resetPasswordSchema } = formSchemas;
-  const mutation = useMutation({
-    mutationFn: (password: string) => resetPassword(token, password),
-    onSuccess: () => {
-      toast.success('Password reset successfully!', { duration: 3000 });
-      router.push('/sign-in');
-    },
-    onError: error => toast.error(error.message),
-  });
+  const mutation = useResetPasswordMutation(token);
   const isLoading = mutation.isPending;
   const form = useForm<SchemaForm<typeof resetPasswordSchema>>({
     resolver: zodResolver(resetPasswordSchema),

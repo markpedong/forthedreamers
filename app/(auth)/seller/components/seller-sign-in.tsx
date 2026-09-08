@@ -1,9 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
 import { ArrowRight } from 'lucide-react';
 import type { SchemaForm, TOnNavigate } from '@/lib/types';
 
@@ -15,22 +13,10 @@ import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 
 import Link from 'next/link';
-import { signIn } from '@/lib/http';
-import { useMutation } from '@tanstack/react-query';
-import { setUserData } from '@/redux/reducers/userData';
-import { store } from '@/redux/store';
+import { useSignInMutation } from '@/services/useMutation';
 
 const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
-  const router = useRouter();
-  const mutation = useMutation({
-    mutationFn: signIn,
-    onSuccess: result => {
-      (store.dispatch as any)(setUserData(result.data!));
-      toast.success('Logged in successfully!', { duration: 3000 });
-      router.push('/dashboard');
-    },
-    onError: error => toast.error(error.message, { duration: 5000 }),
-  });
+  const mutation = useSignInMutation('seller');
   const isSubmitting = mutation.isPending;
   const { loginSchema } = formSchemas;
 
@@ -43,7 +29,7 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   });
 
   const onSubmit = (values: SchemaForm<typeof loginSchema>) => {
-    mutation.mutate({ email: values.email, password: values.password, audience: 'seller' });
+    mutation.mutate({ email: values.email, password: values.password });
   };
 
   return (

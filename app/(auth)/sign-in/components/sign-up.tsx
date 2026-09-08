@@ -6,22 +6,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Input from '@/components/reusable/input';
 import Form from '@/components/reusable/form';
-import { toast } from 'sonner';
-import { signUp } from '@/lib/http';
-import { useMutation } from '@tanstack/react-query';
+import { useSignUpMutation } from '@/services/useMutation';
 import Divider from '@/components/reusable/divider';
-import { useRouter } from 'next/navigation';
 
 const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
-  const router = useRouter();
-  const mutation = useMutation({
-    mutationFn: signUp,
-    onSuccess: () => {
-      toast.success('Account created successfully!', { duration: 3000 });
-      router.refresh();
-    },
-    onError: error => toast.error(error.message),
-  });
+  const mutation = useSignUpMutation();
   const isSigningUp = mutation.isPending;
   const { registrationSchema } = formSchemas;
 

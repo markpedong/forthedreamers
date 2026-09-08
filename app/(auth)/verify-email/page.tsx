@@ -5,22 +5,15 @@ import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Mail, ArrowRight, Loader2 } from 'lucide-react';
-import { getCurrentUser, resendVerification } from '@/lib/http';
-import { toast } from 'sonner';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useResendVerificationMutation } from '@/services/useMutation';
+import { useCurrentUserQuery } from '@/services/useQuery';
 
 const VerifyEmailPage = () => {
   const router = useRouter();
-  const userQuery = useQuery({
-    queryKey: ['current-user'],
-    queryFn: getCurrentUser,
-    select: result => result.data,
-    retry: false,
-  });
-  const mutation = useMutation({
-    mutationFn: resendVerification,
-    onSuccess: () => toast.success('Verification link sent! Check your inbox.', { duration: 3000 }),
-    onError: error => toast.error(error.message, { duration: 3000 }),
+  const userQuery = useCurrentUserQuery();
+  const mutation = useResendVerificationMutation({
+    message: 'Verification link sent! Check your inbox.',
+    duration: 3000,
   });
   const email = userQuery.data?.email;
 

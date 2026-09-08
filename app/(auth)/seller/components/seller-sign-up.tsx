@@ -12,22 +12,11 @@ import formSchemas from '@/hooks/form-schemas';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import Divider from '@/components/reusable/divider';
-import { useRouter } from 'next/navigation';
-import { sellerSignUp } from '@/lib/http';
-import { useMutation } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { useSellerSignUpMutation } from '@/services/useMutation';
 import Link from 'next/link';
 
 const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
-  const router = useRouter();
-  const mutation = useMutation({
-    mutationFn: sellerSignUp,
-    onSuccess: result => {
-      toast.success(result.message);
-      router.refresh();
-    },
-    onError: error => toast.error(error.message),
-  });
+  const mutation = useSellerSignUpMutation();
   const isSigningUp = mutation.isPending;
   const isSubmitting = isSigningUp;
   const { createSellerSchema } = formSchemas;
