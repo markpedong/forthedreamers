@@ -1,23 +1,40 @@
+import { Prisma } from '@/generated/prisma';
+import prisma from '@/lib/prisma';
 import 'server-only';
 
-import prisma from '@/lib/prisma';
+const wishlistCardSelect = {
+  id: true,
+  addedAt: true,
+  product: {
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      images: true,
+      basePrice: true,
+      rating: true,
+      reviewCount: true,
+      category: { select: { id: true, name: true } },
+      seller: { select: { storeName: true } },
+      variants: { select: { price: true }, orderBy: { createdAt: 'asc' as const }, take: 1 },
+    },
+  },
+} satisfies Prisma.WishlistSelect;
 
 export const wishlistIds = async (userId: string) =>
   (await prisma.wishlist.findMany({ where: { userId }, select: { productId: true } })).map(item => item.productId);
 
 export const wishlistItems = async (userId: string, page: number, limit: number) => {
   const where = { userId };
-  const [wishlist, total] = await Promise.all([
-    prisma.wishlist.findMany({
-      where,
-      include: { product: { include: { category: true, seller: true, variants: true } } },
-      orderBy: { addedAt: 'desc' },
-      skip: (page - 1) * limit,
-      take: limit,
-    }),
-    prisma.wishlist.count({ where }),
-  ]);
-  return { wishlist, total, page, limit };
+  // No total count — UI only shows paginated pages; exact count is expensive on large datasets
+  const wishlist = await prisma.wishlist.findMany({
+    where,
+    select: wishlistCardSelect,
+    orderBy: { addedAt: 'desc' },
+    skip: (page - 1) * limit,
+    take: limit,
+  });
+  return { wishlist, total: undefined, page, limit };
 };
 
 export const setWishlist = async (userId: string, productId: string, wanted: boolean) => {
@@ -32,8 +49,8 @@ export const setWishlist = async (userId: string, productId: string, wanted: boo
       create: { userId, productId },
       update: {},
     });
-  } else {
-    await prisma.wishlist.deleteMany({ where: { userId, productId } });
+    return { productId, wanted: true };
   }
-  return { productId, wanted };
+  await prisma.wishlist.deleteMany({ where: { userId, productId } });
+  return { productId, wanted: false };
 };

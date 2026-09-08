@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { Prisma } from '@/generated/prisma';
-import { successResponse, errorResponse, getPaginatedData } from '@/lib/server-helper';
-import { prisma } from '@/lib/prisma';
+import { successResponse, errorResponse } from '@/lib/server-helper';
+import prisma from '@/lib/prisma';
 import { z } from 'zod';
 
 const searchSchema = z.object({
@@ -60,11 +60,18 @@ export async function GET(request: NextRequest) {
       ...(constraints.length && { AND: constraints }),
     };
     const sortBy = parsed.data.sortBy === 'price' ? 'basePrice' : parsed.data.sortBy;
-    const result = await getPaginatedData({
-      model: 'product',
-      where: { ...where, page, pageSize: limit },
-      orderBy: [{ [sortBy]: order }, { id: 'asc' }],
-      include: {
+    const take = limit + 1; // one extra to determine hasMore
+
+    const products = await prisma.product.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        images: true,
+        basePrice: true,
+        rating: true,
+        reviewCount: true,
         category: { select: { id: true, name: true } },
         seller: { select: { storeName: true } },
         variants: {
@@ -72,7 +79,14 @@ export async function GET(request: NextRequest) {
           orderBy: { createdAt: 'asc' },
         },
       },
+      orderBy: [{ [sortBy]: order }, { id: 'asc' }],
+      skip: (page - 1) * limit,
+      take,
     });
+
+    const hasMore = products.length > limit;
+    const items = hasMore ? products.slice(0, limit) : products;
+
     const [categories, brands] = await Promise.all([
       prisma.category.findMany({
         where: { products: { some: { status: 'ACTIVE' } } },
@@ -88,10 +102,11 @@ export async function GET(request: NextRequest) {
     ]);
 
     return successResponse({
-      products: result.data,
-      total: result.total,
-      page: result.page,
-      limit: result.pageSize,
+      products: items,
+      total: undefined,
+      page,
+      limit,
+      hasMore,
       categories,
       brands: brands.flatMap(item => (item.brand ? [item.brand] : [])),
     });

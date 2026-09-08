@@ -26,7 +26,7 @@ export const listReviews = async (slug: string, { page, limit, rating, sortBy, o
   const product = await prisma.product.findFirst({ where: { slug, status: 'ACTIVE' }, select: { id: true } });
   if (!product) throw new Error('Product not found');
   const where = { productId: product.id, isPublished: true, ...(rating ? { rating } : {}) };
-  const [reviews, total, aggregate] = await Promise.all([
+  const [reviews, aggregate] = await Promise.all([
     prisma.review.findMany({
       where,
       select: {
@@ -42,7 +42,6 @@ export const listReviews = async (slug: string, { page, limit, rating, sortBy, o
       skip: (page - 1) * limit,
       take: limit,
     }),
-    prisma.review.count({ where }),
     prisma.review.aggregate({
       where: { productId: product.id, isPublished: true },
       _avg: { rating: true },
@@ -51,7 +50,7 @@ export const listReviews = async (slug: string, { page, limit, rating, sortBy, o
   ]);
   return {
     reviews: reviews.map(review => ({ ...review, createdAt: review.createdAt.toISOString() })),
-    total,
+    total: undefined,
     page,
     limit,
     averageRating: aggregate._avg.rating ?? 0,

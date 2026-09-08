@@ -224,6 +224,9 @@ model Product {
   @@index([tags], type: Gin, map: "product_tags_gin_idx")
   @@index([createdAt])
   @@index([updatedAt])
+  @@index([status, createdAt, id], map: "product_status_created_idx")
+  @@index([status, categoryId, rating], map: "product_status_category_rating_idx")
+  @@index([status, sellerId, createdAt], map: "product_status_seller_created_idx")
   @@map("product")
 }
 
@@ -425,6 +428,7 @@ model Order {
   @@index([orderGroupId])
   @@index([status])
   @@index([coupon])
+  @@index([createdAt, status], map: "order_created_status_idx")
   @@map("order")
 }
 

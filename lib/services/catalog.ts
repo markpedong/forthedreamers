@@ -17,7 +17,7 @@ export const cardSelect = {
 } satisfies Prisma.ProductSelect;
 
 export const homeProducts = () =>
-  cached('catalog', cacheKeys.home, 60, () =>
+  cached('catalog', cacheKeys.home, 300, () =>
     prisma.product.findMany({
       where: { status: 'ACTIVE' },
       select: cardSelect,
@@ -27,7 +27,7 @@ export const homeProducts = () =>
   );
 
 export const productSlugs = () =>
-  cached('catalog', cacheKeys.productSlugs, 60, () =>
+  cached('catalog', cacheKeys.productSlugs, 300, () =>
     prisma.product.findMany({
       where: { status: 'ACTIVE' },
       select: { slug: true },
@@ -51,11 +51,23 @@ export const publicCategories = () =>
 export const apiProductBySlug = (slug: string) =>
   prisma.product.findUnique({
     where: { slug },
-    include: {
-      specs: { omit: { createdAt: true, updatedAt: true, productId: true } },
-      category: { omit: { createdAt: true, updatedAt: true } },
-      variants: { omit: { createdAt: true, updatedAt: true, productId: true } },
-      seller: { omit: { createdAt: true, updatedAt: true, id: true, userId: true } },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      brand: true,
+      basePrice: true,
+      description: true,
+      images: true,
+      tags: true,
+      stock: true,
+      rating: true,
+      reviewCount: true,
+      createdAt: true,
+      category: { select: { id: true, name: true } },
+      seller: { select: { storeName: true } },
+      variants: { select: { id: true, name: true, price: true, discountedPrice: true, stock: true } },
+      specs: { select: { label: true, value: true } },
     },
   });
 
@@ -107,6 +119,7 @@ export const productBySlug = (slug: string) =>
     const reviewWhere = { productId: product.id, isPublished: true };
     const paidStatuses = ['PAID', 'PROCESSING', 'SHIPPED', 'COMPLETED'] as const;
 
+    // sellerProductCount is independent — include in the parallel batch
     const [reviewAggregate, reviewGroups, reviews, soldAggregate, relatedProducts, sellerProducts, sellerProductCount] =
       await Promise.all([
         prisma.review.aggregate({ where: reviewWhere, _avg: { rating: true }, _count: { _all: true } }),
@@ -147,7 +160,7 @@ export const productBySlug = (slug: string) =>
           orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
           take: 4,
         }),
-        prisma.product.count({ where: { status: 'ACTIVE', sellerId: product.seller.id } }),
+        prisma.product.count({ where: { sellerId: product.seller.id, status: 'ACTIVE' } }),
       ]);
 
     const distribution = Object.fromEntries([1, 2, 3, 4, 5].map(rating => [rating, 0])) as Record<number, number>;

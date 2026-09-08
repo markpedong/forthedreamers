@@ -69,7 +69,23 @@ export const adminProducts = async () => {
   const user = await requireCatalogAccess();
   const products = await prisma.product.findMany({
     where: user.role === USER_ROLE.SELLER ? { seller: { userId: user.id } } : undefined,
-    include: { category: true, variants: true, specs: true, seller: true },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      status: true,
+      basePrice: true,
+      images: true,
+      stock: true,
+      rating: true,
+      reviewCount: true,
+      sold: true,
+      brand: true,
+      category: { select: { id: true, name: true } },
+      variants: { select: { id: true, name: true, price: true, discountedPrice: true, stock: true, coupon: true, attributes: true } },
+      specs: { select: { id: true, label: true, value: true } },
+      seller: { select: { id: true, storeName: true } },
+    },
     orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
     take: 100,
   });
