@@ -1,0 +1,375 @@
+'use client';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import {
+  addCartItem,
+  addCategory,
+  changePassword,
+  checkoutCart,
+  createAddress,
+  createProduct,
+  createReview,
+  deleteAddress,
+  deleteProduct,
+  deleteUser,
+  linkSocial,
+  removeCartItem,
+  resendVerification,
+  resetPassword,
+  sellerSignUp,
+  sendForgotPassword,
+  setDefaultAddress,
+  setUserBanned,
+  setWishlist,
+  signIn,
+  signUp,
+  socialSignIn,
+  toggleProductStatus,
+  updateAddress,
+  updateCartQuantity,
+  updateProduct,
+  updateProfile,
+} from '@/lib/http';
+import type { ProductFormData } from '@/lib/types';
+import { decrementCartCount, incrementCartCount, setCartCount } from '@/redux/reducers/cartData';
+import { setUserData } from '@/redux/reducers/userData';
+import { useAppDispatch } from '@/redux/store';
+import { productReviewsQueryKey, wishlistQueryKey } from './useQuery';
+
+export const useSignInMutation = (audience: 'user' | 'seller') => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (input: { email: string; password: string }) => signIn({ ...input, audience }),
+    onSuccess: result => {
+      dispatch(setUserData(result.data!));
+      toast.success(audience === 'seller' ? 'Logged in successfully!' : 'Sign in successfully!', {
+        duration: audience === 'seller' ? 3000 : 2000,
+      });
+      if (audience === 'seller') {
+        router.push('/dashboard');
+      } else {
+        router.replace('/profile');
+        router.refresh();
+      }
+    },
+    onError: error => toast.error(error.message, { duration: 5000 }),
+  });
+};
+
+export const useSignUpMutation = () => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: signUp,
+    onSuccess: () => {
+      toast.success('Account created successfully!', { duration: 3000 });
+      router.refresh();
+    },
+    onError: error => toast.error(error.message),
+  });
+};
+
+export const useSellerSignUpMutation = () => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: sellerSignUp,
+    onSuccess: result => {
+      toast.success(result.message);
+      router.refresh();
+    },
+    onError: error => toast.error(error.message),
+  });
+};
+
+export const useSocialSignInMutation = (next: '/profile' | '/dashboard') =>
+  useMutation({
+    mutationFn: () => socialSignIn('google', next),
+    onSuccess: result => {
+      if (result.data?.url) window.location.assign(result.data.url);
+    },
+    onError: error => toast.error(error.message),
+  });
+
+export const useForgotPasswordMutation = ({
+  redirectTo,
+  onSuccess,
+  successMessage = 'Reset link sent successfully!',
+  duration,
+}: {
+  redirectTo?: string;
+  onSuccess?: () => void;
+  successMessage?: string;
+  duration?: number;
+} = {}) =>
+  useMutation({
+    mutationFn: (email: string) => sendForgotPassword(email, redirectTo),
+    onSuccess: () => {
+      toast.success(successMessage, { duration });
+      onSuccess?.();
+    },
+    onError: error => toast.error(error.message),
+  });
+
+export const useResetPasswordMutation = (token: string) => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (password: string) => resetPassword(token, password),
+    onSuccess: () => {
+      toast.success('Password reset successfully!', { duration: 3000 });
+      router.push('/sign-in');
+    },
+    onError: error => toast.error(error.message),
+  });
+};
+
+export const useResendVerificationMutation = ({
+  message,
+  description,
+  duration,
+}: {
+  message: string;
+  description?: string;
+  duration?: number;
+}) =>
+  useMutation({
+    mutationFn: resendVerification,
+    onSuccess: () => toast.success(message, { description, duration }),
+    onError: error => toast.error(error.message, { duration }),
+  });
+
+export const useChangePasswordMutation = (onSuccess: () => void) =>
+  useMutation({
+    mutationFn: changePassword,
+    onSuccess: () => {
+      toast.success('Password changed successfully!');
+      onSuccess();
+    },
+    onError: error => toast.error(error.message),
+  });
+
+export const useLinkSocialMutation = () =>
+  useMutation({
+    mutationFn: (provider: string) => linkSocial(provider, '/profile?accountLinked=true&tab=security'),
+    onSuccess: result => {
+      if (result.data?.url) window.location.assign(result.data.url);
+    },
+    onError: error => toast.error(error.message),
+  });
+
+export const useUpdateProfileMutation = ({
+  successMessage,
+  description,
+  onSuccess,
+  onError,
+}: {
+  successMessage: string;
+  description?: string;
+  onSuccess?: () => void;
+  onError?: () => void;
+}) => {
+  const dispatch = useAppDispatch();
+
+  return useMutation({
+    mutationFn: updateProfile,
+    onSuccess: result => {
+      if (result.data?.user) dispatch(setUserData(result.data.user));
+      toast.success(successMessage, { description });
+      onSuccess?.();
+    },
+    onError: error => {
+      onError?.();
+      toast.error(error.message);
+    },
+  });
+};
+
+export type AddressMutationInput = {
+  operation: 'create' | 'update' | 'delete' | 'default';
+  input: unknown;
+};
+
+export const useAddressMutation = (onSaved: (operation: AddressMutationInput['operation']) => void) => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: ({ operation, input }: AddressMutationInput) => {
+      if (operation === 'create') return createAddress(input);
+      if (operation === 'update') return updateAddress(input);
+      if (operation === 'delete') return deleteAddress(input as string);
+      return setDefaultAddress(input as string);
+    },
+    onSuccess: (_result, { operation }) => {
+      toast.success(
+        operation === 'create'
+          ? 'Address added'
+          : operation === 'update'
+            ? 'Address updated'
+            : operation === 'delete'
+              ? 'Address deleted'
+              : 'Default address updated'
+      );
+      onSaved(operation);
+      router.refresh();
+    },
+    onError: error => toast.error(error.message),
+  });
+};
+
+export const useAddCategoryMutation = (onSuccess: () => void) => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: addCategory,
+    onSuccess: result => {
+      toast.success(result.message);
+      onSuccess();
+      router.refresh();
+    },
+    onError: error => toast.error(error.message),
+  });
+};
+
+export const useDeleteProductMutation = (onSuccess: () => void) => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: deleteProduct,
+    onSuccess: result => {
+      toast.success(result.message);
+      onSuccess();
+      router.refresh();
+    },
+    onError: error => toast.error(error.message),
+  });
+};
+
+export const useToggleProductStatusMutation = (rollback: (input: { id: string; active: boolean }) => void) => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: toggleProductStatus,
+    onError: (error, input) => {
+      rollback(input);
+      toast.error(error.message);
+    },
+    onSettled: () => router.refresh(),
+  });
+};
+
+export const useSaveProductMutation = (onSuccess: () => void) => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: ({ data, type }: { data: ProductFormData; type: 'CREATE' | 'EDIT' }) =>
+      type === 'EDIT' ? updateProduct(data) : createProduct(data),
+    onSuccess: result => {
+      toast.success(result.message);
+      onSuccess();
+      router.refresh();
+    },
+    onError: error => toast.error(error.message),
+  });
+};
+
+export const useSetUserBannedMutation = () => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: ({ userId, banned }: { userId: string; banned: boolean }) => setUserBanned(userId, banned),
+    onSuccess: (_result, { banned }) => {
+      toast.success(`User has been ${banned ? 'banned' : 'unbanned'}`);
+      router.refresh();
+    },
+    onError: error => toast.error(error.message),
+  });
+};
+
+export const useDeleteUserMutation = (onSuccess: () => void) => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => {
+      toast.success('User deleted successfully!', { duration: 2000 });
+      onSuccess();
+      router.refresh();
+    },
+    onError: error => toast.error(error.message),
+  });
+};
+
+export const useUpdateCartMutation = () => useMutation({ mutationFn: updateCartQuantity });
+export const useRemoveCartMutation = () => useMutation({ mutationFn: removeCartItem });
+
+export const useAddCartMutation = () => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: ({ variantId, quantity }: { variantId: string; quantity: number; buyNow: boolean }) =>
+      addCartItem({ variantId, quantity }),
+    onMutate: () => dispatch(incrementCartCount()),
+    onSuccess: (result, { buyNow }) => {
+      if (result.data) dispatch(setCartCount(result.data.count));
+      if (buyNow) router.push('/checkout');
+    },
+    onError: error => {
+      dispatch(decrementCartCount());
+      toast.error(error.message);
+    },
+  });
+};
+
+export const useCheckoutMutation = () =>
+  useMutation({
+    mutationFn: checkoutCart,
+    onSuccess: result => {
+      if (result.data) window.location.assign(`/checkout/success?orderId=${result.data.orderGroupId}`);
+    },
+    onError: error => toast.error(error.message),
+  });
+
+export const useCreateReviewMutation = (slug: string, onSuccess: () => void) => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (input: unknown) => createReview(slug, input),
+    onSuccess: () => {
+      onSuccess();
+      toast.success('Review submitted');
+      void queryClient.invalidateQueries({ queryKey: productReviewsQueryKey(slug) });
+      router.refresh();
+    },
+    onError: error => toast.error(error.message),
+  });
+};
+
+export const useWishlistMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, wanted }: { id: string; wanted: boolean }) => setWishlist(id, wanted),
+    onMutate: async ({ id, wanted }) => {
+      await queryClient.cancelQueries({ queryKey: wishlistQueryKey });
+      const previous = queryClient.getQueryData<string[]>(wishlistQueryKey);
+      queryClient.setQueryData<string[]>(wishlistQueryKey, old => {
+        if (wanted) return old ? [...old, id] : [id];
+        return old ? old.filter(item => item !== id) : [];
+      });
+      return { previous };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previous) queryClient.setQueryData(wishlistQueryKey, context.previous);
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: wishlistQueryKey });
+    },
+  });
+};
