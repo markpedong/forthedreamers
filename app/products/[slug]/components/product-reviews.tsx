@@ -5,8 +5,7 @@ import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import type { ProductReview, ReviewSummary } from './product-types';
-import { useQuery } from '@tanstack/react-query';
-import { getReviews } from '@/lib/http';
+import { useProductReviewsQuery } from '@/services/useQuery';
 
 type ProductReviewsProps = {
   slug: string;
@@ -28,15 +27,13 @@ const ProductReviews = ({ slug, initialReviews, summary }: ProductReviewsProps) 
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [page, setPage] = useState(1);
   const pageSize = 6;
-  const query = useQuery({
-    queryKey: ['product-reviews', slug, selectedRating, page],
-    queryFn: () => getReviews<{ reviews: ProductReview[]; total: number }>(slug, page, selectedRating, pageSize),
-    select: result => result.data,
-    initialData:
-      selectedRating === null && page === 1
-        ? { success: true, data: { reviews: initialReviews, total: summary.count } }
-        : undefined,
-  });
+  const query = useProductReviewsQuery<ProductReview>(
+    slug,
+    page,
+    selectedRating,
+    pageSize,
+    selectedRating === null && page === 1 ? { reviews: initialReviews, total: summary.count } : undefined
+  );
   const reviews = query.data?.reviews ?? [];
   const total = query.data?.total ?? 0;
   const pageCount = Math.max(1, Math.ceil(total / pageSize));

@@ -3,14 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Heart, ShoppingCart } from 'lucide-react';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { addCartItem } from '@/lib/http';
 import type { ProductPageVariant, ProductPurchaseData } from './product-types';
-import { useAppDispatch } from '@/redux/store';
-import { decrementCartCount, incrementCartCount, setCartCount } from '@/redux/reducers/cartData';
-import { useWishlist } from '@/lib/hooks/use-wishlist';
-import { useMutation } from '@tanstack/react-query';
+import { useAddCartMutation, useWishlistMutation } from '@/services/useMutation';
+import { useWishlistQuery } from '@/services/useQuery';
 
 const AddToCartSection = ({
   product,
@@ -19,26 +15,15 @@ const AddToCartSection = ({
   product: ProductPurchaseData;
   selectedVariant: ProductPageVariant | null;
 }) => {
-  const wishlist = useWishlist();
+  const wishlistQuery = useWishlistQuery();
+  const wishlistMutation = useWishlistMutation();
   const [quantity, setQuantity] = useState(1);
-  const isWishlisted = wishlist.ids.includes(product.id);
-  const dispatch = useAppDispatch();
+  const wishlistIds = wishlistQuery.data ?? [];
+  const isWishlisted = wishlistIds.includes(product.id);
   const router = useRouter();
   const maxQuantity = Math.min(999, selectedVariant?.stock ?? 0);
   const safeQuantity = Math.min(quantity, Math.max(1, maxQuantity));
-  const cartMutation = useMutation({
-    mutationFn: ({ variantId, quantity }: { variantId: string; quantity: number; buyNow: boolean }) =>
-      addCartItem({ variantId, quantity }),
-    onMutate: () => dispatch(incrementCartCount()),
-    onSuccess: (result, { buyNow }) => {
-      if (result.data) dispatch(setCartCount(result.data.count));
-      if (buyNow) router.push('/checkout');
-    },
-    onError: error => {
-      dispatch(decrementCartCount());
-      toast.error(error.message);
-    },
-  });
+  const cartMutation = useAddCartMutation();
   const isProcessingBuyNow = cartMutation.isPending && cartMutation.variables?.buyNow;
 
   const handleQuantity = (value: number) => {
@@ -121,8 +106,8 @@ const AddToCartSection = ({
       <Button
         variant="outline"
         className="h-11 w-full"
-        disabled={wishlist.isPending(product.id)}
-        onClick={() => wishlist.toggle(product.id)}
+        disabled={wishlistMutation.isPending && wishlistMutation.variables?.id === product.id}
+        onClick={() => wishlistMutation.mutate({ id: product.id, wanted: !isWishlisted })}
         aria-pressed={isWishlisted}
       >
         <Heart size={18} className={isWishlisted ? 'fill-destructive text-destructive' : ''} />

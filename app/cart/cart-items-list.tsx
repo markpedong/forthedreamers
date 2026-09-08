@@ -5,10 +5,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { removeCartItem, updateCartQuantity } from '@/lib/http';
 import type { CartItem } from '@/lib/services/cart';
 import CartNavigation from './cart-navigation';
-import { useMutation } from '@tanstack/react-query';
+import { useRemoveCartMutation, useUpdateCartMutation } from '@/services/useMutation';
 
 const CartItemsList = ({ items }: { items: CartItem[] }) => {
   const [visibleItems, setVisibleItems] = useState(items);
@@ -16,8 +15,8 @@ const CartItemsList = ({ items }: { items: CartItem[] }) => {
   const versions = useRef(new Map<string, number>());
   const queues = useRef(new Map<string, Promise<void>>());
   const quantityTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
-  const updateMutation = useMutation({ mutationFn: updateCartQuantity });
-  const removeMutation = useMutation({ mutationFn: removeCartItem });
+  const updateMutation = useUpdateCartMutation();
+  const removeMutation = useRemoveCartMutation();
 
   useEffect(
     () => () => {

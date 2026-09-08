@@ -3,27 +3,13 @@
 import { useAppSelector } from '@/redux/store';
 import { type FormEvent, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createReview } from '@/lib/http';
+import { useCreateReviewMutation } from '@/services/useMutation';
 
 const ReviewForm = ({ slug }: { slug: string }) => {
   const user = useAppSelector(state => state.userData.data);
-  const router = useRouter();
   const [submitted, setSubmitted] = useState(false);
-  const queryClient = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: (input: unknown) => createReview(slug, input),
-    onSuccess: () => {
-      setSubmitted(true);
-      toast.success('Review submitted');
-      void queryClient.invalidateQueries({ queryKey: ['product-reviews', slug] });
-      router.refresh();
-    },
-    onError: error => toast.error(error.message),
-  });
+  const mutation = useCreateReviewMutation(slug, () => setSubmitted(true));
   const pending = mutation.isPending;
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
