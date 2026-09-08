@@ -1,31 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { USER_ROLE } from '@/generated/prisma';
 import { getSession } from '@/lib/services/auth';
 import { publicCategories } from '@/lib/services/catalog';
 import { saveCategory } from '@/lib/services/admin-catalog';
+import { errorResponse, successResponse } from '@/lib/server-helper';
 
 const schema = z.object({ id: z.string().min(1).max(100).optional(), name: z.string().trim().min(1).max(100) });
 const isAdmin = async () => (await getSession())?.user.role === USER_ROLE.ADMIN;
 
-export const GET = async () => NextResponse.json({ success: true, data: await publicCategories() });
+export const GET = async () => successResponse(await publicCategories());
 
 const save = async (request: NextRequest, editing: boolean) => {
-  if (!(await isAdmin())) return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
+  if (!(await isAdmin())) return errorResponse('Forbidden', 403);
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success || (editing && !parsed.data.id))
-    return NextResponse.json({ success: false, message: 'Invalid category' }, { status: 400 });
+    return errorResponse('Invalid category', 400);
   try {
-    return NextResponse.json({
-      success: true,
-      message: 'Saved successfully',
-      data: await saveCategory(parsed.data.name, parsed.data.id),
-    });
+    return successResponse(await saveCategory(parsed.data.name, parsed.data.id), 'Saved successfully');
   } catch (error) {
-    return NextResponse.json(
-      { success: false, message: error instanceof Error ? error.message : 'Unable to save category' },
-      { status: 400 }
-    );
+    return errorResponse(error instanceof Error ? error.message : 'Unable to save category', 400);
   }
 };
 

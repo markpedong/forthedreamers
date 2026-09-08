@@ -1,20 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { changePassword, getSession } from '@/lib/services/auth';
+import { errorResponse, successResponse } from '@/lib/server-helper';
 
 const schema = z.object({ password: z.string().min(8).max(128) });
 
 export const PATCH = async (request: NextRequest) => {
-  if (!(await getSession())) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  if (!(await getSession())) return errorResponse('Unauthorized', 401);
   const parsed = schema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return NextResponse.json({ success: false, message: 'Invalid password' }, { status: 400 });
+  if (!parsed.success) return errorResponse('Invalid password', 400);
   try {
     await changePassword(parsed.data.password);
-    return NextResponse.json({ success: true });
+    return successResponse();
   } catch (error) {
-    return NextResponse.json(
-      { success: false, message: error instanceof Error ? error.message : 'Unable to change password' },
-      { status: 400 }
-    );
+    return errorResponse(error instanceof Error ? error.message : 'Unable to change password', 400);
   }
 };

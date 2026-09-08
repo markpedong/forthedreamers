@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { errorResponse } from '@/lib/server-helper';
+
 export async function POST() {
-  return new NextResponse('Stripe payments are currently disabled', { status: 503 });
+  return errorResponse('Stripe payments are currently disabled', 503);
 }

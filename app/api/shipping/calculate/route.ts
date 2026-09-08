@@ -10,14 +10,14 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const body = await request.json();
     const { region, items } = body;
 
     if (!region || !items) {
-      return errorResponse('Missing required fields');
+      return errorResponse('Missing required fields', 400);
     }
 
     // Simple shipping calculation (can be extended with real methods)
@@ -40,6 +40,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Calculate shipping error:', error);
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }

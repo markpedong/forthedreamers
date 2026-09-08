@@ -169,14 +169,9 @@ export type ProTableProps<T> = {
   isLoading?: boolean;
 };
 
-export type ApiResponse<T> = {
-  success: boolean;
-  message?: string;
-  data?: T;
-  page?: number;
-  pageSize?: number;
-  total?: number;
-};
+export type ApiSuccessResponse<T> = { success: true; data?: T; message?: string };
+export type ApiErrorResponse = { success: false; message: string };
+export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
 
 export type TGetPaginatedData = {
   model: keyof PrismaClient;

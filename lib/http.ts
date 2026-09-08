@@ -3,7 +3,7 @@
 import { toast } from 'sonner';
 import { API_ROUTE } from '@/constants/enum';
 import type { CartItem } from './services/cart';
-import type { ApiResponse, ProductFormData, TProduct } from './types';
+import type { ApiResponse, ApiSuccessResponse, ProductFormData, TProduct } from './types';
 import type { TUserData } from '@/services/types';
 
 type FetchOptions = Omit<RequestInit, 'body'> & {
@@ -11,7 +11,7 @@ type FetchOptions = Omit<RequestInit, 'body'> & {
   showErrorToast?: boolean;
 };
 
-export const apiFetch = async <T = unknown>(url: string, options: FetchOptions = {}): Promise<ApiResponse<T>> => {
+export const apiFetch = async <T = unknown>(url: string, options: FetchOptions = {}): Promise<ApiSuccessResponse<T>> => {
   const { body, showErrorToast = true, ...requestOptions } = options;
   const response = await fetch(url, {
     ...requestOptions,
@@ -29,7 +29,7 @@ export const apiFetch = async <T = unknown>(url: string, options: FetchOptions =
     throw new Error(message);
   }
 
-  if (!data) throw new Error('Invalid server response');
+  if (!data?.success) throw new Error(data?.message || 'Invalid server response');
   return data;
 };
 

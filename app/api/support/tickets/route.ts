@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const { searchParams } = new URL(request.url);
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Get support tickets error:', error);
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }
 
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const body = await request.json();
@@ -91,9 +91,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Create support ticket error:', error);
     if (error instanceof z.ZodError) {
-      return errorResponse('Invalid input data');
+      return errorResponse('Invalid input data', 400);
     }
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }
 
@@ -105,7 +105,7 @@ export async function GET_BY_ID(_request: NextRequest, { params }: { params: Pro
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const { id } = await params;
@@ -123,13 +123,13 @@ export async function GET_BY_ID(_request: NextRequest, { params }: { params: Pro
     });
 
     if (!ticket) {
-      return errorResponse('Support ticket not found');
+      return errorResponse('Support ticket not found', 400);
     }
 
     return successResponse(ticket);
   } catch (error) {
     console.error('Get support ticket error:', error);
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }
 
@@ -145,7 +145,7 @@ export async function POST_MESSAGE(request: NextRequest, { params }: { params: P
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const { id } = await params;
@@ -161,7 +161,7 @@ export async function POST_MESSAGE(request: NextRequest, { params }: { params: P
     });
 
     if (!ticket) {
-      return errorResponse('Support ticket not found');
+      return errorResponse('Support ticket not found', 400);
     }
 
     const newMessage = await prisma.supportMessage.create({
@@ -183,9 +183,9 @@ export async function POST_MESSAGE(request: NextRequest, { params }: { params: P
   } catch (error) {
     console.error('Add support message error:', error);
     if (error instanceof z.ZodError) {
-      return errorResponse('Invalid input data');
+      return errorResponse('Invalid input data', 400);
     }
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }
 
@@ -197,7 +197,7 @@ export async function GET_ADMIN(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user || session.user.role !== 'ADMIN') {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const { searchParams } = new URL(request.url);
@@ -237,6 +237,6 @@ export async function GET_ADMIN(request: NextRequest) {
     });
   } catch (error) {
     console.error('Get admin support tickets error:', error);
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }

@@ -1,16 +1,13 @@
-import { NextResponse } from 'next/server';
 import { getSession, sendVerificationEmail } from '@/lib/services/auth';
+import { errorResponse, successResponse } from '@/lib/server-helper';
 
 export const POST = async () => {
   const session = await getSession();
-  if (!session?.user.email) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  if (!session?.user.email) return errorResponse('Unauthorized', 401);
   try {
     await sendVerificationEmail(session.user.email);
-    return NextResponse.json({ success: true });
+    return successResponse();
   } catch (error) {
-    return NextResponse.json(
-      { success: false, message: error instanceof Error ? error.message : 'Unable to send verification email' },
-      { status: 400 }
-    );
+    return errorResponse(error instanceof Error ? error.message : 'Unable to send verification email', 400);
   }
 };

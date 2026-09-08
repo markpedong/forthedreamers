@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const { searchParams } = new URL(request.url);
@@ -48,13 +48,13 @@ export async function GET(request: NextRequest) {
     } else {
       // Get all coupons (admin only)
       if (!isAdmin) {
-        return errorResponse('Unauthorized');
+        return errorResponse('Unauthorized', 400);
       }
       return successResponse({ coupons: COUPONS });
     }
   } catch (error) {
     console.error('Get coupons error:', error);
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }
 
@@ -66,37 +66,37 @@ export async function POST_VALIDATE(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const body = await request.json();
     const { code, orderTotal, categories, products } = body;
 
     if (!code) {
-      return errorResponse('Coupon code required');
+      return errorResponse('Coupon code required', 400);
     }
 
     const coupon = COUPONS.find(c => c.code === code.toUpperCase());
 
     if (!coupon) {
-      return errorResponse('Invalid coupon code');
+      return errorResponse('Invalid coupon code', 400);
     }
 
     // Check if coupon is active
     if (!coupon.isActive) {
-      return errorResponse('Coupon is not active');
+      return errorResponse('Coupon is not active', 400);
     }
 
     // Check minimum order amount
     if (coupon.minOrderAmount && orderTotal < coupon.minOrderAmount) {
-      return errorResponse(`Minimum order amount is $${coupon.minOrderAmount}`);
+      return errorResponse(`Minimum order amount is $${coupon.minOrderAmount}`, 400);
     }
 
     // Check category restrictions
     if (coupon.applicableCategories && coupon.applicableCategories.length > 0) {
       const hasApplicableCategory = categories?.some((cat: string) => coupon.applicableCategories.includes(cat));
       if (!hasApplicableCategory) {
-        return errorResponse('Coupon not applicable to items in cart');
+        return errorResponse('Coupon not applicable to items in cart', 400);
       }
     }
 
@@ -104,7 +104,7 @@ export async function POST_VALIDATE(request: NextRequest) {
     if (coupon.applicableProducts && coupon.applicableProducts.length > 0) {
       const hasApplicableProduct = products?.some((prod: string) => coupon.applicableProducts.includes(prod));
       if (!hasApplicableProduct) {
-        return errorResponse('Coupon not applicable to items in cart');
+        return errorResponse('Coupon not applicable to items in cart', 400);
       }
     }
 
@@ -121,6 +121,6 @@ export async function POST_VALIDATE(request: NextRequest) {
     });
   } catch (error) {
     console.error('Validate coupon error:', error);
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }

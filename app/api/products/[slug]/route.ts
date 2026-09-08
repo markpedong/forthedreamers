@@ -9,10 +9,10 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     const product = await apiProductBySlug(slug);
 
     if (!product) {
-      return errorResponse('Product not found');
+      return errorResponse('Product not found', 400);
     }
 
-    return successResponse({ data: product });
+    return successResponse(product);
   } catch (error) {
     return errorResponse(error);
   }

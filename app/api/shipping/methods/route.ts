@@ -12,7 +12,7 @@ export async function GET() {
   try {
     const session = await getSession();
     if (!session) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const methods = await prisma.shippingMethod.findMany({
@@ -23,7 +23,7 @@ export async function GET() {
     return successResponse({ methods });
   } catch (error) {
     console.error('Get shipping methods error:', error);
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }
 
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user || session.user.role !== 'ADMIN') {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const body = await request.json();
@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Create shipping method error:', error);
     if (error instanceof z.ZodError) {
-      return errorResponse('Invalid input data');
+      return errorResponse('Invalid input data', 400);
     }
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }

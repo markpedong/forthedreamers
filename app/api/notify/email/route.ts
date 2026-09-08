@@ -10,14 +10,14 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const body = await request.json();
     const { to, subject, template, data } = body;
 
     if (!to || !subject) {
-      return errorResponse('Recipient and subject are required');
+      return errorResponse('Recipient and subject are required', 400);
     }
 
     // In production, this would integrate with an email service (SendGrid, AWS SES, etc.)
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     return successResponse({ sent: true, to, subject }, 'Email notification queued for delivery');
   } catch (error) {
     console.error('Send email notification error:', error);
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }
 
@@ -48,7 +48,7 @@ export async function GET() {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     // Get user's notification preferences from database
@@ -65,7 +65,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Get notification preferences error:', error);
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }
 
@@ -77,7 +77,7 @@ export async function PUT(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     await request.json();
@@ -88,6 +88,6 @@ export async function PUT(request: NextRequest) {
     return successResponse(preferences, 'Notification preferences updated');
   } catch (error) {
     console.error('Update notification preferences error:', error);
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }

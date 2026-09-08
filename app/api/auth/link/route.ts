@@ -1,23 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getSession, socialLinkUrl } from '@/lib/services/auth';
+import { errorResponse, successResponse } from '@/lib/server-helper';
 
 const schema = z.object({ provider: z.enum(['google', 'github']), next: z.string().startsWith('/').max(200) });
 
 export const POST = async (request: NextRequest) => {
-  if (!(await getSession())) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  if (!(await getSession())) return errorResponse('Unauthorized', 401);
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success)
-    return NextResponse.json({ success: false, message: 'Invalid account link request' }, { status: 400 });
+    return errorResponse('Invalid account link request', 400);
   try {
-    return NextResponse.json({
-      success: true,
-      data: { url: await socialLinkUrl(parsed.data.provider, parsed.data.next) },
-    });
+    return successResponse({ url: await socialLinkUrl(parsed.data.provider, parsed.data.next) });
   } catch (error) {
-    return NextResponse.json(
-      { success: false, message: error instanceof Error ? error.message : 'Unable to link account' },
-      { status: 400 }
-    );
+    return errorResponse(error instanceof Error ? error.message : 'Unable to link account', 400);
   }
 };

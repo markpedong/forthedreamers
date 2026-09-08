@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const { searchParams } = new URL(request.url);
@@ -106,6 +106,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Search API error:', error);
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }

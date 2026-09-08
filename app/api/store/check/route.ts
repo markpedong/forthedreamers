@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   const storeName = body.storeName?.trim();
 
   if (!storeName) {
-    return errorResponse('storeName is required');
+    return errorResponse('storeName is required', 400);
   }
 
   // Wrap the Prisma query in catchError
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (store) {
-    return errorResponse('Store name already exists');
+    return errorResponse('Store name already exists', 400);
   }
 
   return successResponse({ exists: false });

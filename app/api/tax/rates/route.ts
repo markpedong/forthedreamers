@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const { searchParams } = new URL(request.url);
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Get tax rates error:', error);
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }
 
@@ -45,14 +45,14 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse('Unauthorized');
+      return errorResponse('Unauthorized', 400);
     }
 
     const body = await request.json();
     const { region, items } = body;
 
     if (!region || !items) {
-      return errorResponse('Missing required fields');
+      return errorResponse('Missing required fields', 400);
     }
 
     // Get tax rate for region
@@ -76,6 +76,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Calculate tax error:', error);
-    return errorResponse('Internal server error');
+    return errorResponse('Internal server error', 400);
   }
 }

@@ -1,16 +1,13 @@
-import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/services/auth';
 import { checkout } from '@/lib/services/checkout';
+import { errorResponse, successResponse } from '@/lib/server-helper';
 
 export const POST = async () => {
   const session = await getSession();
-  if (!session) return NextResponse.json({ success: false, message: 'Please sign in' }, { status: 401 });
+  if (!session) return errorResponse('Please sign in', 401);
   try {
-    return NextResponse.json({ success: true, message: 'Order confirmed', data: await checkout(session.user.id) });
+    return successResponse(await checkout(session.user.id), 'Order confirmed');
   } catch (error) {
-    return NextResponse.json(
-      { success: false, message: error instanceof Error ? error.message : 'Failed to place order' },
-      { status: 400 }
-    );
+    return errorResponse(error instanceof Error ? error.message : 'Failed to place order', 400);
   }
 };

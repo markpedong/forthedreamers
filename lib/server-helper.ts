@@ -1,28 +1,25 @@
 import { Prisma } from '@/generated/prisma';
 import { NextResponse } from 'next/server';
-import { ApiResponse, TGetPaginatedData } from './types';
+import type { ApiErrorResponse, ApiSuccessResponse, TGetPaginatedData } from './types';
 import prisma from './prisma';
 
-export const successResponse = (data: any = null, message = 'OK', status = 200) => {
-  return NextResponse.json(
+export const successResponse = <T>(data?: T, message?: string, status = 200) =>
+  NextResponse.json<ApiSuccessResponse<T>>(
     {
       success: true,
-      message,
-      ...data,
+      ...(data === undefined ? {} : { data }),
+      ...(message === undefined ? {} : { message }),
     },
-    {
-      status,
-    }
+    { status }
   );
-};
 
-export const errorResponse = (err: unknown) => {
+export const errorResponse = (err: unknown, responseStatus?: number) => {
   let message = 'Unknown server error';
-  let status = 500;
+  let status = responseStatus ?? 500;
 
   if (typeof err === 'string') {
     message = err;
-    status = 400;
+    status = responseStatus ?? 400;
   }
 
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -35,7 +32,7 @@ export const errorResponse = (err: unknown) => {
     const mapped = prismaErrorMap[err.code];
     if (mapped) {
       message = mapped.message;
-      status = mapped.status;
+      status = responseStatus ?? mapped.status;
     } else {
       message = `Database error: ${err.message}`;
     }
@@ -43,14 +40,14 @@ export const errorResponse = (err: unknown) => {
 
   if (err instanceof Prisma.PrismaClientValidationError) {
     message = 'Invalid data passed to the database';
-    status = 400;
+    status = responseStatus ?? 400;
   }
 
   if (err instanceof Error) {
     message = err.message;
   }
 
-  return NextResponse.json(
+  return NextResponse.json<ApiErrorResponse>(
     {
       success: false,
       message,
@@ -65,7 +62,7 @@ export const getPaginatedData = async <T extends object>({
   include,
   orderBy = [{ createdAt: 'desc' }, { id: 'asc' }],
   omit,
-}: TGetPaginatedData): Promise<ApiResponse<T>> => {
+}: TGetPaginatedData): Promise<{ success: true; data: T[]; total: number; page: number; pageSize: number }> => {
   const page = Number(where.page) || 1;
   const pageSize = Number(where.pageSize) || 10;
   const prismaModel = prisma[model] as any;
