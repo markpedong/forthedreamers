@@ -44,6 +44,16 @@ export const publicCategories = () =>
     })
   )
 
+export const apiProductBySlug = (slug: string) => prisma.product.findUnique({
+  where: {slug},
+  include: {
+    specs: {omit: {createdAt: true, updatedAt: true, productId: true}},
+    category: {omit: {createdAt: true, updatedAt: true}},
+    variants: {omit: {createdAt: true, updatedAt: true, productId: true}},
+    seller: {omit: {createdAt: true, updatedAt: true, id: true, userId: true}}
+  }
+})
+
 // Stock and public review data are intentionally short-lived. Purchase actions re-check stock and price in the database.
 export const productBySlug = (slug: string) =>
   cached('catalog', `${cacheKeys.product(slug)}:detail-v2`, 60, async () => {

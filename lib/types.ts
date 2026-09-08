@@ -1,5 +1,5 @@
 import type { z, ZodTypeAny } from 'zod';
-import { getSession } from "./server-actions";
+import type { getSession } from './services/auth';
 import type { Control, Path, FieldValues } from 'react-hook-form';
 import { ComponentPropsWithoutRef, Ref } from "react";
 import { Category, PrismaClient, Product, PRODUCT_STATUS, Seller, Spec, Variant } from "@/generated/prisma";
@@ -15,8 +15,6 @@ export type Account = { id: string; accountId: string; providerId: string; creat
 export type ValueEnumItem = { label: string; value: string | number };
 
 export type ValueEnum = ValueEnumItem[] | (() => Promise<ValueEnumItem[]>);
-
-export type TCreateSeller = { storeName: string, userID: string }
 
 export type ProductFormData = {
   id?: string;
@@ -170,13 +168,6 @@ export type ProTableProps<T> = {
   actionRef?: Ref<ActionType | undefined>;
   formRef?: Ref<unknown>;
   isLoading?: boolean
-}
-
-export type BaseQueryParams = {
-  current?: number
-  pageSize?: number
-  dateRange?: [string, string] | string[]
-  [key: string]: any
 }
 
 export type ApiResponse<T> = {

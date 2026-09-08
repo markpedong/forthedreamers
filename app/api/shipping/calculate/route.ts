@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getSession } from "@/lib/server-actions";
+import { getSession } from '@/lib/services/auth';
 import { successResponse, errorResponse } from "@/lib/server-helper";
 
 /**

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getSession } from '@/lib/server-actions'
+import { getSession } from '@/lib/services/auth'
 import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {

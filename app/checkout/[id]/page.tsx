@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/server-actions";
+import { getSession } from '@/lib/services/auth';
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { Button } from "@/components/ui/button";

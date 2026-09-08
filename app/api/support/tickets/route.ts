@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getSession } from "@/lib/server-actions";
+import { getSession } from '@/lib/services/auth';
 import { successResponse, errorResponse, getPaginatedData } from "@/lib/server-helper";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";

@@ -1,6 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { finishSellerSignup } from '@/lib/actions/seller';
-export async function POST(req: NextRequest) {
-  const result = await finishSellerSignup((await req.json()).storeName);
-  return NextResponse.json(result, { status: result.success ? 200 : 400 });
+import {NextRequest, NextResponse} from 'next/server'
+import {sellerSignup, sellerSignupSchema} from '@/lib/services/seller'
+
+export const POST = async (request: NextRequest) => {
+  const parsed = sellerSignupSchema.safeParse(await request.json().catch(() => null))
+  if (!parsed.success) return NextResponse.json({success: false, message: 'Check your signup details'}, {status: 400})
+  try {
+    const data = await sellerSignup(parsed.data)
+    return NextResponse.json({
+      success: true,
+      message: data.hasSession ? 'Seller account created' : 'Seller account created. Check your email to verify your account.',
+      data
+    })
+  } catch (error) {
+    return NextResponse.json({success: false, message: error instanceof Error ? error.message : 'Unable to sign up'}, {status: 400})
+  }
 }

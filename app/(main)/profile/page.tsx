@@ -1,4 +1,5 @@
-import { getSession, listAllSessions, getUserAccounts, getUserAddresses } from '@/lib/server-actions'
+import {getSession, listAllSessions} from '@/lib/services/auth'
+import {getUserAccounts, getUserAddresses} from '@/lib/services/profile'
 import ProfileDetails from './components/profile-details'
 import AccountManagement from './components/account-management'
 import ProfileHeader from './components/profile-header'
@@ -37,7 +38,7 @@ const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
   const [accounts, sessions, addresses] = await Promise.all([
     getUserAccounts(userId),
     listAllSessions(),
-    getUserAddresses()
+    getUserAddresses(userId)
   ])
 
   const nonCredentialAccounts = accounts.filter((a) => a.providerId !== 'credential')

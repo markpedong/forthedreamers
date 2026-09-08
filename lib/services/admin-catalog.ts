@@ -4,7 +4,7 @@ import {z} from 'zod'
 import {USER_ROLE} from '@/generated/prisma'
 import {invalidateCatalog} from '@/lib/cache'
 import prisma from '@/lib/prisma'
-import {getSession} from '@/lib/server-actions'
+import {getSession} from '@/lib/services/auth'
 import {regenerateSlug} from '@/utils/helper'
 import {revalidatePath} from 'next/cache'
 
@@ -37,7 +37,7 @@ const variantSchema = z
   })
   .refine(value => value.discountedPrice == null || value.discountedPrice <= value.price, 'Invalid discount')
 
-const productSchema = z.object({
+export const productSchema = z.object({
   id: idSchema.optional(),
   name: z.string().trim().min(1).max(200),
   categoryId: idSchema,

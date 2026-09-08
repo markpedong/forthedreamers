@@ -1,7 +1,7 @@
 import type {Address} from '@/generated/prisma'
 import {Button} from '@/components/ui/button'
 import prisma from '@/lib/prisma'
-import {getSession} from '@/lib/server-actions'
+import {getSession} from '@/lib/services/auth'
 import {Package} from 'lucide-react'
 import {redirect} from 'next/navigation'
 import Link from 'next/link'

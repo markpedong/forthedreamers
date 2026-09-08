@@ -1,4 +1,3 @@
-import { BaseQueryParams } from "@/lib/types";
 import chroma from "chroma-js";
 import { toast } from "sonner";
 
@@ -154,18 +153,6 @@ export const getCssVarHex = (variableName: string) => {
     return;
   }
 }
-
-export const buildQueryParams = (params?: BaseQueryParams) => {
-  const { current = 1, dateRange, ...rest } = params || {};
-  const sp = new URLSearchParams(rest as Record<string, string>);
-
-  if (dateRange?.length === 2) sp.set('dateRange', `${dateRange[0]},${dateRange[1]}`);
-
-  sp.set('page', String(current));
-
-  return sp.toString();
-};
-
 
 export const fileToBase64 = (file: File) =>
   new Promise<string>((resolve, reject) => {

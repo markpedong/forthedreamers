@@ -1,66 +1,35 @@
 import {NextRequest, NextResponse} from 'next/server'
-import {setWishlist} from '@/lib/actions/wishlist'
-import {getSession} from '@/lib/server-actions'
-import prisma from '@/lib/prisma'
-import {errorResponse, getPaginatedData, successResponse} from '@/lib/server-helper'
+import {z} from 'zod'
+import {getSession} from '@/lib/services/auth'
+import {setWishlist, wishlistIds, wishlistItems} from '@/lib/services/wishlist'
 
-/**
- * GET /api/wishlist
- * Get user's wishlist with pagination.
- */
+const idSchema = z.string().min(1).max(100)
+
 export const GET = async (request: NextRequest) => {
+  const session = await getSession()
+  if (!session) return NextResponse.json({success: false, message: 'Unauthorized'}, {status: 401})
+  if (request.nextUrl.searchParams.get('ids') === 'true') {
+    return NextResponse.json({success: true, data: {ids: await wishlistIds(session.user.id)}})
+  }
+  const page = z.coerce.number().int().min(1).safeParse(request.nextUrl.searchParams.get('page') ?? 1)
+  const limit = z.coerce.number().int().min(1).max(100).safeParse(request.nextUrl.searchParams.get('limit') ?? 20)
+  if (!page.success || !limit.success) return NextResponse.json({success: false, message: 'Invalid pagination'}, {status: 400})
+  return NextResponse.json({success: true, data: await wishlistItems(session.user.id, page.data, limit.data)})
+}
+
+const change = async (request: NextRequest, wanted: boolean) => {
+  const session = await getSession()
+  if (!session) return NextResponse.json({success: false, message: 'Please sign in to save products'}, {status: 401})
+  const rawId = wanted ? (await request.json().catch(() => null))?.productId : request.nextUrl.searchParams.get('productId')
+  const parsed = idSchema.safeParse(rawId)
+  if (!parsed.success) return NextResponse.json({success: false, message: 'Invalid product'}, {status: 400})
   try {
-    const session = await getSession()
-    if (!session?.user) {
-      return errorResponse('Unauthorized')
-    }
-
-    const {searchParams} = new URL(request.url)
-    if (searchParams.get('ids') === 'true') {
-      const items = await prisma.wishlist.findMany({where: {userId: session.user.id}, select: {productId: true}})
-      return NextResponse.json({success: true, data: {ids: items.map(item => item.productId)}})
-    }
-
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '20')
-
-    const result = await getPaginatedData({
-      model: 'wishlist',
-      where: {userId: session.user.id, page, pageSize: limit},
-      orderBy: {addedAt: 'desc'},
-      include: {
-        product: {
-          include: {
-            category: true,
-            seller: true,
-            variants: true,
-          },
-        },
-      },
-    })
-
-    return successResponse({
-      wishlist: result.data,
-      total: result.total,
-      page: result.page,
-      limit: result.pageSize,
-    })
+    const data = await setWishlist(session.user.id, parsed.data, wanted)
+    return NextResponse.json({success: true, message: wanted ? 'Added to wishlist' : 'Removed from wishlist', data})
   } catch (error) {
-    console.error('Get wishlist error:', error)
-    return errorResponse('Internal server error')
+    return NextResponse.json({success: false, message: error instanceof Error ? error.message : 'Unable to update wishlist'}, {status: 400})
   }
 }
 
-/**
- * POST /api/wishlist
- * Add a product to wishlist.
- */
-export const POST = async (request: NextRequest) => {
-  const result = await setWishlist((await request.json()).productId, true)
-  return NextResponse.json(result, {status: result.success ? 200 : 400})
-}
-// Explicit productId query parameter; this route has no dynamic [id] segment.
-export const DELETE = async (request: NextRequest) => {
-  const result = await setWishlist(request.nextUrl.searchParams.get('productId') ?? '', false)
-  return NextResponse.json(result, {status: result.success ? 200 : 400})
-}
+export const POST = (request: NextRequest) => change(request, true)
+export const DELETE = (request: NextRequest) => change(request, false)

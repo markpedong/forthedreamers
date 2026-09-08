@@ -1,4 +1,4 @@
-import { getProductPrisma } from '@/lib/server-actions';
+import {apiProductBySlug} from '@/lib/services/catalog';
 import { errorResponse, successResponse } from '@/lib/server-helper';
 import { NextRequest } from 'next/server';
 
@@ -6,7 +6,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   const { slug } = await params;
 
   try {
-    const product = await getProductPrisma(slug)
+    const product = await apiProductBySlug(slug)
 
     if (!product) {
       return errorResponse("Product not found");
