@@ -29,17 +29,17 @@ const SellerForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) =
   return (
     <AuthCard
       title="Reset your password"
-      description="Enter your email and we’ll send you a secure reset link."
+      description="Enter your email and we'll send you a secure reset link."
       icon={<Mail className="size-5" />}
     >
-      <Form form={form} submitLabel={isPending ? 'Sending...' : 'Send reset link'} onSubmit={onSubmit}>
+      <Form className="space-y-4" form={form} submitLabel={isPending ? 'Sending...' : 'Send reset link'} onSubmit={onSubmit}>
         <Input name="name" type="email" placeholder="your@email.com" disabled={isPending} autoComplete="email" />
       </Form>
 
       <button
         type="button"
         onClick={() => onNavigate('login')}
-        className="mx-auto mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="mx-auto mt-5 flex items-center justify-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
         Back to sign in

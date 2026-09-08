@@ -56,7 +56,7 @@ const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
       description={useBackup ? 'Enter one of your backup codes' : 'Enter the 6-digit code from your authenticator app'}
       icon={<ShieldCheck className="size-5" />}
     >
-          <Form form={form} onSubmit={onSubmit} submitLabel={isPending ? 'Verifying...' : 'Verify'}>
+          <Form className="space-y-4" form={form} onSubmit={onSubmit} submitLabel={isPending ? 'Verifying...' : 'Verify'}>
             <Input
               control={form.control}
               name="otp"
@@ -68,7 +68,7 @@ const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
             />
           </Form>
 
-          <div className="mt-6 space-y-3 text-center">
+          <div className="mt-5 space-y-3 text-center">
             <button
               onClick={() => {
                 form.reset();

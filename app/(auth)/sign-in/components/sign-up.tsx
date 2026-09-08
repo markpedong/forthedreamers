@@ -35,6 +35,7 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           onSubmit={onSubmit}
           isSending={isSigningUp}
           submitLabel={isSigningUp ? 'Signing up...' : 'Sign up'}
+          className="space-y-3 sm:space-y-5"
         >
           <Input
             control={form.control}
@@ -79,7 +80,7 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
         <OauthButtons next="/profile" />
 
-        <p className="mt-6 text-center text-sm text-muted-foreground">
+        <p className="mt-3 text-center text-sm text-muted-foreground sm:mt-6">
           Already have an account?{' '}
           <button onClick={() => onNavigate('login')} className="font-medium text-primary underline-offset-4 hover:underline">
             Sign in

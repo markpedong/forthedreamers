@@ -33,7 +33,7 @@ const ResetPassword: FC<{ token: string }> = ({ token }) => {
         description="Use at least 8 characters with uppercase, lowercase, and numbers."
         icon={<KeyRound className="size-5" />}
       >
-            <Form form={form} onSubmit={onSubmit} submitLabel={isLoading ? 'Resetting...' : 'Reset Password'}>
+            <Form className="space-y-4" form={form} onSubmit={onSubmit} submitLabel={isLoading ? 'Resetting...' : 'Reset Password'}>
               <Input
                 control={form.control}
                 name="password"

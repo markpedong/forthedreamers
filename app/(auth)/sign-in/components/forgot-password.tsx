@@ -26,27 +26,26 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     <AuthPage>
       <AuthCard
         title="Reset your password"
-        description="Enter your email and we’ll send you a secure reset link."
+        description="Enter your email and we'll send you a secure reset link."
         icon={<Mail className="size-5" />}
       >
-        <div className="space-y-5">
-          <Form
-            form={form}
-            onSubmit={onSubmit}
-            isSending={isSending}
-            submitLabel={isSending ? 'Sending...' : 'Send reset link'}
-          >
-            <Input
-              control={form.control}
-              name="email"
-              label="Email"
-              placeholder="you@example.com"
-              disabled={isSending}
-            />
-          </Form>
-        </div>
+        <Form
+          form={form}
+          onSubmit={onSubmit}
+          isSending={isSending}
+          submitLabel={isSending ? 'Sending...' : 'Send reset link'}
+          className="space-y-3 sm:space-y-5"
+        >
+          <Input
+            control={form.control}
+            name="email"
+            label="Email"
+            placeholder="you@example.com"
+            disabled={isSending}
+          />
+        </Form>
 
-        <div className="mt-6 text-center">
+        <div className="mt-3 text-center sm:mt-6">
           <button
             onClick={() => onNavigate('login')}
             className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center transition-colors"

@@ -23,7 +23,7 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
   return (
     <AuthCard title="Welcome back" description="Sign in to manage your store and track sales." eyebrow="Seller hub">
-          <form onSubmit={handleSubmit(submit)} className="space-y-6">
+          <form onSubmit={handleSubmit(submit)} className="space-y-4">
             <FormField
               {...register('email', { setValueAs: value => value.replace(/\s+/g, '') })}
               id="seller-email"
@@ -78,7 +78,7 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
             </Button>
           </form>
 
-      <div className="mt-7 space-y-3 border-t pt-6 text-center text-sm text-muted-foreground">
+      <div className="mt-5 space-y-3 border-t border-foreground/10 pt-5 text-center text-sm text-muted-foreground">
         <p>
           New to selling?{' '}
           <button

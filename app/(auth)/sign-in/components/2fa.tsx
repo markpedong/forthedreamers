@@ -64,7 +64,7 @@ const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           />
         </Form>
 
-        <div className="mt-6 space-y-6 text-center">
+        <div className="mt-3 space-y-3 text-center sm:mt-6 sm:space-y-6">
         <button
           onClick={() => {
             form.reset();

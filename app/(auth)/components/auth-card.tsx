@@ -13,22 +13,28 @@ type AuthCardProps = {
 const AuthCard = ({ title, description, children, eyebrow, icon, className }: AuthCardProps) => (
   <section
     className={cn(
-      'w-full rounded-2xl border border-border/80 bg-card p-5 text-card-foreground shadow-[0_24px_70px_-36px_rgba(0,0,0,0.35)] sm:p-8',
+      'w-full rounded-[1.75rem] border border-white bg-white p-5 text-foreground shadow-[0_24px_80px_-32px_rgba(0,0,0,0.65)] sm:p-7 dark:border-white/15 dark:bg-neutral-950',
       className
     )}
   >
-    <header className="mb-8 text-center">
+    <header className="mb-6 space-y-2 text-center">
       {icon && (
-        <div className="mx-auto mb-5 flex size-12 items-center justify-center rounded-2xl border bg-muted text-foreground">
+        <div className="mx-auto mb-4 flex size-11 items-center justify-center rounded-2xl border border-neutral-200 bg-neutral-100 dark:border-white/10 dark:bg-white/10">
           {icon}
         </div>
       )}
-      {eyebrow && <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">{eyebrow}</p>}
-      <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{title}</h1>
-      <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted-foreground sm:text-base">{description}</p>
+      {eyebrow && (
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          {eyebrow}
+        </p>
+      )}
+      <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
+      <p className="mx-auto max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-base">
+        {description}
+      </p>
     </header>
 
-    <div className="[&_input]:h-12 [&_input]:rounded-xl [&_input]:px-4 [&_form>button]:h-12 [&_form>button]:rounded-xl">
+    <div className="[&_input]:h-11 [&_input]:rounded-xl [&_input]:border-neutral-200 [&_input]:bg-neutral-50 [&_input]:shadow-none [&_form>button]:h-11 [&_form>button]:rounded-xl dark:[&_input]:border-white/15 dark:[&_input]:bg-white/10">
       {children}
     </div>
   </section>

@@ -26,9 +26,11 @@ const VerifyEmailPage = () => {
 
   if (userQuery.isPending) {
     return (
-      <div className="flex min-h-[100dvh] items-center justify-center bg-muted/30">
-        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-      </div>
+      <AuthPage>
+        <div className="mx-auto flex size-14 items-center justify-center rounded-2xl border border-white/45 bg-white/70 shadow-xl backdrop-blur-2xl dark:border-white/15 dark:bg-neutral-950/70">
+          <Loader2 className="size-6 animate-spin" />
+        </div>
+      </AuthPage>
     );
   }
 
@@ -44,7 +46,7 @@ const VerifyEmailPage = () => {
         icon={<Mail className="size-5" />}
       >
         <div className="space-y-6">
-          <div className="space-y-3 rounded-xl border bg-muted/50 p-4">
+          <div className="space-y-3 rounded-xl border border-white/50 bg-white/35 p-4 dark:border-white/10 dark:bg-white/5">
             <h3 className="font-medium text-sm">What to do next:</h3>
             <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside">
               <li>Check your email inbox for a message from us</li>
@@ -75,7 +77,7 @@ const VerifyEmailPage = () => {
             Didn&apos;t receive the email? Check your spam folder or try resending.
           </p>
 
-          <div className="border-t pt-4">
+          <div className="border-t border-foreground/10 pt-4">
             <Button variant="ghost" onClick={() => router.push('/sign-in')} className="h-11 w-full rounded-xl">
               Back to Sign In
             </Button>

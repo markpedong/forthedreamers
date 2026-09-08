@@ -34,7 +34,7 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
   return (
     <AuthCard title="Start selling" description="Create your seller account and set up your storefront." eyebrow="Seller hub">
-      <Form form={form} onSubmit={onSubmit} submitLabel={isSubmitting ? 'Creating account...' : 'Create Account'}>
+      <Form className="space-y-4" form={form} onSubmit={onSubmit} submitLabel={isSubmitting ? 'Creating account...' : 'Create Account'}>
         <Input label="Store Name" name="storeName" placeholder="My Awesome Store" disabled={isSubmitting} />
         <Input name="name" label="Name" placeholder="John Doe" disabled={isSubmitting} />
         <Input
@@ -63,7 +63,7 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         />
       </Form>
 
-      <div className="mt-6 grid gap-2 rounded-xl border bg-muted/50 p-4">
+      <div className="mt-5 grid gap-2 rounded-xl border border-white/50 bg-white/35 p-4 dark:border-white/10 dark:bg-white/5">
         {['Free to list your products', 'Reach thousands of customers', '24/7 seller support included'].map(benefit => (
           <div key={benefit} className="flex items-center gap-3">
             <CheckCircle className="size-4 shrink-0 text-primary" />
@@ -72,7 +72,7 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         ))}
       </div>
 
-      <div className="mt-7 space-y-3 border-t pt-6 text-center text-sm text-muted-foreground">
+      <div className="mt-5 space-y-3 border-t border-foreground/10 pt-5 text-center text-sm text-muted-foreground">
         <p>
           Already have a seller account?{' '}
           <button
