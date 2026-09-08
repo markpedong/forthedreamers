@@ -1,16 +1,12 @@
 'use client';
 
-import { FC, useState, useTransition } from 'react';
+import { FC, useState } from 'react';
 import { Plus, MoreHorizontal, BadgeCheckIcon, BadgeAlertIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { DropdownMenuItemType, SchemaForm } from '@/lib/types';
-import {
-  banUser,
-  deleteUserByAdmin,
-  unbanUser,
-} from '@/lib/server-actions';
+import {deleteUser, setUserBanned} from '@/lib/http';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import classNames from 'classnames';
@@ -24,6 +20,7 @@ import { tryWithToast } from '@/utils/helper';
 import DropDown from '@/components/reusable/dropdown';
 import ProTable from '@/components/pro-table';
 import { ProColumn } from '@/lib/types';
+import {useMutation} from '@tanstack/react-query';
 
 type UserWithRole = {
   id: string;
@@ -44,7 +41,25 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     resolver: zodResolver(twoFactorSchema),
     defaultValues: { otp: '' },
   });
-  const [isPending, startTransition] = useTransition();
+  const updateMutation = useMutation({
+    mutationFn: ({userId, banned}: {userId: string; banned: boolean}) => setUserBanned(userId, banned),
+    onSuccess: (_result, {banned}) => {
+      toast.success(`User has been ${banned ? 'banned' : 'unbanned'}`);
+      router.refresh();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+  const deleteMutation = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => {
+      toast.success('User deleted successfully!', { duration: 2000 });
+      setShowDeleteUser(false);
+      setSelectedUser(null);
+      router.refresh();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+  const isPending = updateMutation.isPending || deleteMutation.isPending;
 
   const handleViewDetails = (user: UserWithRole) => {
     setSelectedUser(user);
@@ -65,16 +80,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
   };
 
   const handleBanUnbanUser = (user: UserWithRole) => {
-    startTransition(async () => {
-      const res = user.banned
-        ? await tryWithToast(unbanUser(user.id))
-        : await tryWithToast(banUser(user.id));
-
-      if (!res) return;
-
-      toast.success(`User ${user.name} has been ${user.banned ? 'unbanned' : 'banned'}`);
-      router.refresh();
-    });
+    updateMutation.mutate({userId: user.id, banned: !user.banned});
   };
 
   const onSubmit = async ({ otp }: SchemaForm<typeof twoFactorSchema>) => {
@@ -84,18 +90,9 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
       return;
     }
 
-    startTransition(async () => {
-      const verifyResult = await tryWithToast(twoFactor.verifyTotp({ code: `${otp}` }));
-      if (!verifyResult || !!verifyResult.error) return;
-
-      const deleteResult = await tryWithToast(deleteUserByAdmin(`${selectedUser?.id}`));
-      if (!deleteResult) return;
-
-      toast.success('User deleted successfully!', { duration: 2000 });
-      setShowDeleteUser(false);
-      setSelectedUser(null);
-      router.refresh();
-    });
+    const verifyResult = await tryWithToast(twoFactor.verifyTotp({ code: `${otp}` }));
+    if (!verifyResult || !!verifyResult.error || !selectedUser) return;
+    deleteMutation.mutate(selectedUser.id);
   };
 
   const dropdownMenus = (record: UserWithRole): DropdownMenuItemType[] => [

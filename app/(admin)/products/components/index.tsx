@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, useState, useOptimistic, useTransition } from 'react'
+import { FC, useState } from 'react'
 import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -10,34 +10,55 @@ import AlertDialog from '@/components/reusable/alert-dialog'
 import Link from 'next/link'
 import DropDown from '@/components/reusable/dropdown'
 import ProTable from '@/components/pro-table'
-import { createProduct, updateProduct, deleteProduct, setProductStatus } from '@/lib/actions/admin-catalog'
+import {createProduct, deleteProduct, toggleProductStatus, updateProduct} from '@/lib/http'
 import { Switch } from '@/components/ui/switch'
+import {useMutation} from '@tanstack/react-query'
+import {useRouter} from 'next/navigation'
 
 const Products: FC<{ initialProducts: TProduct[]; initialCategories: import("@/generated/prisma").Category[] }> = ({ initialProducts, initialCategories }) => {
   const [deleteDialog, setDeleteDialog] = useState<{id: string; name: string} | null>(null)
   const [open, setOpen] = useState(false)
   const [type, setType] = useState<'EDIT' | 'CREATE'>('CREATE')
   const [product, setProduct] = useState<TProduct>()
-  const [isPending, startTransition] = useTransition()
-  const [rows, optimistic] = useOptimistic(initialProducts, (state, change: { id: string; active?: boolean }) => change.active === undefined ? state.filter(p => p.id !== change.id) : state.map(p => p.id === change.id ? { ...p, status: change.active ? 'ACTIVE' as const : 'INACTIVE' as const } : p))
+  const [rows, setRows] = useState(initialProducts)
+  const router = useRouter()
+  const deleteMutation = useMutation({
+    mutationFn: deleteProduct,
+    onSuccess: result => {
+      toast.success(result.message)
+      setDeleteDialog(null)
+      setProduct(undefined)
+      router.refresh()
+    },
+    onError: error => toast.error(error.message)
+  })
+  const statusMutation = useMutation({
+    mutationFn: toggleProductStatus,
+    onError: (error, {id, active}) => {
+      setRows(state => state.map(item => item.id === id ? {...item, status: active ? 'INACTIVE' : 'ACTIVE'} : item))
+      toast.error(error.message)
+    },
+    onSettled: () => router.refresh()
+  })
+  const saveMutation = useMutation({
+    mutationFn: ({data, type}: {data: ProductFormData; type: 'CREATE' | 'EDIT'}) =>
+      type === 'EDIT' ? updateProduct(data) : createProduct(data),
+    onSuccess: result => {
+      toast.success(result.message)
+      setOpen(false)
+      router.refresh()
+    },
+    onError: error => toast.error(error.message)
+  })
+  const isPending = deleteMutation.isPending || statusMutation.isPending || saveMutation.isPending
   const handleDelete = () => {
     if (!deleteDialog) return
-    startTransition(async () => {
-      optimistic({ id: deleteDialog.id })
-      try {
-        const result = await deleteProduct(deleteDialog.id)
-        if (!result.success) { toast.error(result.message); return }
-        toast.success('Product deleted'); setDeleteDialog(null); setProduct(undefined)
-      } catch { toast.error('Unable to delete product') }
-    })
+    deleteMutation.mutate(deleteDialog.id)
   }
   const toggleStatus = (id: string) => {
     const active = rows.find(p => p.id === id)?.status !== 'ACTIVE'
-    startTransition(async () => {
-      optimistic({ id, active })
-      try { const result = await setProductStatus(id, active); if (!result.success) toast.error(result.message) }
-      catch { toast.error('Unable to update status') }
-    })
+    setRows(state => state.map(item => item.id === id ? {...item, status: active ? 'ACTIVE' : 'INACTIVE'} : item))
+    statusMutation.mutate({id, active})
   }
 
   const dropdownMenus = (record: TProduct): DropdownMenuItemType[] => [
@@ -143,13 +164,7 @@ const Products: FC<{ initialProducts: TProduct[]; initialCategories: import("@/g
   ]
 
   const handleSubmitProduct = (data: ProductFormData, type: 'CREATE' | 'EDIT') => {
-    startTransition(async () => {
-      try {
-        const result = await (type === 'EDIT' ? updateProduct(data) : createProduct(data))
-        if (!result.success) { toast.error(result.message); return }
-        toast.success(result.message); setOpen(false)
-      } catch { toast.error('Unable to save product') }
-    })
+    saveMutation.mutate({data, type})
   }
 
   return (
