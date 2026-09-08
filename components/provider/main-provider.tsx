@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, type PropsWithChildren } from 'react'
+import { Suspense, type PropsWithChildren, useState } from 'react'
 import { AppProgressProvider } from '@bprogress/next'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Provider } from 'react-redux'
@@ -19,13 +19,13 @@ type MainProviderProps = PropsWithChildren<{
 }>
 
 const MainProvider = ({ children, initialSession }: MainProviderProps) => {
-  const queryClient = new QueryClient()
+  const [queryClient] = useState(() => new QueryClient())
 
   return (
     <AppProgressProvider>
       <Provider store={store}>
-        <AuthProvider initialSession={initialSession}>
-          <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider initialSession={initialSession}>
             <Navbar />
             <Suspense fallback={null}>
               <ToastListener />
@@ -36,8 +36,8 @@ const MainProvider = ({ children, initialSession }: MainProviderProps) => {
             <ImpersonationIndicator />
             <Footer />
             <BottomNav />
-          </QueryClientProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </QueryClientProvider>
       </Provider>
     </AppProgressProvider>
   )

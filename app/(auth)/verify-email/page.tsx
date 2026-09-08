@@ -1,55 +1,31 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import {useEffect} from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Mail, ArrowRight, Loader2 } from 'lucide-react';
-import { requestPasswordReset } from '@/lib/auth-client';
+import {getCurrentUser, resendVerification} from '@/lib/http';
 import { toast } from 'sonner';
+import {useMutation, useQuery} from '@tanstack/react-query';
 
 const VerifyEmailPage = () => {
   const router = useRouter();
-  const [email, setEmail] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [sending, setSending] = useState(false);
+  const userQuery = useQuery({queryKey: ['current-user'], queryFn: getCurrentUser, select: result => result.data, retry: false});
+  const mutation = useMutation({
+    mutationFn: resendVerification,
+    onSuccess: () => toast.success('Verification link sent! Check your inbox.', {duration: 3000}),
+    onError: error => toast.error(error.message, {duration: 3000})
+  });
+  const email = userQuery.data?.email;
 
   useEffect(() => {
-    const getUserEmail = async () => {
-      try {
-        // Try to get the current user's email from Supabase session
-        const supabase = await import('@/lib/supabase/client').then(m => m.createSupabaseBrowserClient());
-        const { data } = await supabase.auth.getSession();
-        if (data.session?.user?.email) {
-          setEmail(data.session.user.email);
-        } else {
-          // No session — redirect to sign-in
-          router.push('/sign-in');
-        }
-      } catch {
-        router.push('/sign-in');
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (userQuery.isError) router.push('/sign-in');
+  }, [router, userQuery.isError]);
 
-    getUserEmail();
-  }, [router]);
+  const handleResend = () => mutation.mutate();
 
-  const handleResend = async () => {
-    if (!email) return;
-    setSending(true);
-    try {
-      await requestPasswordReset({ email, redirectTo: '/reset-password' });
-      toast.success('Verification link sent! Check your inbox.', { duration: 3000 });
-    } catch (err) {
-      toast.error('Failed to resend verification link. Please try again.', { duration: 3000 });
-    } finally {
-      setSending(false);
-    }
-  };
-
-  if (loading) {
+  if (userQuery.isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
@@ -85,10 +61,10 @@ const VerifyEmailPage = () => {
 
           <Button
             onClick={handleResend}
-            disabled={sending}
+            disabled={mutation.isPending || !email}
             className="w-full flex items-center justify-center gap-2"
           >
-            {sending ? (
+            {mutation.isPending ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Sending...

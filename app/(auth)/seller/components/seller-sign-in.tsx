@@ -1,6 +1,5 @@
 'use client'
 
-import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,18 +14,21 @@ import formSchemas from '@/hooks/form-schemas'
 import Form from '@/components/reusable/form'
 import Input from '@/components/reusable/input'
 
-import { getUserDB } from '@/lib/server-actions'
-import { USER_ROLE } from '@/generated/prisma'
-
 import Link from 'next/link'
-
-import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-
-const supabase = createSupabaseBrowserClient()
+import {signIn} from '@/lib/http'
+import {useMutation} from '@tanstack/react-query'
 
 const SellerSignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
   const router = useRouter()
-  const [isSubmitting, startSubmitting] = useTransition()
+  const mutation = useMutation({
+    mutationFn: signIn,
+    onSuccess: () => {
+      toast.success('Logged in successfully!', {duration: 3000})
+      router.push('/dashboard')
+    },
+    onError: error => toast.error(error.message, {duration: 5000})
+  })
+  const isSubmitting = mutation.isPending
   const {loginSchema} = formSchemas
 
   const form = useForm<SchemaForm<typeof loginSchema>>({
@@ -38,56 +40,7 @@ const SellerSignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
   })
 
   const onSubmit = (values: SchemaForm<typeof loginSchema>) => {
-    startSubmitting(async () => {
-      const {data, error} = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password
-      })
-
-      if (error) {
-        toast.error(error.message, {
-          duration: 5000
-        })
-        return
-      }
-
-      if (!data.user) {
-        toast.error('Unable to sign in. Please try again.', {
-          duration: 5000
-        })
-        return
-      }
-
-      const user = await getUserDB(data.user.id)
-
-      if (!user) {
-        await supabase.auth.signOut()
-
-        toast.error('User account was not found.', {
-          duration: 5000
-        })
-
-        router.refresh()
-        return
-      }
-
-      if (user.role === USER_ROLE.USER) {
-        await supabase.auth.signOut()
-
-        toast.error('You are not authorized to access this page, please use the user panel.', {
-          duration: 5000
-        })
-
-        router.refresh()
-        return
-      }
-
-      toast.success('Logged in successfully!', {
-        duration: 3000
-      })
-
-      router.push('/dashboard')
-    })
+    mutation.mutate({email: values.email, password: values.password, audience: 'seller'})
   }
 
   return (
@@ -127,7 +80,7 @@ const SellerSignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
       </Card>
 
       <div className='pt-6 border-t border-border text-center'>
-        <p className='text-sm text-muted-foreground mb-4'>Don't have an account?</p>
+        <p className='text-sm text-muted-foreground mb-4'>Don&apos;t have an account?</p>
 
         <Button
           onClick={() => onNavigate('register')}

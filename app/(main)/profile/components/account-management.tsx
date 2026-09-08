@@ -1,14 +1,13 @@
 'use client';
 
-import { FC, useState, useTransition } from 'react';
+import { FC, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { CHANGE_PASSWORD_DEFAULT, OAUTH_PROVIDERS } from '@/constants';
 import formSchemas from '@/hooks/form-schemas';
-import { requestPasswordReset, linkSocial } from '@/lib/auth-client';
-import { changePassword } from '@/lib/server-actions';
+import {changePassword, linkSocial, sendForgotPassword} from '@/lib/http';
 import { Account, SchemaForm } from '@/lib/types';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
@@ -18,6 +17,7 @@ import AlertDialog from '@/components/reusable/alert-dialog';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppSelector } from '@/redux/store';
+import {useMutation} from '@tanstack/react-query';
 
 interface AccountManagementProps {
   accounts: Account[];
@@ -33,41 +33,35 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
   });
 
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [isSubmitting, startSubmitting] = useTransition();
-
-  const onSubmit = (values: SchemaForm<typeof changePasswordSchema>) => {
-    startSubmitting(async () => {
-      const result = await changePassword({
-        currentPassword: values.currentPassword,
-        newPassword: values.confirmPassword,
-      });
-      if (result?.error) {
-        toast.error(result.error);
-        return;
-      }
-
-      toast.success('Password changed successfully!', {
-        description: 'Revoking other sessions...',
-      });
-
+  const passwordMutation = useMutation({
+    mutationFn: changePassword,
+    onSuccess: () => {
+      toast.success('Password changed successfully!');
       form.reset(CHANGE_PASSWORD_DEFAULT);
       setShowPasswordDialog(false);
-    });
+    },
+    onError: (error) => toast.error(error.message),
+  });
+  const resetMutation = useMutation({
+    mutationFn: ({email}: {email: string}) => sendForgotPassword(email, '/reset-password'),
+    onSuccess: () => toast.success('Password reset link sent successfully'),
+    onError: (error) => toast.error(error.message),
+  });
+  const linkMutation = useMutation({
+    mutationFn: (provider: string) => linkSocial(provider, '/profile?accountLinked=true&tab=security'),
+    onSuccess: result => {
+      if (result.data?.url) window.location.assign(result.data.url)
+    },
+    onError: error => toast.error(error.message)
+  });
+  const isSubmitting = passwordMutation.isPending || resetMutation.isPending || linkMutation.isPending;
+
+  const onSubmit = (values: SchemaForm<typeof changePasswordSchema>) => {
+    passwordMutation.mutate(values.confirmPassword);
   };
 
   const handleSetPassword = () => {
-    startSubmitting(async () => {
-      const result = await requestPasswordReset({
-        email: `${user?.email}`,
-        redirectTo: '/reset-password',
-      });
-      if (result.error) {
-        toast.error(result.error.message || 'Something went wrong');
-        return;
-      }
-
-      toast.success('Password reset link sent successfully');
-    });
+    if (user?.email) resetMutation.mutate({email: user.email});
   };
 
   return (
@@ -108,12 +102,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
                   provider={provider}
                   account={null}
                   loading={isSubmitting}
-                  onClick={(provider) =>
-                    linkSocial({
-                      provider,
-                      callbackURL: '/profile?accountLinked=true&tab=security',
-                    })
-                  }
+                  onClick={(provider) => linkMutation.mutate(provider)}
                 />
               ))}
             </div>

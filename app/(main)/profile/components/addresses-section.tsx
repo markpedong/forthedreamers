@@ -1,13 +1,12 @@
 'use client'
 
-import { FC, useTransition, useState } from 'react'
+import { FC, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { MapPin, Trash2, Star, Pencil, Plus } from 'lucide-react'
-import { deleteAddress, setDefaultAddress, createAddress, updateAddress } from '@/lib/server-actions'
-import { tryWithToast } from '@/utils/helper'
+import {createAddress, deleteAddress, setDefaultAddress, updateAddress} from '@/lib/http'
 import { useRouter } from 'next/navigation'
 import AlertDialog from '@/components/reusable/alert-dialog'
 import Form from '@/components/reusable/form'
@@ -16,6 +15,7 @@ import formSchemas from '@/hooks/form-schemas'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { SchemaForm } from '@/lib/types'
+import {useMutation} from '@tanstack/react-query'
 
 type Address = {
   id: string
@@ -35,11 +35,25 @@ type AddressesSectionProps = {
 }
 
 const AddressesSection: FC<AddressesSectionProps> = ({ addresses }) => {
-  const [isPending, startTransition] = useTransition()
   const router = useRouter()
   const [showDialog, setShowDialog] = useState(false)
   const [editingAddress, setEditingAddress] = useState<Address | null>(null)
-  const { addressSchema, addressUpdateSchema } = formSchemas
+  const {addressSchema} = formSchemas
+  const mutation = useMutation({
+    mutationFn: ({operation, input}: {operation: 'create' | 'update' | 'delete' | 'default'; input: unknown}) => {
+      if (operation === 'create') return createAddress(input)
+      if (operation === 'update') return updateAddress(input)
+      if (operation === 'delete') return deleteAddress(input as string)
+      return setDefaultAddress(input as string)
+    },
+    onSuccess: (_result, {operation}) => {
+      toast.success(operation === 'create' ? 'Address added' : operation === 'update' ? 'Address updated' : operation === 'delete' ? 'Address deleted' : 'Default address updated')
+      if (operation === 'create' || operation === 'update') setShowDialog(false)
+      router.refresh()
+    },
+    onError: error => toast.error(error.message)
+  })
+  const isPending = mutation.isPending
 
   const form = useForm<SchemaForm<typeof addressSchema>>({
     resolver: zodResolver(addressSchema),
@@ -89,39 +103,15 @@ const AddressesSection: FC<AddressesSectionProps> = ({ addresses }) => {
   }
 
   const onSubmit = (values: SchemaForm<typeof addressSchema>) => {
-    startTransition(async () => {
-      let result
-      if (editingAddress) {
-        result = await tryWithToast(updateAddress({ ...values, id: editingAddress.id }))
-      } else {
-        result = await tryWithToast(createAddress(values))
-      }
-      if (result) {
-        toast.success(editingAddress ? 'Address updated' : 'Address added')
-        setShowDialog(false)
-        router.refresh()
-      }
-    })
+    mutation.mutate({operation: editingAddress ? 'update' : 'create', input: editingAddress ? {...values, id: editingAddress.id} : values})
   }
 
   const handleDelete = (addressId: string) => {
-    startTransition(async () => {
-      const result = await tryWithToast(deleteAddress(addressId))
-      if (result?.success) {
-        toast.success('Address deleted')
-        router.refresh()
-      }
-    })
+    mutation.mutate({operation: 'delete', input: addressId})
   }
 
   const handleSetDefault = (addressId: string) => {
-    startTransition(async () => {
-      const result = await tryWithToast(setDefaultAddress(addressId))
-      if (result?.id) {
-        toast.success('Default address updated')
-        router.refresh()
-      }
-    })
+    mutation.mutate({operation: 'default', input: addressId})
   }
 
   const typeLabels: Record<Address['type'], string> = {
@@ -155,7 +145,7 @@ const AddressesSection: FC<AddressesSectionProps> = ({ addresses }) => {
           {addresses.length === 0 ? (
             <div className='py-12 text-center text-muted-foreground'>
               <MapPin className='mx-auto mb-3 h-10 w-10 opacity-40' />
-              <p className='font-medium'>You haven't added an address yet</p>
+              <p className='font-medium'>You haven&apos;t added an address yet</p>
               <p className='mt-1 text-sm'>Add your first delivery address to use at checkout.</p>
               <Button
                 variant='outline'

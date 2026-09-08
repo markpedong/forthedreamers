@@ -2,17 +2,24 @@ import Input from '@/components/reusable/input';
 import { SchemaForm, TOnNavigate } from '@/lib/types';
 import PageWrapper from './page-wrapper';
 import formSchemas from '@/hooks/form-schemas';
-import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { sendForgotPasswordEmail } from '@/lib/server-actions';
+import {sendForgotPassword} from '@/lib/http';
+import {useMutation} from '@tanstack/react-query';
 import { toast } from 'sonner';
 import Form from '@/components/reusable/form';
-import { tryWithToast } from '@/utils/helper';
 
 const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const { forgotPasswordSchema } = formSchemas;
-  const [isSending, startSending] = useTransition();
+  const mutation = useMutation({
+    mutationFn: (email: string) => sendForgotPassword(email),
+    onSuccess: () => {
+      toast.success('Reset link sent successfully!', {duration: 2000});
+      onNavigate('login');
+    },
+    onError: (error) => toast.error(error.message),
+  });
+  const isSending = mutation.isPending;
   const form = useForm<SchemaForm<typeof forgotPasswordSchema>>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
@@ -20,15 +27,7 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     },
   });
 
-  const onSubmit = async (values: SchemaForm<typeof forgotPasswordSchema>) => {
-    startSending(async () => {
-      const result = await tryWithToast(sendForgotPasswordEmail(values.email));
-      if (!result) return;
-
-      toast.success('Reset link sent successfully!', { duration: 2000 });
-      onNavigate('login');
-    });
-  };
+  const onSubmit = (values: SchemaForm<typeof forgotPasswordSchema>) => mutation.mutate(values.email);
 
   return (
     <PageWrapper>

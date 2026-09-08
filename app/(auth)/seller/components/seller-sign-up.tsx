@@ -3,7 +3,6 @@
 import type { SchemaForm, TOnNavigate } from '@/lib/types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTransition } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 
@@ -14,13 +13,22 @@ import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import Divider from '@/components/reusable/divider';
 import { useRouter } from 'next/navigation';
-import { sellerSignup } from '@/lib/actions/seller';
+import {sellerSignUp} from '@/lib/http';
+import {useMutation} from '@tanstack/react-query';
 import { toast } from 'sonner';
 import Link from 'next/link';
 
 const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
-  const [isSigningUp, startTransition] = useTransition();
+  const mutation = useMutation({
+    mutationFn: sellerSignUp,
+    onSuccess: (result) => {
+      toast.success(result.message);
+      router.refresh();
+    },
+    onError: (error) => toast.error(error.message),
+  });
+  const isSigningUp = mutation.isPending;
   const isSubmitting = isSigningUp;
   const { createSellerSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof createSellerSchema>>({
@@ -35,13 +43,7 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   });
 
   const onSubmit = (values: SchemaForm<typeof createSellerSchema>) => {
-    startTransition(async () => {
-      try {
-        const result = await sellerSignup(values);
-        if (result.success) { toast.success(result.message); router.refresh(); }
-        else toast.error(result.message);
-      } catch { toast.error('Unable to sign up'); }
-    });
+    mutation.mutate(values);
   };
 
   return (

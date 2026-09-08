@@ -1,26 +1,40 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import formSchemas from '@/hooks/form-schemas'
 import { SchemaForm } from '@/lib/types'
-import { sendVerificationEmailAction, updateUser } from '@/lib/server-actions'
+import {resendVerification, updateProfile} from '@/lib/http'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckCircle2, AlertCircle } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
-import { tryWithToast } from '@/utils/helper'
 import { setUserData } from '@/redux/reducers/userData'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
+import {useMutation} from '@tanstack/react-query'
 
 const ProfileDetails = () => {
   const dispatch = useAppDispatch()
   const user = useAppSelector(state => state.userData.data)
   const [isEditing, setIsEditing] = useState(false)
-  const [isPending, startTransition] = useTransition()
-  const [isSubmitting, startSubmitting] = useTransition()
+  const verificationMutation = useMutation({
+    mutationFn: resendVerification,
+    onSuccess: () => toast.success('Success', {description: 'Verification email sent'}),
+    onError: error => toast.error(error.message)
+  })
+  const profileMutation = useMutation({
+    mutationFn: (name: string) => updateProfile({name}),
+    onSuccess: result => {
+      if (result.data?.user) dispatch(setUserData(result.data.user))
+      toast.success('Success', {description: 'Profile updated'})
+      setIsEditing(false)
+    },
+    onError: error => toast.error(error.message)
+  })
+  const isPending = verificationMutation.isPending
+  const isSubmitting = profileMutation.isPending
   const { nameEmailSchema } = formSchemas
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<SchemaForm<typeof nameEmailSchema>>({
@@ -28,26 +42,9 @@ const ProfileDetails = () => {
     values: { name: user?.name ?? '', email: user?.email ?? '' },
   })
 
-  const handleResendVerification = () => {
-    startTransition(async () => {
-      const result = await tryWithToast(sendVerificationEmailAction(`${user?.email}`))
-      if (!result?.status) return
+  const handleResendVerification = () => verificationMutation.mutate()
 
-      toast.success('Success', { description: 'Verification email sent' })
-    })
-  }
-
-  const onSubmit = async ({ name }: SchemaForm<typeof nameEmailSchema>) => {
-    startSubmitting(async () => {
-      const result = await tryWithToast(updateUser({ name }))
-      if (!result) return
-
-      if (result.user) dispatch(setUserData(result.user))
-
-      toast.success('Success', { description: 'Profile updated' })
-      setIsEditing(false)
-    })
-  }
+  const onSubmit = ({name}: SchemaForm<typeof nameEmailSchema>) => profileMutation.mutate(name)
 
   return (
     <Card id='personal-information' className='scroll-mt-24 shadow-none'>

@@ -8,22 +8,25 @@ import Input from '@/components/reusable/input'
 import { useForm } from 'react-hook-form'
 import formSchemas from '@/hooks/form-schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useTransition } from 'react'
 import { toast } from 'sonner'
 import Divider from '@/components/reusable/divider'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-import { getUserDB } from '@/lib/server-actions'
-import { USER_ROLE } from '@/generated/prisma'
-
-import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-
-const supabase = createSupabaseBrowserClient()
+import {signIn} from '@/lib/http'
+import {useMutation} from '@tanstack/react-query'
 
 const SignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
   const router = useRouter()
-  const [isSubmit, startSubmitting] = useTransition()
+  const mutation = useMutation({
+    mutationFn: signIn,
+    onSuccess: () => {
+      toast.success('Sign in successfully!', {duration: 2000})
+      router.refresh()
+    },
+    onError: error => toast.error(error.message, {duration: 5000})
+  })
+  const isSubmit = mutation.isPending
   const {loginSchema} = formSchemas
 
   const form = useForm<SchemaForm<typeof loginSchema>>({
@@ -35,45 +38,7 @@ const SignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
   })
 
   const onSubmit = (values: SchemaForm<typeof loginSchema>) => {
-    startSubmitting(async () => {
-      const {data, error} = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password
-      })
-
-      if (error) {
-        toast.error(error.message, {
-          duration: 5000
-        })
-        return
-      }
-
-      if (!data.user) {
-        toast.error('Unable to sign in. Please try again.', {
-          duration: 5000
-        })
-        return
-      }
-
-      const user = await getUserDB(data.user.id)
-
-      if (user?.role !== USER_ROLE.USER) {
-        await supabase.auth.signOut()
-
-        toast.error('You are not authorized to access this page, please use the seller panel.', {
-          duration: 5000
-        })
-
-        router.refresh()
-        return
-      }
-
-      toast.success('Sign in successfully!', {
-        duration: 2000
-      })
-
-      router.refresh()
-    })
+    mutation.mutate({email: values.email, password: values.password, audience: 'user'})
   }
 
   return (
@@ -115,7 +80,7 @@ const SignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
         </div>
 
         <p className='text-center text-sm text-muted-foreground mt-6'>
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <button onClick={() => onNavigate('register')} className='text-primary hover:underline' type='button'>
             Create account
           </button>

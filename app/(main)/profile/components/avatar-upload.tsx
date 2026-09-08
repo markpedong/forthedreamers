@@ -1,14 +1,14 @@
 'use client'
 
-import { useState, useRef, FC, useTransition } from 'react'
+import { useState, useRef, FC } from 'react'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Plus, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { updateUserImage } from '@/lib/server-actions'
+import {updateProfile} from '@/lib/http'
 import { toBase64 } from '@/lib/utils'
-import { tryWithToast } from '@/utils/helper'
 import { setUserData } from '@/redux/reducers/userData'
 import { useAppDispatch } from '@/redux/store'
+import {useMutation} from '@tanstack/react-query'
 
 interface AvatarUploadProps {
   src?: string
@@ -21,7 +21,18 @@ const AvatarUpload: FC<AvatarUploadProps> = ({ src, alt, initials, isGoogleAvata
   const dispatch = useAppDispatch()
   const [preview, setPreview] = useState<string>()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [isPending, startTransition] = useTransition()
+  const mutation = useMutation({
+    mutationFn: (image: string) => updateProfile({image}),
+    onSuccess: result => {
+      if (result.data?.user) dispatch(setUserData(result.data.user))
+      toast.success('Profile image updated')
+    },
+    onError: error => {
+      setPreview(undefined)
+      toast.error(error.message)
+    }
+  })
+  const isPending = mutation.isPending
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -30,14 +41,7 @@ const AvatarUpload: FC<AvatarUploadProps> = ({ src, alt, initials, isGoogleAvata
     const base64 = await toBase64(file)
     setPreview(base64 as string)
 
-    startTransition(async () => {
-      const result = await tryWithToast(updateUserImage({ image: base64 as string }))
-      if (!result) return
-
-      if (result.user) dispatch(setUserData(result.user))
-
-      toast.success('Profile image updated')
-    })
+    mutation.mutate(base64 as string)
   }
 
   return (

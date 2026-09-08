@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useTransition } from 'react';
+import { FC } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,13 +10,21 @@ import Form from '@/components/reusable/form';
 import formSchemas from '@/hooks/form-schemas';
 import Input from '@/components/reusable/input';
 import { SchemaForm } from '@/lib/types';
-import { resetPassword } from '@/lib/server-actions';
-import { tryWithToast } from '@/utils/helper';
+import {resetPassword} from '@/lib/http';
+import {useMutation} from '@tanstack/react-query';
 
 const ResetPassword: FC<{ token: string }> = ({ token }) => {
   const router = useRouter();
   const { resetPasswordSchema } = formSchemas;
-  const [isLoading, startTransition] = useTransition();
+  const mutation = useMutation({
+    mutationFn: (password: string) => resetPassword(token, password),
+    onSuccess: () => {
+      toast.success('Password reset successfully!', {duration: 3000});
+      router.push('/sign-in');
+    },
+    onError: (error) => toast.error(error.message),
+  });
+  const isLoading = mutation.isPending;
   const form = useForm<SchemaForm<typeof resetPasswordSchema>>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
@@ -25,15 +33,7 @@ const ResetPassword: FC<{ token: string }> = ({ token }) => {
     },
   });
 
-  const onSubmit = async (values: SchemaForm<typeof resetPasswordSchema>) => {
-    startTransition(async () => {
-      const result = await tryWithToast(resetPassword(token, values.password));
-      if (!result) return;
-
-      toast.success('Password reset successfully!', { duration: 3000 });
-      router.push('/sign-in');
-    });
-  };
+  const onSubmit = (values: SchemaForm<typeof resetPasswordSchema>) => mutation.mutate(values.password);
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8'>

@@ -5,16 +5,24 @@ import formSchemas from '@/hooks/form-schemas'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Input from '@/components/reusable/input'
-import { useTransition } from 'react'
 import Form from '@/components/reusable/form'
 import { toast } from 'sonner'
-import { signUp } from '@/lib/server-actions'
+import {signUp} from '@/lib/http'
+import {useMutation} from '@tanstack/react-query'
 import Divider from '@/components/reusable/divider'
 import { useRouter } from 'next/navigation'
 
 const SignUp = ({onNavigate}: {onNavigate: TOnNavigate}) => {
   const router = useRouter()
-  const [isSigningUp, startSigningUp] = useTransition()
+  const mutation = useMutation({
+    mutationFn: signUp,
+    onSuccess: () => {
+      toast.success('Account created successfully!', {duration: 3000})
+      router.refresh()
+    },
+    onError: error => toast.error(error.message)
+  })
+  const isSigningUp = mutation.isPending
   const {registrationSchema} = formSchemas
 
   const form = useForm<SchemaForm<typeof registrationSchema>>({
@@ -27,21 +35,8 @@ const SignUp = ({onNavigate}: {onNavigate: TOnNavigate}) => {
     }
   })
 
-  const onSubmit = async (values: SchemaForm<typeof registrationSchema>) => {
-    startSigningUp(async () => {
-      try {
-        await signUp(values.email, values.password, values.name)
-
-        toast.success('Account created successfully!', {
-          duration: 3000
-        })
-
-        router.refresh()
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Something went wrong')
-      }
-    })
-  }
+  const onSubmit = (values: SchemaForm<typeof registrationSchema>) =>
+    mutation.mutate({email: values.email, password: values.password, name: values.name})
   return (
     <PageWrapper>
       <div>

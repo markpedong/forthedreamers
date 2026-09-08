@@ -1,11 +1,12 @@
 'use client'
 
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from './client'
-import { getCurrentUserData } from '@/lib/server-actions'
+import {getCurrentUser, signOut as signOutRequest} from '@/lib/http'
 import { clearUserData, setUserData } from '@/redux/reducers/userData'
 import { useAppDispatch } from '@/redux/store'
+import {useMutation, useQuery} from '@tanstack/react-query'
 
 type SessionUser = {
   id: string
@@ -44,9 +45,21 @@ type AuthProviderProps = {
 
 export const AuthProvider = ({ children, initialSession }: AuthProviderProps) => {
   const [session, setSession] = useState<AuthSession | null>(initialSession ?? null)
-  const loadedUserId = useRef<string | null>(null)
   const dispatch = useAppDispatch()
   const router = useRouter()
+  const userQuery = useQuery({
+    queryKey: ['current-user', session?.user?.id],
+    queryFn: getCurrentUser,
+    enabled: Boolean(session?.user?.id),
+    select: result => result.data,
+    retry: false
+  })
+  const signOutMutation = useMutation({mutationFn: signOutRequest})
+
+  useEffect(() => {
+    if (userQuery.data && userQuery.data.id === session?.user?.id) dispatch(setUserData(userQuery.data))
+    else if (userQuery.isError) dispatch(clearUserData())
+  }, [dispatch, session?.user?.id, userQuery.data, userQuery.isError])
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient()
@@ -75,42 +88,20 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
       )
 
       if (!currentSession) {
-        loadedUserId.current = null
         dispatch(clearUserData())
         return
       }
-
-      const userId = currentSession.user.id
-      if (loadedUserId.current === userId) return
-      loadedUserId.current = userId
-
-      void getCurrentUserData()
-        .then(user => {
-          if (loadedUserId.current !== userId) return
-          if (user?.id === userId) dispatch(setUserData(user))
-          else {
-            loadedUserId.current = null
-            dispatch(clearUserData())
-          }
-        })
-        .catch(() => {
-          if (loadedUserId.current !== userId) return
-          loadedUserId.current = null
-          dispatch(clearUserData())
-        })
     })
 
     return () => subscription.unsubscribe()
   }, [dispatch])
 
   const signOut = async () => {
-    loadedUserId.current = null
     dispatch(clearUserData())
     setSession(null)
 
     try {
-      const { error } = await createSupabaseBrowserClient().auth.signOut()
-      if (error) console.error('Error signing out:', error)
+      await signOutMutation.mutateAsync()
     } catch (error) {
       console.error('Error signing out:', error)
     } finally {
