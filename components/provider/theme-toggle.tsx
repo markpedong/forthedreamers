@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useIsMobile } from '@/hooks/useIsMobile'
@@ -10,6 +11,15 @@ const ThemeToggleButton = () => {
   const theme = useAppSelector(state => state.appData.theme)
   const dispatch = useAppDispatch()
   const isMobile = useIsMobile()
+
+  useEffect(() => {
+    const html = document.documentElement
+    if (theme === 'dark') {
+      html.classList.add('dark')
+    } else {
+      html.classList.remove('dark')
+    }
+  }, [theme])
 
   const toggleTheme = () => {
     dispatch(setTheme(theme === 'light' ? 'dark' : 'light'))
@@ -33,7 +43,7 @@ const ThemeToggleButton = () => {
           onClick={toggleTheme}
           className='rounded-full shadow-md border border-border bg-background hover:bg-accent'
         >
-          {theme === 'light' ? <Moon className='h-[1.2rem] w-[1.2rem]' /> : <Sun className='h-[1.2rem] w-[1.2rem]' />}
+          {theme === 'dark' ? <Moon className='h-[1.2rem] w-[1.2rem]' /> : <Sun className='h-[1.2rem] w-[1.2rem]' />}
           <span className='sr-only'>Toggle theme</span>
         </Button>
       </motion.div>
