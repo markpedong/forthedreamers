@@ -3,35 +3,26 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 import formSchemas from '@/hooks/form-schemas';
 import { SchemaForm } from '@/lib/types';
-import { resendVerification, updateProfile } from '@/lib/http';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
-import { setUserData } from '@/redux/reducers/userData';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { useMutation } from '@tanstack/react-query';
+import { useAppSelector } from '@/redux/store';
+import { useResendVerificationMutation, useUpdateProfileMutation } from '@/services/useMutation';
 
 const ProfileDetails = () => {
-  const dispatch = useAppDispatch();
   const user = useAppSelector(state => state.userData.data);
   const [isEditing, setIsEditing] = useState(false);
-  const verificationMutation = useMutation({
-    mutationFn: resendVerification,
-    onSuccess: () => toast.success('Success', { description: 'Verification email sent' }),
-    onError: error => toast.error(error.message),
+  const verificationMutation = useResendVerificationMutation({
+    message: 'Success',
+    description: 'Verification email sent',
   });
-  const profileMutation = useMutation({
-    mutationFn: (name: string) => updateProfile({ name }),
-    onSuccess: result => {
-      if (result.data?.user) dispatch(setUserData(result.data.user));
-      toast.success('Success', { description: 'Profile updated' });
-      setIsEditing(false);
-    },
-    onError: error => toast.error(error.message),
+  const profileMutation = useUpdateProfileMutation({
+    successMessage: 'Success',
+    description: 'Profile updated',
+    onSuccess: () => setIsEditing(false),
   });
   const isPending = verificationMutation.isPending;
   const isSubmitting = profileMutation.isPending;
@@ -49,7 +40,7 @@ const ProfileDetails = () => {
 
   const handleResendVerification = () => verificationMutation.mutate();
 
-  const onSubmit = ({ name }: SchemaForm<typeof nameEmailSchema>) => profileMutation.mutate(name);
+  const onSubmit = ({ name }: SchemaForm<typeof nameEmailSchema>) => profileMutation.mutate({ name });
 
   return (
     <Card id="personal-information" className="scroll-mt-24 shadow-none">

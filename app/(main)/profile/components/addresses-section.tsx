@@ -4,10 +4,7 @@ import { FC, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
 import { MapPin, Trash2, Star, Pencil, Plus } from 'lucide-react';
-import { createAddress, deleteAddress, setDefaultAddress, updateAddress } from '@/lib/http';
-import { useRouter } from 'next/navigation';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
@@ -15,7 +12,7 @@ import formSchemas from '@/hooks/form-schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SchemaForm } from '@/lib/types';
-import { useMutation } from '@tanstack/react-query';
+import { useAddressMutation } from '@/services/useMutation';
 
 type Address = {
   id: string;
@@ -35,31 +32,11 @@ type AddressesSectionProps = {
 };
 
 const AddressesSection: FC<AddressesSectionProps> = ({ addresses }) => {
-  const router = useRouter();
   const [showDialog, setShowDialog] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const { addressSchema } = formSchemas;
-  const mutation = useMutation({
-    mutationFn: ({ operation, input }: { operation: 'create' | 'update' | 'delete' | 'default'; input: unknown }) => {
-      if (operation === 'create') return createAddress(input);
-      if (operation === 'update') return updateAddress(input);
-      if (operation === 'delete') return deleteAddress(input as string);
-      return setDefaultAddress(input as string);
-    },
-    onSuccess: (_result, { operation }) => {
-      toast.success(
-        operation === 'create'
-          ? 'Address added'
-          : operation === 'update'
-            ? 'Address updated'
-            : operation === 'delete'
-              ? 'Address deleted'
-              : 'Default address updated'
-      );
-      if (operation === 'create' || operation === 'update') setShowDialog(false);
-      router.refresh();
-    },
-    onError: error => toast.error(error.message),
+  const mutation = useAddressMutation(operation => {
+    if (operation === 'create' || operation === 'update') setShowDialog(false);
   });
   const isPending = mutation.isPending;
 

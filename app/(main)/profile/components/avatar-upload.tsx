@@ -3,12 +3,8 @@
 import { useState, useRef, FC } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Plus, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import { updateProfile } from '@/lib/http';
 import { toBase64 } from '@/lib/utils';
-import { setUserData } from '@/redux/reducers/userData';
-import { useAppDispatch } from '@/redux/store';
-import { useMutation } from '@tanstack/react-query';
+import { useUpdateProfileMutation } from '@/services/useMutation';
 
 interface AvatarUploadProps {
   src?: string;
@@ -18,19 +14,11 @@ interface AvatarUploadProps {
 }
 
 const AvatarUpload: FC<AvatarUploadProps> = ({ src, alt, initials, isGoogleAvatar = false }) => {
-  const dispatch = useAppDispatch();
   const [preview, setPreview] = useState<string>();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const mutation = useMutation({
-    mutationFn: (image: string) => updateProfile({ image }),
-    onSuccess: result => {
-      if (result.data?.user) dispatch(setUserData(result.data.user));
-      toast.success('Profile image updated');
-    },
-    onError: error => {
-      setPreview(undefined);
-      toast.error(error.message);
-    },
+  const mutation = useUpdateProfileMutation({
+    successMessage: 'Profile image updated',
+    onError: () => setPreview(undefined),
   });
   const isPending = mutation.isPending;
 
@@ -41,7 +29,7 @@ const AvatarUpload: FC<AvatarUploadProps> = ({ src, alt, initials, isGoogleAvata
     const base64 = await toBase64(file);
     setPreview(base64 as string);
 
-    mutation.mutate(base64 as string);
+    mutation.mutate({ image: base64 as string });
   };
 
   return (

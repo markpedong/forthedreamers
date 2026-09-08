@@ -1,13 +1,11 @@
 'use client';
 
 import { FC, useState } from 'react';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { CHANGE_PASSWORD_DEFAULT, OAUTH_PROVIDERS } from '@/constants';
 import formSchemas from '@/hooks/form-schemas';
-import { changePassword, linkSocial, sendForgotPassword } from '@/lib/http';
 import { Account, SchemaForm } from '@/lib/types';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
@@ -17,7 +15,11 @@ import AlertDialog from '@/components/reusable/alert-dialog';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppSelector } from '@/redux/store';
-import { useMutation } from '@tanstack/react-query';
+import {
+  useChangePasswordMutation,
+  useForgotPasswordMutation,
+  useLinkSocialMutation,
+} from '@/services/useMutation';
 
 interface AccountManagementProps {
   accounts: Account[];
@@ -33,27 +35,15 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
   });
 
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const passwordMutation = useMutation({
-    mutationFn: changePassword,
-    onSuccess: () => {
-      toast.success('Password changed successfully!');
-      form.reset(CHANGE_PASSWORD_DEFAULT);
-      setShowPasswordDialog(false);
-    },
-    onError: error => toast.error(error.message),
+  const passwordMutation = useChangePasswordMutation(() => {
+    form.reset(CHANGE_PASSWORD_DEFAULT);
+    setShowPasswordDialog(false);
   });
-  const resetMutation = useMutation({
-    mutationFn: ({ email }: { email: string }) => sendForgotPassword(email, '/reset-password'),
-    onSuccess: () => toast.success('Password reset link sent successfully'),
-    onError: error => toast.error(error.message),
+  const resetMutation = useForgotPasswordMutation({
+    redirectTo: '/reset-password',
+    successMessage: 'Password reset link sent successfully',
   });
-  const linkMutation = useMutation({
-    mutationFn: (provider: string) => linkSocial(provider, '/profile?accountLinked=true&tab=security'),
-    onSuccess: result => {
-      if (result.data?.url) window.location.assign(result.data.url);
-    },
-    onError: error => toast.error(error.message),
-  });
+  const linkMutation = useLinkSocialMutation();
   const isSubmitting = passwordMutation.isPending || resetMutation.isPending || linkMutation.isPending;
 
   const onSubmit = (values: SchemaForm<typeof changePasswordSchema>) => {
@@ -61,7 +51,7 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
   };
 
   const handleSetPassword = () => {
-    if (user?.email) resetMutation.mutate({ email: user.email });
+    if (user?.email) resetMutation.mutate(user.email);
   };
 
   return (
