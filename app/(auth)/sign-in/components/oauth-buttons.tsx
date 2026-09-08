@@ -10,13 +10,12 @@ const OauthButtons = ({ next }: OauthButtonsProps) => {
     <Button
       type="button"
       variant="outline"
-      className="h-11 w-full"
+      className="h-12 w-full rounded-xl bg-background font-medium shadow-xs"
       disabled={mutation.isPending}
       onClick={() => mutation.mutate()}
     >
-      {' '}
-      <GoogleIcon />{' '}
-      <span className="ml-2"> {mutation.isPending ? 'Opening Google...' : 'Continue with Google'} </span>{' '}
+      <GoogleIcon />
+      <span>{mutation.isPending ? 'Opening Google...' : 'Continue with Google'}</span>
     </Button>
   );
 };

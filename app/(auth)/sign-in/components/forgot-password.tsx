@@ -1,11 +1,13 @@
 import Input from '@/components/reusable/input';
 import { SchemaForm, TOnNavigate } from '@/lib/types';
-import PageWrapper from './page-wrapper';
+import AuthPage from '../../components/auth-page';
 import formSchemas from '@/hooks/form-schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForgotPasswordMutation } from '@/services/useMutation';
 import Form from '@/components/reusable/form';
+import AuthCard from '../../components/auth-card';
+import { ArrowLeft, Mail } from 'lucide-react';
 
 const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const { forgotPasswordSchema } = formSchemas;
@@ -21,13 +23,12 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const onSubmit = (values: SchemaForm<typeof forgotPasswordSchema>) => mutation.mutate(values.email);
 
   return (
-    <PageWrapper>
-      <div>
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Reset password</h1>
-          <p className="text-muted-foreground">Enter your email to receive a reset link</p>
-        </div>
-
+    <AuthPage>
+      <AuthCard
+        title="Reset your password"
+        description="Enter your email and we’ll send you a secure reset link."
+        icon={<Mail className="size-5" />}
+      >
         <div className="space-y-5">
           <Form
             form={form}
@@ -38,9 +39,8 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
             <Input
               control={form.control}
               name="email"
-              label="Forgot Email"
+              label="Email"
               placeholder="you@example.com"
-              description="Must contain uppercase, lowercase, and numbers"
               disabled={isSending}
             />
           </Form>
@@ -51,14 +51,12 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
             onClick={() => onNavigate('login')}
             className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center transition-colors"
           >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
+            <ArrowLeft className="mr-2 size-4" />
             Back to sign in
           </button>
         </div>
-      </div>
-    </PageWrapper>
+      </AuthCard>
+    </AuthPage>
   );
 };
 

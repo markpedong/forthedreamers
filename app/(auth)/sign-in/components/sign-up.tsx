@@ -1,5 +1,5 @@
 import { SchemaForm, TOnNavigate } from '@/lib/types';
-import PageWrapper from './page-wrapper';
+import AuthPage from '../../components/auth-page';
 import OauthButtons from './oauth-buttons';
 import formSchemas from '@/hooks/form-schemas';
 import { useForm } from 'react-hook-form';
@@ -8,6 +8,7 @@ import Input from '@/components/reusable/input';
 import Form from '@/components/reusable/form';
 import { useSignUpMutation } from '@/services/useMutation';
 import Divider from '@/components/reusable/divider';
+import AuthCard from '../../components/auth-card';
 
 const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const mutation = useSignUpMutation();
@@ -27,13 +28,8 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const onSubmit = (values: SchemaForm<typeof registrationSchema>) =>
     mutation.mutate({ email: values.email, password: values.password, name: values.name });
   return (
-    <PageWrapper>
-      <div>
-        <div className="mb-8 text-center">
-          <h1 className="mb-2 text-3xl font-bold">Create account</h1>
-          <p className="text-muted-foreground">Sign up to get started</p>
-        </div>
-
+    <AuthPage>
+      <AuthCard title="Create your account" description="Join For The Dreamers and start discovering curated finds." eyebrow="New here">
         <Form
           form={form}
           onSubmit={onSubmit}
@@ -81,18 +77,16 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
         <Divider title="or continue with" />
 
-        <div className="grid grid-cols-2 gap-3">
-          <OauthButtons next="/profile" />
-        </div>
+        <OauthButtons next="/profile" />
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Already have an account?{' '}
-          <button onClick={() => onNavigate('login')} className="text-primary hover:underline">
+          <button onClick={() => onNavigate('login')} className="font-medium text-primary underline-offset-4 hover:underline">
             Sign in
           </button>
         </p>
-      </div>
-    </PageWrapper>
+      </AuthCard>
+    </AuthPage>
   );
 };
 

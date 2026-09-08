@@ -8,10 +8,8 @@ import { toast } from 'sonner';
 import Input from '@/components/reusable/input';
 import Form from '@/components/reusable/form';
 import formSchemas from '@/hooks/form-schemas';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Mail } from 'lucide-react';
+import AuthCard from '../../components/auth-card';
 
 const SellerForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const { forgotPasswordSchema } = formSchemas;
@@ -29,36 +27,24 @@ const SellerForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) =
   };
 
   return (
-    <div className="flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
-        className="w-full max-w-md"
+    <AuthCard
+      title="Reset your password"
+      description="Enter your email and we’ll send you a secure reset link."
+      icon={<Mail className="size-5" />}
+    >
+      <Form form={form} submitLabel={isPending ? 'Sending...' : 'Send reset link'} onSubmit={onSubmit}>
+        <Input name="name" type="email" placeholder="your@email.com" disabled={isPending} autoComplete="email" />
+      </Form>
+
+      <button
+        type="button"
+        onClick={() => onNavigate('login')}
+        className="mx-auto mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
-        <Card className="border-border bg-card/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-semibold mb-1">Reset Password</CardTitle>
-            <CardDescription>Enter your email and we’ll send you a reset link.</CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            <Form form={form} submitLabel={isPending ? 'Sending...' : 'Send reset link'} onSubmit={onSubmit}>
-              <Input name="name" type="email" placeholder="your@email.com" disabled={isPending} autoComplete="email" />
-            </Form>
-
-            <Button
-              variant="link"
-              onClick={() => onNavigate('login')}
-              className="text-sm text-primary hover:underline flex items-center justify-center gap-1 mt-3"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to sign in
-            </Button>
-          </CardContent>
-        </Card>
-      </motion.div>
-    </div>
+        <ArrowLeft className="size-4" />
+        Back to sign in
+      </button>
+    </AuthCard>
   );
 };
 

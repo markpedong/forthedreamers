@@ -10,6 +10,8 @@ import { FC, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { tryWithToast } from '@/utils/helper';
+import AuthCard from '../../components/auth-card';
+import { ShieldCheck } from 'lucide-react';
 
 const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
   const router = useRouter();
@@ -49,16 +51,11 @@ const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
-      <div className="w-full max-w-md">
-        <div className="space-y-6">
-          <div className="text-center">
-            <h1 className="text-2xl font-semibold mb-1">{useBackup ? 'Backup Code' : 'Enter Verification Code'}</h1>
-            <p className="text-sm text-muted-foreground">
-              {useBackup ? 'Enter one of your backup codes' : 'Enter the 6-digit code from your authenticator app'}
-            </p>
-          </div>
-
+    <AuthCard
+      title={useBackup ? 'Backup code' : 'Enter verification code'}
+      description={useBackup ? 'Enter one of your backup codes' : 'Enter the 6-digit code from your authenticator app'}
+      icon={<ShieldCheck className="size-5" />}
+    >
           <Form form={form} onSubmit={onSubmit} submitLabel={isPending ? 'Verifying...' : 'Verify'}>
             <Input
               control={form.control}
@@ -71,27 +68,25 @@ const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
             />
           </Form>
 
-          <div className="space-y-2 text-center">
+          <div className="mt-6 space-y-3 text-center">
             <button
               onClick={() => {
                 form.reset();
                 setUseBackup(!useBackup);
               }}
-              className="text-sm text-primary hover:underline block w-full"
+              className="block w-full text-sm font-medium text-primary underline-offset-4 hover:underline"
             >
               {useBackup ? 'Use authenticator code' : 'Use backup code'}
             </button>
 
             <button
               onClick={() => onNavigate('login')}
-              className="text-sm text-muted-foreground hover:text-foreground block w-full"
+              className="block w-full text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               Back to sign in
             </button>
           </div>
-        </div>
-      </div>
-    </div>
+    </AuthCard>
   );
 };
 

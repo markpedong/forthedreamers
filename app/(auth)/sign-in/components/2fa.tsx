@@ -1,6 +1,6 @@
 import { SchemaForm, TOnNavigate } from '@/lib/types';
 import { useState, useTransition } from 'react';
-import PageWrapper from './page-wrapper';
+import AuthPage from '../../components/auth-page';
 import formSchemas from '@/hooks/form-schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +10,8 @@ import { toast } from 'sonner';
 import { twoFactor } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { tryWithToast } from '@/utils/helper';
+import AuthCard from '../../components/auth-card';
+import { ArrowLeft, ShieldCheck } from 'lucide-react';
 
 const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
@@ -47,55 +49,42 @@ const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   };
 
   return (
-    <PageWrapper>
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-            />
-          </svg>
-        </div>
-        <h1 className="text-3xl font-bold mb-2">{useBackup ? 'Backup code' : 'Two-factor authentication'}</h1>
-        <p className="text-muted-foreground">
-          {useBackup ? 'Enter one of your backup codes' : 'Enter the 6-digit code from your authenticator app'}
-        </p>
-      </div>
+    <AuthPage>
+      <AuthCard
+        title={useBackup ? 'Backup code' : 'Two-factor authentication'}
+        description={useBackup ? 'Enter one of your backup codes' : 'Enter the 6-digit code from your authenticator app'}
+        icon={<ShieldCheck className="size-5" />}
+      >
+        <Form form={form} onSubmit={onSubmit} submitLabel={isPending ? 'Verifying in...' : 'Verify'}>
+          <Input
+            name="otp"
+            type="number"
+            placeholder={useBackup ? 'XXXX-XXXX-XXXX' : '000000'}
+            maxLength={useBackup ? 14 : 6}
+          />
+        </Form>
 
-      <Form form={form} onSubmit={onSubmit} submitLabel={isPending ? 'Verifying in...' : 'Verify'}>
-        <Input
-          name="otp"
-          type="number"
-          placeholder={useBackup ? 'XXXX-XXXX-XXXX' : '000000'}
-          maxLength={useBackup ? 14 : 6}
-        />
-      </Form>
-
-      <div className="mt-6 space-y-6 text-center">
+        <div className="mt-6 space-y-6 text-center">
         <button
           onClick={() => {
             form.reset();
             setUseBackup(!useBackup);
           }}
-          className="text-sm text-muted-foreground hover:text-foreground block w-full"
+          className="block w-full text-sm font-medium text-primary underline-offset-4 hover:underline"
         >
           {useBackup ? 'Use authenticator code instead' : 'Use backup code'}
         </button>
 
         <button
           onClick={() => onNavigate('login')}
-          className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center mx-auto transition-colors"
+          className="mx-auto inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
+          <ArrowLeft className="mr-2 size-4" />
           Go back
         </button>
-      </div>
-    </PageWrapper>
+        </div>
+      </AuthCard>
+    </AuthPage>
   );
 };
 

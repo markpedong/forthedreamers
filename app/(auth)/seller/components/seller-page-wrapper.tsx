@@ -23,43 +23,36 @@ const features = [
 
 const SellerPageWrapper: FC<PropsWithChildren> = ({ children }) => {
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-background via-background to-secondary dark:from-background dark:via-background dark:to-secondary">
-      <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/10 dark:from-primary/10 dark:via-accent/10 dark:to-secondary/20">
-        <div className="absolute top-0 right-0 w-96 h-96 -mr-48 -mt-48 rounded-full blur-3xl opacity-40 bg-gradient-to-br from-accent/20 to-transparent dark:from-accent/30" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 -ml-48 -mb-48 rounded-full blur-3xl opacity-40 bg-gradient-to-tr from-primary/20 to-transparent dark:from-primary/30" />
-
-        <div className="relative z-10">
-          <div className="mb-4 w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-            <ShoppingBag className="w-6 h-6 text-primary-foreground" />
+    <div className="grid min-h-[100dvh] bg-muted/30 lg:grid-cols-[minmax(360px,0.8fr)_minmax(520px,1.2fr)]">
+      <aside className="hidden border-r bg-foreground p-10 text-background lg:flex lg:flex-col lg:justify-between xl:p-14">
+        <div>
+          <div className="mb-6 flex size-11 items-center justify-center rounded-xl border border-background/20 bg-background/10">
+            <ShoppingBag className="size-5" />
           </div>
-          <h2 className="text-3xl font-bold text-foreground mb-2">Your Seller Hub</h2>
-          <p className="text-lg text-muted-foreground">Manage, grow, and scale your e-commerce business</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-background/55">For The Dreamers</p>
+          <h2 className="max-w-md text-4xl font-medium tracking-tight">Your business, beautifully managed.</h2>
+          <p className="mt-4 max-w-md leading-7 text-background/65">Manage your store, understand your sales, and keep growing.</p>
         </div>
 
-        <div className="relative z-10 space-y-5">
-          {features.map(({ icon: Icon, title, desc }, i) => (
-            <div
-              key={i}
-              className="group flex items-start gap-4 p-4 rounded-lg border border-white/20 bg-white/10 backdrop-blur-md transition-all duration-200 hover:bg-white/20 hover:shadow-lg dark:bg-black/30 dark:hover:bg-black/50 dark:border-white/10"
-            >
-              <div className="mt-1 p-2 rounded-md bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <Icon className="w-5 h-5 text-primary" />
+        <div className="space-y-6">
+          {features.map(({ icon: Icon, title, desc }) => (
+            <div key={title} className="flex items-start gap-4 border-t border-background/15 pt-6">
+              <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-background/10">
+                <Icon className="size-4" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">{title}</h3>
-                <p className="text-sm text-muted-foreground mt-1">{desc}</p>
+                <h3 className="text-sm font-medium">{title}</h3>
+                <p className="mt-1 text-sm leading-6 text-background/55">{desc}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <p className="relative z-10 pt-8 border-t border-white/20 dark:border-white/10 text-xs text-muted-foreground">
-          Trusted by 50,000+ sellers worldwide
-        </p>
-      </div>
+        <p className="text-xs text-background/45">A focused workspace for independent sellers.</p>
+      </aside>
 
-      <div className="flex flex-1 items-center justify-center p-6 md:p-10">
-        <div className="w-full max-w-md">{children}</div>
+      <div className="flex items-center justify-center px-4 py-6 sm:px-6 sm:py-10 lg:px-10">
+        <div className="w-full max-w-lg">{children}</div>
       </div>
     </div>
   );
