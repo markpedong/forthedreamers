@@ -11,6 +11,7 @@ import {
   createAddress,
   createProduct,
   createReview,
+  createSupportTicket,
   deleteAddress,
   deleteProduct,
   deleteUser,
@@ -19,6 +20,7 @@ import {
   resendVerification,
   resetPassword,
   sellerSignUp,
+  sendSupportMessage,
   sendForgotPassword,
   setDefaultAddress,
   setUserBanned,
@@ -37,6 +39,8 @@ import { decrementCartCount, incrementCartCount, setCartCount } from '@/redux/re
 import { setUserData } from '@/redux/reducers/userData';
 import { useAppDispatch } from '@/redux/store';
 import { productReviewsQueryKey, wishlistQueryKey } from './useQuery';
+import { supportTicketsQueryKey, wishlistItemsQueryKey } from './useQuery';
+import type { SupportTicketResult } from '@/lib/http';
 
 export const useSignInMutation = (audience: 'user' | 'seller') => {
   const dispatch = useAppDispatch();
@@ -367,9 +371,36 @@ export const useWishlistMutation = () => {
     },
     onError: (_error, _variables, context) => {
       if (context?.previous) queryClient.setQueryData(wishlistQueryKey, context.previous);
+      toast.error(_error.message);
     },
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: wishlistQueryKey });
+      void queryClient.invalidateQueries({ queryKey: wishlistItemsQueryKey });
     },
+  });
+};
+
+export const useCreateSupportTicketMutation = (onSuccess: (ticket: SupportTicketResult) => void) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createSupportTicket,
+    onSuccess: result => {
+      toast.success(result.message ?? 'Support ticket created');
+      void queryClient.invalidateQueries({ queryKey: supportTicketsQueryKey });
+      onSuccess(result.data!);
+    },
+    onError: error => toast.error(error.message),
+  });
+};
+
+export const useSupportMessageMutation = (ticketId: string, onSuccess: () => void) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (message: string) => sendSupportMessage({ ticketId, message }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: supportTicketsQueryKey });
+      onSuccess();
+    },
+    onError: error => toast.error(error.message),
   });
 };

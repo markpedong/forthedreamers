@@ -1,6 +1,7 @@
 import { AppleIcon, FacebookIcon, GoogleIcon, TikTokIcon } from "@/components/icons/oauth";
 import { PRODUCT_STATUS } from "@/generated/prisma";
 import { ComponentProps, ElementType } from "react";
+import type { FormSpec, TVariant } from '@/lib/types';
 
 export const OAUTH_PROVIDERS = ["google", "github", "facebook", "tiktok"] as const
 export type OAuthProvider = (typeof OAUTH_PROVIDERS)[number]
@@ -27,8 +28,8 @@ export const PRODUCT_DEFAULT = {
   basePrice: null,
   stock: null,
   status: PRODUCT_STATUS.INACTIVE,
-  variants: [] as any[],
-  specs: [] as any[],
+  variants: [] as TVariant[],
+  specs: [] as FormSpec[],
   tags: [] as string[],
   images: [] as string[],
 };
@@ -40,7 +41,7 @@ export const LABEL_VALUE_DEFAULT = {
   value: '',
 }
 
-export const DISABLED_NAVBAR = ['/sign-in', '/reset-password', '/seller', '/products', '/users', '/dashboard', '/categories']
+export const DISABLED_NAVBAR = ['/sign-in', '/reset-password', '/seller', '/users', '/dashboard']
 
 export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 

@@ -131,7 +131,7 @@ const DashboardHeader = ({ data }: { data: DashboardData }) => {
           </SelectContent>
         </Select>
         <Button asChild>
-          <Link href="/products">
+          <Link href="/dashboard/products">
             <Package className="h-4 w-4" />
             Add product
           </Link>

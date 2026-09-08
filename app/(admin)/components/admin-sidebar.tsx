@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Users,
-  ShoppingCart,
   Package,
   CreditCard,
   BarChart3,
@@ -32,12 +31,11 @@ const Sidebar: FC = () => {
     },
     {
       label: 'Categories',
-      href: '/categories',
+      href: '/dashboard/categories',
       icon: ShoppingBag,
       allowed: user?.role === USER_ROLE.ADMIN,
     },
-    { label: 'Orders', href: '/orders', icon: ShoppingCart },
-    { label: 'Products', href: '/products', icon: Package },
+    { label: 'Products', href: '/dashboard/products', icon: Package },
     { label: 'Payments', href: '/payments', icon: CreditCard },
     { label: 'Analytics', href: '/analytics', icon: BarChart3 },
     { label: 'Security', href: '/security', icon: Lock },
@@ -56,7 +54,7 @@ const Sidebar: FC = () => {
         <ul className="space-y-2 px-3">
           {visibleNavItems.map(item => {
             const Icon = item.icon;
-            const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
+            const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
 
             return (
               <li key={item.href}>

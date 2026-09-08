@@ -39,7 +39,11 @@ export const productSlugs = () =>
 export const publicCategories = () =>
   cached('catalog', cacheKeys.categories, 3600, () =>
     prisma.category.findMany({
-      select: { id: true, name: true },
+      select: {
+        id: true,
+        name: true,
+        _count: { select: { products: { where: { status: 'ACTIVE' } } } },
+      },
       orderBy: { name: 'asc' },
     })
   );

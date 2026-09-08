@@ -1,10 +1,26 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { getCurrentUser, getReviews, getWishlistIds } from '@/lib/http';
+import {
+  getCategories,
+  getCurrentUser,
+  getOrders,
+  getReviews,
+  getSupportTicket,
+  getSupportTickets,
+  getWishlistIds,
+  getWishlistItems,
+  searchProducts,
+  type ProductSearchParams,
+} from '@/lib/http';
 
 export const wishlistQueryKey = ['wishlist-ids'] as const;
 export const productReviewsQueryKey = (slug: string) => ['product-reviews', slug] as const;
+export const productsQueryKey = ['products'] as const;
+export const categoriesQueryKey = ['categories'] as const;
+export const wishlistItemsQueryKey = ['wishlist-items'] as const;
+export const ordersQueryKey = ['orders'] as const;
+export const supportTicketsQueryKey = ['support-tickets'] as const;
 
 export const useCurrentUserQuery = () =>
   useQuery({
@@ -33,4 +49,49 @@ export const useWishlistQuery = () =>
     queryKey: wishlistQueryKey,
     queryFn: async () => (await getWishlistIds()).data?.ids ?? [],
     staleTime: 1000 * 60,
+  });
+
+export const useProductsQuery = (filters: ProductSearchParams, enabled = true) =>
+  useQuery({
+    queryKey: [...productsQueryKey, filters],
+    queryFn: () => searchProducts(filters),
+    select: result => result.data!,
+    enabled,
+  });
+
+export const useCategoriesQuery = () =>
+  useQuery({
+    queryKey: categoriesQueryKey,
+    queryFn: getCategories,
+    select: result => result.data ?? [],
+    staleTime: 1000 * 60 * 10,
+  });
+
+export const useWishlistItemsQuery = (page: number) =>
+  useQuery({
+    queryKey: [...wishlistItemsQueryKey, page],
+    queryFn: () => getWishlistItems(page),
+    select: result => result.data!,
+  });
+
+export const useOrdersQuery = (page: number, status = '', sortBy = 'createdAt', order = 'desc') =>
+  useQuery({
+    queryKey: [...ordersQueryKey, page, status, sortBy, order],
+    queryFn: () => getOrders(page, status, sortBy, order),
+    select: result => result.data!,
+  });
+
+export const useSupportTicketsQuery = (page: number, status = '') =>
+  useQuery({
+    queryKey: [...supportTicketsQueryKey, page, status],
+    queryFn: () => getSupportTickets(page, status),
+    select: result => result.data!,
+  });
+
+export const useSupportTicketQuery = (id: string | null) =>
+  useQuery({
+    queryKey: [...supportTicketsQueryKey, id],
+    queryFn: () => getSupportTicket(id!),
+    select: result => result.data!,
+    enabled: !!id,
   });

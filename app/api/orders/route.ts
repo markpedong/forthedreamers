@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server';
 import { getSession } from '@/lib/services/auth';
 import { successResponse, errorResponse, getPaginatedData } from '@/lib/server-helper';
+import { ORDER_STATUS } from '@/generated/prisma';
+import { z } from 'zod';
 
 /**
  * GET /api/orders
@@ -10,37 +12,40 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse('Unauthorized', 400);
+      return errorResponse('Unauthorized', 401);
     }
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const status = searchParams.get('status') || '';
-    const sortBy = searchParams.get('sortBy') || 'createdAt';
-    const order = searchParams.get('order') || 'desc';
+    const parsed = z
+      .object({
+        page: z.coerce.number().int().min(1).default(1),
+        limit: z.coerce.number().int().min(1).max(100).default(10),
+        status: z.enum(ORDER_STATUS).optional(),
+        sortBy: z.enum(['createdAt', 'total', 'status']).default('createdAt'),
+        order: z.enum(['asc', 'desc']).default('desc'),
+      })
+      .safeParse(Object.fromEntries(searchParams));
+    if (!parsed.success) return errorResponse('Invalid order filters', 400);
+    const { page, limit, status, sortBy, order } = parsed.data;
 
-    const where: any = { userId: session.user.id };
+    const where: { userId: string; status?: ORDER_STATUS } = { userId: session.user.id };
     if (status) {
       where.status = status;
     }
 
-    const orderBy: any = {};
-    orderBy[sortBy] = order;
-
     const result = await getPaginatedData({
       model: 'order',
       where: { ...where, page, pageSize: limit },
-      orderBy,
+      orderBy: [{ [sortBy]: order }, { id: 'asc' }],
       include: {
         orderItems: {
           include: {
-            product: true,
-            variant: true,
+            product: { select: { id: true, name: true, slug: true, images: true } },
+            variant: { select: { id: true, name: true } },
           },
         },
-        orderGroup: true,
-        seller: true,
+        orderGroup: { select: { paymentStatus: true } },
+        seller: { select: { storeName: true } },
       },
     });
 
@@ -52,6 +57,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Get orders error:', error);
-    return errorResponse('Internal server error', 400);
+    return errorResponse('Unable to load orders', 500);
   }
 }

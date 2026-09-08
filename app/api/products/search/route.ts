@@ -1,111 +1,102 @@
 import { NextRequest } from 'next/server';
-import { getSession } from '@/lib/services/auth';
+import { Prisma } from '@/generated/prisma';
 import { successResponse, errorResponse, getPaginatedData } from '@/lib/server-helper';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
 
-/**
- * GET /api/products/search
- * Search products with filters, sorting, and pagination.
- * Query params:
- *   q - search query (fuzzy on name, description)
- *   category - filter by category slug
- *   brand - filter by brand
- *   minPrice, maxPrice - price range
- *   minRating, maxRating - rating range
- *   inStock - boolean: 1 or 0
- *   sortBy - name, price, rating, sold, createdAt
- *   order - asc, desc
- *   page, limit - pagination
- */
+const searchSchema = z.object({
+  q: z.string().trim().max(200).default(''),
+  category: z.string().max(100).default(''),
+  brand: z.string().max(100).default(''),
+  minPrice: z.coerce.number().finite().nonnegative().optional(),
+  maxPrice: z.coerce.number().finite().nonnegative().optional(),
+  minRating: z.coerce.number().finite().min(0).max(5).default(0),
+  maxRating: z.coerce.number().finite().min(0).max(5).default(5),
+  inStock: z.enum(['0', '1']).optional(),
+  sortBy: z.enum(['name', 'price', 'basePrice', 'rating', 'sold', 'createdAt']).default('createdAt'),
+  order: z.enum(['asc', 'desc']).default('desc'),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+
 export async function GET(request: NextRequest) {
+  const parsed = searchSchema.safeParse(Object.fromEntries(request.nextUrl.searchParams));
+  if (!parsed.success) return errorResponse('Invalid search filters', 400);
+
   try {
-    const session = await getSession();
-    if (!session) {
-      return errorResponse('Unauthorized', 400);
+    const { q, category, brand, minPrice, maxPrice, minRating, maxRating, inStock, page, limit, order } = parsed.data;
+    if (minPrice != null && maxPrice != null && minPrice > maxPrice)
+      return errorResponse('Minimum price cannot exceed maximum price', 400);
+    if (minRating > maxRating) return errorResponse('Minimum rating cannot exceed maximum rating', 400);
+
+    const price = { ...(minPrice != null && { gte: minPrice }), ...(maxPrice != null && { lte: maxPrice }) };
+    const constraints: Prisma.ProductWhereInput[] = [];
+    if (q) {
+      constraints.push({
+        OR: [
+          { name: { contains: q, mode: 'insensitive' } },
+          { description: { contains: q, mode: 'insensitive' } },
+        ],
+      });
     }
-
-    const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q') || '';
-    const category = searchParams.get('category') || '';
-    const brand = searchParams.get('brand') || '';
-    const minPrice = parseFloat(searchParams.get('minPrice') || '0');
-    const maxPrice = parseFloat(searchParams.get('maxPrice') || 'Infinity');
-    const minRating = parseFloat(searchParams.get('minRating') || '0');
-    const maxRating = parseFloat(searchParams.get('maxRating') || '5');
-    const inStock = searchParams.get('inStock');
-    const sortBy = searchParams.get('sortBy') || 'createdAt';
-    const order = searchParams.get('order') || 'desc';
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
-
-    // Build filters
-    const where: Record<string, unknown> = { status: 'ACTIVE' };
-
-    // Full-text search on name and description
-    if (query) {
-      where.OR = [
-        { name: { contains: query, mode: 'insensitive' } },
-        { description: { contains: query, mode: 'insensitive' } },
-      ];
+    if (minPrice != null || maxPrice != null) {
+      constraints.push({ OR: [{ basePrice: price }, { basePrice: null, variants: { some: { price } } }] });
     }
-
-    if (category) {
-      where.category = { slug: category };
-    }
-
-    if (brand) {
-      where.brand = { contains: brand, mode: 'insensitive' };
-    }
-
-    // Price is an AND constraint; putting it in the search OR made unrelated
-    // products match every price filter.
-    where.basePrice = { gte: minPrice, lte: maxPrice };
-
-    // Rating range
-    where.rating = { gte: minRating, lte: maxRating };
-
-    // Stock filter
     if (inStock === '1') {
-      where.stock = { gt: 0 };
+      constraints.push({ OR: [{ stock: { gt: 0 } }, { variants: { some: { stock: { gt: 0 } } } }] });
     } else if (inStock === '0') {
-      where.stock = { lte: 0 };
+      constraints.push({
+        AND: [{ OR: [{ stock: { lte: 0 } }, { stock: null }] }, { variants: { none: { stock: { gt: 0 } } } }],
+      });
     }
 
-    // Build sort
-    const allowedSorts = new Set(['name', 'basePrice', 'rating', 'sold', 'createdAt']);
-    const orderBy: Record<string, 'asc' | 'desc'> = {
-      [allowedSorts.has(sortBy) ? sortBy : 'createdAt']: order === 'asc' ? 'asc' : 'desc',
+    const where: Prisma.ProductWhereInput = {
+      status: 'ACTIVE',
+      ...(category
+        ? { category: { OR: [{ id: category }, { name: { equals: category, mode: 'insensitive' } }] } }
+        : {}),
+      ...(brand ? { brand: { equals: brand, mode: 'insensitive' } } : {}),
+      rating: { gte: minRating, lte: maxRating },
+      ...(constraints.length && { AND: constraints }),
     };
-
-    // Get products with pagination
+    const sortBy = parsed.data.sortBy === 'price' ? 'basePrice' : parsed.data.sortBy;
     const result = await getPaginatedData({
       model: 'product',
       where: { ...where, page, pageSize: limit },
-      orderBy,
+      orderBy: [{ [sortBy]: order }, { id: 'asc' }],
+      include: {
+        category: { select: { id: true, name: true } },
+        seller: { select: { storeName: true } },
+        variants: {
+          select: { id: true, name: true, price: true, discountedPrice: true, stock: true },
+          orderBy: { createdAt: 'asc' },
+        },
+      },
     });
-
-    // Get categories for filter options
-    const categories = await prisma.category.findMany({
-      select: { name: true },
-    });
-
-    // Get brands (unique)
-    const brands = await prisma.product.findMany({
-      where: { brand: { not: null } },
-      select: { brand: true },
-      distinct: ['brand'],
-    });
+    const [categories, brands] = await Promise.all([
+      prisma.category.findMany({
+        where: { products: { some: { status: 'ACTIVE' } } },
+        select: { id: true, name: true },
+        orderBy: { name: 'asc' },
+      }),
+      prisma.product.findMany({
+        where: { status: 'ACTIVE', brand: { not: null } },
+        select: { brand: true },
+        distinct: ['brand'],
+        orderBy: { brand: 'asc' },
+      }),
+    ]);
 
     return successResponse({
       products: result.data,
       total: result.total,
       page: result.page,
       limit: result.pageSize,
-      categories: categories.map(c => c.name),
-      brands: brands.map(b => b.brand).filter(Boolean),
+      categories,
+      brands: brands.flatMap(item => (item.brand ? [item.brand] : [])),
     });
   } catch (error) {
     console.error('Search API error:', error);
-    return errorResponse('Internal server error', 400);
+    return errorResponse('Unable to search products', 500);
   }
 }

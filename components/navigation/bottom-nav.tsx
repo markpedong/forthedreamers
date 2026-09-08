@@ -1,7 +1,7 @@
 'use client';
 
 import { FC } from 'react';
-import { Home, ShoppingBag, Package, User } from 'lucide-react';
+import { Heart, Home, ShoppingBag, Package, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -13,6 +13,7 @@ import { Route } from 'next';
 const navItems = [
   { icon: Home, label: 'Home', href: '/' },
   { icon: ShoppingBag, label: 'Categories', href: '/categories' },
+  { icon: Heart, label: 'Wishlist', href: '/wishlist', protected: true },
   { icon: Package, label: 'Orders', href: '/orders', protected: true },
   { icon: User, label: 'Profile', href: '/profile', protected: true },
 ];

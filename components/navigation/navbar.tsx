@@ -1,7 +1,7 @@
 'use client';
 
 import { FC, useState } from 'react';
-import { LogIn, Search, ShoppingCart, User } from 'lucide-react';
+import { Heart, LifeBuoy, LogIn, Search, ShoppingCart, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -18,30 +18,31 @@ import { usePathname } from 'next/navigation';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { clearUserData } from '@/redux/reducers/userData';
-import { store } from '@/redux/store';
 import { DISABLED_NAVBAR } from '@/constants';
 import CartItemCount from './cart-item-count';
-import { useAppSelector } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { useRouter } from 'next/navigation';
+import { signOut } from '@/lib/http';
 
 const Navbar: FC = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const user = useAppSelector(state => state.userData.data);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const isMobile = useIsMobile();
   const pathname = usePathname();
 
   const handleSignOut = async () => {
-    (store.dispatch as any)(clearUserData());
+    dispatch(clearUserData());
     try {
-      await fetch('/api/auth/sign-out', { method: 'POST', credentials: 'include' });
+      await signOut();
     } catch (err) {
       console.error('Error signing out:', err);
     }
     router.replace('/sign-in');
   };
 
-  if (DISABLED_NAVBAR.includes(pathname)) return null;
+  if (DISABLED_NAVBAR.some(path => pathname === path || (path === '/dashboard' && pathname.startsWith('/dashboard/')))) return null;
 
   const CartButton = (
     <Link href="/cart" className="relative p-2 hover:bg-muted rounded-full transition-colors">
@@ -62,7 +63,13 @@ const Navbar: FC = () => {
           <Link href="/profile">Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/profile?tab=orders">Orders</Link>
+          <Link href="/orders">Orders</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/wishlist"><Heart className="h-4 w-4" /> Wishlist</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/support"><LifeBuoy className="h-4 w-4" /> Support</Link>
         </DropdownMenuItem>
         {pathname !== '/profile' && (
           <>

@@ -1,58 +1,46 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Search, X } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import formSchemas from '@/hooks/form-schemas';
-import { SchemaForm } from '@/lib/types';
-import Form from '../reusable/form';
-
-const SUGGESTIONS = [
-  { type: 'product', label: 'Wireless Headphones', category: 'Electronics' },
-  { type: 'product', label: 'Running Shoes', category: 'Fashion' },
-  { type: 'category', label: 'Electronics', category: 'Category' },
-  { type: 'category', label: 'Fashion & Apparel', category: 'Category' },
-  { type: 'shop', label: 'TechHub Store', category: 'Shop' },
-  { type: 'shop', label: 'Fashion Plus', category: 'Shop' },
-];
+import { Input } from '@/components/ui/input';
+import { useProductsQuery } from '@/services/useQuery';
 
 const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const [filtered, setFiltered] = useState(SUGGESTIONS.slice(0, 4));
-  const { searchSchema } = formSchemas;
-
-  const form = useForm<SchemaForm<typeof searchSchema>>({
-    resolver: zodResolver(searchSchema),
-    defaultValues: { search: '' },
-  });
-
-  const searchValue = form.watch('search');
+  const router = useRouter();
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const query = useProductsQuery({ q: debouncedSearch, limit: 6 }, isOpen && debouncedSearch.length >= 2);
 
   useEffect(() => {
-    const query = searchValue.trim().toLowerCase();
-    if (query) {
-      setFiltered(SUGGESTIONS.filter(item => item.label.toLowerCase().includes(query)));
-    } else {
-      setFiltered(SUGGESTIONS.slice(0, 4));
-    }
-  }, [searchValue]);
+    const timer = window.setTimeout(() => setDebouncedSearch(search.trim()), 300);
+    return () => window.clearTimeout(timer);
+  }, [search]);
 
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) onClose();
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) onClose();
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, [isOpen, onClose]);
 
+  const openResults = () => {
+    const value = search.trim();
+    if (!value) return;
+    router.push(`/products?q=${encodeURIComponent(value)}`);
+    onClose();
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div
+          <motion.button
+            type="button"
+            aria-label="Close search"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -60,79 +48,79 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
           />
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Search products"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-start justify-center pt-20 md:pt-32 px-4"
+            className="fixed inset-x-4 top-20 z-50 mx-auto w-auto max-w-2xl md:top-32"
           >
-            <div className="w-full max-w-2xl">
-              <Form form={form} className="relative mb-4" customSubmitButton>
-                <div className="relative bg-background rounded-lg shadow-lg overflow-hidden">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    autoFocus
-                    type="text"
-                    placeholder="Search products, categories, shops..."
-                    {...form.register('search')}
-                    className="w-full pl-12 pr-12 py-3 text-base border-0 bg-background focus-visible:ring-2 focus-visible:ring-primary"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      form.reset();
-                      setFiltered(SUGGESTIONS.slice(0, 4));
-                      onClose();
-                    }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                  >
-                    <X className="w-5 h-5" />
-                  </Button>
-                </div>
-              </Form>
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-background rounded-lg shadow-lg overflow-hidden"
-              >
-                {filtered.length ? (
-                  <div className="divide-y divide-border">
-                    {filtered.map((s, i) => (
-                      <motion.button
-                        key={i}
-                        whileHover={{ backgroundColor: 'var(--muted)' }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => {
-                          form.setValue('search', s.label);
-                          onClose();
-                        }}
-                        className="w-full px-4 py-3 text-left flex items-center justify-between hover:bg-muted transition-colors"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Search className="w-4 h-4 text-muted-foreground" />
-                          <div>
-                            <p className="text-sm font-medium">{s.label}</p>
-                            <p className="text-xs text-muted-foreground">{s.category}</p>
-                          </div>
-                        </div>
-                      </motion.button>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="px-4 py-8 text-center text-muted-foreground">
-                    <p>No results found for “{searchValue}”</p>
-                  </div>
-                )}
-              </motion.div>
+            <form
+              onSubmit={event => {
+                event.preventDefault();
+                openResults();
+              }}
+              className="relative mb-4 overflow-hidden rounded-lg bg-background shadow-lg"
+            >
+              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                autoFocus
+                value={search}
+                onChange={event => setSearch(event.target.value)}
+                placeholder="Search products..."
+                className="w-full border-0 bg-background py-3 pl-12 pr-12 text-base focus-visible:ring-2 focus-visible:ring-primary"
+              />
+              <Button type="button" variant="ghost" size="icon" onClick={onClose} className="absolute right-2 top-1/2 -translate-y-1/2">
+                <X className="h-5 w-5" />
+                <span className="sr-only">Close search</span>
+              </Button>
+            </form>
 
-              <div className="mt-4 text-center text-xs text-muted-foreground">
-                <p>
-                  Press <kbd className="px-2 py-1 bg-muted rounded text-foreground">ESC</kbd> to close
+            <div className="overflow-hidden rounded-lg bg-background shadow-lg">
+              {search.trim().length < 2 ? (
+                <p className="px-4 py-8 text-center text-sm text-muted-foreground">Type at least 2 characters to search.</p>
+              ) : query.isLoading || debouncedSearch !== search.trim() ? (
+                <p className="px-4 py-8 text-center text-sm text-muted-foreground">Searching products…</p>
+              ) : query.isError ? (
+                <div className="space-y-3 px-4 py-8 text-center">
+                  <p className="text-sm text-destructive">{query.error.message}</p>
+                  <Button variant="outline" size="sm" onClick={() => void query.refetch()}>Try again</Button>
+                </div>
+              ) : query.data?.products.length ? (
+                <div className="divide-y divide-border">
+                  {query.data.products.map(product => (
+                    <button
+                      type="button"
+                      key={product.id}
+                      onClick={() => {
+                        router.push(`/products/${product.slug}`);
+                        onClose();
+                      }}
+                      className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-muted"
+                    >
+                      <span>
+                        <span className="block text-sm font-medium">{product.name}</span>
+                        <span className="block text-xs text-muted-foreground">
+                          {product.category.name} · {product.seller.storeName}
+                        </span>
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        {product.basePrice != null || product.variants[0]
+                          ? `$${(product.basePrice ?? product.variants[0].price).toFixed(2)}`
+                          : 'Price unavailable'}
+                      </span>
+                    </button>
+                  ))}
+                  <button type="button" onClick={openResults} className="w-full px-4 py-3 text-sm font-medium hover:bg-muted">
+                    View all results
+                  </button>
+                </div>
+              ) : (
+                <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+                  No products found for “{debouncedSearch}”.
                 </p>
-              </div>
+              )}
             </div>
           </motion.div>
         </>

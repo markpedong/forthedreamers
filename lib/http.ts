@@ -6,6 +6,94 @@ import type { CartItem } from './services/cart';
 import type { ApiResponse, ApiSuccessResponse, ProductFormData, TProduct } from './types';
 import type { TUserData } from '@/services/types';
 
+export type CatalogProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  brand: string | null;
+  basePrice: number | null;
+  images: string[];
+  rating: number;
+  reviewCount: number;
+  stock: number | null;
+  category: { id: string; name: string };
+  seller: { storeName: string };
+  variants: { id: string; name: string; price: number; discountedPrice: number | null; stock: number }[];
+};
+
+export type ProductSearchParams = {
+  q?: string;
+  category?: string;
+  brand?: string;
+  minPrice?: string | number;
+  maxPrice?: string | number;
+  minRating?: string | number;
+  maxRating?: string | number;
+  inStock?: '0' | '1' | '';
+  sortBy?: 'name' | 'price' | 'basePrice' | 'rating' | 'sold' | 'createdAt';
+  order?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+};
+
+export type ProductsResult = {
+  products: CatalogProduct[];
+  total: number;
+  page: number;
+  limit: number;
+  categories: { id: string; name: string }[];
+  brands: string[];
+};
+
+export type CategoryResult = { id: string; name: string; _count: { products: number } };
+export type WishlistResult = {
+  wishlist: { id: string; addedAt: string; product: CatalogProduct }[];
+  total: number;
+  page: number;
+  limit: number;
+};
+
+export type OrderResult = {
+  id: string;
+  total: number;
+  status: string;
+  createdAt: string;
+  orderGroup: { paymentStatus: string } | null;
+  seller: { storeName: string } | null;
+  orderItems: {
+    id: string;
+    quantity: number;
+    finalPriceAfterDiscount: number;
+    product: { id: string; name: string; slug: string; images: string[] } | null;
+    variant: { id: string; name: string };
+  }[];
+};
+
+export type OrdersResult = { orders: OrderResult[]; total: number; page: number; limit: number };
+export type SupportMessageResult = {
+  id: string;
+  message: string;
+  isStaff: boolean;
+  createdAt: string;
+};
+export type SupportTicketResult = {
+  id: string;
+  subject: string;
+  message: string;
+  category: 'ORDER' | 'PRODUCT' | 'SHIPPING' | 'ACCOUNT' | 'OTHER';
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
+  status: 'OPEN' | 'IN_PROGRESS' | 'CLOSED' | 'CANCELLED';
+  createdAt: string;
+  updatedAt: string;
+  messages?: SupportMessageResult[];
+};
+export type SupportTicketsResult = {
+  tickets: SupportTicketResult[];
+  total: number;
+  page: number;
+  limit: number;
+};
+
 type FetchOptions = Omit<RequestInit, 'body'> & {
   body?: unknown;
   showErrorToast?: boolean;
@@ -46,6 +134,26 @@ export const deleteProduct = (id: string) => apiFetch(API_ROUTE.PRODUCTS, { meth
 export const toggleProductStatus = ({ id, active }: { id: string; active: boolean }) =>
   apiFetch(`${API_ROUTE.PRODUCTS}/toggle`, { method: 'PATCH', body: { id, active } });
 
+// ─── Customer catalog ─────────────────────────────────────────────────────
+
+const withSearchParams = (path: string, values: Record<string, string | number | undefined>) => {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(values)) {
+    if (value !== undefined && value !== '') params.set(key, String(value));
+  }
+  const query = params.toString();
+  return query ? `${path}?${query}` : path;
+};
+
+export const searchProducts = (filters: ProductSearchParams) =>
+  apiFetch<ProductsResult>(withSearchParams('/api/products/search', filters), {
+    cache: 'no-store',
+    showErrorToast: false,
+  });
+
+export const getCategories = () =>
+  apiFetch<CategoryResult[]>(API_ROUTE.CATEGORIES, { cache: 'no-store', showErrorToast: false });
+
 // ─── Cart ──────────────────────────────────────────────────────────────────
 
 type CartMutationData = {
@@ -79,6 +187,46 @@ export const setWishlist = (productId: string, wanted: boolean) =>
       showErrorToast: false,
     }
   );
+
+export const getWishlistItems = (page: number, limit = 20) =>
+  apiFetch<WishlistResult>(withSearchParams('/api/wishlist', { page, limit }), {
+    cache: 'no-store',
+    showErrorToast: false,
+  });
+
+// ─── Orders and support ───────────────────────────────────────────────────
+
+export const getOrders = (page: number, status = '', sortBy = 'createdAt', order = 'desc') =>
+  apiFetch<OrdersResult>(withSearchParams('/api/orders', { page, limit: 10, status, sortBy, order }), {
+    cache: 'no-store',
+    showErrorToast: false,
+  });
+
+export const getSupportTickets = (page: number, status = '') =>
+  apiFetch<SupportTicketsResult>(withSearchParams('/api/support/tickets', { page, limit: 10, status }), {
+    cache: 'no-store',
+    showErrorToast: false,
+  });
+
+export const getSupportTicket = (id: string) =>
+  apiFetch<SupportTicketResult>(`/api/support/tickets/${encodeURIComponent(id)}`, {
+    cache: 'no-store',
+    showErrorToast: false,
+  });
+
+export const createSupportTicket = (input: {
+  subject: string;
+  message: string;
+  category: SupportTicketResult['category'];
+  priority: SupportTicketResult['priority'];
+}) => apiFetch<SupportTicketResult>('/api/support/tickets', { method: 'POST', body: input, showErrorToast: false });
+
+export const sendSupportMessage = ({ ticketId, message }: { ticketId: string; message: string }) =>
+  apiFetch<SupportMessageResult>(`/api/support/tickets/${encodeURIComponent(ticketId)}/messages`, {
+    method: 'POST',
+    body: { message },
+    showErrorToast: false,
+  });
 
 // ─── Auth and profile ───────────────────────────────────────────────────────
 

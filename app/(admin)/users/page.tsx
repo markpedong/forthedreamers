@@ -16,7 +16,7 @@ const Page = async () => {
     users = await listUsers();
   } catch (err) {
     if (err instanceof Error && err.message.includes('not allowed')) {
-      redirect('/products');
+      redirect('/dashboard/products');
     }
 
     redirect('/');
