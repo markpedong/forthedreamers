@@ -1,8 +1,9 @@
 export type ProfileTab = 'profile' | 'addresses' | 'security'
+export type Theme = 'light' | 'dark'
 
 export type TAppDataState = {
-  theme: string | null
-  currentProfileTab: ProfileTab | null
+  theme: Theme
+  currentProfileTab: ProfileTab
 }
 
 export type TCartDataState = {

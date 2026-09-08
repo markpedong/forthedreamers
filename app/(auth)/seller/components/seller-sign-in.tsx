@@ -17,12 +17,15 @@ import Input from '@/components/reusable/input';
 import Link from 'next/link';
 import { signIn } from '@/lib/http';
 import { useMutation } from '@tanstack/react-query';
+import { setUserData } from '@/redux/reducers/userData';
+import { store } from '@/redux/store';
 
 const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
   const mutation = useMutation({
     mutationFn: signIn,
-    onSuccess: () => {
+    onSuccess: result => {
+      (store.dispatch as any)(setUserData(result.data!));
       toast.success('Logged in successfully!', { duration: 3000 });
       router.push('/dashboard');
     },

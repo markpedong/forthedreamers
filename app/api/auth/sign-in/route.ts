@@ -23,7 +23,12 @@ export const POST = async (request: NextRequest) => {
         403
       );
     }
-    return successResponse({ role: session.user.role });
+    return successResponse({
+      ...session.user,
+      email: session.user.email ?? '',
+      createdAt: new Date(session.user.createdAt).toISOString(),
+      updatedAt: new Date(session.user.updatedAt).toISOString(),
+    });
   } catch (error) {
     return errorResponse(error instanceof Error ? error.message : 'Unable to sign in', 400);
   }

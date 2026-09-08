@@ -1,9 +1,10 @@
-import { ProfileTab, TAppDataState } from "@/services/types";
+import { ProfileTab, TAppDataState, Theme } from "@/services/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: TAppDataState = {
-  theme: null,
-  currentProfileTab: null
+  theme:
+    typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+  currentProfileTab: 'profile'
 }
 
 const appDataSlice = createSlice({
@@ -11,7 +12,7 @@ const appDataSlice = createSlice({
   initialState,
   reducers: {
     resetAppDataState: () => initialState,
-    setTheme: (state, action) => {
+    setTheme: (state, action: PayloadAction<Theme>) => {
       state.theme = action.payload;
     },
     setCurrentProfileTab: (state, action: PayloadAction<ProfileTab>) => {

@@ -84,7 +84,7 @@ export const setWishlist = (productId: string, wanted: boolean) =>
 
 export const getCurrentUser = () => apiFetch<TUserData>('/api/auth/me', { cache: 'no-store', showErrorToast: false });
 export const signIn = (input: { email: string; password: string; audience: 'user' | 'seller' }) =>
-  apiFetch<{ role: string }>('/api/auth/sign-in', { method: 'POST', body: input, showErrorToast: false });
+  apiFetch<TUserData>('/api/auth/sign-in', { method: 'POST', body: input, showErrorToast: false });
 export const signUp = (input: { email: string; password: string; name: string }) =>
   apiFetch('/api/auth/sign-up', { method: 'POST', body: input, showErrorToast: false });
 export const sellerSignUp = (input: unknown) =>

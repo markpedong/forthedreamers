@@ -1,22 +1,17 @@
 'use client';
 
+import { useAppSelector } from '@/redux/store';
 import { Button } from '@/components/ui/button';
-import { useAuthSession } from '@/lib/supabase/auth-context';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HatGlasses } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 
 const ImpersonationIndicator: FC = () => {
-  const session = useAuthSession().session;
   const router = useRouter();
 
-  // Check for impersonation (custom property from Supabase extension)
-  const isImpersonated = session?.session && 'impersonatedBy' in (session.session as any);
-  const impersonatedBy = isImpersonated ? (session.session as any).impersonatedBy : null;
-
-  if (!impersonatedBy) return null;
-
+  // Impersonation is handled server-side; no client-side session needed.
+  // This component stays as a placeholder for future server-side integration.
   const handleStopImpersonating = async () => {
     router.push('/users');
   };

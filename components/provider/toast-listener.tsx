@@ -1,13 +1,13 @@
 'use client';
 
-import { useAuthSession } from '@/lib/supabase/auth-context';
+import { clearUserData } from '@/redux/reducers/userData';
+import { store } from '@/redux/store';
 import { Route } from 'next';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 const ToastListener = () => {
-  const { signOut } = useAuthSession();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -17,6 +17,16 @@ const ToastListener = () => {
   const accountLinked = searchParams.get('accountLinked');
   const isFromSocial = searchParams.get('social');
   const isSignedIn = searchParams.get('isSignedIn');
+
+  const handleSignOut = async () => {
+    (store.dispatch as any)(clearUserData());
+    try {
+      await fetch('/api/auth/sign-out', { method: 'POST', credentials: 'include' });
+    } catch (err) {
+      console.error('Error signing out:', err);
+    }
+    router.replace('/sign-in');
+  };
 
   const deleteParameters = (keys: string[]) => {
     const nextSearchParams = new URLSearchParams(searchParams.toString());
@@ -30,7 +40,7 @@ const ToastListener = () => {
 
   useEffect(() => {
     if (isSignedIn === 'false') {
-      signOut();
+      handleSignOut();
       deleteParameters(['isSignedIn']);
     }
   }, [pathname, isSignedIn]);

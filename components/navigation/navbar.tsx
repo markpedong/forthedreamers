@@ -17,17 +17,29 @@ import SearchOverlay from './search-overlay';
 import { usePathname } from 'next/navigation';
 import classNames from 'classnames';
 import Link from 'next/link';
-import { useAuthSession } from '@/lib/supabase/auth-context';
+import { clearUserData } from '@/redux/reducers/userData';
+import { store } from '@/redux/store';
 import { DISABLED_NAVBAR } from '@/constants';
 import CartItemCount from './cart-item-count';
 import { useAppSelector } from '@/redux/store';
+import { useRouter } from 'next/navigation';
 
 const Navbar: FC = () => {
-  const { signOut } = useAuthSession();
+  const router = useRouter();
   const user = useAppSelector(state => state.userData.data);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const isMobile = useIsMobile();
   const pathname = usePathname();
+
+  const handleSignOut = async () => {
+    (store.dispatch as any)(clearUserData());
+    try {
+      await fetch('/api/auth/sign-out', { method: 'POST', credentials: 'include' });
+    } catch (err) {
+      console.error('Error signing out:', err);
+    }
+    router.replace('/sign-in');
+  };
 
   if (DISABLED_NAVBAR.includes(pathname)) return null;
 
@@ -55,7 +67,7 @@ const Navbar: FC = () => {
         {pathname !== '/profile' && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer" onClick={() => void signOut()} variant="destructive">
+            <DropdownMenuItem className="cursor-pointer" onClick={() => void handleSignOut()} variant="destructive">
               Logout
             </DropdownMenuItem>
           </>

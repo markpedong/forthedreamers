@@ -15,13 +15,17 @@ import Link from 'next/link';
 
 import { signIn } from '@/lib/http';
 import { useMutation } from '@tanstack/react-query';
+import { setUserData } from '@/redux/reducers/userData';
+import { store } from '@/redux/store';
 
 const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
   const mutation = useMutation({
     mutationFn: signIn,
-    onSuccess: () => {
+    onSuccess: result => {
+      (store.dispatch as any)(setUserData(result.data!));
       toast.success('Sign in successfully!', { duration: 2000 });
+      router.replace('/profile');
       router.refresh();
     },
     onError: error => toast.error(error.message, { duration: 5000 }),

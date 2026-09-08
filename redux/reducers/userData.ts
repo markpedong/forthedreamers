@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { TUserData, TUserDataState } from '@/services/types'
+import { TUserData } from '@/services/types'
 
-const initialState: TUserDataState = {
+const initialState: { data: TUserData | null } = {
   data: null
 }
 
