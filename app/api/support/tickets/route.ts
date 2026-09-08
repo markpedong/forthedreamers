@@ -1,8 +1,8 @@
-import { NextRequest } from "next/server";
+import { NextRequest } from 'next/server';
 import { getSession } from '@/lib/services/auth';
-import { successResponse, errorResponse, getPaginatedData } from "@/lib/server-helper";
-import { prisma } from "@/lib/prisma";
-import { z } from "zod";
+import { successResponse, errorResponse, getPaginatedData } from '@/lib/server-helper';
+import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
 
 /**
  * GET /api/support/tickets
@@ -12,13 +12,13 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse("Unauthorized");
+      return errorResponse('Unauthorized');
     }
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "10");
-    const status = searchParams.get("status") || "";
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const status = searchParams.get('status') || '';
 
     const where: any = { userId: session.user.id };
     if (status) {
@@ -26,11 +26,11 @@ export async function GET(request: NextRequest) {
     }
 
     const result = await getPaginatedData({
-      model: "supportTicket",
+      model: 'supportTicket',
       where: { ...where, page, pageSize: limit },
       include: {
         messages: {
-          orderBy: { createdAt: "asc" },
+          orderBy: { createdAt: 'asc' },
         },
       },
     });
@@ -42,8 +42,8 @@ export async function GET(request: NextRequest) {
       limit: result.pageSize,
     });
   } catch (error) {
-    console.error("Get support tickets error:", error);
-    return errorResponse("Internal server error");
+    console.error('Get support tickets error:', error);
+    return errorResponse('Internal server error');
   }
 }
 
@@ -54,8 +54,8 @@ export async function GET(request: NextRequest) {
 const ticketSchema = z.object({
   subject: z.string().min(5).max(200),
   message: z.string().min(10).max(2000),
-  category: z.enum(["ORDER", "PRODUCT", "SHIPPING", "ACCOUNT", "OTHER"]),
-  priority: z.enum(["LOW", "MEDIUM", "HIGH"]).optional().default("MEDIUM"),
+  category: z.enum(['ORDER', 'PRODUCT', 'SHIPPING', 'ACCOUNT', 'OTHER']),
+  priority: z.enum(['LOW', 'MEDIUM', 'HIGH']).optional().default('MEDIUM'),
   orderId: z.string().optional(),
   productId: z.string().optional(),
 });
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse("Unauthorized");
+      return errorResponse('Unauthorized');
     }
 
     const body = await request.json();
@@ -82,18 +82,18 @@ export async function POST(request: NextRequest) {
       },
       include: {
         messages: {
-          orderBy: { createdAt: "asc" },
+          orderBy: { createdAt: 'asc' },
         },
       },
     });
 
-    return successResponse(ticket, "Support ticket created", 201);
+    return successResponse(ticket, 'Support ticket created', 201);
   } catch (error) {
-    console.error("Create support ticket error:", error);
+    console.error('Create support ticket error:', error);
     if (error instanceof z.ZodError) {
-      return errorResponse("Invalid input data");
+      return errorResponse('Invalid input data');
     }
-    return errorResponse("Internal server error");
+    return errorResponse('Internal server error');
   }
 }
 
@@ -101,14 +101,11 @@ export async function POST(request: NextRequest) {
  * GET /api/support/tickets/[id]
  * Get a specific support ticket.
  */
-export async function GET_BY_ID(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET_BY_ID(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse("Unauthorized");
+      return errorResponse('Unauthorized');
     }
 
     const { id } = await params;
@@ -120,19 +117,19 @@ export async function GET_BY_ID(
       },
       include: {
         messages: {
-          orderBy: { createdAt: "asc" },
+          orderBy: { createdAt: 'asc' },
         },
       },
     });
 
     if (!ticket) {
-      return errorResponse("Support ticket not found");
+      return errorResponse('Support ticket not found');
     }
 
     return successResponse(ticket);
   } catch (error) {
-    console.error("Get support ticket error:", error);
-    return errorResponse("Internal server error");
+    console.error('Get support ticket error:', error);
+    return errorResponse('Internal server error');
   }
 }
 
@@ -144,14 +141,11 @@ const messageSchema = z.object({
   message: z.string().min(10).max(2000),
 });
 
-export async function POST_MESSAGE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST_MESSAGE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse("Unauthorized");
+      return errorResponse('Unauthorized');
     }
 
     const { id } = await params;
@@ -167,7 +161,7 @@ export async function POST_MESSAGE(
     });
 
     if (!ticket) {
-      return errorResponse("Support ticket not found");
+      return errorResponse('Support ticket not found');
     }
 
     const newMessage = await prisma.supportMessage.create({
@@ -185,13 +179,13 @@ export async function POST_MESSAGE(
       data: { updatedAt: new Date() },
     });
 
-    return successResponse(newMessage, "Message added to ticket", 201);
+    return successResponse(newMessage, 'Message added to ticket', 201);
   } catch (error) {
-    console.error("Add support message error:", error);
+    console.error('Add support message error:', error);
     if (error instanceof z.ZodError) {
-      return errorResponse("Invalid input data");
+      return errorResponse('Invalid input data');
     }
-    return errorResponse("Internal server error");
+    return errorResponse('Internal server error');
   }
 }
 
@@ -202,15 +196,15 @@ export async function POST_MESSAGE(
 export async function GET_ADMIN(request: NextRequest) {
   try {
     const session = await getSession();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return errorResponse("Unauthorized");
+    if (!session?.user || session.user.role !== 'ADMIN') {
+      return errorResponse('Unauthorized');
     }
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "20");
-    const status = searchParams.get("status") || "";
-    const category = searchParams.get("category") || "";
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
+    const status = searchParams.get('status') || '';
+    const category = searchParams.get('category') || '';
 
     const where: any = {};
     if (status) {
@@ -221,7 +215,7 @@ export async function GET_ADMIN(request: NextRequest) {
     }
 
     const result = await getPaginatedData({
-      model: "supportTicket",
+      model: 'supportTicket',
       where: { ...where, page, pageSize: limit },
       include: {
         user: {
@@ -242,7 +236,7 @@ export async function GET_ADMIN(request: NextRequest) {
       limit: result.pageSize,
     });
   } catch (error) {
-    console.error("Get admin support tickets error:", error);
-    return errorResponse("Internal server error");
+    console.error('Get admin support tickets error:', error);
+    return errorResponse('Internal server error');
   }
 }

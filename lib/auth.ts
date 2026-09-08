@@ -1,8 +1,8 @@
-import { cache } from "react";
-import type { User as SupabaseUser } from "@supabase/supabase-js";
-import { getRandomDefaultAvatarUrl } from "./default-avatars";
-import { prisma } from "./prisma";
-import { createSupabaseServerClient } from "./supabase/server";
+import { cache } from 'react';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
+import { getRandomDefaultAvatarUrl } from './default-avatars';
+import { prisma } from './prisma';
+import { createSupabaseServerClient } from './supabase/server';
 
 export const upsertAuthUser = async (user: SupabaseUser) => {
   if (!user.email) return null;
@@ -10,11 +10,11 @@ export const upsertAuthUser = async (user: SupabaseUser) => {
   const profile = await prisma.user.findUnique({ where: { id: user.id } });
   const name =
     profile?.name ||
-    (typeof user.user_metadata.name === "string" && user.user_metadata.name) ||
-    (typeof user.user_metadata.full_name === "string" && user.user_metadata.full_name) ||
-    user.email.split("@")[0] ||
-    "user";
-  const metadataImage = typeof user.user_metadata.avatar_url === "string" ? user.user_metadata.avatar_url : null;
+    (typeof user.user_metadata.name === 'string' && user.user_metadata.name) ||
+    (typeof user.user_metadata.full_name === 'string' && user.user_metadata.full_name) ||
+    user.email.split('@')[0] ||
+    'user';
+  const metadataImage = typeof user.user_metadata.avatar_url === 'string' ? user.user_metadata.avatar_url : null;
   const emailVerified = Boolean(user.email_confirmed_at);
 
   if (!profile) {
@@ -23,7 +23,7 @@ export const upsertAuthUser = async (user: SupabaseUser) => {
     if (!metadataImage) {
       const supabase = await createSupabaseServerClient();
       const { error } = await supabase.auth.updateUser({ data: { avatar_url: image } });
-      if (error) console.error("Unable to persist default avatar in Supabase Auth:", error.message);
+      if (error) console.error('Unable to persist default avatar in Supabase Auth:', error.message);
     }
 
     return prisma.user.create({
@@ -39,11 +39,7 @@ export const upsertAuthUser = async (user: SupabaseUser) => {
 
   const image = metadataImage ?? profile.image;
 
-  if (
-    profile.email !== user.email ||
-    profile.emailVerified !== emailVerified ||
-    profile.image !== image
-  ) {
+  if (profile.email !== user.email || profile.emailVerified !== emailVerified || profile.image !== image) {
     return prisma.user.update({
       where: { id: user.id },
       data: {

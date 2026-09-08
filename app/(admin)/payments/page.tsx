@@ -5,27 +5,14 @@ import { useState } from 'react';
 import { CreditCard, MoreHorizontal, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const initialTransactions = [
   {
@@ -80,13 +67,13 @@ export default function PaymentsPage() {
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [toast, setToast] = useState('');
 
-  const handleViewDetails = (transaction) => {
+  const handleViewDetails = transaction => {
     setSelectedTransaction(transaction);
     showNotification(`Viewing transaction ${transaction.id}`);
   };
 
-  const handleRefund = (transactionId) => {
-    const transaction = transactions.find((t) => t.id === transactionId);
+  const handleRefund = transactionId => {
+    const transaction = transactions.find(t => t.id === transactionId);
     const newTransaction = {
       ...transaction,
       id: `TXN${Math.random().toString().slice(2, 5)}`,
@@ -98,58 +85,50 @@ export default function PaymentsPage() {
     showNotification(`Refund of ${transaction.amount} initiated for ${transaction.customer}`);
   };
 
-  const handleDownloadReceipt = (transactionId) => {
+  const handleDownloadReceipt = transactionId => {
     showNotification(`Receipt for ${transactionId} downloaded`);
   };
 
-  const showNotification = (message) => {
+  const showNotification = message => {
     setToast(message);
     setTimeout(() => setToast(''), 3000);
   };
 
   return (
-    <div className='p-6 space-y-6'>
+    <div className="p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className='text-3xl font-bold tracking-tight'>Payments</h1>
-        <p className='text-muted-foreground mt-1'>Manage transactions and refunds</p>
+        <h1 className="text-3xl font-bold tracking-tight">Payments</h1>
+        <p className="text-muted-foreground mt-1">Manage transactions and refunds</p>
       </div>
 
       {/* Summary Cards */}
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
-          <CardHeader className='pb-2'>
-            <CardTitle className='text-sm font-medium text-muted-foreground'>
-              Total Revenue
-            </CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>$45,231.89</div>
-            <p className='text-xs text-muted-foreground mt-1'>
-              From {transactions.length} transactions
-            </p>
+            <div className="text-2xl font-bold">$45,231.89</div>
+            <p className="text-xs text-muted-foreground mt-1">From {transactions.length} transactions</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className='pb-2'>
-            <CardTitle className='text-sm font-medium text-muted-foreground'>
-              Pending Refunds
-            </CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Pending Refunds</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>$449.97</div>
-            <p className='text-xs text-muted-foreground mt-1'>2 pending refunds</p>
+            <div className="text-2xl font-bold">$449.97</div>
+            <p className="text-xs text-muted-foreground mt-1">2 pending refunds</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className='pb-2'>
-            <CardTitle className='text-sm font-medium text-muted-foreground'>
-              Success Rate
-            </CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Success Rate</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>98%</div>
-            <p className='text-xs text-muted-foreground mt-1'>4 of 5 successful</p>
+            <div className="text-2xl font-bold">98%</div>
+            <p className="text-xs text-muted-foreground mt-1">4 of 5 successful</p>
           </CardContent>
         </Card>
       </div>
@@ -161,7 +140,7 @@ export default function PaymentsPage() {
           <CardDescription>All payment activities</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='overflow-x-auto'>
+          <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -172,18 +151,18 @@ export default function PaymentsPage() {
                   <TableHead>Type</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead className='text-right'>Actions</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {transactions.map((transaction) => (
+                {transactions.map(transaction => (
                   <TableRow key={transaction.id}>
-                    <TableCell className='font-medium'>{transaction.id}</TableCell>
+                    <TableCell className="font-medium">{transaction.id}</TableCell>
                     <TableCell>{transaction.customer}</TableCell>
-                    <TableCell className='font-medium'>{transaction.amount}</TableCell>
+                    <TableCell className="font-medium">{transaction.amount}</TableCell>
                     <TableCell>
-                      <div className='flex items-center gap-2'>
-                        <CreditCard className='w-4 h-4 text-muted-foreground' />
+                      <div className="flex items-center gap-2">
+                        <CreditCard className="w-4 h-4 text-muted-foreground" />
                         {transaction.method}
                       </div>
                     </TableCell>
@@ -206,20 +185,20 @@ export default function PaymentsPage() {
                       </span>
                     </TableCell>
                     <TableCell>{transaction.date}</TableCell>
-                    <TableCell className='text-right'>
+                    <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant='ghost' size='icon'>
-                            <MoreHorizontal className='w-4 h-4' />
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="w-4 h-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align='end'>
+                        <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => handleViewDetails(transaction)}>
                             View Details
                           </DropdownMenuItem>
                           {transaction.type === 'Charge' && (
                             <DropdownMenuItem onClick={() => handleRefund(transaction.id)}>
-                              <RefreshCw className='w-4 h-4 mr-2' />
+                              <RefreshCw className="w-4 h-4 mr-2" />
                               Refund
                             </DropdownMenuItem>
                           )}
@@ -245,34 +224,34 @@ export default function PaymentsPage() {
               <DialogTitle>Transaction Details</DialogTitle>
               <DialogDescription>{selectedTransaction.id}</DialogDescription>
             </DialogHeader>
-            <div className='space-y-4'>
-              <div className='grid grid-cols-2 gap-4'>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className='text-sm text-muted-foreground'>Customer</p>
-                  <p className='font-medium'>{selectedTransaction.customer}</p>
+                  <p className="text-sm text-muted-foreground">Customer</p>
+                  <p className="font-medium">{selectedTransaction.customer}</p>
                 </div>
                 <div>
-                  <p className='text-sm text-muted-foreground'>Amount</p>
-                  <p className='font-medium'>{selectedTransaction.amount}</p>
+                  <p className="text-sm text-muted-foreground">Amount</p>
+                  <p className="font-medium">{selectedTransaction.amount}</p>
                 </div>
                 <div>
-                  <p className='text-sm text-muted-foreground'>Method</p>
-                  <p className='font-medium'>{selectedTransaction.method}</p>
+                  <p className="text-sm text-muted-foreground">Method</p>
+                  <p className="font-medium">{selectedTransaction.method}</p>
                 </div>
                 <div>
-                  <p className='text-sm text-muted-foreground'>Status</p>
-                  <p className='font-medium'>{selectedTransaction.status}</p>
+                  <p className="text-sm text-muted-foreground">Status</p>
+                  <p className="font-medium">{selectedTransaction.status}</p>
                 </div>
               </div>
               {selectedTransaction.type === 'Charge' && (
                 <Button
-                  className='w-full'
+                  className="w-full"
                   onClick={() => {
                     handleRefund(selectedTransaction.id);
                     setSelectedTransaction(null);
                   }}
                 >
-                  <RefreshCw className='w-4 h-4 mr-2' />
+                  <RefreshCw className="w-4 h-4 mr-2" />
                   Process Refund
                 </Button>
               )}
@@ -283,7 +262,7 @@ export default function PaymentsPage() {
 
       {/* Toast notification */}
       {toast && (
-        <div className='fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm'>
+        <div className="fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm">
           {toast}
         </div>
       )}

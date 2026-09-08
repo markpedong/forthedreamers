@@ -1,7 +1,7 @@
-import {redirect} from 'next/navigation'
+import { redirect } from 'next/navigation';
 
 const AnalyticsPage = () => {
-  redirect('/dashboard?range=12m')
-}
+  redirect('/dashboard?range=12m');
+};
 
-export default AnalyticsPage
+export default AnalyticsPage;

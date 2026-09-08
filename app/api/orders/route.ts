@@ -1,6 +1,6 @@
-import { NextRequest } from "next/server";
+import { NextRequest } from 'next/server';
 import { getSession } from '@/lib/services/auth';
-import { successResponse, errorResponse, getPaginatedData } from "@/lib/server-helper";
+import { successResponse, errorResponse, getPaginatedData } from '@/lib/server-helper';
 
 /**
  * GET /api/orders
@@ -10,15 +10,15 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse("Unauthorized");
+      return errorResponse('Unauthorized');
     }
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "10");
-    const status = searchParams.get("status") || "";
-    const sortBy = searchParams.get("sortBy") || "createdAt";
-    const order = searchParams.get("order") || "desc";
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const status = searchParams.get('status') || '';
+    const sortBy = searchParams.get('sortBy') || 'createdAt';
+    const order = searchParams.get('order') || 'desc';
 
     const where: any = { userId: session.user.id };
     if (status) {
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     orderBy[sortBy] = order;
 
     const result = await getPaginatedData({
-      model: "order",
+      model: 'order',
       where: { ...where, page, pageSize: limit },
       orderBy,
       include: {
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       limit: result.pageSize,
     });
   } catch (error) {
-    console.error("Get orders error:", error);
-    return errorResponse("Internal server error");
+    console.error('Get orders error:', error);
+    return errorResponse('Internal server error');
   }
 }

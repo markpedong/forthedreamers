@@ -17,7 +17,7 @@ export default function SellerAuthInterface() {
   };
 
   return (
-    <div className='min-h-screen'>
+    <div className="min-h-screen">
       {currentPage === 'login' || currentPage === 'register' || currentPage === 'forgot' ? (
         <SellerPageWrapper>{pages[currentPage as keyof typeof pages]}</SellerPageWrapper>
       ) : (

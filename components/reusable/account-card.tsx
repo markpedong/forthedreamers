@@ -19,20 +19,16 @@ const AccountCard: FC<AccountCardProps> = ({ provider, account, loading, onClick
   const isLinked = Boolean(account?.createdAt);
 
   return (
-    <div className='flex items-center justify-between rounded-lg border border-border bg-muted/50 p-4 transition-colors hover:bg-muted'>
-      <div className='flex items-center gap-3'>
-        <div className='rounded-lg bg-background p-2'>
-          {Icon && <Icon className='h-5 w-5 text-foreground' />}
-        </div>
+    <div className="flex items-center justify-between rounded-lg border border-border bg-muted/50 p-4 transition-colors hover:bg-muted">
+      <div className="flex items-center gap-3">
+        <div className="rounded-lg bg-background p-2">{Icon && <Icon className="h-5 w-5 text-foreground" />}</div>
         <div>
-          <p className='font-medium text-foreground capitalize'>
-            {providerDetails?.name ?? provider}
-          </p>
+          <p className="font-medium text-foreground capitalize">{providerDetails?.name ?? provider}</p>
 
           {isLinked ? (
             <>
               {account?.createdAt && (
-                <p className='text-xs text-muted-foreground'>
+                <p className="text-xs text-muted-foreground">
                   Linked on{' '}
                   {new Date(account.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -43,20 +39,15 @@ const AccountCard: FC<AccountCardProps> = ({ provider, account, loading, onClick
               )}
             </>
           ) : (
-            <p className='text-sm text-muted-foreground'>Not connected</p>
+            <p className="text-sm text-muted-foreground">Not connected</p>
           )}
         </div>
       </div>
 
       {isLinked ? (
-        <Badge variant='secondary'>Connected</Badge>
+        <Badge variant="secondary">Connected</Badge>
       ) : (
-        <Button
-          variant='outline'
-          size='sm'
-          onClick={() => onClick?.(provider)}
-          disabled={loading}
-        >
+        <Button variant="outline" size="sm" onClick={() => onClick?.(provider)} disabled={loading}>
           Link
         </Button>
       )}

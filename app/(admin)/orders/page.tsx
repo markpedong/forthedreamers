@@ -5,34 +5,15 @@ import { Search, MoreHorizontal, Eye } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const initialOrders = [
   {
@@ -85,10 +66,9 @@ export default function OrdersPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState('recent');
 
-  const filteredOrders = orders.filter((order) => {
+  const filteredOrders = orders.filter(order => {
     const matchesSearch =
-      order.id.includes(searchTerm) ||
-      order.customer.toLowerCase().includes(searchTerm.toLowerCase());
+      order.id.includes(searchTerm) || order.customer.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -103,7 +83,7 @@ export default function OrdersPage() {
   });
 
   const handleUpdateStatus = (orderId: string, newStatus: string) => {
-    setOrders(orders.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o)));
+    setOrders(orders.map(o => (o.id === orderId ? { ...o, status: newStatus } : o)));
     showNotification(`Order ${orderId} status updated to ${newStatus}`);
   };
 
@@ -112,7 +92,7 @@ export default function OrdersPage() {
   };
 
   const handleCancelOrder = (orderId: string) => {
-    setOrders(orders.filter((o) => o.id !== orderId));
+    setOrders(orders.filter(o => o.id !== orderId));
     showNotification(`Order ${orderId} has been cancelled`);
     setSelectedOrder(null);
   };
@@ -123,51 +103,51 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className='p-6 space-y-6'>
+    <div className="p-6 space-y-6">
       {/* Header */}
-      <div className='flex items-center justify-between'>
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className='text-3xl font-bold tracking-tight'>Orders</h1>
-          <p className='text-muted-foreground mt-1'>View and manage all orders</p>
+          <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
+          <p className="text-muted-foreground mt-1">View and manage all orders</p>
         </div>
       </div>
 
       {/* Filters */}
       <Card>
-        <CardContent className='pt-6'>
-          <div className='flex flex-col md:flex-row gap-4'>
-            <div className='flex-1'>
-              <div className='relative'>
-                <Search className='absolute left-3 top-2.5 w-4 h-4 text-muted-foreground' />
+        <CardContent className="pt-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder='Search orders...'
-                  className='pl-10'
+                  placeholder="Search orders..."
+                  className="pl-10"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                 />
               </div>
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className='w-full md:w-40'>
-                <SelectValue placeholder='Status' />
+              <SelectTrigger className="w-full md:w-40">
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value='all'>All Status</SelectItem>
-                <SelectItem value='Pending'>Pending</SelectItem>
-                <SelectItem value='Processing'>Processing</SelectItem>
-                <SelectItem value='Shipped'>Shipped</SelectItem>
-                <SelectItem value='Completed'>Completed</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="Pending">Pending</SelectItem>
+                <SelectItem value="Processing">Processing</SelectItem>
+                <SelectItem value="Shipped">Shipped</SelectItem>
+                <SelectItem value="Completed">Completed</SelectItem>
               </SelectContent>
             </Select>
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className='w-full md:w-40'>
-                <SelectValue placeholder='Sort by' />
+              <SelectTrigger className="w-full md:w-40">
+                <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value='recent'>Most Recent</SelectItem>
-                <SelectItem value='amount-high'>Amount (High)</SelectItem>
-                <SelectItem value='amount-low'>Amount (Low)</SelectItem>
-                <SelectItem value='customer'>Customer (A-Z)</SelectItem>
+                <SelectItem value="recent">Most Recent</SelectItem>
+                <SelectItem value="amount-high">Amount (High)</SelectItem>
+                <SelectItem value="amount-low">Amount (Low)</SelectItem>
+                <SelectItem value="customer">Customer (A-Z)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -176,8 +156,8 @@ export default function OrdersPage() {
 
       {/* Orders Table */}
       <Card>
-        <CardContent className='pt-6'>
-          <div className='overflow-x-auto'>
+        <CardContent className="pt-6">
+          <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -187,16 +167,16 @@ export default function OrdersPage() {
                   <TableHead>Total</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead className='text-right'>Actions</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sortedOrders.map((order) => (
+                {sortedOrders.map(order => (
                   <TableRow key={order.id}>
-                    <TableCell className='font-medium'>{order.id}</TableCell>
+                    <TableCell className="font-medium">{order.id}</TableCell>
                     <TableCell>{order.customer}</TableCell>
                     <TableCell>{order.items}</TableCell>
-                    <TableCell className='font-medium'>{order.total}</TableCell>
+                    <TableCell className="font-medium">{order.total}</TableCell>
                     <TableCell>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -213,26 +193,23 @@ export default function OrdersPage() {
                       </span>
                     </TableCell>
                     <TableCell>{order.date}</TableCell>
-                    <TableCell className='text-right'>
+                    <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant='ghost' size='icon'>
-                            <MoreHorizontal className='w-4 h-4' />
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="w-4 h-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align='end'>
+                        <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => setSelectedOrder(order)}>
-                            <Eye className='w-4 h-4 mr-2' />
+                            <Eye className="w-4 h-4 mr-2" />
                             View Details
                           </DropdownMenuItem>
                           <DropdownMenuItem>Update Status</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handlePrintInvoice(order.id)}>
                             Print Invoice
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className='text-destructive'
-                            onClick={() => handleCancelOrder(order.id)}
-                          >
+                          <DropdownMenuItem className="text-destructive" onClick={() => handleCancelOrder(order.id)}>
                             Cancel Order
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -254,36 +231,36 @@ export default function OrdersPage() {
               <DialogTitle>Order Details</DialogTitle>
               <DialogDescription>{selectedOrder.id}</DialogDescription>
             </DialogHeader>
-            <div className='space-y-4'>
-              <div className='grid grid-cols-2 gap-4'>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className='text-sm text-muted-foreground'>Customer</p>
-                  <p className='font-medium'>{selectedOrder.customer}</p>
+                  <p className="text-sm text-muted-foreground">Customer</p>
+                  <p className="font-medium">{selectedOrder.customer}</p>
                 </div>
                 <div>
-                  <p className='text-sm text-muted-foreground'>Date</p>
-                  <p className='font-medium'>{selectedOrder.date}</p>
+                  <p className="text-sm text-muted-foreground">Date</p>
+                  <p className="font-medium">{selectedOrder.date}</p>
                 </div>
                 <div>
-                  <p className='text-sm text-muted-foreground'>Items</p>
-                  <p className='font-medium'>{selectedOrder.items}</p>
+                  <p className="text-sm text-muted-foreground">Items</p>
+                  <p className="font-medium">{selectedOrder.items}</p>
                 </div>
                 <div>
-                  <p className='text-sm text-muted-foreground'>Total</p>
-                  <p className='font-medium'>{selectedOrder.total}</p>
+                  <p className="text-sm text-muted-foreground">Total</p>
+                  <p className="font-medium">{selectedOrder.total}</p>
                 </div>
               </div>
               <div>
-                <p className='text-sm text-muted-foreground mb-2'>Update Status</p>
-                <Select onValueChange={(value) => handleUpdateStatus(selectedOrder.id, value)}>
+                <p className="text-sm text-muted-foreground mb-2">Update Status</p>
+                <Select onValueChange={value => handleUpdateStatus(selectedOrder.id, value)}>
                   <SelectTrigger>
                     <SelectValue placeholder={selectedOrder.status} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='Pending'>Pending</SelectItem>
-                    <SelectItem value='Processing'>Processing</SelectItem>
-                    <SelectItem value='Shipped'>Shipped</SelectItem>
-                    <SelectItem value='Completed'>Completed</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Processing">Processing</SelectItem>
+                    <SelectItem value="Shipped">Shipped</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -294,7 +271,7 @@ export default function OrdersPage() {
 
       {/* Toast notification */}
       {toast && (
-        <div className='fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm'>
+        <div className="fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm">
           {toast}
         </div>
       )}

@@ -26,7 +26,7 @@ const Form = <T extends FieldValues>({
   return (
     <FormUI {...form}>
       <form
-        onSubmit={(e) => {
+        onSubmit={e => {
           e.preventDefault();
           e.stopPropagation();
 
@@ -39,7 +39,7 @@ const Form = <T extends FieldValues>({
       >
         {children}
         {!customSubmitButton && (
-          <Button className='w-full h-11' disabled={isSending} aria-busy={isSending}>
+          <Button className="w-full h-11" disabled={isSending} aria-busy={isSending}>
             {submitLabel}
           </Button>
         )}

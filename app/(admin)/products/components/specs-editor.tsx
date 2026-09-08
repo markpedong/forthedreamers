@@ -37,9 +37,7 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
     startTransition(() => {
       const specData = { label: data.label.trim(), value: data.value.trim() };
       const updated =
-        editingIndex != null
-          ? specs.map((s, i) => (i === editingIndex ? specData : s))
-          : [...specs, specData];
+        editingIndex != null ? specs.map((s, i) => (i === editingIndex ? specData : s)) : [...specs, specData];
 
       onSpecsChange(updated);
       setDialogOpen(false);
@@ -48,36 +46,33 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
   };
 
   return (
-    <div className='space-y-4'>
-      <div className='flex items-center justify-between'>
-        <h3 className='font-semibold'>Specifications</h3>
-        <Button size='sm' onClick={() => openDialog()} className='gap-1'>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold">Specifications</h3>
+        <Button size="sm" onClick={() => openDialog()} className="gap-1">
           <Plus size={16} /> Add Spec
         </Button>
       </div>
 
-      <div className='space-y-2 max-h-96 overflow-y-auto'>
+      <div className="space-y-2 max-h-96 overflow-y-auto">
         {specs.length === 0 ? (
-          <p className='text-sm text-muted-foreground'>No specifications added yet.</p>
+          <p className="text-sm text-muted-foreground">No specifications added yet.</p>
         ) : (
           specs.map((spec, i) => (
-            <div
-              key={i}
-              className='flex items-center justify-between gap-2 p-3 border rounded-lg border-border'
-            >
-              <div className='flex-1 min-w-0'>
-                <p className='text-sm text-muted-foreground'>{spec.label}</p>
-                <p className='text-sm text-foreground'>{spec.value}</p>
+            <div key={i} className="flex items-center justify-between gap-2 p-3 border rounded-lg border-border">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-muted-foreground">{spec.label}</p>
+                <p className="text-sm text-foreground">{spec.value}</p>
               </div>
-              <div className='flex gap-1'>
-                <Button variant='outline' size='sm' onClick={() => openDialog(i)}>
+              <div className="flex gap-1">
+                <Button variant="outline" size="sm" onClick={() => openDialog(i)}>
                   Edit
                 </Button>
                 <Button
-                  variant='outline'
-                  size='sm'
+                  variant="outline"
+                  size="sm"
                   onClick={() => handleDelete(i)}
-                  className='text-destructive hover:text-destructive'
+                  className="text-destructive hover:text-destructive"
                 >
                   <Trash2 size={16} />
                 </Button>
@@ -98,8 +93,8 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
         loading={isPending}
       >
         <Form form={form} customSubmitButton>
-          <Input label='Label *' name='label' placeholder='e.g., Driver Size' preventSpaces />
-          <Input label='Value *' name='value' placeholder='e.g., 40mm' preventSpaces />
+          <Input label="Label *" name="label" placeholder="e.g., Driver Size" preventSpaces />
+          <Input label="Value *" name="value" placeholder="e.g., 40mm" preventSpaces />
         </Form>
       </Dialog>
     </div>

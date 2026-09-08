@@ -24,7 +24,7 @@ import { useAppSelector } from '@/redux/store';
 
 const Navbar: FC = () => {
   const { signOut } = useAuthSession();
-  const user = useAppSelector((state) => state.userData.data);
+  const user = useAppSelector(state => state.userData.data);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const isMobile = useIsMobile();
   const pathname = usePathname();
@@ -32,11 +32,8 @@ const Navbar: FC = () => {
   if (DISABLED_NAVBAR.includes(pathname)) return null;
 
   const CartButton = (
-    <Link
-      href='/cart'
-      className='relative p-2 hover:bg-muted rounded-full transition-colors'
-    >
-      <ShoppingCart className='w-5 h-5' />
+    <Link href="/cart" className="relative p-2 hover:bg-muted rounded-full transition-colors">
+      <ShoppingCart className="w-5 h-5" />
       <CartItemCount />
     </Link>
   );
@@ -44,21 +41,21 @@ const Navbar: FC = () => {
   const ProfileButton = !isMobile && (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant='ghost' size='icon'>
-          <User className='w-5 h-5' />
+        <Button variant="ghost" size="icon">
+          <User className="w-5 h-5" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className='w-56'>
+      <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuItem asChild>
-          <Link href='/profile'>Profile</Link>
+          <Link href="/profile">Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href='/profile?tab=orders'>Orders</Link>
+          <Link href="/profile?tab=orders">Orders</Link>
         </DropdownMenuItem>
         {pathname !== '/profile' && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className='cursor-pointer' onClick={() => void signOut()} variant='destructive'>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => void signOut()} variant="destructive">
               Logout
             </DropdownMenuItem>
           </>
@@ -75,23 +72,20 @@ const Navbar: FC = () => {
       onClick={() => setIsSearchOpen(true)}
     >
       <Input
-        type='text'
-        placeholder='Search products, categories, shops...'
+        type="text"
+        placeholder="Search products, categories, shops..."
         readOnly
         className={classNames(
           'w-full rounded-full bg-muted border-0 focus-visible:ring-2 focus-visible:ring-primary cursor-pointer pl-10 pr-4 py-2',
           {
             'pl-8 pr-3 py-1.5 text-sm': isMobile,
-          },
+          }
         )}
       />
       <Search
-        className={classNames(
-          'absolute top-1/2 -translate-y-1/2 text-muted-foreground left-3 w-4 h-4',
-          {
-            'left-2.5 w-4 h-4': isMobile,
-          },
-        )}
+        className={classNames('absolute top-1/2 -translate-y-1/2 text-muted-foreground left-3 w-4 h-4', {
+          'left-2.5 w-4 h-4': isMobile,
+        })}
       />
     </div>
   );
@@ -106,30 +100,27 @@ const Navbar: FC = () => {
           'sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border',
           {
             'md:hidden': isMobile,
-          },
+          }
         )}
       >
         <div
-          className={classNames(
-            'w-full max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4',
-            {
-              'gap-4': isMobile,
-            },
-          )}
+          className={classNames('w-full max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4', {
+            'gap-4': isMobile,
+          })}
         >
-          <Link href='/' className='font-bold text-primary'>
+          <Link href="/" className="font-bold text-primary">
             FTD
           </Link>
           {SearchBar}
-          <div className='flex items-center gap-2'>
+          <div className="flex items-center gap-2">
             {!!user ? (
               <>
                 {CartButton}
                 {ProfileButton}
               </>
             ) : (
-              <Button variant='ghost' asChild>
-                <Link href='/sign-in'>
+              <Button variant="ghost" asChild>
+                <Link href="/sign-in">
                   Sign In
                   <LogIn />
                 </Link>

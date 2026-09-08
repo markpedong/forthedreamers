@@ -1,6 +1,6 @@
-import { NextRequest } from "next/server";
+import { NextRequest } from 'next/server';
 import { getSession } from '@/lib/services/auth';
-import { successResponse, errorResponse } from "@/lib/server-helper";
+import { successResponse, errorResponse } from '@/lib/server-helper';
 
 /**
  * GET /api/tax/rates
@@ -10,19 +10,19 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session) {
-      return errorResponse("Unauthorized");
+      return errorResponse('Unauthorized');
     }
 
     const { searchParams } = new URL(request.url);
-    const region = searchParams.get("region") || "";
+    const region = searchParams.get('region') || '';
 
     // Simple tax calculation (can be extended with real tax rates)
     const TAX_RATES: Record<string, number> = {
       us: 0.08,
-      eu: 0.20,
-      uk: 0.20,
+      eu: 0.2,
+      uk: 0.2,
       ca: 0.05,
-      au: 0.10,
+      au: 0.1,
     };
 
     const rate = TAX_RATES[region] || 0.08; // Default 8%
@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
       regions: Object.keys(TAX_RATES),
     });
   } catch (error) {
-    console.error("Get tax rates error:", error);
-    return errorResponse("Internal server error");
+    console.error('Get tax rates error:', error);
+    return errorResponse('Internal server error');
   }
 }
 
@@ -45,23 +45,23 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse("Unauthorized");
+      return errorResponse('Unauthorized');
     }
 
     const body = await request.json();
     const { region, items } = body;
 
     if (!region || !items) {
-      return errorResponse("Missing required fields");
+      return errorResponse('Missing required fields');
     }
 
     // Get tax rate for region
     const TAX_RATES: Record<string, number> = {
       us: 0.08,
-      eu: 0.20,
-      uk: 0.20,
+      eu: 0.2,
+      uk: 0.2,
       ca: 0.05,
-      au: 0.10,
+      au: 0.1,
     };
 
     const rate = TAX_RATES[region] || 0.08; // Default 8%
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       total: subtotal + taxAmount,
     });
   } catch (error) {
-    console.error("Calculate tax error:", error);
-    return errorResponse("Internal server error");
+    console.error('Calculate tax error:', error);
+    return errorResponse('Internal server error');
   }
 }

@@ -31,19 +31,19 @@ const SessionItem: FC<Props> = ({ session, isCurrent }) => {
       }`}
     >
       {isCurrent && (
-        <Badge variant='default' className='absolute top-2 right-2 text-xs'>
+        <Badge variant="default" className="absolute top-2 right-2 text-xs">
           Active Now
         </Badge>
       )}
 
-      <div className='flex items-center gap-3 flex-1'>
+      <div className="flex items-center gap-3 flex-1">
         <div className={`rounded-lg p-2 ${isCurrent ? 'bg-primary/10' : 'bg-muted'}`}>
           {getDeviceIcon(`${session.userAgent}`)}
         </div>
-        <div className='flex-1 min-w-0'>
-          <p className='font-medium text-sm'>{getBrowserInfo(`${session.userAgent}`)}</p>
-          <p className='text-xs text-muted-foreground'>{session.ipAddress || 'Unknown IP'}</p>
-          <p className='text-xs text-muted-foreground'>
+        <div className="flex-1 min-w-0">
+          <p className="font-medium text-sm">{getBrowserInfo(`${session.userAgent}`)}</p>
+          <p className="text-xs text-muted-foreground">{session.ipAddress || 'Unknown IP'}</p>
+          <p className="text-xs text-muted-foreground">
             {new Date(session.createdAt).toLocaleDateString()}{' '}
             {isCurrent && `• ${new Date(session.createdAt).toLocaleTimeString()}`}
           </p>
@@ -52,12 +52,12 @@ const SessionItem: FC<Props> = ({ session, isCurrent }) => {
 
       {!isCurrent && (
         <Button
-          variant='ghost'
-          size='sm'
+          variant="ghost"
+          size="sm"
           onClick={() => handleAction()}
-          className='ml-2 text-destructive hover:text-destructive hover:bg-destructive/10'
+          className="ml-2 text-destructive hover:text-destructive hover:bg-destructive/10"
         >
-          <LogOut className='w-4 h-4' />
+          <LogOut className="w-4 h-4" />
         </Button>
       )}
     </div>

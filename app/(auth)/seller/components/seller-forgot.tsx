@@ -29,40 +29,30 @@ const SellerForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) =
   };
 
   return (
-    <div className='flex items-center justify-center p-4'>
+    <div className="flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className='w-full max-w-md'
+        className="w-full max-w-md"
       >
-        <Card className='border-border bg-card/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200'>
-          <CardHeader className='text-center'>
-            <CardTitle className='text-2xl font-semibold mb-1'>Reset Password</CardTitle>
+        <Card className="border-border bg-card/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-semibold mb-1">Reset Password</CardTitle>
             <CardDescription>Enter your email and we’ll send you a reset link.</CardDescription>
           </CardHeader>
 
           <CardContent>
-            <Form
-              form={form}
-              submitLabel={isPending ? 'Sending...' : 'Send reset link'}
-              onSubmit={onSubmit}
-            >
-              <Input
-                name='name'
-                type='email'
-                placeholder='your@email.com'
-                disabled={isPending}
-                autoComplete='email'
-              />
+            <Form form={form} submitLabel={isPending ? 'Sending...' : 'Send reset link'} onSubmit={onSubmit}>
+              <Input name="name" type="email" placeholder="your@email.com" disabled={isPending} autoComplete="email" />
             </Form>
 
             <Button
-              variant='link'
+              variant="link"
               onClick={() => onNavigate('login')}
-              className='text-sm text-primary hover:underline flex items-center justify-center gap-1 mt-3'
+              className="text-sm text-primary hover:underline flex items-center justify-center gap-1 mt-3"
             >
-              <ArrowLeft className='w-4 h-4' />
+              <ArrowLeft className="w-4 h-4" />
               Back to sign in
             </Button>
           </CardContent>

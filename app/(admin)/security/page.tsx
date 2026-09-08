@@ -6,21 +6,8 @@ import { Shield, Key, Lock, Monitor, LogOut, Download } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const initialSessions = [
   {
@@ -83,7 +70,7 @@ export default function SecurityPage() {
   const [toast, setToast] = useState('');
   const [selectedLog, setSelectedLog] = useState(null);
 
-  const handleUpdateTwoFA = (checked) => {
+  const handleUpdateTwoFA = checked => {
     setTwoFAEnabled(checked);
     showNotification(`Two-Factor Authentication ${checked ? 'enabled' : 'disabled'}`);
   };
@@ -104,50 +91,48 @@ export default function SecurityPage() {
     showNotification('Opening device management');
   };
 
-  const handleLogoutSession = (sessionId) => {
-    setSessions(sessions.filter((s) => s.id !== sessionId));
+  const handleLogoutSession = sessionId => {
+    setSessions(sessions.filter(s => s.id !== sessionId));
     showNotification('Session logged out successfully');
   };
 
-  const handleViewLogDetails = (log) => {
+  const handleViewLogDetails = log => {
     setSelectedLog(log);
     showNotification(`Viewing audit log: ${log.action}`);
   };
 
-  const showNotification = (message) => {
+  const showNotification = message => {
     setToast(message);
     setTimeout(() => setToast(''), 3000);
   };
 
   return (
-    <div className='p-6 space-y-6'>
+    <div className="p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className='text-3xl font-bold tracking-tight'>Security</h1>
-        <p className='text-muted-foreground mt-1'>Manage your account security and sessions</p>
+        <h1 className="text-3xl font-bold tracking-tight">Security</h1>
+        <p className="text-muted-foreground mt-1">Manage your account security and sessions</p>
       </div>
 
       {/* Security Settings */}
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <Shield className='w-5 h-5' />
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="w-5 h-5" />
               Two-Factor Authentication
             </CardTitle>
             <CardDescription>Add an extra layer of security</CardDescription>
           </CardHeader>
-          <CardContent className='space-y-4'>
-            <div className='flex items-center justify-between'>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
               <div>
-                <p className='font-medium text-sm'>Status</p>
-                <p className='text-sm text-muted-foreground'>
-                  {twoFAEnabled ? 'Enabled' : 'Disabled'}
-                </p>
+                <p className="font-medium text-sm">Status</p>
+                <p className="text-sm text-muted-foreground">{twoFAEnabled ? 'Enabled' : 'Disabled'}</p>
               </div>
               <Switch checked={twoFAEnabled} onCheckedChange={handleUpdateTwoFA} />
             </div>
-            <Button className='w-full' onClick={handleUpdate2FASettings}>
+            <Button className="w-full" onClick={handleUpdate2FASettings}>
               Update 2FA Settings
             </Button>
           </CardContent>
@@ -155,23 +140,19 @@ export default function SecurityPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <Key className='w-5 h-5' />
+            <CardTitle className="flex items-center gap-2">
+              <Key className="w-5 h-5" />
               API Keys
             </CardTitle>
             <CardDescription>Manage your API credentials</CardDescription>
           </CardHeader>
-          <CardContent className='space-y-4'>
+          <CardContent className="space-y-4">
             <div>
-              <p className='font-medium text-sm'>Active Keys</p>
-              <p className='text-sm text-muted-foreground'>2 active keys</p>
+              <p className="font-medium text-sm">Active Keys</p>
+              <p className="text-sm text-muted-foreground">2 active keys</p>
             </div>
-            <Button
-              className='w-full bg-transparent'
-              variant='outline'
-              onClick={handleManageAPIKeys}
-            >
-              <Download className='w-4 h-4 mr-2' />
+            <Button className="w-full bg-transparent" variant="outline" onClick={handleManageAPIKeys}>
+              <Download className="w-4 h-4 mr-2" />
               Manage API Keys
             </Button>
           </CardContent>
@@ -179,22 +160,18 @@ export default function SecurityPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <Lock className='w-5 h-5' />
+            <CardTitle className="flex items-center gap-2">
+              <Lock className="w-5 h-5" />
               Password
             </CardTitle>
             <CardDescription>Change your account password</CardDescription>
           </CardHeader>
-          <CardContent className='space-y-4'>
+          <CardContent className="space-y-4">
             <div>
-              <p className='font-medium text-sm'>Last Changed</p>
-              <p className='text-sm text-muted-foreground'>30 days ago</p>
+              <p className="font-medium text-sm">Last Changed</p>
+              <p className="text-sm text-muted-foreground">30 days ago</p>
             </div>
-            <Button
-              className='w-full bg-transparent'
-              variant='outline'
-              onClick={handleChangePassword}
-            >
+            <Button className="w-full bg-transparent" variant="outline" onClick={handleChangePassword}>
               Change Password
             </Button>
           </CardContent>
@@ -202,22 +179,18 @@ export default function SecurityPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <Monitor className='w-5 h-5' />
+            <CardTitle className="flex items-center gap-2">
+              <Monitor className="w-5 h-5" />
               Trusted Devices
             </CardTitle>
             <CardDescription>Manage your trusted devices</CardDescription>
           </CardHeader>
-          <CardContent className='space-y-4'>
+          <CardContent className="space-y-4">
             <div>
-              <p className='font-medium text-sm'>Devices</p>
-              <p className='text-sm text-muted-foreground'>3 trusted devices</p>
+              <p className="font-medium text-sm">Devices</p>
+              <p className="text-sm text-muted-foreground">3 trusted devices</p>
             </div>
-            <Button
-              className='w-full bg-transparent'
-              variant='outline'
-              onClick={handleManageDevices}
-            >
+            <Button className="w-full bg-transparent" variant="outline" onClick={handleManageDevices}>
               Manage Devices
             </Button>
           </CardContent>
@@ -231,7 +204,7 @@ export default function SecurityPage() {
           <CardDescription>Manage your active sessions across devices</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='overflow-x-auto'>
+          <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -239,13 +212,13 @@ export default function SecurityPage() {
                   <TableHead>Location</TableHead>
                   <TableHead>Last Active</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className='text-right'>Actions</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sessions.map((session) => (
+                {sessions.map(session => (
                   <TableRow key={session.id}>
-                    <TableCell className='font-medium'>{session.device}</TableCell>
+                    <TableCell className="font-medium">{session.device}</TableCell>
                     <TableCell>{session.location}</TableCell>
                     <TableCell>{session.lastActive}</TableCell>
                     <TableCell>
@@ -259,14 +232,14 @@ export default function SecurityPage() {
                         {session.status}
                       </span>
                     </TableCell>
-                    <TableCell className='text-right'>
+                    <TableCell className="text-right">
                       <Button
-                        variant='ghost'
-                        size='sm'
-                        className='text-destructive'
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive"
                         onClick={() => handleLogoutSession(session.id)}
                       >
-                        <LogOut className='w-4 h-4 mr-1' />
+                        <LogOut className="w-4 h-4 mr-1" />
                         Logout
                       </Button>
                     </TableCell>
@@ -285,7 +258,7 @@ export default function SecurityPage() {
           <CardDescription>Recent admin activity and changes</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='overflow-x-auto'>
+          <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -296,13 +269,13 @@ export default function SecurityPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {auditLogs.map((log) => (
+                {auditLogs.map(log => (
                   <TableRow
                     key={log.id}
-                    className='cursor-pointer hover:bg-muted/50'
+                    className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleViewLogDetails(log)}
                   >
-                    <TableCell className='font-medium'>{log.action}</TableCell>
+                    <TableCell className="font-medium">{log.action}</TableCell>
                     <TableCell>{log.timestamp}</TableCell>
                     <TableCell>{log.ip}</TableCell>
                     <TableCell>
@@ -332,23 +305,23 @@ export default function SecurityPage() {
               <DialogTitle>Audit Log Details</DialogTitle>
               <DialogDescription>Log ID: {selectedLog.id}</DialogDescription>
             </DialogHeader>
-            <div className='space-y-4'>
-              <div className='grid grid-cols-2 gap-4'>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className='text-sm text-muted-foreground'>Action</p>
-                  <p className='font-medium'>{selectedLog.action}</p>
+                  <p className="text-sm text-muted-foreground">Action</p>
+                  <p className="font-medium">{selectedLog.action}</p>
                 </div>
                 <div>
-                  <p className='text-sm text-muted-foreground'>Status</p>
-                  <p className='font-medium'>{selectedLog.status}</p>
+                  <p className="text-sm text-muted-foreground">Status</p>
+                  <p className="font-medium">{selectedLog.status}</p>
                 </div>
                 <div>
-                  <p className='text-sm text-muted-foreground'>Timestamp</p>
-                  <p className='font-medium'>{selectedLog.timestamp}</p>
+                  <p className="text-sm text-muted-foreground">Timestamp</p>
+                  <p className="font-medium">{selectedLog.timestamp}</p>
                 </div>
                 <div>
-                  <p className='text-sm text-muted-foreground'>IP Address</p>
-                  <p className='font-medium'>{selectedLog.ip}</p>
+                  <p className="text-sm text-muted-foreground">IP Address</p>
+                  <p className="font-medium">{selectedLog.ip}</p>
                 </div>
               </div>
             </div>
@@ -358,7 +331,7 @@ export default function SecurityPage() {
 
       {/* Toast notification */}
       {toast && (
-        <div className='fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm'>
+        <div className="fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm">
           {toast}
         </div>
       )}

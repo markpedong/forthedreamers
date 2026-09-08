@@ -1,5 +1,5 @@
-import chroma from "chroma-js";
-import { toast } from "sonner";
+import chroma from 'chroma-js';
+import { toast } from 'sonner';
 
 // catchError that automatically shows toast/log
 // export async function catchErrorWithToast<T, E extends new (...args: any[]) => Error>(
@@ -29,7 +29,7 @@ export async function catchRouteErrors<T>(promise: Promise<T>): Promise<[Error |
     const data = await promise;
     return [null, data];
   } catch (err) {
-    return [err instanceof Error ? err : new Error("Something went wrong"), null];
+    return [err instanceof Error ? err : new Error('Something went wrong'), null];
   }
 }
 
@@ -54,10 +54,10 @@ export async function catchRouteErrors<T>(promise: Promise<T>): Promise<[Error |
 // };
 
 const handleError = (err: unknown) => {
-  const message = err instanceof Error ? err.message : "Something went wrong";
+  const message = err instanceof Error ? err.message : 'Something went wrong';
 
-  if (typeof window !== "undefined") {
-    import("sonner").then(({ toast }) => {
+  if (typeof window !== 'undefined') {
+    import('sonner').then(({ toast }) => {
       toast.error(message);
     });
   } else {
@@ -95,9 +95,7 @@ type ErrResp = {
   message?: string;
 };
 
-export const tryWithToast = async <T>(
-  promise: Promise<T>,
-): Promise<T | null> => {
+export const tryWithToast = async <T>(promise: Promise<T>): Promise<T | null> => {
   try {
     const res = await promise;
 
@@ -108,8 +106,7 @@ export const tryWithToast = async <T>(
 
     return res;
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Something went wrong";
+    const message = error instanceof Error ? error.message : 'Something went wrong';
 
     toast.error(message);
     return null;
@@ -120,13 +117,13 @@ export function slugify(text: string): string {
   return text
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
 }
 
 export function regenerateSlug(text: string): string {
-  return slugify(text)
+  return slugify(text);
 }
 
 export const getCssVarHex = (variableName: string) => {
@@ -139,9 +136,7 @@ export const getCssVarHex = (variableName: string) => {
 
   if (value.startsWith('lab(')) {
     // @ts-ignore
-    const [l, a, b] = value
-      .match(/-?[\d.]+%?/g)
-      .map((v) => (v.includes('%') ? parseFloat(v) : parseFloat(v)));
+    const [l, a, b] = value.match(/-?[\d.]+%?/g).map(v => (v.includes('%') ? parseFloat(v) : parseFloat(v)));
 
     return chroma.lab(l, a, b).hex();
   }
@@ -152,12 +147,12 @@ export const getCssVarHex = (variableName: string) => {
     console.warn('Unable to parse color:', value, e);
     return;
   }
-}
+};
 
 export const fileToBase64 = (file: File) =>
   new Promise<string>((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = reject
-  })
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+  });

@@ -1,61 +1,63 @@
-import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 type SellerInfoProps = {
   seller: {
-    storeName: string
-    description: string | null
-    logo: string | null
-    createdAt: Date | string
-    activeProductCount: number
-    rating: number
-    reviewCount: number
-  }
-}
+    storeName: string;
+    description: string | null;
+    logo: string | null;
+    createdAt: Date | string;
+    activeProductCount: number;
+    rating: number;
+    reviewCount: number;
+  };
+};
 
-const SellerInfo = ({seller}: SellerInfoProps) => {
-  const joinedDate = new Date(seller.createdAt).toLocaleDateString(undefined, {month: 'long', year: 'numeric'})
+const SellerInfo = ({ seller }: SellerInfoProps) => {
+  const joinedDate = new Date(seller.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
 
   return (
-    <section className='rounded-xl border border-border bg-card p-6 sm:p-8'>
-      <div className='flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between'>
-        <div className='flex items-center gap-4'>
-          <Avatar className='size-16 rounded-xl border border-border'>
-            <AvatarImage src={seller.logo ?? undefined} alt='' />
-            <AvatarFallback className='rounded-xl text-lg'>{seller.storeName.slice(0, 1).toUpperCase()}</AvatarFallback>
+    <section className="rounded-xl border border-border bg-card p-6 sm:p-8">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-4">
+          <Avatar className="size-16 rounded-xl border border-border">
+            <AvatarImage src={seller.logo ?? undefined} alt="" />
+            <AvatarFallback className="rounded-xl text-lg">{seller.storeName.slice(0, 1).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div>
-            <p className='text-xs uppercase tracking-widest text-muted-foreground'>Seller</p>
-            <h2 className='mt-1 text-xl font-semibold text-foreground'>{seller.storeName}</h2>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">Seller</p>
+            <h2 className="mt-1 text-xl font-semibold text-foreground">{seller.storeName}</h2>
           </div>
         </div>
 
-        <div className='grid grid-cols-2 gap-5 text-sm sm:min-w-64'>
+        <div className="grid grid-cols-2 gap-5 text-sm sm:min-w-64">
           <div>
-            <p className='text-muted-foreground'>Active products</p>
-            <p className='mt-1 font-medium text-foreground'>{seller.activeProductCount}</p>
+            <p className="text-muted-foreground">Active products</p>
+            <p className="mt-1 font-medium text-foreground">{seller.activeProductCount}</p>
           </div>
           <div>
-            <p className='text-muted-foreground'>Member since</p>
-            <p className='mt-1 font-medium text-foreground'>{joinedDate}</p>
+            <p className="text-muted-foreground">Member since</p>
+            <p className="mt-1 font-medium text-foreground">{joinedDate}</p>
           </div>
           <div>
-            <p className='text-muted-foreground'>Seller rating</p>
-            <p className='mt-1 font-medium text-foreground'>
+            <p className="text-muted-foreground">Seller rating</p>
+            <p className="mt-1 font-medium text-foreground">
               {seller.rating > 0 ? `${seller.rating.toFixed(1)}/5` : 'No ratings yet'}
             </p>
           </div>
           <div>
-            <p className='text-muted-foreground'>Reviews received</p>
-            <p className='mt-1 font-medium text-foreground'>{seller.reviewCount}</p>
+            <p className="text-muted-foreground">Reviews received</p>
+            <p className="mt-1 font-medium text-foreground">{seller.reviewCount}</p>
           </div>
         </div>
       </div>
 
       {seller.description && (
-        <p className='mt-6 max-w-3xl border-t border-border pt-6 leading-relaxed text-muted-foreground'>{seller.description}</p>
+        <p className="mt-6 max-w-3xl border-t border-border pt-6 leading-relaxed text-muted-foreground">
+          {seller.description}
+        </p>
       )}
     </section>
-  )
-}
+  );
+};
 
-export default SellerInfo
+export default SellerInfo;

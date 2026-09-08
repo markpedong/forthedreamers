@@ -1,10 +1,10 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
-  })
+  });
 
   // With Fluid compute, don't put this client in a global environment
   // variable. Always create a new one on each request.
@@ -14,20 +14,18 @@ export async function updateSession(request: NextRequest) {
     {
       cookies: {
         getAll() {
-          return request.cookies.getAll()
+          return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           supabaseResponse = NextResponse.next({
             request,
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
+          });
+          cookiesToSet.forEach(({ name, value, options }) => supabaseResponse.cookies.set(name, value, options));
         },
       },
     }
-  )
+  );
 
   // Do not run code between createServerClient and
   // supabase.auth.getClaims(). A simple mistake could make it very hard to debug
@@ -35,9 +33,9 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: If you remove getClaims() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
-  const { data } = await supabase.auth.getClaims()
-  const user = data?.claims
-  const pathname = request.nextUrl.pathname
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims;
+  const pathname = request.nextUrl.pathname;
 
   const isProtected =
     pathname.startsWith('/profile') ||
@@ -49,27 +47,27 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith('/settings') ||
     pathname.startsWith('/payments') ||
     pathname.startsWith('/security') ||
-    pathname.startsWith('/users')
+    pathname.startsWith('/users');
 
   // Check email verification status for protected routes
-  let isEmailVerified = true
+  let isEmailVerified = true;
   if (user && isProtected) {
-    const { data: userData } = await supabase.auth.getUser()
-    isEmailVerified = userData?.user?.email_confirmed_at !== undefined && userData?.user?.email_confirmed_at !== null
+    const { data: userData } = await supabase.auth.getUser();
+    isEmailVerified = userData?.user?.email_confirmed_at !== undefined && userData?.user?.email_confirmed_at !== null;
   }
 
   if (!user && isProtected) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/sign-in'
-    url.searchParams.set('isSignedIn', 'false')
-    return NextResponse.redirect(url)
+    const url = request.nextUrl.clone();
+    url.pathname = '/sign-in';
+    url.searchParams.set('isSignedIn', 'false');
+    return NextResponse.redirect(url);
   }
 
   // Redirect unverified users to verify email page if they try to access protected routes
   if (user && !isEmailVerified && isProtected) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/verify-email'
-    return NextResponse.redirect(url)
+    const url = request.nextUrl.clone();
+    url.pathname = '/verify-email';
+    return NextResponse.redirect(url);
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
@@ -85,5 +83,5 @@ export async function updateSession(request: NextRequest) {
   // If this is not done, you may be causing the browser and server to go out
   // of sync and terminate the user's session prematurely!
 
-  return supabaseResponse
+  return supabaseResponse;
 }

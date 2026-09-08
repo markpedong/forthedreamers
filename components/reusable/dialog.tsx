@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
 import {
   Dialog as DialogUI,
   DialogContent,
@@ -7,27 +7,27 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-  DialogClose
-} from '@/components/ui/dialog'
-import { ReactNode } from 'react'
+  DialogClose,
+} from '@/components/ui/dialog';
+import { ReactNode } from 'react';
 
 interface ReusableDialogProps {
-  title: string
-  description?: string
-  confirmText?: string
-  cancelText?: string
-  destructive?: boolean
-  loading?: boolean
-  onConfirm?: () => void
-  onCancel?: () => void
-  children?: ReactNode
+  title: string;
+  description?: string;
+  confirmText?: string;
+  cancelText?: string;
+  destructive?: boolean;
+  loading?: boolean;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  children?: ReactNode;
   // form: UseFormReturn<T>;
-  triggerText: string | (() => ReactNode) | false
-  onTriggerClick?: () => void
-  disableRefreshUponSubmit?: boolean
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
-  contentClassname?: string
+  triggerText: string | (() => ReactNode) | false;
+  onTriggerClick?: () => void;
+  disableRefreshUponSubmit?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  contentClassname?: string;
 }
 
 const Dialog = ({
@@ -45,7 +45,7 @@ const Dialog = ({
   open,
   onOpenChange,
   contentClassname,
-  onConfirm
+  onConfirm,
 }: ReusableDialogProps) => {
   return (
     <DialogUI open={open} onOpenChange={onOpenChange}>
@@ -59,11 +59,11 @@ const Dialog = ({
         className={contentClassname}
         onKeyDown={e => {
           if (e.key === 'Enter') {
-            e.preventDefault()
-            onConfirm?.()
+            e.preventDefault();
+            onConfirm?.();
           } else if (e.key === 'Escape') {
-            e.preventDefault()
-            onCancel?.()
+            e.preventDefault();
+            onCancel?.();
           }
         }}
       >
@@ -74,17 +74,22 @@ const Dialog = ({
         {children}
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant={destructive ? 'destructive' : 'outline'} type='button' onClick={onCancel} disabled={loading}>
+            <Button
+              variant={destructive ? 'destructive' : 'outline'}
+              type="button"
+              onClick={onCancel}
+              disabled={loading}
+            >
               {cancelText}
             </Button>
           </DialogClose>
-          <Button onClick={onConfirm} type='submit' disabled={loading}>
+          <Button onClick={onConfirm} type="submit" disabled={loading}>
             {loading ? 'Please wait...' : confirmText}
           </Button>
         </DialogFooter>
       </DialogContent>
     </DialogUI>
-  )
-}
+  );
+};
 
-export default Dialog
+export default Dialog;

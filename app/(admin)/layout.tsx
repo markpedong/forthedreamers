@@ -1,33 +1,33 @@
-import { getSession } from '@/lib/services/auth'
-import { redirect } from 'next/navigation'
-import AdminHeader from './components/admin-header'
-import { SidebarProvider } from '@/components/ui/sidebar'
-import { AdminSidebar } from '@/components/dynamic'
+import { getSession } from '@/lib/services/auth';
+import { redirect } from 'next/navigation';
+import AdminHeader from './components/admin-header';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { AdminSidebar } from '@/components/dynamic';
 
-export default async function AdminLayout({children}: LayoutProps<'/'>) {
-  const session = await getSession()
+export default async function AdminLayout({ children }: LayoutProps<'/'>) {
+  const session = await getSession();
 
   if (!session) {
-    redirect('/sign-in?isSignedIn=false')
+    redirect('/sign-in?isSignedIn=false');
   }
 
   if (!session.user.emailVerified) {
-    redirect('/profile?emailVerified=false')
+    redirect('/profile?emailVerified=false');
   }
 
   if (!['ADMIN', 'SELLER'].includes(session.user.role ?? '')) {
-    redirect('/')
+    redirect('/');
   }
 
   return (
     <SidebarProvider>
-      <div className='flex h-screen bg-background w-full'>
+      <div className="flex h-screen bg-background w-full">
         <AdminSidebar />
-        <div className='flex-1 flex flex-col'>
+        <div className="flex-1 flex flex-col">
           <AdminHeader />
-          <main className='flex-1 overflow-auto p-6'>{children}</main>
+          <main className="flex-1 overflow-auto p-6">{children}</main>
         </div>
       </div>
     </SidebarProvider>
-  )
+  );
 }

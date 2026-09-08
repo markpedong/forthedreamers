@@ -25,7 +25,7 @@ const DropDown: FC<DropdownProps> = ({ trigger, menus, align = 'end' }) => {
               className={classNames(
                 'flex items-center gap-2',
                 menu.className,
-                menu.isDestructive && 'text-destructive',
+                menu.isDestructive && 'text-destructive'
               )}
               asChild
             >

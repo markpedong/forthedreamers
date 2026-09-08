@@ -1,7 +1,7 @@
-import { NextRequest } from "next/server";
+import { NextRequest } from 'next/server';
 import { getSession } from '@/lib/services/auth';
-import { successResponse, errorResponse, getPaginatedData } from "@/lib/server-helper";
-import { prisma } from "@/lib/prisma";
+import { successResponse, errorResponse, getPaginatedData } from '@/lib/server-helper';
+import { prisma } from '@/lib/prisma';
 
 /**
  * GET /api/products/search
@@ -21,31 +21,31 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session) {
-      return errorResponse("Unauthorized");
+      return errorResponse('Unauthorized');
     }
 
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get("q") || "";
-    const category = searchParams.get("category") || "";
-    const brand = searchParams.get("brand") || "";
-    const minPrice = parseFloat(searchParams.get("minPrice") || "0");
-    const maxPrice = parseFloat(searchParams.get("maxPrice") || "Infinity");
-    const minRating = parseFloat(searchParams.get("minRating") || "0");
-    const maxRating = parseFloat(searchParams.get("maxRating") || "5");
-    const inStock = searchParams.get("inStock");
-    const sortBy = searchParams.get("sortBy") || "createdAt";
-    const order = searchParams.get("order") || "desc";
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "20");
+    const query = searchParams.get('q') || '';
+    const category = searchParams.get('category') || '';
+    const brand = searchParams.get('brand') || '';
+    const minPrice = parseFloat(searchParams.get('minPrice') || '0');
+    const maxPrice = parseFloat(searchParams.get('maxPrice') || 'Infinity');
+    const minRating = parseFloat(searchParams.get('minRating') || '0');
+    const maxRating = parseFloat(searchParams.get('maxRating') || '5');
+    const inStock = searchParams.get('inStock');
+    const sortBy = searchParams.get('sortBy') || 'createdAt';
+    const order = searchParams.get('order') || 'desc';
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
 
     // Build filters
-    const where: Record<string, unknown> = { status: "ACTIVE" };
+    const where: Record<string, unknown> = { status: 'ACTIVE' };
 
     // Full-text search on name and description
     if (query) {
       where.OR = [
-        { name: { contains: query, mode: "insensitive" } },
-        { description: { contains: query, mode: "insensitive" } },
+        { name: { contains: query, mode: 'insensitive' } },
+        { description: { contains: query, mode: 'insensitive' } },
       ];
     }
 
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (brand) {
-      where.brand = { contains: brand, mode: "insensitive" };
+      where.brand = { contains: brand, mode: 'insensitive' };
     }
 
     // Price is an AND constraint; putting it in the search OR made unrelated
@@ -65,19 +65,21 @@ export async function GET(request: NextRequest) {
     where.rating = { gte: minRating, lte: maxRating };
 
     // Stock filter
-    if (inStock === "1") {
+    if (inStock === '1') {
       where.stock = { gt: 0 };
-    } else if (inStock === "0") {
+    } else if (inStock === '0') {
       where.stock = { lte: 0 };
     }
 
     // Build sort
-    const allowedSorts = new Set(["name", "basePrice", "rating", "sold", "createdAt"]);
-    const orderBy: Record<string, 'asc' | 'desc'> = { [allowedSorts.has(sortBy) ? sortBy : "createdAt"]: order === "asc" ? "asc" : "desc" };
+    const allowedSorts = new Set(['name', 'basePrice', 'rating', 'sold', 'createdAt']);
+    const orderBy: Record<string, 'asc' | 'desc'> = {
+      [allowedSorts.has(sortBy) ? sortBy : 'createdAt']: order === 'asc' ? 'asc' : 'desc',
+    };
 
     // Get products with pagination
     const result = await getPaginatedData({
-      model: "product",
+      model: 'product',
       where: { ...where, page, pageSize: limit },
       orderBy,
     });
@@ -91,7 +93,7 @@ export async function GET(request: NextRequest) {
     const brands = await prisma.product.findMany({
       where: { brand: { not: null } },
       select: { brand: true },
-      distinct: ["brand"],
+      distinct: ['brand'],
     });
 
     return successResponse({
@@ -99,11 +101,11 @@ export async function GET(request: NextRequest) {
       total: result.total,
       page: result.page,
       limit: result.pageSize,
-      categories: categories.map((c) => c.name),
-      brands: brands.map((b) => b.brand).filter(Boolean),
+      categories: categories.map(c => c.name),
+      brands: brands.map(b => b.brand).filter(Boolean),
     });
   } catch (error) {
-    console.error("Search API error:", error);
-    return errorResponse("Internal server error");
+    console.error('Search API error:', error);
+    return errorResponse('Internal server error');
   }
 }

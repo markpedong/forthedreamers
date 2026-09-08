@@ -1,8 +1,8 @@
-import { NextRequest } from "next/server";
+import { NextRequest } from 'next/server';
 import { getSession } from '@/lib/services/auth';
-import { successResponse, errorResponse } from "@/lib/server-helper";
-import { prisma } from "@/lib/prisma";
-import { z } from "zod";
+import { successResponse, errorResponse } from '@/lib/server-helper';
+import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
 
 /**
  * GET /api/shipping/methods
@@ -12,18 +12,18 @@ export async function GET() {
   try {
     const session = await getSession();
     if (!session) {
-      return errorResponse("Unauthorized");
+      return errorResponse('Unauthorized');
     }
 
     const methods = await prisma.shippingMethod.findMany({
       where: { isActive: true },
-      orderBy: { price: "asc" },
+      orderBy: { price: 'asc' },
     });
 
     return successResponse({ methods });
   } catch (error) {
-    console.error("Get shipping methods error:", error);
-    return errorResponse("Internal server error");
+    console.error('Get shipping methods error:', error);
+    return errorResponse('Internal server error');
   }
 }
 
@@ -43,8 +43,8 @@ const shippingMethodSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return errorResponse("Unauthorized");
+    if (!session?.user || session.user.role !== 'ADMIN') {
+      return errorResponse('Unauthorized');
     }
 
     const body = await request.json();
@@ -54,12 +54,12 @@ export async function POST(request: NextRequest) {
       data: validated,
     });
 
-    return successResponse(method, "Shipping method created", 201);
+    return successResponse(method, 'Shipping method created', 201);
   } catch (error) {
-    console.error("Create shipping method error:", error);
+    console.error('Create shipping method error:', error);
     if (error instanceof z.ZodError) {
-      return errorResponse("Invalid input data");
+      return errorResponse('Invalid input data');
     }
-    return errorResponse("Internal server error");
+    return errorResponse('Internal server error');
   }
 }

@@ -1,21 +1,26 @@
 'use client';
 
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Mail, ArrowRight, Loader2 } from 'lucide-react';
-import {getCurrentUser, resendVerification} from '@/lib/http';
+import { getCurrentUser, resendVerification } from '@/lib/http';
 import { toast } from 'sonner';
-import {useMutation, useQuery} from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 const VerifyEmailPage = () => {
   const router = useRouter();
-  const userQuery = useQuery({queryKey: ['current-user'], queryFn: getCurrentUser, select: result => result.data, retry: false});
+  const userQuery = useQuery({
+    queryKey: ['current-user'],
+    queryFn: getCurrentUser,
+    select: result => result.data,
+    retry: false,
+  });
   const mutation = useMutation({
     mutationFn: resendVerification,
-    onSuccess: () => toast.success('Verification link sent! Check your inbox.', {duration: 3000}),
-    onError: error => toast.error(error.message, {duration: 3000})
+    onSuccess: () => toast.success('Verification link sent! Check your inbox.', { duration: 3000 }),
+    onError: error => toast.error(error.message, { duration: 3000 }),
   });
   const email = userQuery.data?.email;
 
@@ -42,10 +47,7 @@ const VerifyEmailPage = () => {
           </div>
           <CardTitle className="text-2xl">Verify Your Email</CardTitle>
           <CardDescription>
-            We sent a verification link to{' '}
-            {email && (
-              <span className="font-medium text-foreground">{email}</span>
-            )}
+            We sent a verification link to {email && <span className="font-medium text-foreground">{email}</span>}
           </CardDescription>
         </CardHeader>
 
@@ -82,11 +84,7 @@ const VerifyEmailPage = () => {
           </p>
 
           <div className="pt-4 border-t border-border">
-            <Button
-              variant="ghost"
-              onClick={() => router.push('/sign-in')}
-              className="w-full"
-            >
+            <Button variant="ghost" onClick={() => router.push('/sign-in')} className="w-full">
               Back to Sign In
             </Button>
           </div>

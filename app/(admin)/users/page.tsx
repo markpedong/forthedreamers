@@ -1,28 +1,28 @@
-import {USER_ROLE} from '@/generated/prisma'
-import {getSession} from '@/lib/services/auth'
-import {listUsers} from '@/lib/services/admin-users'
-import Users from './index'
-import { redirect } from 'next/navigation'
+import { USER_ROLE } from '@/generated/prisma';
+import { getSession } from '@/lib/services/auth';
+import { listUsers } from '@/lib/services/admin-users';
+import Users from './index';
+import { redirect } from 'next/navigation';
 
 const Page = async () => {
-  const session = await getSession()
+  const session = await getSession();
 
   if (session?.user.role !== USER_ROLE.ADMIN) {
-    redirect('/')
+    redirect('/');
   }
 
-  let users
+  let users;
   try {
-    users = await listUsers()
+    users = await listUsers();
   } catch (err) {
     if (err instanceof Error && err.message.includes('not allowed')) {
-      redirect('/products')
+      redirect('/products');
     }
 
-    redirect('/')
+    redirect('/');
   }
 
-  return <Users users={users.filter(u => u.id !== session.user.id)} />
-}
+  return <Users users={users.filter(u => u.id !== session.user.id)} />;
+};
 
-export default Page
+export default Page;

@@ -1,6 +1,6 @@
-import { NextRequest } from "next/server";
+import { NextRequest } from 'next/server';
 import { getSession } from '@/lib/services/auth';
-import { successResponse, errorResponse } from "@/lib/server-helper";
+import { successResponse, errorResponse } from '@/lib/server-helper';
 
 /**
  * POST /api/notify/email
@@ -10,19 +10,19 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse("Unauthorized");
+      return errorResponse('Unauthorized');
     }
 
     const body = await request.json();
     const { to, subject, template, data } = body;
 
     if (!to || !subject) {
-      return errorResponse("Recipient and subject are required");
+      return errorResponse('Recipient and subject are required');
     }
 
     // In production, this would integrate with an email service (SendGrid, AWS SES, etc.)
     // For now, we log the notification request
-    console.log("Email notification requested:", {
+    console.log('Email notification requested:', {
       to,
       subject,
       template,
@@ -33,13 +33,10 @@ export async function POST(request: NextRequest) {
     // Simulate sending email (in production, replace with actual email service call)
     // await emailService.send({ to, subject, template, data });
 
-    return successResponse(
-      { sent: true, to, subject },
-      "Email notification queued for delivery"
-    );
+    return successResponse({ sent: true, to, subject }, 'Email notification queued for delivery');
   } catch (error) {
-    console.error("Send email notification error:", error);
-    return errorResponse("Internal server error");
+    console.error('Send email notification error:', error);
+    return errorResponse('Internal server error');
   }
 }
 
@@ -51,7 +48,7 @@ export async function GET() {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse("Unauthorized");
+      return errorResponse('Unauthorized');
     }
 
     // Get user's notification preferences from database
@@ -67,8 +64,8 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("Get notification preferences error:", error);
-    return errorResponse("Internal server error");
+    console.error('Get notification preferences error:', error);
+    return errorResponse('Internal server error');
   }
 }
 
@@ -80,7 +77,7 @@ export async function PUT(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse("Unauthorized");
+      return errorResponse('Unauthorized');
     }
 
     await request.json();
@@ -88,9 +85,9 @@ export async function PUT(request: NextRequest) {
     // Note: notificationPreference model may not exist in schema yet
     const preferences = null;
 
-    return successResponse(preferences, "Notification preferences updated");
+    return successResponse(preferences, 'Notification preferences updated');
   } catch (error) {
-    console.error("Update notification preferences error:", error);
-    return errorResponse("Internal server error");
+    console.error('Update notification preferences error:', error);
+    return errorResponse('Internal server error');
   }
 }

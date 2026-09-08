@@ -34,7 +34,7 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
   useEffect(() => {
     const query = searchValue.trim().toLowerCase();
     if (query) {
-      setFiltered(SUGGESTIONS.filter((item) => item.label.toLowerCase().includes(query)));
+      setFiltered(SUGGESTIONS.filter(item => item.label.toLowerCase().includes(query)));
     } else {
       setFiltered(SUGGESTIONS.slice(0, 4));
     }
@@ -57,38 +57,38 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className='fixed inset-0 z-50 bg-black/50 backdrop-blur-sm'
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className='fixed inset-0 z-50 flex items-start justify-center pt-20 md:pt-32 px-4'
+            className="fixed inset-0 z-50 flex items-start justify-center pt-20 md:pt-32 px-4"
           >
-            <div className='w-full max-w-2xl'>
-              <Form form={form} className='relative mb-4' customSubmitButton>
-                <div className='relative bg-background rounded-lg shadow-lg overflow-hidden'>
-                  <Search className='absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground' />
+            <div className="w-full max-w-2xl">
+              <Form form={form} className="relative mb-4" customSubmitButton>
+                <div className="relative bg-background rounded-lg shadow-lg overflow-hidden">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
                     autoFocus
-                    type='text'
-                    placeholder='Search products, categories, shops...'
+                    type="text"
+                    placeholder="Search products, categories, shops..."
                     {...form.register('search')}
-                    className='w-full pl-12 pr-12 py-3 text-base border-0 bg-background focus-visible:ring-2 focus-visible:ring-primary'
+                    className="w-full pl-12 pr-12 py-3 text-base border-0 bg-background focus-visible:ring-2 focus-visible:ring-primary"
                   />
                   <Button
-                    type='button'
-                    variant='ghost'
-                    size='icon'
+                    type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => {
                       form.reset();
                       setFiltered(SUGGESTIONS.slice(0, 4));
                       onClose();
                     }}
-                    className='absolute right-2 top-1/2 -translate-y-1/2'
+                    className="absolute right-2 top-1/2 -translate-y-1/2"
                   >
-                    <X className='w-5 h-5' />
+                    <X className="w-5 h-5" />
                   </Button>
                 </div>
               </Form>
@@ -96,10 +96,10 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className='bg-background rounded-lg shadow-lg overflow-hidden'
+                className="bg-background rounded-lg shadow-lg overflow-hidden"
               >
                 {filtered.length ? (
-                  <div className='divide-y divide-border'>
+                  <div className="divide-y divide-border">
                     {filtered.map((s, i) => (
                       <motion.button
                         key={i}
@@ -109,29 +109,28 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                           form.setValue('search', s.label);
                           onClose();
                         }}
-                        className='w-full px-4 py-3 text-left flex items-center justify-between hover:bg-muted transition-colors'
+                        className="w-full px-4 py-3 text-left flex items-center justify-between hover:bg-muted transition-colors"
                       >
-                        <div className='flex items-center gap-3'>
-                          <Search className='w-4 h-4 text-muted-foreground' />
+                        <div className="flex items-center gap-3">
+                          <Search className="w-4 h-4 text-muted-foreground" />
                           <div>
-                            <p className='text-sm font-medium'>{s.label}</p>
-                            <p className='text-xs text-muted-foreground'>{s.category}</p>
+                            <p className="text-sm font-medium">{s.label}</p>
+                            <p className="text-xs text-muted-foreground">{s.category}</p>
                           </div>
                         </div>
                       </motion.button>
                     ))}
                   </div>
                 ) : (
-                  <div className='px-4 py-8 text-center text-muted-foreground'>
+                  <div className="px-4 py-8 text-center text-muted-foreground">
                     <p>No results found for “{searchValue}”</p>
                   </div>
                 )}
               </motion.div>
 
-              <div className='mt-4 text-center text-xs text-muted-foreground'>
+              <div className="mt-4 text-center text-xs text-muted-foreground">
                 <p>
-                  Press <kbd className='px-2 py-1 bg-muted rounded text-foreground'>ESC</kbd> to
-                  close
+                  Press <kbd className="px-2 py-1 bg-muted rounded text-foreground">ESC</kbd> to close
                 </p>
               </div>
             </div>

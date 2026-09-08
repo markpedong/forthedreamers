@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { CHANGE_PASSWORD_DEFAULT, OAUTH_PROVIDERS } from '@/constants';
 import formSchemas from '@/hooks/form-schemas';
-import {changePassword, linkSocial, sendForgotPassword} from '@/lib/http';
+import { changePassword, linkSocial, sendForgotPassword } from '@/lib/http';
 import { Account, SchemaForm } from '@/lib/types';
 import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
@@ -17,7 +17,7 @@ import AlertDialog from '@/components/reusable/alert-dialog';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppSelector } from '@/redux/store';
-import {useMutation} from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 interface AccountManagementProps {
   accounts: Account[];
@@ -25,7 +25,7 @@ interface AccountManagementProps {
 }
 
 const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }) => {
-  const user = useAppSelector((state) => state.userData.data);
+  const user = useAppSelector(state => state.userData.data);
   const { changePasswordSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof changePasswordSchema>>({
     resolver: zodResolver(changePasswordSchema),
@@ -40,19 +40,19 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
       form.reset(CHANGE_PASSWORD_DEFAULT);
       setShowPasswordDialog(false);
     },
-    onError: (error) => toast.error(error.message),
+    onError: error => toast.error(error.message),
   });
   const resetMutation = useMutation({
-    mutationFn: ({email}: {email: string}) => sendForgotPassword(email, '/reset-password'),
+    mutationFn: ({ email }: { email: string }) => sendForgotPassword(email, '/reset-password'),
     onSuccess: () => toast.success('Password reset link sent successfully'),
-    onError: (error) => toast.error(error.message),
+    onError: error => toast.error(error.message),
   });
   const linkMutation = useMutation({
     mutationFn: (provider: string) => linkSocial(provider, '/profile?accountLinked=true&tab=security'),
     onSuccess: result => {
-      if (result.data?.url) window.location.assign(result.data.url)
+      if (result.data?.url) window.location.assign(result.data.url);
     },
-    onError: error => toast.error(error.message)
+    onError: error => toast.error(error.message),
   });
   const isSubmitting = passwordMutation.isPending || resetMutation.isPending || linkMutation.isPending;
 
@@ -61,23 +61,23 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
   };
 
   const handleSetPassword = () => {
-    if (user?.email) resetMutation.mutate({email: user.email});
+    if (user?.email) resetMutation.mutate({ email: user.email });
   };
 
   return (
     <>
-      <Card className='shadow-none'>
-        <CardHeader className='border-b'>
-          <CardTitle className='text-xl'>Sign-in methods</CardTitle>
+      <Card className="shadow-none">
+        <CardHeader className="border-b">
+          <CardTitle className="text-xl">Sign-in methods</CardTitle>
           <CardDescription>Manage your password and linked accounts.</CardDescription>
         </CardHeader>
 
-        <CardContent className='space-y-6'>
+        <CardContent className="space-y-6">
           <section>
-            <p className='mb-3 text-sm font-medium text-foreground'>Linked accounts</p>
+            <p className="mb-3 text-sm font-medium text-foreground">Linked accounts</p>
             {accounts.length ? (
-              <div className='space-y-2'>
-                {accounts.map((account) => (
+              <div className="space-y-2">
+                {accounts.map(account => (
                   <AccountCard
                     key={account.id}
                     provider={account.providerId}
@@ -87,22 +87,20 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
                 ))}
               </div>
             ) : (
-              <p className='text-sm text-muted-foreground'>No linked accounts</p>
+              <p className="text-sm text-muted-foreground">No linked accounts</p>
             )}
           </section>
 
           <section>
-            <p className='mb-3 text-sm font-medium text-foreground'>Available to link</p>
-            <div className='grid gap-3'>
-              {OAUTH_PROVIDERS.filter(
-                (provider) => !accounts.some((a) => a.providerId === provider),
-              ).map((provider) => (
+            <p className="mb-3 text-sm font-medium text-foreground">Available to link</p>
+            <div className="grid gap-3">
+              {OAUTH_PROVIDERS.filter(provider => !accounts.some(a => a.providerId === provider)).map(provider => (
                 <AccountCard
                   key={provider}
                   provider={provider}
                   account={null}
                   loading={isSubmitting}
-                  onClick={(provider) => linkMutation.mutate(provider)}
+                  onClick={provider => linkMutation.mutate(provider)}
                 />
               ))}
             </div>
@@ -110,26 +108,22 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
 
           <Divider />
 
-          <section className='rounded-lg border border-border bg-muted/30 p-4'>
-            <div className='flex items-start gap-4'>
-              <div
-                className={`rounded-full p-2 ${
-                  hasPassword ? 'bg-green-500/10' : 'bg-amber-500/10'
-                }`}
-              >
+          <section className="rounded-lg border border-border bg-muted/30 p-4">
+            <div className="flex items-start gap-4">
+              <div className={`rounded-full p-2 ${hasPassword ? 'bg-green-500/10' : 'bg-amber-500/10'}`}>
                 {hasPassword ? (
-                  <ShieldCheck className='h-5 w-5 text-green-600 dark:text-green-400' />
+                  <ShieldCheck className="h-5 w-5 text-green-600 dark:text-green-400" />
                 ) : (
-                  <ShieldAlert className='h-5 w-5 text-amber-600 dark:text-amber-400' />
+                  <ShieldAlert className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                 )}
               </div>
 
-              <div className='flex-1 space-y-3'>
+              <div className="flex-1 space-y-3">
                 <div>
-                  <p className='font-medium text-foreground'>
+                  <p className="font-medium text-foreground">
                     {hasPassword ? 'Password Protection Active' : 'No Password Set'}
                   </p>
-                  <p className='text-sm text-muted-foreground'>
+                  <p className="text-sm text-muted-foreground">
                     {hasPassword
                       ? 'Your account is secured with a password. You can update it anytime.'
                       : 'Set a password to secure your account and enable additional login options.'}
@@ -138,12 +132,12 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
 
                 <Button
                   variant={hasPassword ? 'outline' : 'default'}
-                  size='sm'
+                  size="sm"
                   onClick={() => (hasPassword ? setShowPasswordDialog(true) : handleSetPassword())}
                   disabled={isSubmitting}
-                  className='gap-2'
+                  className="gap-2"
                 >
-                  <KeyRound className='h-4 w-4' />
+                  <KeyRound className="h-4 w-4" />
                   {hasPassword ? 'Change Password' : isSubmitting ? 'Sending...' : 'Set Password'}
                 </Button>
               </div>
@@ -154,36 +148,36 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
       <AlertDialog
         open={showPasswordDialog}
         onOpenChange={setShowPasswordDialog}
-        title='Change Password'
-        description='Enter your current and new password.'
-        confirmText='Change Password'
+        title="Change Password"
+        description="Enter your current and new password."
+        confirmText="Change Password"
         loading={isSubmitting}
         onConfirm={form.handleSubmit(onSubmit)}
         onCancel={() => form.reset({ currentPassword: '', newPassword: '', confirmPassword: '' })}
       >
-        <Form form={form} onSubmit={onSubmit} customSubmitButton className='mt-8'>
+        <Form form={form} onSubmit={onSubmit} customSubmitButton className="mt-8">
           <Input
             control={form.control}
-            name='currentPassword'
-            label='Current Password'
-            type='password'
-            placeholder='••••••••'
+            name="currentPassword"
+            label="Current Password"
+            type="password"
+            placeholder="••••••••"
             disabled={isSubmitting}
           />
           <Input
             control={form.control}
-            name='newPassword'
-            label='New Password'
-            type='password'
-            placeholder='••••••••'
+            name="newPassword"
+            label="New Password"
+            type="password"
+            placeholder="••••••••"
             disabled={isSubmitting}
           />
           <Input
             control={form.control}
-            name='confirmPassword'
-            label='Confirm Password'
-            type='password'
-            placeholder='••••••••'
+            name="confirmPassword"
+            label="Confirm Password"
+            type="password"
+            placeholder="••••••••"
             disabled={isSubmitting}
           />
         </Form>

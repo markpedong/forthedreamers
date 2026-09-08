@@ -10,8 +10,8 @@ import Form from '@/components/reusable/form';
 import formSchemas from '@/hooks/form-schemas';
 import Input from '@/components/reusable/input';
 import { SchemaForm } from '@/lib/types';
-import {resetPassword} from '@/lib/http';
-import {useMutation} from '@tanstack/react-query';
+import { resetPassword } from '@/lib/http';
+import { useMutation } from '@tanstack/react-query';
 
 const ResetPassword: FC<{ token: string }> = ({ token }) => {
   const router = useRouter();
@@ -19,10 +19,10 @@ const ResetPassword: FC<{ token: string }> = ({ token }) => {
   const mutation = useMutation({
     mutationFn: (password: string) => resetPassword(token, password),
     onSuccess: () => {
-      toast.success('Password reset successfully!', {duration: 3000});
+      toast.success('Password reset successfully!', { duration: 3000 });
       router.push('/sign-in');
     },
-    onError: (error) => toast.error(error.message),
+    onError: error => toast.error(error.message),
   });
   const isLoading = mutation.isPending;
   const form = useForm<SchemaForm<typeof resetPasswordSchema>>({
@@ -36,47 +36,43 @@ const ResetPassword: FC<{ token: string }> = ({ token }) => {
   const onSubmit = (values: SchemaForm<typeof resetPasswordSchema>) => mutation.mutate(values.password);
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8'>
-      <div className='w-full max-w-md'>
-        <Card className='border shadow-lg'>
-          <CardHeader className='space-y-2'>
-            <CardTitle className='text-2xl font-bold'>Reset Password</CardTitle>
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md">
+        <Card className="border shadow-lg">
+          <CardHeader className="space-y-2">
+            <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
             <CardDescription>
-              Enter your new password below. It must be at least 8 characters and contain uppercase,
-              lowercase, and numbers.
+              Enter your new password below. It must be at least 8 characters and contain uppercase, lowercase, and
+              numbers.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Form
-              form={form}
-              onSubmit={onSubmit}
-              submitLabel={isLoading ? 'Resetting...' : 'Reset Password'}
-            >
+            <Form form={form} onSubmit={onSubmit} submitLabel={isLoading ? 'Resetting...' : 'Reset Password'}>
               <Input
                 control={form.control}
-                name='password'
-                type='password'
-                label='New Password'
-                description='Must contain uppercase, lowercase, and numbers'
-                placeholder='Enter your new password'
+                name="password"
+                type="password"
+                label="New Password"
+                description="Must contain uppercase, lowercase, and numbers"
+                placeholder="Enter your new password"
                 disabled={isLoading}
               />
               <Input
                 control={form.control}
-                name='confirmPassword'
-                label='Confirm Password'
-                type='password'
-                placeholder='Confirm your new password'
+                name="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                placeholder="Confirm your new password"
                 disabled={isLoading}
-                description='Passwords must match'
+                description="Passwords must match"
               />
             </Form>
           </CardContent>
         </Card>
 
-        <p className='mt-4 text-center text-sm text-muted-foreground'>
+        <p className="mt-4 text-center text-sm text-muted-foreground">
           Remember your password?{' '}
-          <a href='/sign-in' className='font-medium text-primary hover:underline'>
+          <a href="/sign-in" className="font-medium text-primary hover:underline">
             Sign in instead
           </a>
         </p>

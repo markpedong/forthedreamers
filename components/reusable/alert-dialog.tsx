@@ -50,7 +50,7 @@ const AlertDialog: FC<ReusableAlertProps> = ({
     <AlertDialogUI open={open} {...{ onOpenChange }}>
       <AlertDialogContent
         className={classNames('flex flex-col max-h-[90vh] p-0 gap-0', wrapperClassName)}
-        onKeyDown={(e) => {
+        onKeyDown={e => {
           if (e.key === 'Enter') {
             e.preventDefault();
             onConfirm?.();
@@ -71,18 +71,14 @@ const AlertDialog: FC<ReusableAlertProps> = ({
         </div>
 
         {/* Sticky footer */}
-        <AlertDialogFooter className='m-4 flex-shrink-0'>
+        <AlertDialogFooter className="m-4 flex-shrink-0">
           <AlertDialogCancel disabled={loading} onClick={onCancel}>
             {cancelText}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             disabled={loading}
-            className={
-              destructive
-                ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
-                : ''
-            }
+            className={destructive ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : ''}
           >
             {loading ? 'Please wait...' : confirmText}
           </AlertDialogAction>

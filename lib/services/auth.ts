@@ -1,26 +1,26 @@
-import 'server-only'
+import 'server-only';
 
-import {headers} from 'next/headers'
-import type {Provider} from '@supabase/supabase-js'
-import prisma from '@/lib/prisma'
-import {getRandomDefaultAvatarUrl} from '@/lib/default-avatars'
-import {createSupabaseServerClient} from '@/lib/supabase/server'
-import {upsertAuthUser} from '@/lib/auth'
-import type {TUserData} from '@/services/types'
+import { headers } from 'next/headers';
+import type { Provider } from '@supabase/supabase-js';
+import prisma from '@/lib/prisma';
+import { getRandomDefaultAvatarUrl } from '@/lib/default-avatars';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { upsertAuthUser } from '@/lib/auth';
+import type { TUserData } from '@/services/types';
 
 const appOrigin = async () => {
-  const headerStore = await headers()
-  const proto = headerStore.get('x-forwarded-proto') ?? 'http'
-  const host = headerStore.get('x-forwarded-host') ?? headerStore.get('host')
-  return process.env.NEXT_PUBLIC_APP_URL || (host ? `${proto}://${host}` : '')
-}
+  const headerStore = await headers();
+  const proto = headerStore.get('x-forwarded-proto') ?? 'http';
+  const host = headerStore.get('x-forwarded-host') ?? headerStore.get('host');
+  return process.env.NEXT_PUBLIC_APP_URL || (host ? `${proto}://${host}` : '');
+};
 
 export const getSession = async () => {
-  const supabase = await createSupabaseServerClient()
-  const {data, error} = await supabase.auth.getUser()
-  if (error || !data.user) return null
-  const {data: sessionData} = await supabase.auth.getSession()
-  const profile = await upsertAuthUser(data.user)
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) return null;
+  const { data: sessionData } = await supabase.auth.getSession();
+  const profile = await upsertAuthUser(data.user);
 
   return {
     hasPassword:
@@ -41,138 +41,148 @@ export const getSession = async () => {
       role: profile?.role ?? 'USER',
       twoFactorEnabled: profile?.twoFactorEnabled ?? false,
       createdAt: profile?.createdAt ?? new Date(data.user.created_at),
-      updatedAt: profile?.updatedAt ?? new Date(data.user.updated_at ?? data.user.created_at)
+      updatedAt: profile?.updatedAt ?? new Date(data.user.updated_at ?? data.user.created_at),
     },
-    session: {token: sessionData.session?.access_token ?? '', impersonatedBy: null as string | null}
-  }
-}
+    session: { token: sessionData.session?.access_token ?? '', impersonatedBy: null as string | null },
+  };
+};
 
 export const getCurrentUserData = async (): Promise<TUserData | null> => {
-  const session = await getSession()
-  if (!session) return null
+  const session = await getSession();
+  if (!session) return null;
   return {
     ...session.user,
     email: session.user.email ?? '',
     createdAt: new Date(session.user.createdAt).toISOString(),
-    updatedAt: new Date(session.user.updatedAt).toISOString()
-  }
-}
+    updatedAt: new Date(session.user.updatedAt).toISOString(),
+  };
+};
 
 export const signUp = async (email: string, password: string, name: string, callbackURL = '/profile') => {
-  const supabase = await createSupabaseServerClient()
-  const origin = await appOrigin()
-  const image = getRandomDefaultAvatarUrl()
+  const supabase = await createSupabaseServerClient();
+  const origin = await appOrigin();
+  const image = getRandomDefaultAvatarUrl();
   const result = await supabase.auth.signUp({
     email,
     password,
-    options: {emailRedirectTo: `${origin}/auth/callback?next=${callbackURL}`, data: {name, avatar_url: image}}
-  })
-  if (result.error) throw new Error(result.error.message)
+    options: { emailRedirectTo: `${origin}/auth/callback?next=${callbackURL}`, data: { name, avatar_url: image } },
+  });
+  if (result.error) throw new Error(result.error.message);
   if (result.data.user?.email) {
     await prisma.user.upsert({
-      where: {id: result.data.user.id},
-      update: {email: result.data.user.email, name},
+      where: { id: result.data.user.id },
+      update: { email: result.data.user.email, name },
       create: {
         id: result.data.user.id,
         email: result.data.user.email,
         name,
         image,
-        emailVerified: Boolean(result.data.user.email_confirmed_at)
-      }
-    })
+        emailVerified: Boolean(result.data.user.email_confirmed_at),
+      },
+    });
   }
-  return result.data
-}
+  return result.data;
+};
 
 export const signIn = async (email: string, password: string) => {
-  const supabase = await createSupabaseServerClient()
-  const result = await supabase.auth.signInWithPassword({email, password})
-  if (result.error) throw new Error(result.error.message)
-  return result.data
-}
+  const supabase = await createSupabaseServerClient();
+  const result = await supabase.auth.signInWithPassword({ email, password });
+  if (result.error) throw new Error(result.error.message);
+  return result.data;
+};
 
-export const signOut = async () => (await createSupabaseServerClient()).auth.signOut()
+export const signOut = async () => (await createSupabaseServerClient()).auth.signOut();
 
 export const socialSignInUrl = async (provider: Provider, next: '/profile' | '/dashboard') => {
-  const supabase = await createSupabaseServerClient()
-  const origin = await appOrigin()
-  const {data, error} = await supabase.auth.signInWithOAuth({
+  const supabase = await createSupabaseServerClient();
+  const origin = await appOrigin();
+  const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
-    options: {redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`, skipBrowserRedirect: true}
-  })
-  if (error || !data.url) throw new Error(error?.message ?? 'Unable to start social sign in')
-  return data.url
-}
+    options: { redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`, skipBrowserRedirect: true },
+  });
+  if (error || !data.url) throw new Error(error?.message ?? 'Unable to start social sign in');
+  return data.url;
+};
 
 export const socialLinkUrl = async (provider: Provider, next: string) => {
-  const supabase = await createSupabaseServerClient()
-  const origin = await appOrigin()
-  const {data, error} = await supabase.auth.linkIdentity({
+  const supabase = await createSupabaseServerClient();
+  const origin = await appOrigin();
+  const { data, error } = await supabase.auth.linkIdentity({
     provider,
-    options: {redirectTo: `${origin}${next}`, skipBrowserRedirect: true}
-  })
-  if (error || !data.url) throw new Error(error?.message ?? 'Unable to link account')
-  return data.url
-}
+    options: { redirectTo: `${origin}${next}`, skipBrowserRedirect: true },
+  });
+  if (error || !data.url) throw new Error(error?.message ?? 'Unable to link account');
+  return data.url;
+};
 
 export const sendVerificationEmail = async (email: string) => {
-  const supabase = await createSupabaseServerClient()
-  const origin = await appOrigin()
-  const {error} = await supabase.auth.resend({
+  const supabase = await createSupabaseServerClient();
+  const origin = await appOrigin();
+  const { error } = await supabase.auth.resend({
     type: 'signup',
     email,
-    options: {emailRedirectTo: `${origin}/auth/callback?next=/profile`}
-  })
-  if (error) throw new Error(error.message)
-}
+    options: { emailRedirectTo: `${origin}/auth/callback?next=/profile` },
+  });
+  if (error) throw new Error(error.message);
+};
 
 export const sendForgotPasswordEmail = async (email: string, redirectTo = '/reset-password') => {
-  const supabase = await createSupabaseServerClient()
-  const origin = await appOrigin()
-  const {error} = await supabase.auth.resetPasswordForEmail(email, {redirectTo: `${origin}${redirectTo}`})
-  if (error) throw new Error(error.message)
-}
+  const supabase = await createSupabaseServerClient();
+  const origin = await appOrigin();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${origin}${redirectTo}` });
+  if (error) throw new Error(error.message);
+};
 
 export const resetPassword = async (token: string, newPassword: string) => {
-  const supabase = await createSupabaseServerClient()
-  const {error: verifyError} = await supabase.auth.verifyOtp({email: '', token, type: 'recovery'})
-  if (verifyError) throw new Error('Invalid or expired reset token')
-  const {error} = await supabase.auth.updateUser({password: newPassword})
-  if (error) throw new Error(error.message)
-}
+  const supabase = await createSupabaseServerClient();
+  const { error: verifyError } = await supabase.auth.verifyOtp({ email: '', token, type: 'recovery' });
+  if (verifyError) throw new Error('Invalid or expired reset token');
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) throw new Error(error.message);
+};
 
 export const changePassword = async (newPassword: string) => {
-  const {error} = await (await createSupabaseServerClient()).auth.updateUser({password: newPassword})
-  if (error) throw new Error(error.message)
-}
+  const { error } = await (await createSupabaseServerClient()).auth.updateUser({ password: newPassword });
+  if (error) throw new Error(error.message);
+};
 
 export const updateUser = async (userId: string, name: string) => {
-  const supabase = await createSupabaseServerClient()
-  const {data: {user}, error} = await supabase.auth.updateUser({data: {name}})
-  if (error || !user || user.id !== userId) throw new Error(error?.message ?? 'Authentication required')
-  await prisma.user.update({where: {id: userId}, data: {name}})
-  return getCurrentUserData()
-}
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.updateUser({ data: { name } });
+  if (error || !user || user.id !== userId) throw new Error(error?.message ?? 'Authentication required');
+  await prisma.user.update({ where: { id: userId }, data: { name } });
+  return getCurrentUserData();
+};
 
 export const updateUserImage = async (userId: string, image: string) => {
-  const supabase = await createSupabaseServerClient()
-  const {data: {user}, error} = await supabase.auth.updateUser({data: {avatar_url: image}})
-  if (error || !user || user.id !== userId) throw new Error(error?.message ?? 'Authentication required')
-  await prisma.user.update({where: {id: userId}, data: {image}})
-  return getCurrentUserData()
-}
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.updateUser({ data: { avatar_url: image } });
+  if (error || !user || user.id !== userId) throw new Error(error?.message ?? 'Authentication required');
+  await prisma.user.update({ where: { id: userId }, data: { image } });
+  return getCurrentUserData();
+};
 
 export const listAllSessions = async () => {
-  const supabase = await createSupabaseServerClient()
-  const {data: {session}} = await supabase.auth.getSession()
-  if (!session) return []
-  const headerStore = await headers()
-  const forwardedFor = headerStore.get('x-forwarded-for')
-  return [{
-    id: session.access_token,
-    token: session.access_token,
-    userAgent: headerStore.get('user-agent'),
-    ipAddress: forwardedFor?.split(',')[0]?.trim() ?? headerStore.get('x-real-ip'),
-    createdAt: session.user.last_sign_in_at ?? session.user.created_at
-  }]
-}
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) return [];
+  const headerStore = await headers();
+  const forwardedFor = headerStore.get('x-forwarded-for');
+  return [
+    {
+      id: session.access_token,
+      token: session.access_token,
+      userAgent: headerStore.get('user-agent'),
+      ipAddress: forwardedFor?.split(',')[0]?.trim() ?? headerStore.get('x-real-ip'),
+      createdAt: session.user.last_sign_in_at ?? session.user.created_at,
+    },
+  ];
+};

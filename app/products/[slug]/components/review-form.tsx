@@ -1,63 +1,65 @@
-'use client'
+'use client';
 
-import {useAppSelector} from '@/redux/store'
-import {type FormEvent, useState} from 'react'
-import Link from 'next/link'
-import {useRouter} from 'next/navigation'
-import {toast} from 'sonner'
-import {Button} from '@/components/ui/button'
-import {useMutation, useQueryClient} from '@tanstack/react-query'
-import {createReview} from '@/lib/http'
+import { useAppSelector } from '@/redux/store';
+import { type FormEvent, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createReview } from '@/lib/http';
 
-const ReviewForm = ({slug}: {slug: string}) => {
-  const user = useAppSelector(state => state.userData.data)
-  const router = useRouter()
-  const [submitted, setSubmitted] = useState(false)
-  const queryClient = useQueryClient()
+const ReviewForm = ({ slug }: { slug: string }) => {
+  const user = useAppSelector(state => state.userData.data);
+  const router = useRouter();
+  const [submitted, setSubmitted] = useState(false);
+  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (input: unknown) => createReview(slug, input),
     onSuccess: () => {
-      setSubmitted(true)
-      toast.success('Review submitted')
-      void queryClient.invalidateQueries({queryKey: ['product-reviews', slug]})
-      router.refresh()
+      setSubmitted(true);
+      toast.success('Review submitted');
+      void queryClient.invalidateQueries({ queryKey: ['product-reviews', slug] });
+      router.refresh();
     },
-    onError: error => toast.error(error.message)
-  })
-  const pending = mutation.isPending
+    onError: error => toast.error(error.message),
+  });
+  const pending = mutation.isPending;
   const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (pending) return
-    const form = event.currentTarget
-    const data = new FormData(form)
-    mutation.mutate({rating: Number(data.get('rating')), title: data.get('title'), comment: data.get('comment')})
-  }
+    event.preventDefault();
+    if (pending) return;
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    mutation.mutate({ rating: Number(data.get('rating')), title: data.get('title'), comment: data.get('comment') });
+  };
 
   if (!user)
     return (
-      <p className='text-sm text-muted-foreground'>
-        <Link className='underline' href='/sign-in'>
+      <p className="text-sm text-muted-foreground">
+        <Link className="underline" href="/sign-in">
           Sign in
         </Link>{' '}
         to review a purchased product.
       </p>
-    )
+    );
   if (submitted)
     return (
-      <p role='status' className='text-sm'>
+      <p role="status" className="text-sm">
         Thank you for sharing your review.
       </p>
-    )
+    );
 
   return (
-    <form onSubmit={submit} className='space-y-4 rounded-xl border border-border p-6'>
-      <h3 className='font-medium'>Write a review</h3>
-      <p className='text-sm text-muted-foreground'>One review per product. A paid purchase is required and checked when you submit.</p>
-      <fieldset disabled={pending} className='grid gap-4'>
-        <label className='grid gap-2 text-sm'>
+    <form onSubmit={submit} className="space-y-4 rounded-xl border border-border p-6">
+      <h3 className="font-medium">Write a review</h3>
+      <p className="text-sm text-muted-foreground">
+        One review per product. A paid purchase is required and checked when you submit.
+      </p>
+      <fieldset disabled={pending} className="grid gap-4">
+        <label className="grid gap-2 text-sm">
           Rating
-          <select name='rating' required defaultValue='' className='rounded-md border bg-background p-2'>
-            <option value='' disabled>
+          <select name="rating" required defaultValue="" className="rounded-md border bg-background p-2">
+            <option value="" disabled>
               Select a rating
             </option>
             {[5, 4, 3, 2, 1].map(rating => (
@@ -67,20 +69,20 @@ const ReviewForm = ({slug}: {slug: string}) => {
             ))}
           </select>
         </label>
-        <label className='grid gap-2 text-sm'>
+        <label className="grid gap-2 text-sm">
           Title (optional)
-          <input name='title' maxLength={100} className='rounded-md border bg-background p-2' />
+          <input name="title" maxLength={100} className="rounded-md border bg-background p-2" />
         </label>
-        <label className='grid gap-2 text-sm'>
+        <label className="grid gap-2 text-sm">
           Your review (optional)
-          <textarea name='comment' maxLength={1000} rows={4} className='rounded-md border bg-background p-2' />
+          <textarea name="comment" maxLength={1000} rows={4} className="rounded-md border bg-background p-2" />
         </label>
-        <Button type='submit' className='justify-self-start'>
+        <Button type="submit" className="justify-self-start">
           {pending ? 'Submitting review...' : 'Submit review'}
         </Button>
       </fieldset>
     </form>
-  )
-}
+  );
+};
 
-export default ReviewForm
+export default ReviewForm;

@@ -1,15 +1,15 @@
-import prisma from "@/lib/prisma";
+import prisma from '@/lib/prisma';
 
 async function main() {
   const categories = await prisma.category.findMany({
     select: { id: true, name: true },
   });
-  console.log("CATEGORIES:", JSON.stringify(categories, null, 2));
+  console.log('CATEGORIES:', JSON.stringify(categories, null, 2));
 
   const sellers = await prisma.seller.findMany({
     select: { id: true, storeName: true },
   });
-  console.log("SELLERS:", JSON.stringify(sellers, null, 2));
+  console.log('SELLERS:', JSON.stringify(sellers, null, 2));
 
   const products = await prisma.product.findMany({
     take: 5,
@@ -21,11 +21,11 @@ async function main() {
       status: true,
     },
   });
-  console.log("PRODUCTS:", JSON.stringify(products, null, 2));
+  console.log('PRODUCTS:', JSON.stringify(products, null, 2));
 }
 
 main()
-  .catch((e) => {
+  .catch(e => {
     console.error(e);
     process.exit(1);
   })

@@ -1,12 +1,12 @@
 import type { z, ZodTypeAny } from 'zod';
 import type { getSession } from './services/auth';
 import type { Control, Path, FieldValues } from 'react-hook-form';
-import { ComponentPropsWithoutRef, Ref } from "react";
-import { Category, PrismaClient, Product, PRODUCT_STATUS, Seller, Spec, Variant } from "@/generated/prisma";
+import { ComponentPropsWithoutRef, Ref } from 'react';
+import { Category, PrismaClient, Product, PRODUCT_STATUS, Seller, Spec, Variant } from '@/generated/prisma';
 
 export type TOnNavigate = (page: string) => void;
 
-export type Session = Awaited<ReturnType<typeof getSession>>
+export type Session = Awaited<ReturnType<typeof getSession>>;
 
 export type SchemaForm<T extends ZodTypeAny> = z.infer<T>;
 
@@ -37,9 +37,9 @@ export type ProductFormModalProps = {
   setOpen: (open: boolean) => void;
   type: 'CREATE' | 'EDIT';
   initialProduct?: TProduct;
-  categories: Category[]
-  onSubmit: (data: ProductFormData & { sellerId?: string }, type: 'CREATE' | 'EDIT') => Promise<void> | void
-}
+  categories: Category[];
+  onSubmit: (data: ProductFormData & { sellerId?: string }, type: 'CREATE' | 'EDIT') => Promise<void> | void;
+};
 
 export type SharedProps<T extends FieldValues> = {
   label?: string;
@@ -56,7 +56,7 @@ export type InputProps<T extends FieldValues> = SharedProps<T> &
   Omit<ComponentPropsWithoutRef<'input'>, 'name' | 'type'> & {
     type?: 'text' | 'password' | 'number' | 'email';
     textarea?: false;
-    isHorizontal?: boolean
+    isHorizontal?: boolean;
   };
 
 export type TextareaProps<T extends FieldValues> = SharedProps<T> &
@@ -65,7 +65,6 @@ export type TextareaProps<T extends FieldValues> = SharedProps<T> &
   };
 
 export type ReusableInputProps<T extends FieldValues> = InputProps<T> | TextareaProps<T>;
-
 
 export type Option = {
   value: string | number;
@@ -80,7 +79,7 @@ export type ReusableSelectProps<T extends FieldValues> = {
   placeholder?: string;
   options: Option[];
   disabled?: boolean;
-  containerClassName?: string
+  containerClassName?: string;
 };
 
 export type FormSpec = {
@@ -92,7 +91,7 @@ export type FormSpec = {
 export type SpecsEditorProps = {
   specs: FormSpec[];
   onSpecsChange: (specs: FormSpec[]) => void;
-}
+};
 
 export type FormVariant = {
   id?: string;
@@ -100,20 +99,20 @@ export type FormVariant = {
   isRequired: boolean;
 };
 
-export type OmittedProductFields = Omit<Product, "createdAt" | "updatedAt" | "categoryId">
+export type OmittedProductFields = Omit<Product, 'createdAt' | 'updatedAt' | 'categoryId'>;
 
-export type TSeller = Omit<Seller, "createdAt" | "updatedAt">
+export type TSeller = Omit<Seller, 'createdAt' | 'updatedAt'>;
 
-export type TVariant = Omit<Variant, "createdAt" | "updatedAt" | "attributes"> & {
-  attributes: Record<string, string>,
-}
+export type TVariant = Omit<Variant, 'createdAt' | 'updatedAt' | 'attributes'> & {
+  attributes: Record<string, string>;
+};
 
 export type TProduct = OmittedProductFields & {
   specs: Spec[];
   category: Omit<Category, 'createdAt' | 'updatedAt'>;
   variants: TVariant[];
-  seller: TSeller
-}
+  seller: TSeller;
+};
 
 export type ProTableRef = {
   reset: () => void;
@@ -134,11 +133,11 @@ export type ProColumn<T> = {
   sorter?: (a: T, b: T) => number;
   fieldProps?: Record<string, any>;
   width?: number;
-  align?: "left" | "center" | "right";
+  align?: 'left' | 'center' | 'right';
 };
 
 export type DropdownMenuItemType = {
-  label: React.ReactElement
+  label: React.ReactElement;
 
   onClick?: () => void;
   isDestructive?: boolean;
@@ -148,7 +147,7 @@ export type DropdownMenuItemType = {
 };
 
 export type DropdownProps = {
-  trigger: React.ReactElement
+  trigger: React.ReactElement;
 
   align?: 'start' | 'center' | 'end';
   menus: DropdownMenuItemType[];
@@ -162,13 +161,13 @@ export type ProTableProps<T> = {
   headerTitle?: React.ReactNode;
   toolBarRender?: false;
   search?: Record<string, any> | false;
-  exportDataFn?: () => Promise<void>
-  timeLabel?: string
-  disableTimeFilter?: boolean
+  exportDataFn?: () => Promise<void>;
+  timeLabel?: string;
+  disableTimeFilter?: boolean;
   actionRef?: Ref<ActionType | undefined>;
   formRef?: Ref<unknown>;
-  isLoading?: boolean
-}
+  isLoading?: boolean;
+};
 
 export type ApiResponse<T> = {
   success: boolean;
@@ -184,16 +183,15 @@ export type TGetPaginatedData = {
   where: Record<string, any>;
   include?: any;
   orderBy?: any;
-  omit?: any
-}
-
+  omit?: any;
+};
 
 export type VariantEditorProps = {
   variants: TVariant[];
   onVariantsChange: (variants: Partial<TVariant>[]) => void;
-}
+};
 
 export type TagsInputProps = {
   tags: string[];
   onTagsChange: (tags: string[]) => void;
-}
+};

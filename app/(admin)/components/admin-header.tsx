@@ -8,26 +8,29 @@ import { useAppSelector } from '@/redux/store';
 
 const AdminHeader: FC = () => {
   const { signOut } = useAuthSession();
-  const user = useAppSelector((state) => state.userData.data);
+  const user = useAppSelector(state => state.userData.data);
   const pathname = usePathname();
 
   return (
-    <header className='h-16 border-b border-sidebar-border bg-background px-6 flex items-center justify-between'>
-      <h2 className='text-lg font-semibold text-sidebar-foreground'>
-        {pathname === '/dashboard' ? 'Dashboard' : pathname.split('/').pop()?.charAt(0).toUpperCase() + pathname.split('/').slice(-1)[0].replace(/-/g, ' ') || 'Admin'}
+    <header className="h-16 border-b border-sidebar-border bg-background px-6 flex items-center justify-between">
+      <h2 className="text-lg font-semibold text-sidebar-foreground">
+        {pathname === '/dashboard'
+          ? 'Dashboard'
+          : pathname.split('/').pop()?.charAt(0).toUpperCase() + pathname.split('/').slice(-1)[0].replace(/-/g, ' ') ||
+            'Admin'}
       </h2>
-      <div className='flex items-center gap-4'>
+      <div className="flex items-center gap-4">
         {user && (
-          <div className='flex items-center gap-2 text-sm text-sidebar-foreground/80'>
-            <User className='w-4 h-4' />
+          <div className="flex items-center gap-2 text-sm text-sidebar-foreground/80">
+            <User className="w-4 h-4" />
             <span>{user.email}</span>
           </div>
         )}
         <button
           onClick={async () => await signOut()}
-          className='flex items-center gap-2 text-sm text-sidebar-foreground/80 hover:text-sidebar-primary transition-colors'
+          className="flex items-center gap-2 text-sm text-sidebar-foreground/80 hover:text-sidebar-primary transition-colors"
         >
-          <LogOut className='w-4 h-4' />
+          <LogOut className="w-4 h-4" />
           Logout
         </button>
       </div>

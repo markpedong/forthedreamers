@@ -55,87 +55,87 @@ export default function SettingsPage() {
     showNotification('API settings saved');
   };
 
-  const handleToggleNotification = (key) => {
+  const handleToggleNotification = key => {
     setNotifications({ ...notifications, [key]: !notifications[key] });
   };
 
-  const showNotification = (message) => {
+  const showNotification = message => {
     setToast(message);
     setTimeout(() => setToast(''), 3000);
   };
 
   return (
-    <div className='p-6 space-y-6'>
+    <div className="p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className='text-3xl font-bold tracking-tight'>Settings</h1>
-        <p className='text-muted-foreground mt-1'>Manage your store configuration</p>
+        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+        <p className="text-muted-foreground mt-1">Manage your store configuration</p>
       </div>
 
       {/* Settings Tabs */}
-      <Tabs defaultValue='store' className='w-full'>
-        <TabsList className='grid w-full grid-cols-4'>
-          <TabsTrigger value='store'>Store Info</TabsTrigger>
-          <TabsTrigger value='notifications'>Notifications</TabsTrigger>
-          <TabsTrigger value='tax'>Tax Settings</TabsTrigger>
-          <TabsTrigger value='api'>API Keys</TabsTrigger>
+      <Tabs defaultValue="store" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="store">Store Info</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="tax">Tax Settings</TabsTrigger>
+          <TabsTrigger value="api">API Keys</TabsTrigger>
         </TabsList>
 
         {/* Store Info */}
-        <TabsContent value='store' className='space-y-4'>
+        <TabsContent value="store" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Store Information</CardTitle>
               <CardDescription>Basic store details</CardDescription>
             </CardHeader>
-            <CardContent className='space-y-4'>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className='text-sm font-medium'>Store Name</label>
+                  <label className="text-sm font-medium">Store Name</label>
                   <Input
                     value={storeInfo.name}
-                    onChange={(e) => setStoreInfo({ ...storeInfo, name: e.target.value })}
-                    className='mt-2'
+                    onChange={e => setStoreInfo({ ...storeInfo, name: e.target.value })}
+                    className="mt-2"
                   />
                 </div>
                 <div>
-                  <label className='text-sm font-medium'>Store Email</label>
+                  <label className="text-sm font-medium">Store Email</label>
                   <Input
-                    type='email'
+                    type="email"
                     value={storeInfo.email}
-                    onChange={(e) => setStoreInfo({ ...storeInfo, email: e.target.value })}
-                    className='mt-2'
+                    onChange={e => setStoreInfo({ ...storeInfo, email: e.target.value })}
+                    className="mt-2"
                   />
                 </div>
               </div>
               <div>
-                <label className='text-sm font-medium'>Store Description</label>
+                <label className="text-sm font-medium">Store Description</label>
                 <Textarea
                   value={storeInfo.description}
-                  onChange={(e) => setStoreInfo({ ...storeInfo, description: e.target.value })}
-                  className='mt-2'
+                  onChange={e => setStoreInfo({ ...storeInfo, description: e.target.value })}
+                  className="mt-2"
                 />
               </div>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className='text-sm font-medium'>Store Currency</label>
+                  <label className="text-sm font-medium">Store Currency</label>
                   <Input
                     value={storeInfo.currency}
-                    onChange={(e) => setStoreInfo({ ...storeInfo, currency: e.target.value })}
-                    className='mt-2'
+                    onChange={e => setStoreInfo({ ...storeInfo, currency: e.target.value })}
+                    className="mt-2"
                   />
                 </div>
                 <div>
-                  <label className='text-sm font-medium'>Store Timezone</label>
+                  <label className="text-sm font-medium">Store Timezone</label>
                   <Input
                     value={storeInfo.timezone}
-                    onChange={(e) => setStoreInfo({ ...storeInfo, timezone: e.target.value })}
-                    className='mt-2'
+                    onChange={e => setStoreInfo({ ...storeInfo, timezone: e.target.value })}
+                    className="mt-2"
                   />
                 </div>
               </div>
               <Button onClick={handleSaveStoreInfo}>
-                <Save className='w-4 h-4 mr-2' />
+                <Save className="w-4 h-4 mr-2" />
                 Save Changes
               </Button>
             </CardContent>
@@ -143,14 +143,14 @@ export default function SettingsPage() {
         </TabsContent>
 
         {/* Notifications */}
-        <TabsContent value='notifications' className='space-y-4'>
+        <TabsContent value="notifications" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Notification Preferences</CardTitle>
               <CardDescription>Manage how you receive notifications</CardDescription>
             </CardHeader>
-            <CardContent className='space-y-6'>
-              <div className='space-y-4'>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
                 {[
                   {
                     key: 'newOrders',
@@ -177,11 +177,11 @@ export default function SettingsPage() {
                     label: 'System Updates',
                     description: 'Get notified about system maintenance',
                   },
-                ].map((item) => (
-                  <div key={item.key} className='flex items-center justify-between'>
+                ].map(item => (
+                  <div key={item.key} className="flex items-center justify-between">
                     <div>
-                      <p className='font-medium text-sm'>{item.label}</p>
-                      <p className='text-xs text-muted-foreground'>{item.description}</p>
+                      <p className="font-medium text-sm">{item.label}</p>
+                      <p className="text-xs text-muted-foreground">{item.description}</p>
                     </div>
                     <Switch
                       checked={notifications[item.key]}
@@ -191,7 +191,7 @@ export default function SettingsPage() {
                 ))}
               </div>
               <Button onClick={handleSaveNotifications}>
-                <Save className='w-4 h-4 mr-2' />
+                <Save className="w-4 h-4 mr-2" />
                 Save Preferences
               </Button>
             </CardContent>
@@ -199,34 +199,32 @@ export default function SettingsPage() {
         </TabsContent>
 
         {/* Tax Settings */}
-        <TabsContent value='tax' className='space-y-4'>
+        <TabsContent value="tax" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Tax Settings</CardTitle>
               <CardDescription>Configure tax rules for your store</CardDescription>
             </CardHeader>
-            <CardContent className='space-y-4'>
-              <div className='space-y-4'>
+            <CardContent className="space-y-4">
+              <div className="space-y-4">
                 {[
                   { key: 'taxRate', label: 'Tax Rate', placeholder: 'e.g. 8.5%' },
                   { key: 'taxId', label: 'Tax ID', placeholder: 'Your tax identification number' },
                   { key: 'shippingTax', label: 'Shipping Tax', placeholder: 'Shipping tax rate' },
-                ].map((field) => (
+                ].map(field => (
                   <div key={field.key}>
-                    <label className='text-sm font-medium'>{field.label}</label>
+                    <label className="text-sm font-medium">{field.label}</label>
                     <Input
                       placeholder={field.placeholder}
                       value={taxSettings[field.key]}
-                      onChange={(e) =>
-                        setTaxSettings({ ...taxSettings, [field.key]: e.target.value })
-                      }
-                      className='mt-2'
+                      onChange={e => setTaxSettings({ ...taxSettings, [field.key]: e.target.value })}
+                      className="mt-2"
                     />
                   </div>
                 ))}
               </div>
               <Button onClick={handleSaveTaxSettings}>
-                <Save className='w-4 h-4 mr-2' />
+                <Save className="w-4 h-4 mr-2" />
                 Save Tax Settings
               </Button>
             </CardContent>
@@ -234,28 +232,28 @@ export default function SettingsPage() {
         </TabsContent>
 
         {/* API Keys */}
-        <TabsContent value='api' className='space-y-4'>
+        <TabsContent value="api" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>API Configuration</CardTitle>
               <CardDescription>Manage your API keys and webhooks</CardDescription>
             </CardHeader>
-            <CardContent className='space-y-4'>
+            <CardContent className="space-y-4">
               <div>
-                <label className='text-sm font-medium'>API Key</label>
-                <Input value={apiSettings.apiKey} className='mt-2' disabled />
+                <label className="text-sm font-medium">API Key</label>
+                <Input value={apiSettings.apiKey} className="mt-2" disabled />
               </div>
               <div>
-                <label className='text-sm font-medium'>Webhook URL</label>
+                <label className="text-sm font-medium">Webhook URL</label>
                 <Input
-                  placeholder='https://your-domain.com/webhooks'
+                  placeholder="https://your-domain.com/webhooks"
                   value={apiSettings.webhookUrl}
-                  onChange={(e) => setApiSettings({ ...apiSettings, webhookUrl: e.target.value })}
-                  className='mt-2'
+                  onChange={e => setApiSettings({ ...apiSettings, webhookUrl: e.target.value })}
+                  className="mt-2"
                 />
               </div>
               <Button onClick={handleSaveAPISettings}>
-                <Save className='w-4 h-4 mr-2' />
+                <Save className="w-4 h-4 mr-2" />
                 Update API Settings
               </Button>
             </CardContent>
@@ -265,7 +263,7 @@ export default function SettingsPage() {
 
       {/* Toast notification */}
       {toast && (
-        <div className='fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm'>
+        <div className="fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm">
           {toast}
         </div>
       )}

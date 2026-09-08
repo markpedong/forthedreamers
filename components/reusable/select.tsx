@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  Select as SelectUI,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
+import { Select as SelectUI, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import type { FieldValues } from 'react-hook-form';
 import { ReusableSelectProps } from '@/lib/types';
@@ -35,7 +29,7 @@ const Select = <T extends FieldValues>({
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
               <SelectContent>
-                {options.map((opt) => (
+                {options.map(opt => (
                   <SelectItem key={opt.value} value={String(opt.value)}>
                     {opt.label}
                   </SelectItem>
@@ -43,7 +37,7 @@ const Select = <T extends FieldValues>({
               </SelectContent>
             </SelectUI>
           </FormControl>
-          {description && <div className='text-sm text-muted-foreground'>{description}</div>}
+          {description && <div className="text-sm text-muted-foreground">{description}</div>}
           <FormMessage />
         </FormItem>
       )}

@@ -1,57 +1,57 @@
-'use client'
+'use client';
 
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from 'sonner'
-import { ArrowRight } from 'lucide-react'
-import type { SchemaForm, TOnNavigate } from '@/lib/types'
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { ArrowRight } from 'lucide-react';
+import type { SchemaForm, TOnNavigate } from '@/lib/types';
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
-import formSchemas from '@/hooks/form-schemas'
-import Form from '@/components/reusable/form'
-import Input from '@/components/reusable/input'
+import formSchemas from '@/hooks/form-schemas';
+import Form from '@/components/reusable/form';
+import Input from '@/components/reusable/input';
 
-import Link from 'next/link'
-import {signIn} from '@/lib/http'
-import {useMutation} from '@tanstack/react-query'
+import Link from 'next/link';
+import { signIn } from '@/lib/http';
+import { useMutation } from '@tanstack/react-query';
 
-const SellerSignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
-  const router = useRouter()
+const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
+  const router = useRouter();
   const mutation = useMutation({
     mutationFn: signIn,
     onSuccess: () => {
-      toast.success('Logged in successfully!', {duration: 3000})
-      router.push('/dashboard')
+      toast.success('Logged in successfully!', { duration: 3000 });
+      router.push('/dashboard');
     },
-    onError: error => toast.error(error.message, {duration: 5000})
-  })
-  const isSubmitting = mutation.isPending
-  const {loginSchema} = formSchemas
+    onError: error => toast.error(error.message, { duration: 5000 }),
+  });
+  const isSubmitting = mutation.isPending;
+  const { loginSchema } = formSchemas;
 
   const form = useForm<SchemaForm<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
-      password: ''
-    }
-  })
+      password: '',
+    },
+  });
 
   const onSubmit = (values: SchemaForm<typeof loginSchema>) => {
-    mutation.mutate({email: values.email, password: values.password, audience: 'seller'})
-  }
+    mutation.mutate({ email: values.email, password: values.password, audience: 'seller' });
+  };
 
   return (
-    <div className='space-y-8'>
+    <div className="space-y-8">
       <div>
-        <h1 className='text-3xl font-bold text-foreground mb-2'>Welcome Back</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
 
-        <p className='text-muted-foreground'>Sign in to manage your store and track sales.</p>
+        <p className="text-muted-foreground">Sign in to manage your store and track sales.</p>
       </div>
 
-      <Card className='border-border bg-card/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200'>
+      <Card className="border-border bg-card/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200">
         <CardHeader>
           <CardTitle>Sign In</CardTitle>
 
@@ -60,16 +60,30 @@ const SellerSignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
 
         <CardContent>
           <Form form={form} onSubmit={onSubmit} submitLabel={isSubmitting ? 'Signing in...' : 'Sign In'}>
-            <Input name='email' placeholder='your@email.com' disabled={isSubmitting} autoComplete='email' preventSpaces label='Email' />
+            <Input
+              name="email"
+              placeholder="your@email.com"
+              disabled={isSubmitting}
+              autoComplete="email"
+              preventSpaces
+              label="Email"
+            />
 
-            <Input name='password' type='password' placeholder='••••••••' disabled={isSubmitting} preventSpaces label='Password' />
+            <Input
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              disabled={isSubmitting}
+              preventSpaces
+              label="Password"
+            />
 
-            <div className='flex justify-end items-center w-full text-end'>
+            <div className="flex justify-end items-center w-full text-end">
               <Button
-                variant='link'
-                className='text-primary text-sm font-medium'
+                variant="link"
+                className="text-primary text-sm font-medium"
                 onClick={() => onNavigate('forgot')}
-                type='button'
+                type="button"
                 disabled={isSubmitting}
               >
                 Forgot password?
@@ -79,28 +93,28 @@ const SellerSignIn = ({onNavigate}: {onNavigate: TOnNavigate}) => {
         </CardContent>
       </Card>
 
-      <div className='pt-6 border-t border-border text-center'>
-        <p className='text-sm text-muted-foreground mb-4'>Don&apos;t have an account?</p>
+      <div className="pt-6 border-t border-border text-center">
+        <p className="text-sm text-muted-foreground mb-4">Don&apos;t have an account?</p>
 
         <Button
           onClick={() => onNavigate('register')}
-          className='w-full flex items-center justify-center gap-2 group'
-          variant='secondary'
+          className="w-full flex items-center justify-center gap-2 group"
+          variant="secondary"
           disabled={isSubmitting}
         >
           Create Seller Account
-          <ArrowRight className='w-4 h-4 transition-transform group-hover:translate-x-1' />
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
         </Button>
       </div>
 
-      <p className='w-full text-center text-sm text-muted-foreground mt-4'>
+      <p className="w-full text-center text-sm text-muted-foreground mt-4">
         Want to buy things?{' '}
-        <Link href='/sign-in' className='text-primary hover:underline font-medium'>
+        <Link href="/sign-in" className="text-primary hover:underline font-medium">
           Click here
         </Link>
       </p>
     </div>
-  )
-}
+  );
+};
 
-export default SellerSignIn
+export default SellerSignIn;

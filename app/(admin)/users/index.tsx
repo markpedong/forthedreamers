@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { DropdownMenuItemType, SchemaForm } from '@/lib/types';
-import {deleteUser, setUserBanned} from '@/lib/http';
+import { deleteUser, setUserBanned } from '@/lib/http';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import classNames from 'classnames';
@@ -20,7 +20,7 @@ import { tryWithToast } from '@/utils/helper';
 import DropDown from '@/components/reusable/dropdown';
 import ProTable from '@/components/pro-table';
 import { ProColumn } from '@/lib/types';
-import {useMutation} from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 type UserWithRole = {
   id: string;
@@ -42,12 +42,12 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     defaultValues: { otp: '' },
   });
   const updateMutation = useMutation({
-    mutationFn: ({userId, banned}: {userId: string; banned: boolean}) => setUserBanned(userId, banned),
-    onSuccess: (_result, {banned}) => {
+    mutationFn: ({ userId, banned }: { userId: string; banned: boolean }) => setUserBanned(userId, banned),
+    onSuccess: (_result, { banned }) => {
       toast.success(`User has been ${banned ? 'banned' : 'unbanned'}`);
       router.refresh();
     },
-    onError: (error) => toast.error(error.message),
+    onError: error => toast.error(error.message),
   });
   const deleteMutation = useMutation({
     mutationFn: deleteUser,
@@ -57,7 +57,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
       setSelectedUser(null);
       router.refresh();
     },
-    onError: (error) => toast.error(error.message),
+    onError: error => toast.error(error.message),
   });
   const isPending = updateMutation.isPending || deleteMutation.isPending;
 
@@ -67,12 +67,12 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
   };
 
   const handleEditUser = (userId: string) => {
-    const user = users.find((u) => u.id === userId);
+    const user = users.find(u => u.id === userId);
     if (user) toast.success(`Editing ${user.name}`);
   };
 
   const handleDeleteUser = (userId: string) => {
-    const user = users.find((u) => u.id === userId);
+    const user = users.find(u => u.id === userId);
     if (user) {
       setSelectedUser(user);
       setShowDeleteUser(true);
@@ -80,7 +80,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
   };
 
   const handleBanUnbanUser = (user: UserWithRole) => {
-    updateMutation.mutate({userId: user.id, banned: !user.banned});
+    updateMutation.mutate({ userId: user.id, banned: !user.banned });
   };
 
   const onSubmit = async ({ otp }: SchemaForm<typeof twoFactorSchema>) => {
@@ -132,10 +132,10 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
         placeholder: 'eg: 4g2t0@example.com',
       },
       render: (_, record) => (
-        <div className='flex justify-between gap-3'>
+        <div className="flex justify-between gap-3">
           <span>{record.email}</span>
           <Badge
-            variant='secondary'
+            variant="secondary"
             className={classNames('text-white', {
               'bg-green-500 dark:bg-green-600': record.emailVerified,
               'bg-red-500 dark:bg-red-600': !record.emailVerified,
@@ -185,11 +185,11 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
         return (
           <DropDown
             trigger={
-              <Button variant='ghost' size='icon'>
-                <MoreHorizontal className='w-4 h-4' />
+              <Button variant="ghost" size="icon">
+                <MoreHorizontal className="w-4 h-4" />
               </Button>
             }
-            menus={dropdownMenus(record).map((item) => ({
+            menus={dropdownMenus(record).map(item => ({
               ...item,
               disabled: isPending,
               className: 'cursor-pointer',
@@ -201,64 +201,64 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
   ];
 
   return (
-    <div className='p-6 space-y-6'>
-      <div className='flex items-center justify-between'>
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className='text-3xl font-bold tracking-tight'>Users</h1>
-          <p className='text-muted-foreground mt-1'>Manage your customer base</p>
+          <h1 className="text-3xl font-bold tracking-tight">Users</h1>
+          <p className="text-muted-foreground mt-1">Manage your customer base</p>
         </div>
         <Button onClick={() => toast.success('Add user dialog opened')}>
-          <Plus className='w-4 h-4 mr-2' />
+          <Plus className="w-4 h-4 mr-2" />
           Add User
         </Button>
       </div>
 
       <ProTable<UserWithRole>
-        rowKey='id'
-        columns={columns?.map((item) => ({ ...item, align: 'center' }))}
+        rowKey="id"
+        columns={columns?.map(item => ({ ...item, align: 'center' }))}
         dataSource={users}
       />
 
       <AlertDialog
-        headerClassName='gap-0 mb-4'
+        headerClassName="gap-0 mb-4"
         open={showDetails}
         onOpenChange={setShowDetails}
-        title='User Details'
+        title="User Details"
         description={selectedUser?.email}
       >
-        <div className='space-y-4'>
-          <div className='grid grid-cols-2 gap-4'>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className='text-sm text-muted-foreground'>Name</p>
-              <p className='font-medium'>{selectedUser?.name}</p>
+              <p className="text-sm text-muted-foreground">Name</p>
+              <p className="font-medium">{selectedUser?.name}</p>
             </div>
             <div>
-              <p className='text-sm text-muted-foreground'>Role</p>
-              <p className='font-medium'>{selectedUser?.role}</p>
+              <p className="text-sm text-muted-foreground">Role</p>
+              <p className="font-medium">{selectedUser?.role}</p>
             </div>
             <div>
-              <p className='text-sm text-muted-foreground'>Last Login</p>
+              <p className="text-sm text-muted-foreground">Last Login</p>
               {/* <p className='font-medium'>{selectedUser.lastLogin}</p> */}
             </div>
             <div>
-              <p className='text-sm text-muted-foreground'>Status</p>
+              <p className="text-sm text-muted-foreground">Status</p>
               {/* <p className='font-medium'>{selectedUser.status}</p> */}
             </div>
           </div>
-          <Button className='w-full'>Send Email</Button>
+          <Button className="w-full">Send Email</Button>
         </div>
       </AlertDialog>
       <AlertDialog
-        headerClassName='gap-0 mb-6'
+        headerClassName="gap-0 mb-6"
         title={`Delete ${selectedUser?.name}?`}
-        description='Please enter your 2FA code from your authenticator app'
+        description="Please enter your 2FA code from your authenticator app"
         open={showDeleteUser}
         onOpenChange={setShowDeleteUser}
         onConfirm={form.handleSubmit(onSubmit)}
         confirmText={isPending ? 'Deleting...' : 'Delete'}
       >
         <Form form={form} customSubmitButton>
-          <Input id='otp' type='number' name='otp' placeholder='000000' autoFocus maxLength={6} />
+          <Input id="otp" type="number" name="otp" placeholder="000000" autoFocus maxLength={6} />
         </Form>
       </AlertDialog>
     </div>

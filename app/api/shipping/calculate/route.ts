@@ -1,6 +1,6 @@
-import { NextRequest } from "next/server";
+import { NextRequest } from 'next/server';
 import { getSession } from '@/lib/services/auth';
-import { successResponse, errorResponse } from "@/lib/server-helper";
+import { successResponse, errorResponse } from '@/lib/server-helper';
 
 /**
  * GET /api/shipping/calculate
@@ -10,14 +10,14 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
     if (!session?.user) {
-      return errorResponse("Unauthorized");
+      return errorResponse('Unauthorized');
     }
 
     const body = await request.json();
     const { region, items } = body;
 
     if (!region || !items) {
-      return errorResponse("Missing required fields");
+      return errorResponse('Missing required fields');
     }
 
     // Simple shipping calculation (can be extended with real methods)
@@ -34,12 +34,12 @@ export async function POST(request: NextRequest) {
     return successResponse({
       shippingCost: totalShipping,
       estimatedDelivery: new Date(
-        Date.now() + (region === "express" ? 2 : region === "international" ? 14 : 5) * 24 * 60 * 60 * 1000
+        Date.now() + (region === 'express' ? 2 : region === 'international' ? 14 : 5) * 24 * 60 * 60 * 1000
       ),
       regions: Object.keys(SHIPPING_RATES),
     });
   } catch (error) {
-    console.error("Calculate shipping error:", error);
-    return errorResponse("Internal server error");
+    console.error('Calculate shipping error:', error);
+    return errorResponse('Internal server error');
   }
 }
