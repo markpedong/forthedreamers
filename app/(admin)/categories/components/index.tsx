@@ -4,27 +4,15 @@ import ProTable from '@/components/pro-table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Category } from '@/generated/prisma';
-import { addCategory } from '@/lib/http';
-import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
 import { ProColumn, ActionType } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
 import { FC, useRef, useState } from 'react';
-import { toast } from 'sonner';
+import { useAddCategoryMutation } from '@/services/useMutation';
 
 const Categories: FC<{ initialCategories: Category[] }> = ({ initialCategories }) => {
   const actionRef = useRef<ActionType>(null);
-  const router = useRouter();
   const [name, setName] = useState('');
-  const mutation = useMutation({
-    mutationFn: addCategory,
-    onSuccess: result => {
-      toast.success(result.message);
-      setName('');
-      router.refresh();
-    },
-    onError: error => toast.error(error.message),
-  });
+  const mutation = useAddCategoryMutation(() => setName(''));
   const columns: ProColumn<Category>[] = [
     {
       title: 'Name',

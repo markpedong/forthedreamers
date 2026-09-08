@@ -6,8 +6,6 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import { DropdownMenuItemType, SchemaForm } from '@/lib/types';
-import { deleteUser, setUserBanned } from '@/lib/http';
-import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import classNames from 'classnames';
 import Form from '@/components/reusable/form';
@@ -20,7 +18,7 @@ import { tryWithToast } from '@/utils/helper';
 import DropDown from '@/components/reusable/dropdown';
 import ProTable from '@/components/pro-table';
 import { ProColumn } from '@/lib/types';
-import { useMutation } from '@tanstack/react-query';
+import { useDeleteUserMutation, useSetUserBannedMutation } from '@/services/useMutation';
 
 type UserWithRole = {
   id: string;
@@ -32,7 +30,6 @@ type UserWithRole = {
 };
 
 const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
-  const router = useRouter();
   const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [showDeleteUser, setShowDeleteUser] = useState(false);
@@ -41,23 +38,10 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     resolver: zodResolver(twoFactorSchema),
     defaultValues: { otp: '' },
   });
-  const updateMutation = useMutation({
-    mutationFn: ({ userId, banned }: { userId: string; banned: boolean }) => setUserBanned(userId, banned),
-    onSuccess: (_result, { banned }) => {
-      toast.success(`User has been ${banned ? 'banned' : 'unbanned'}`);
-      router.refresh();
-    },
-    onError: error => toast.error(error.message),
-  });
-  const deleteMutation = useMutation({
-    mutationFn: deleteUser,
-    onSuccess: () => {
-      toast.success('User deleted successfully!', { duration: 2000 });
-      setShowDeleteUser(false);
-      setSelectedUser(null);
-      router.refresh();
-    },
-    onError: error => toast.error(error.message),
+  const updateMutation = useSetUserBannedMutation();
+  const deleteMutation = useDeleteUserMutation(() => {
+    setShowDeleteUser(false);
+    setSelectedUser(null);
   });
   const isPending = updateMutation.isPending || deleteMutation.isPending;
 

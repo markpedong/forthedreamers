@@ -2,7 +2,6 @@
 
 import { FC, useState } from 'react';
 import { Edit2, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import ProductFormModal from './product-form-modal';
 import { ProColumn, TProduct, ProductFormData, DropdownMenuItemType } from '@/lib/types';
@@ -10,10 +9,12 @@ import AlertDialog from '@/components/reusable/alert-dialog';
 import Link from 'next/link';
 import DropDown from '@/components/reusable/dropdown';
 import ProTable from '@/components/pro-table';
-import { createProduct, deleteProduct, toggleProductStatus, updateProduct } from '@/lib/http';
 import { Switch } from '@/components/ui/switch';
-import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import {
+  useDeleteProductMutation,
+  useSaveProductMutation,
+  useToggleProductStatusMutation,
+} from '@/services/useMutation';
 
 const Products: FC<{ initialProducts: TProduct[]; initialCategories: import('@/generated/prisma').Category[] }> = ({
   initialProducts,
@@ -24,37 +25,16 @@ const Products: FC<{ initialProducts: TProduct[]; initialCategories: import('@/g
   const [type, setType] = useState<'EDIT' | 'CREATE'>('CREATE');
   const [product, setProduct] = useState<TProduct>();
   const [rows, setRows] = useState(initialProducts);
-  const router = useRouter();
-  const deleteMutation = useMutation({
-    mutationFn: deleteProduct,
-    onSuccess: result => {
-      toast.success(result.message);
-      setDeleteDialog(null);
-      setProduct(undefined);
-      router.refresh();
-    },
-    onError: error => toast.error(error.message),
+  const deleteMutation = useDeleteProductMutation(() => {
+    setDeleteDialog(null);
+    setProduct(undefined);
   });
-  const statusMutation = useMutation({
-    mutationFn: toggleProductStatus,
-    onError: (error, { id, active }) => {
-      setRows(state =>
-        state.map(item => (item.id === id ? { ...item, status: active ? 'INACTIVE' : 'ACTIVE' } : item))
-      );
-      toast.error(error.message);
-    },
-    onSettled: () => router.refresh(),
+  const statusMutation = useToggleProductStatusMutation(({ id, active }) => {
+    setRows(state =>
+      state.map(item => (item.id === id ? { ...item, status: active ? 'INACTIVE' : 'ACTIVE' } : item))
+    );
   });
-  const saveMutation = useMutation({
-    mutationFn: ({ data, type }: { data: ProductFormData; type: 'CREATE' | 'EDIT' }) =>
-      type === 'EDIT' ? updateProduct(data) : createProduct(data),
-    onSuccess: result => {
-      toast.success(result.message);
-      setOpen(false);
-      router.refresh();
-    },
-    onError: error => toast.error(error.message),
-  });
+  const saveMutation = useSaveProductMutation(() => setOpen(false));
   const isPending = deleteMutation.isPending || statusMutation.isPending || saveMutation.isPending;
   const handleDelete = () => {
     if (!deleteDialog) return;
