@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { removeCartItem, updateCartQuantity } from '@/lib/http'
 import type { CartItem } from '@/lib/services/cart'
 import CartNavigation from './cart-navigation'
+import {useMutation} from '@tanstack/react-query'
 
 const CartItemsList = ({ items }: { items: CartItem[] }) => {
   const [visibleItems, setVisibleItems] = useState(items)
@@ -15,6 +16,8 @@ const CartItemsList = ({ items }: { items: CartItem[] }) => {
   const versions = useRef(new Map<string, number>())
   const queues = useRef(new Map<string, Promise<void>>())
   const quantityTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>())
+  const updateMutation = useMutation({mutationFn: updateCartQuantity})
+  const removeMutation = useMutation({mutationFn: removeCartItem})
   
   useEffect(
     () => () => {
@@ -73,7 +76,9 @@ const CartItemsList = ({ items }: { items: CartItem[] }) => {
       .catch(() => undefined)
       .then(async () => {
         try {
-          const result = quantity === undefined ? await removeCartItem(id) : await updateCartQuantity({ cartItemId: id, quantity })
+          const result = quantity === undefined
+            ? await removeMutation.mutateAsync(id)
+            : await updateMutation.mutateAsync({cartItemId: id, quantity})
 
           if (!result.success || !result.data) {
             if (versions.current.get(id) === version) restoreItem(id)

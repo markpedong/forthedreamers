@@ -1,24 +1,26 @@
 'use client';
 
-import { FC, useTransition } from 'react';
-import { startCheckout } from '@/lib/actions/checkout';
+import { FC } from 'react';
+import {checkoutCart} from '@/lib/http';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {useMutation} from '@tanstack/react-query';
 
 interface PlaceOrderButtonProps {
   total: number;
 }
 
 const PlaceOrderButton: FC<PlaceOrderButtonProps> = ({ total }) => {
-  const [pending, startTransition] = useTransition()
-  const handlePlaceOrder = () => startTransition(async () => {
-    try {
-      const result = await startCheckout()
-      if (!result.success) { toast.error(result.message); return }
-      window.location.assign(`/checkout/success?orderId=${result.data.orderGroupId}`)
-    } catch { toast.error('Failed to place order. Check stock and retry.') }
+  const mutation = useMutation({
+    mutationFn: checkoutCart,
+    onSuccess: result => {
+      if (result.data) window.location.assign(`/checkout/success?orderId=${result.data.orderGroupId}`)
+    },
+    onError: error => toast.error(error.message)
   })
+  const pending = mutation.isPending
+  const handlePlaceOrder = () => mutation.mutate()
 
   return (
     <Button

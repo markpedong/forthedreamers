@@ -6,34 +6,31 @@ import Link from 'next/link'
 import {useRouter} from 'next/navigation'
 import {toast} from 'sonner'
 import {Button} from '@/components/ui/button'
+import {useMutation, useQueryClient} from '@tanstack/react-query'
+import {createReview} from '@/lib/http'
 
 const ReviewForm = ({slug}: {slug: string}) => {
   const user = useAppSelector(state => state.userData.data)
   const router = useRouter()
-  const [pending, setPending] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const queryClient = useQueryClient()
+  const mutation = useMutation({
+    mutationFn: (input: unknown) => createReview(slug, input),
+    onSuccess: () => {
+      setSubmitted(true)
+      toast.success('Review submitted')
+      void queryClient.invalidateQueries({queryKey: ['product-reviews', slug]})
+      router.refresh()
+    },
+    onError: error => toast.error(error.message)
+  })
+  const pending = mutation.isPending
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (pending) return
     const form = event.currentTarget
     const data = new FormData(form)
-    setPending(true)
-    try {
-      const response = await fetch(`/api/products/${encodeURIComponent(slug)}/reviews`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({rating: Number(data.get('rating')), title: data.get('title'), comment: data.get('comment')})
-      })
-      const result = (await response.json()) as {success?: boolean; message?: string}
-      if (!response.ok || !result.success) throw new Error(result.message ?? 'Unable to submit review')
-      setSubmitted(true)
-      toast.success('Review submitted')
-      router.refresh()
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unable to submit review')
-    } finally {
-      setPending(false)
-    }
+    mutation.mutate({rating: Number(data.get('rating')), title: data.get('title'), comment: data.get('comment')})
   }
 
   if (!user)

@@ -6,8 +6,7 @@ export const useWishlist = () => {
 
   const { data: ids } = useQuery({
     queryKey: ['wishlist-ids'],
-    queryFn: () => getWishlistIds(),
-    select: (data) => data.data?.ids ?? [],
+    queryFn: async () => (await getWishlistIds()).data?.ids ?? [],
     staleTime: 1000 * 60,
   })
 
@@ -35,7 +34,7 @@ export const useWishlist = () => {
 
   return {
     ids: ids ?? [],
-    isPending: (id: string) => toggleMutation.isPending,
+    isPending: (id: string) => toggleMutation.isPending && toggleMutation.variables?.id === id,
     toggle: (id: string) => {
       const wanted = !(ids?.includes(id) ?? true)
       void toggleMutation.mutate({ id, wanted })

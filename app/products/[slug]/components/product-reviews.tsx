@@ -2,10 +2,11 @@
 
 import {useState} from 'react'
 import {ChevronLeft, ChevronRight, Star} from 'lucide-react'
-import {toast} from 'sonner'
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
 import {Button} from '@/components/ui/button'
 import type {ProductReview, ReviewSummary} from './product-types'
+import {useQuery} from '@tanstack/react-query'
+import {getReviews} from '@/lib/http'
 
 type ProductReviewsProps = {
   slug: string
@@ -24,46 +25,24 @@ const Stars = ({rating}: {rating: number}) => (
 )
 
 const ProductReviews = ({slug, initialReviews, summary}: ProductReviewsProps) => {
-  const [reviews, setReviews] = useState(initialReviews)
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [page, setPage] = useState(1)
-  const [total, setTotal] = useState(summary.count)
-  const [loading, setLoading] = useState(false)
-  const [failed, setFailed] = useState(false)
   const pageSize = 6
+  const query = useQuery({
+    queryKey: ['product-reviews', slug, selectedRating, page],
+    queryFn: () => getReviews<{reviews: ProductReview[]; total: number}>(slug, page, selectedRating, pageSize),
+    select: result => result.data,
+    initialData: selectedRating === null && page === 1
+      ? {success: true, data: {reviews: initialReviews, total: summary.count}}
+      : undefined
+  })
+  const reviews = query.data?.reviews ?? []
+  const total = query.data?.total ?? 0
   const pageCount = Math.max(1, Math.ceil(total / pageSize))
 
-  const loadReviews = async (rating: number | null, nextPage: number) => {
-    setLoading(true)
-    setFailed(false)
-    const params = new URLSearchParams({page: String(nextPage), limit: String(pageSize)})
-    if (rating) params.set('rating', String(rating))
-
-    try {
-      const response = await fetch(`/api/products/${encodeURIComponent(slug)}/reviews?${params.toString()}`, {cache: 'no-store'})
-      const result = (await response.json()) as {success?: boolean; reviews?: ProductReview[]; total?: number; message?: string}
-      if (!response.ok || !result.success || !result.reviews) throw new Error(result.message ?? 'Unable to load reviews')
-      setReviews(result.reviews)
-      setTotal(result.total ?? 0)
-      setPage(nextPage)
-    } catch (error) {
-      setFailed(true)
-      toast.error(error instanceof Error ? error.message : 'Unable to load reviews')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const selectRating = (rating: number | null) => {
-    setFailed(false)
     setSelectedRating(rating)
-    if (rating === null) {
-      setReviews(initialReviews)
-      setTotal(summary.count)
-      setPage(1)
-      return
-    }
-    void loadReviews(rating, 1)
+    setPage(1)
   }
 
   return (
@@ -97,7 +76,7 @@ const ProductReviews = ({slug, initialReviews, summary}: ProductReviewsProps) =>
       </div>
 
       <div className='flex flex-wrap gap-2'>
-        <Button size='sm' variant={selectedRating === null ? 'default' : 'outline'} onClick={() => selectRating(null)} disabled={loading}>
+        <Button size='sm' variant={selectedRating === null ? 'default' : 'outline'} onClick={() => selectRating(null)} disabled={query.isFetching}>
           All reviews
         </Button>
         {ratingOptions.map(rating => (
@@ -106,19 +85,19 @@ const ProductReviews = ({slug, initialReviews, summary}: ProductReviewsProps) =>
             size='sm'
             variant={selectedRating === rating ? 'default' : 'outline'}
             onClick={() => selectRating(rating)}
-            disabled={loading}
+            disabled={query.isFetching}
           >
             {rating} stars
           </Button>
         ))}
       </div>
 
-      {loading ? (
+      {query.isFetching ? (
         <div className='rounded-xl border border-border p-8 text-center text-sm text-muted-foreground'>Loading reviews...</div>
-      ) : failed ? (
+      ) : query.isError ? (
         <div role='alert' className='rounded-xl border p-6'>
           Unable to load reviews.{' '}
-          <Button variant='outline' onClick={() => void loadReviews(selectedRating, 1)}>
+          <Button variant='outline' onClick={() => void query.refetch()}>
             Retry
           </Button>
         </div>
@@ -161,8 +140,8 @@ const ProductReviews = ({slug, initialReviews, summary}: ProductReviewsProps) =>
               size='icon'
               variant='outline'
               aria-label='Previous review page'
-              disabled={page === 1 || loading}
-              onClick={() => void loadReviews(selectedRating, page - 1)}
+              disabled={page === 1 || query.isFetching}
+              onClick={() => setPage(value => value - 1)}
             >
               <ChevronLeft size={16} />
             </Button>
@@ -170,8 +149,8 @@ const ProductReviews = ({slug, initialReviews, summary}: ProductReviewsProps) =>
               size='icon'
               variant='outline'
               aria-label='Next review page'
-              disabled={page === pageCount || loading}
-              onClick={() => void loadReviews(selectedRating, page + 1)}
+              disabled={page === pageCount || query.isFetching}
+              onClick={() => setPage(value => value + 1)}
             >
               <ChevronRight size={16} />
             </Button>

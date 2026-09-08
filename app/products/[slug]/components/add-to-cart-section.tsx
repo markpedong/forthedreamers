@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import {useState} from 'react'
 import { useRouter } from 'next/navigation'
 import { Heart, ShoppingCart } from 'lucide-react'
 import { toast } from 'sonner'
@@ -10,49 +10,37 @@ import type { ProductPageVariant, ProductPurchaseData } from './product-types'
 import { useAppDispatch } from '@/redux/store'
 import { decrementCartCount, incrementCartCount, setCartCount } from '@/redux/reducers/cartData'
 import { useWishlist } from '@/lib/hooks/use-wishlist'
+import {useMutation} from '@tanstack/react-query'
 
 const AddToCartSection = ({ product, selectedVariant }: { product: ProductPurchaseData; selectedVariant: ProductPageVariant | null }) => {
   const wishlist = useWishlist()
   const [quantity, setQuantity] = useState(1)
-  const requestPending = useRef(false)
   const isWishlisted = wishlist.ids.includes(product.id)
   const dispatch = useAppDispatch()
   const router = useRouter()
   const maxQuantity = Math.min(999, selectedVariant?.stock ?? 0)
   const safeQuantity = Math.min(quantity, Math.max(1, maxQuantity))
-  const [isProcessingBuyNow, setIsProcessingBuyNow] = useState(false)
+  const cartMutation = useMutation({
+    mutationFn: ({variantId, quantity}: {variantId: string; quantity: number; buyNow: boolean}) => addCartItem({variantId, quantity}),
+    onMutate: () => dispatch(incrementCartCount()),
+    onSuccess: (result, {buyNow}) => {
+      if (result.data) dispatch(setCartCount(result.data.count))
+      if (buyNow) router.push('/checkout')
+    },
+    onError: error => {
+      dispatch(decrementCartCount())
+      toast.error(error.message)
+    }
+  })
+  const isProcessingBuyNow = cartMutation.isPending && cartMutation.variables?.buyNow
 
   const handleQuantity = (value: number) => {
     if (Number.isSafeInteger(value) && value > 0 && value <= maxQuantity) setQuantity(value)
   }
 
   const submit = (buyNow: boolean) => {
-    if (!selectedVariant || selectedVariant.stock < 1 || requestPending.current) return
-    requestPending.current = true
-    setIsProcessingBuyNow(buyNow)
-
-    dispatch(incrementCartCount())
-
-    void (async () => {
-      try {
-        const result = await addCartItem({ variantId: selectedVariant.id, quantity: safeQuantity })
-        if (!result.success || !result.data) {
-          dispatch(decrementCartCount())
-          toast.error(result.message)
-          return
-        }
-
-        dispatch(setCartCount(result.data.count))
-        if (buyNow) router.push('/checkout')
-      } catch {
-        // Rollback optimistic update on network error.
-        dispatch(decrementCartCount())
-        toast.error('Unable to add to cart. Please try again.')
-      } finally {
-        requestPending.current = false
-        setIsProcessingBuyNow(false)
-      }
-    })()
+    if (!selectedVariant || selectedVariant.stock < 1 || cartMutation.isPending) return
+    cartMutation.mutate({variantId: selectedVariant.id, quantity: safeQuantity, buyNow})
   }
 
   const handleAddToCart = () => submit(false)
