@@ -5,6 +5,8 @@ import Link from 'next/link';
 import type { Route } from 'next';
 import classNames from 'classnames';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { usePathname } from 'next/navigation';
+import { DISABLED_NAVBAR } from '@/constants';
 
 const links = {
   shop: [
@@ -23,6 +25,9 @@ const links = {
 
 const Footer: FC = () => {
   const isMobile = useIsMobile();
+  const pathname = usePathname();
+
+  if (DISABLED_NAVBAR.some(path => pathname === path)) return null;
 
   return (
     <footer className={classNames('mx-auto max-w-7xl px-4 py-16 pb-6', isMobile && 'pb-24')}>
