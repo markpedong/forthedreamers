@@ -4,6 +4,7 @@ import { USER_ROLE } from '@/generated/prisma';
 import { upsertAuthUser } from '@/lib/auth';
 import { signIn, signOut } from '@/lib/services/auth';
 import { errorResponse, successResponse } from '@/lib/server-helper';
+import { formatDate } from '@/lib/utils';
 
 const schema = z.object({
   email: z.string().trim().toLowerCase().pipe(z.email()),
@@ -47,8 +48,8 @@ export const POST = async (request: NextRequest) => {
     }
     return successResponse({
       ...profile,
-      createdAt: profile.createdAt.toISOString(),
-      updatedAt: profile.updatedAt.toISOString(),
+      createdAt: formatDate(profile.createdAt),
+      updatedAt: formatDate(profile.updatedAt),
     });
   } catch {
     await signOut();

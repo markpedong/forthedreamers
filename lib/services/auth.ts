@@ -8,6 +8,7 @@ import { getRandomDefaultAvatarUrl } from '@/lib/default-avatars';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getSessionClaims, getSessionUser } from '@/lib/auth';
 import type { TUserData } from '@/services/types';
+import { formatDate } from '@/lib/utils';
 
 const appOrigin = async () => {
   const headerStore = await headers();
@@ -35,8 +36,8 @@ export const getCurrentUserData = async (): Promise<TUserData | null> => {
   return {
     ...session.user,
     email: session.user.email ?? '',
-    createdAt: new Date(session.user.createdAt).toISOString(),
-    updatedAt: new Date(session.user.updatedAt).toISOString(),
+    createdAt: formatDate(session.user.createdAt),
+    updatedAt: formatDate(session.user.updatedAt),
   };
 };
 

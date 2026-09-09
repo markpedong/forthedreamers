@@ -4,6 +4,7 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { invalidateCatalog } from '@/lib/cache';
 import { revalidatePath } from 'next/cache';
+import { formatDate } from '@/lib/utils';
 
 export const reviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
@@ -49,7 +50,7 @@ export const listReviews = async (slug: string, { page, limit, rating, sortBy, o
     }),
   ]);
   return {
-    reviews: reviews.map(review => ({ ...review, createdAt: review.createdAt.toISOString() })),
+    reviews: reviews.map(review => ({ ...review, createdAt: formatDate(review.createdAt) })),
     total: aggregate._count._all,
     page,
     limit,
@@ -107,5 +108,5 @@ export const createReview = async (userId: string, slug: string, validated: Revi
   await invalidateCatalog();
   revalidatePath('/products/[slug]', 'page');
   revalidatePath('/');
-  return { ...review, createdAt: review.createdAt.toISOString() };
+  return { ...review, createdAt: formatDate(review.createdAt) };
 };

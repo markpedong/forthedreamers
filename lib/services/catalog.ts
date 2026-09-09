@@ -4,6 +4,7 @@ import { cacheKeys } from '@/lib/cache-keys';
 import prisma from '@/lib/prisma';
 import 'server-only';
 import { z } from 'zod';
+import { formatDate } from '@/lib/utils';
 
 export const cardSelect = {
   id: true,
@@ -192,7 +193,7 @@ export const productSupplemental = (productId: string, categoryId: string, selle
 
     return {
       distribution,
-      reviews: reviews.map(review => ({ ...review, createdAt: review.createdAt.toISOString() })),
+      reviews: reviews.map(review => ({ ...review, createdAt: formatDate(review.createdAt) })),
       relatedProducts,
       sellerProducts,
     };

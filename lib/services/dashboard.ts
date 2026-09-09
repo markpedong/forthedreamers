@@ -8,6 +8,7 @@ import type {
   DashboardRange,
   SellerDashboardData,
 } from '@/app/(admin)/dashboard/types';
+import { formatDate } from '@/lib/utils';
 import { DASHBOARD_RANGES, LOW_STOCK_THRESHOLD } from '@/app/(admin)/dashboard/types';
 import prisma from '@/lib/prisma';
 import { getSessionUser } from '@/lib/auth';
@@ -240,7 +241,7 @@ const getSellerRecentOrders = async (sellerId: string, range: DashboardRange) =>
     itemCount: order.orderItems.reduce((sum, item) => sum + item.quantity, 0),
     amount: order.orderItems.reduce((sum, item) => sum + item.finalPriceAfterDiscount, 0),
     status: order.status,
-    createdAt: order.createdAt.toISOString(),
+    createdAt: formatDate(order.createdAt),
   }));
 };
 
@@ -266,7 +267,7 @@ const getAdminRecentOrders = async (range: DashboardRange) => {
     itemCount: order.orderItems.reduce((sum, item) => sum + item.quantity, 0),
     amount: order.total,
     status: order.status,
-    createdAt: order.createdAt.toISOString(),
+    createdAt: formatDate(order.createdAt),
   }));
 };
 

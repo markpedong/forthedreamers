@@ -15,7 +15,8 @@ export const toBase64 = (file: File) =>
     reader.onerror = error => reject(error);
   });
 
-export const formatDate = (date: Date, format = 'MM/DD/YYYY h:mm A') => dayjs(date).format(format);
+export const formatDate = (date: Date | string | null | undefined, format = 'MMM D, YYYY') =>
+  date ? dayjs(date).format(format) : '';
 
 export const getBrowserInfo = (userAgent: string | null) => {
   if (!userAgent) return 'Unknown Device';
