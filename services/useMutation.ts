@@ -370,7 +370,7 @@ export const useAddCartMutation = () => {
 
 export const useCheckoutMutation = () =>
   useMutation({
-    mutationFn: checkoutCart,
+    mutationFn: (vars?: { shippingMethodId?: string }) => checkoutCart(vars?.shippingMethodId),
     onSuccess: result => {
       if (result.data) window.location.assign(`/checkout/success?orderId=${result.data.orderGroupId}`);
     },

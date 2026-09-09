@@ -2,7 +2,7 @@ import { getSession } from '@/lib/services/auth';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Package } from 'lucide-react';
+import { CheckCircle, Package, Truck } from 'lucide-react';
 import Link from 'next/link';
 import OrdersBackLink from '../orders-back-link';
 
@@ -27,6 +27,7 @@ const CheckoutSuccessPage = async ({ searchParams }: { searchParams: Promise<{ o
               },
             },
             seller: true,
+            shippingMethod: true,
           },
         },
       },
@@ -58,6 +59,7 @@ const CheckoutSuccessPage = async ({ searchParams }: { searchParams: Promise<{ o
             },
           },
           seller: true,
+          shippingMethod: true,
         },
       },
     },
@@ -79,20 +81,28 @@ const CheckoutSuccessPage = async ({ searchParams }: { searchParams: Promise<{ o
   return <OrderSummary orderGroup={orderGroup} />;
 };
 
-type OrderGroupWithOrders = Awaited<
-  ReturnType<
-    typeof prisma.orderGroup.findFirst<{
-      include: {
-        orders: {
-          include: {
-            orderItems: { include: { variant: true; product: true } };
-            seller: true;
-          };
-        };
-      };
-    }>
-  >
->;
+type OrderGroupWithOrders = {
+  id: string;
+  userId: string;
+  totalAmount: number;
+  paymentStatus: string;
+  createdAt: Date;
+  orders: Array<{
+    id: string;
+    total: number;
+    shippingFee?: number | null;
+    status: string;
+    seller: { storeName?: string | null } | null;
+    shippingMethod: { name: string; price: number; estimatedDays: number } | null;
+    orderItems: Array<{
+      id: string;
+      product?: { name?: string | null } | null;
+      variant: { name: string };
+      quantity: number;
+      finalPriceAfterDiscount: number;
+    }>;
+  }>;
+};
 
 const OrderSummary = ({ orderGroup }: { orderGroup: NonNullable<OrderGroupWithOrders> }) => {
   return (
@@ -112,6 +122,18 @@ const OrderSummary = ({ orderGroup }: { orderGroup: NonNullable<OrderGroupWithOr
               <p className="text-sm text-muted-foreground">
                 Status: <span className="text-green-500 font-medium">{order.status}</span>
               </p>
+
+              {/* Shipping info per seller order */}
+              {order.shippingMethod && (
+                <div className="mt-2 flex items-center gap-2 text-sm">
+                  <Truck className="w-4 h-4 text-muted-foreground" />
+                  <span>
+                    {order.shippingMethod.name} — ${order.shippingFee?.toFixed(2) || '0.00'}
+                    {' '}({order.shippingMethod.estimatedDays}–{order.shippingMethod.estimatedDays + 3} days)
+                  </span>
+                </div>
+              )}
+
               <p className="font-bold mt-1">${order.total.toFixed(2)}</p>
               <div className="mt-2 space-y-1 text-sm">
                 {order.orderItems.map(item => (

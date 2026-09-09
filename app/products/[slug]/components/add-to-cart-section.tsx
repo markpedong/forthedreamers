@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Heart, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { ProductPageVariant, ProductPurchaseData } from './product-types';
 import { useAddCartMutation, useWishlistMutation } from '@/services/useMutation';
 import { useWishlistQuery } from '@/services/useQuery';
+import { useAppSelector } from '@/redux/store';
 
 const AddToCartSection = ({
   product,
@@ -15,10 +17,11 @@ const AddToCartSection = ({
   product: ProductPurchaseData;
   selectedVariant: ProductPageVariant | null;
 }) => {
-  const wishlistQuery = useWishlistQuery();
+  const user = useAppSelector(state => state.userData.data);
+  const wishlistQuery = useWishlistQuery(user ? undefined : false);
   const wishlistMutation = useWishlistMutation();
   const [quantity, setQuantity] = useState(1);
-  const wishlistIds = wishlistQuery.data ?? [];
+  const wishlistIds = user ? (wishlistQuery.data ?? []) : [];
   const isWishlisted = wishlistIds.includes(product.id);
   const router = useRouter();
   const maxQuantity = Math.min(999, selectedVariant?.stock ?? 0);
@@ -103,16 +106,28 @@ const AddToCartSection = ({
         </p>
       )}
 
-      <Button
-        variant="outline"
-        className="h-11 w-full"
-        disabled={wishlistMutation.isPending && wishlistMutation.variables?.id === product.id}
-        onClick={() => wishlistMutation.mutate({ id: product.id, wanted: !isWishlisted })}
-        aria-pressed={isWishlisted}
-      >
-        <Heart size={18} className={isWishlisted ? 'fill-destructive text-destructive' : ''} />
-        {isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
-      </Button>
+      {user ? (
+        <Button
+          variant="outline"
+          className="h-11 w-full"
+          disabled={wishlistMutation.isPending && wishlistMutation.variables?.id === product.id}
+          onClick={() => wishlistMutation.mutate({ id: product.id, wanted: !isWishlisted })}
+          aria-pressed={isWishlisted}
+        >
+          <Heart size={18} className={isWishlisted ? 'fill-destructive text-destructive' : ''} />
+          {isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
+        </Button>
+      ) : (
+        <div className="flex flex-col items-center gap-2 rounded-md border border-border p-4 text-center">
+          <Heart size={18} className="text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">
+            <Link className="underline" href="/sign-in">
+              Sign in
+            </Link>{' '}
+            to save to your wishlist.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

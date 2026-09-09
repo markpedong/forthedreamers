@@ -1,8 +1,8 @@
-import type { Address } from '@/generated/prisma';
+import type { Address, ShippingMethod } from '@/generated/prisma';
 import { Button } from '@/components/ui/button';
 import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/services/auth';
-import { Package } from 'lucide-react';
+import { Package, Truck } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import CartBackLink from './cart-back-link';
@@ -17,7 +17,12 @@ const CheckoutPage = async () => {
     orderBy: { isDefault: 'desc' },
   });
 
-  const [cartItems, addresses] = await Promise.all([
+  const shippingMethodsQuery = prisma.shippingMethod.findMany({
+    where: { isActive: true },
+    orderBy: { price: 'asc' },
+  });
+
+  const [cartItems, addresses, shippingMethods] = await Promise.all([
     prisma.cartItem.findMany({
       where: { userId: session.user.id },
       include: {
@@ -34,6 +39,7 @@ const CheckoutPage = async () => {
       },
     }),
     addressesQuery,
+    shippingMethodsQuery,
   ]);
 
   if (cartItems.length === 0) {
@@ -89,10 +95,12 @@ const CheckoutPage = async () => {
           </div>
 
           <ShippingAddressForm addresses={addresses} />
-          <PlaceOrderButton total={total} />
+          <ShippingSelectionForm shippingMethods={shippingMethods} />
+          <PlaceOrderButton total={total} shippingMethodsCount={shippingMethods.length} />
         </div>
 
         <div className="order-first lg:order-last">
+          <ShippingSummary shippingMethods={shippingMethods} />
           <div className="p-6 border rounded-lg bg-card space-y-4">
             <h2 className="text-xl font-bold">Total</h2>
             <div className="space-y-2 text-sm">
@@ -111,7 +119,7 @@ const CheckoutPage = async () => {
               })}
               <div className="border-t pt-2 flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>$0.00</span>
               </div>
             </div>
           </div>
@@ -165,6 +173,73 @@ const ShippingAddressForm = ({ addresses }: { addresses: Address[] }) => {
           {addresses.length > 0 ? 'Manage Addresses' : 'Add Address'}
         </Button>
       </Link>
+    </div>
+  );
+};
+
+const ShippingSelectionForm = ({ shippingMethods }: { shippingMethods: ShippingMethod[] }) => {
+  return (
+    <div className="border rounded-lg p-6 bg-card space-y-4">
+      <h2 className="text-xl font-bold flex items-center gap-2">
+        <Truck className="w-5 h-5" />
+        Shipping Method
+      </h2>
+
+      {shippingMethods.length === 0 ? (
+        <p className="text-muted-foreground">No shipping methods available.</p>
+      ) : (
+        <ShippingOptionsRadio options={shippingMethods} />
+      )}
+    </div>
+  );
+};
+
+const ShippingOptionsRadio = ({ options }: { options: ShippingMethod[] }) => {
+  return (
+    <div className="space-y-3">
+      {options.map((method, idx) => (
+        <label
+          key={method.id}
+          className={`flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${
+            idx === 0 ? 'border-primary bg-primary/5' : 'hover:bg-muted'
+          }`}
+        >
+          <input
+            type="radio"
+            name="shippingMethod"
+            value={method.id}
+            defaultChecked={idx === 0}
+            className="mt-1"
+          />
+          <div className="flex-1">
+            <div className="flex justify-between items-center">
+              <p className="font-medium">{method.name}</p>
+              <p className="font-semibold">${method.price.toFixed(2)}</p>
+            </div>
+            {method.description && (
+              <p className="text-sm text-muted-foreground mt-1">{method.description}</p>
+            )}
+            <p className="text-xs text-muted-foreground mt-1">
+              Est. delivery: {method.estimatedDays}–{method.estimatedDays + 3} days
+            </p>
+          </div>
+        </label>
+      ))}
+    </div>
+  );
+};
+
+const ShippingSummary = ({ shippingMethods }: { shippingMethods: ShippingMethod[] }) => {
+  const defaultMethod = shippingMethods.find(m => m.isActive) ?? shippingMethods[0];
+
+  return (
+    <div className="p-6 border rounded-lg bg-card space-y-4">
+      {defaultMethod && (
+        <div className="flex justify-between text-sm">
+          <span>Shipping ({defaultMethod.name})</span>
+          <span>${defaultMethod.price.toFixed(2)}</span>
+        </div>
+      )}
     </div>
   );
 };

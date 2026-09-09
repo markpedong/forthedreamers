@@ -48,11 +48,12 @@ export const useProductReviewsQuery = <Review>(
     staleTime: 1000 * 60,
   });
 
-export const useWishlistQuery = () =>
+export const useWishlistQuery = (enabled: boolean | undefined = true) =>
   useQuery({
     queryKey: wishlistQueryKey,
     queryFn: async () => (await getWishlistIds()).data?.ids ?? [],
     staleTime: 1000 * 60,
+    enabled,
   });
 
 export const useProductsQuery = (filters: ProductSearchParams, enabled = true) =>

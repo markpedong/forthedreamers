@@ -24,6 +24,7 @@ const OrderDetailPage = async ({ params }: { params: Promise<{ id: string }> }) 
             },
           },
           seller: true,
+          shippingMethod: true,
         },
       },
     },
@@ -75,6 +76,17 @@ const OrderDetailPage = async ({ params }: { params: Promise<{ id: string }> }) 
               </span>
             </div>
 
+            {/* Shipping info per seller order */}
+            {order.shippingMethod && (
+              <div className="flex items-center gap-2 text-sm mb-4 p-3 rounded-lg bg-muted/50">
+                <Truck className="w-4 h-4 text-muted-foreground" />
+                <span>
+                  <strong>{order.shippingMethod.name}</strong> — ${order.shippingFee?.toFixed(2) || '0.00'}
+                  {' '}({order.shippingMethod.estimatedDays}–{order.shippingMethod.estimatedDays + 3} days)
+                </span>
+              </div>
+            )}
+
             <div className="space-y-3">
               {order.orderItems.map(item => (
                 <div key={item.id} className="flex items-center gap-4 p-3 rounded-lg bg-muted/50">
@@ -94,15 +106,27 @@ const OrderDetailPage = async ({ params }: { params: Promise<{ id: string }> }) 
           </div>
         ))}
 
-        {/* Tracking placeholder */}
+        {/* Shipping summary */}
         <div className="border-t pt-6">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Truck className="w-5 h-5" />
             Shipping Information
           </h2>
-          <p className="text-muted-foreground text-sm">
-            Shipping details will be available once your order is processed and shipped.
-          </p>
+          {orderGroup.orders.some(o => o.shippingMethod) ? (
+            <div className="space-y-2">
+              {orderGroup.orders.map(order => (
+                order.shippingMethod && (
+                  <div key={order.id} className="text-sm">
+                    <span className="font-medium">{order.seller?.storeName || 'Seller'}:</span>{' '}
+                    {order.shippingMethod.name} — ${order.shippingFee?.toFixed(2) || '0.00'}
+                    {' '}({order.shippingMethod.estimatedDays}–{order.shippingMethod.estimatedDays + 3} days)
+                  </div>
+                )
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground text-sm">No shipping information available yet.</p>
+          )}
         </div>
       </div>
     </main>

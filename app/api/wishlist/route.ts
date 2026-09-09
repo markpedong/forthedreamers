@@ -8,7 +8,7 @@ const idSchema = z.string().min(1).max(100);
 
 export const GET = async (request: NextRequest) => {
   const session = await getSession();
-  if (!session) return errorResponse('Unauthorized', 401);
+  if (!session) return successResponse({ ids: [] as string[] });
   if (request.nextUrl.searchParams.get('ids') === 'true') {
     return successResponse({ ids: await wishlistIds(session.user.id) });
   }

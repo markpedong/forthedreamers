@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import { IMG_FALLBACK } from '@/constants';
 import { useWishlistMutation } from '@/services/useMutation';
 import { useWishlistQuery } from '@/services/useQuery';
+import { useAppSelector } from '@/redux/store';
 
 interface LandingProductCardProps {
   id: string;
@@ -33,9 +35,10 @@ export const LandingProductCard = ({
   isSale,
 }: LandingProductCardProps) => {
   const [imageError, setImageError] = useState(false);
-  const wishlistQuery = useWishlistQuery();
+  const user = useAppSelector(state => state.userData.data);
+  const wishlistQuery = useWishlistQuery(user ? undefined : false);
   const wishlistMutation = useWishlistMutation();
-  const isWishlisted = (wishlistQuery.data ?? []).includes(id);
+  const isWishlisted = user ? (wishlistQuery.data ?? []).includes(id) : false;
 
   const handleWishlist = () => {
     wishlistMutation.mutate({ id, wanted: !isWishlisted });
@@ -78,18 +81,28 @@ export const LandingProductCard = ({
           </div>
         )}
 
-        <button
-          onClick={e => {
-            e.preventDefault();
-            handleWishlist();
-          }}
-          disabled={wishlistMutation.isPending && wishlistMutation.variables?.id === id}
-          aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-          aria-pressed={isWishlisted}
-          className="absolute top-3 right-3 p-2 bg-card/90 hover:bg-card rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
-        >
-          <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-current text-accent' : 'text-foreground'}`} />
-        </button>
+        {user ? (
+          <button
+            onClick={e => {
+              e.preventDefault();
+              handleWishlist();
+            }}
+            disabled={wishlistMutation.isPending && wishlistMutation.variables?.id === id}
+            aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+            aria-pressed={isWishlisted}
+            className="absolute top-3 right-3 p-2 bg-card/90 hover:bg-card rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+          >
+            <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-current text-accent' : 'text-foreground'}`} />
+          </button>
+        ) : (
+          <Link
+            href="/sign-in"
+            className="absolute top-3 right-3 p-2 bg-card/90 hover:bg-card rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+            aria-label="Sign in to wishlist"
+          >
+            <Heart className="w-5 h-5 text-foreground" />
+          </Link>
+        )}
       </div>
 
       <div className="flex flex-col gap-2 flex-1">
