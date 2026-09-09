@@ -73,7 +73,7 @@ export const signIn = async (email: string, password: string) => {
   return result.data;
 };
 
-export const signOut = async () => (await createSupabaseServerClient()).auth.signOut();
+export const signOut = async () => (await createSupabaseServerClient()).auth.signOut({ scope: 'local' });
 
 export const socialSignInUrl = async (provider: Provider, next: '/profile' | '/dashboard') => {
   const supabase = await createSupabaseServerClient();

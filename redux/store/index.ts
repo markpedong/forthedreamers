@@ -7,20 +7,17 @@ import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 // Import your reducers here
 import appDataReducer from '../reducers/appData';
-import cartDataReducer from '../reducers/cartData';
 import userDataReducer from '../reducers/userData';
 import type { TAppDataState } from '@/services/types';
 
 // Define the root state
 export type RootState = {
   appData: ReturnType<typeof appDataReducer>;
-  cartData: ReturnType<typeof cartDataReducer>;
   userData: ReturnType<typeof userDataReducer>;
 };
 
 const rootReducer = combineReducers({
   appData: appDataReducer,
-  cartData: cartDataReducer,
   userData: userDataReducer,
 });
 
@@ -50,16 +47,16 @@ type PersistedRootState = PersistedState & { appData?: Partial<TAppDataState> };
 
 const persistConfig = {
   key: 'root',
-  version: 3,
+  version: 4,
   storage,
-  blacklist: ['userData'],
+  whitelist: ['appData'],
   migrate: async (state: PersistedState) => {
     const persistedState = state as PersistedRootState | undefined;
     if (!persistedState) return persistedState;
 
     const defaults = getDefaultAppData();
     return {
-      ...persistedState,
+      _persist: persistedState._persist,
       appData: {
         ...persistedState.appData,
         theme:

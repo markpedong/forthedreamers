@@ -26,6 +26,7 @@ import {
   setUserBanned,
   setWishlist,
   signIn,
+  signOut,
   signUp,
   socialSignIn,
   toggleProductStatus,
@@ -36,10 +37,9 @@ import {
   uploadProductImages,
 } from '@/lib/http';
 import type { ProductFormData, TProduct } from '@/lib/types';
-import { decrementCartCount, incrementCartCount, setCartCount } from '@/redux/reducers/cartData';
-import { setUserData } from '@/redux/reducers/userData';
-import { useAppDispatch } from '@/redux/store';
-import { currentUserQueryKey, productReviewsQueryKey, wishlistQueryKey } from './useQuery';
+import { clearUserData, setUserData } from '@/redux/reducers/userData';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { cartCountQueryKey, currentUserQueryKey, productReviewsQueryKey, wishlistQueryKey } from './useQuery';
 import { supportTicketsQueryKey, wishlistItemsQueryKey } from './useQuery';
 import type { SupportTicketResult } from '@/lib/http';
 
@@ -59,6 +59,22 @@ export const useSignInMutation = (portal: 'customer' | 'dashboard') => {
       router.replace(portal === 'dashboard' ? '/dashboard' : '/profile');
     },
     onError: error => toast.error(error.message, { duration: 5000 }),
+  });
+};
+
+export const useSignOutMutation = () => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: signOut,
+    onSuccess: () => {
+      queryClient.removeQueries();
+      dispatch(clearUserData());
+      router.replace('/sign-in');
+    },
+    onError: error => toast.error(error.message || 'Unable to sign out. Please try again.'),
   });
 };
 
@@ -310,22 +326,45 @@ export const useDeleteUserMutation = (onSuccess: () => void) => {
 };
 
 export const useUpdateCartMutation = () => useMutation({ mutationFn: updateCartQuantity });
-export const useRemoveCartMutation = () => useMutation({ mutationFn: removeCartItem });
+export const useRemoveCartMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: removeCartItem,
+    onSuccess: result => {
+      if (result.data) queryClient.setQueryData(cartCountQueryKey, result.data.count);
+    },
+  });
+};
 
 export const useAddCartMutation = () => {
-  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const router = useRouter();
+  const user = useAppSelector(state => state.userData.data);
 
   return useMutation({
     mutationFn: ({ variantId, quantity }: { variantId: string; quantity: number; buyNow: boolean }) =>
       addCartItem({ variantId, quantity }),
-    onMutate: () => dispatch(incrementCartCount()),
+    onMutate: () => {
+      if (!user) return;
+      const previousCount = queryClient.getQueryData<number>(cartCountQueryKey);
+      if (previousCount !== undefined) queryClient.setQueryData(cartCountQueryKey, previousCount + 1);
+      return { previousCount };
+    },
     onSuccess: (result, { buyNow }) => {
-      if (result.data) dispatch(setCartCount(result.data.count));
+      if (result.data) queryClient.setQueryData(cartCountQueryKey, result.data.count);
       if (buyNow) router.push('/checkout');
     },
-    onError: error => {
-      dispatch(decrementCartCount());
+    onError: (error, _variables, context) => {
+      if (context?.previousCount !== undefined) queryClient.setQueryData(cartCountQueryKey, context.previousCount);
+
+      if (error.message === 'Please sign in first') {
+        toast.error("You're not signed in. Sign in to add items to your cart.", {
+          action: { label: 'Sign in', onClick: () => router.push('/sign-in') },
+        });
+        return;
+      }
+
       toast.error(error.message);
     },
   });

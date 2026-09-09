@@ -173,6 +173,9 @@ type CartMutationData = {
   count: number;
 };
 
+export const getCartCount = () =>
+  apiFetch<{ count: number }>(`${API_ROUTE.CART}?summary=count`, { cache: 'no-store', showErrorToast: false });
+
 export const removeCartItem = (cartItemId: string) =>
   apiFetch<CartMutationData>(`${API_ROUTE.CART}?id=${cartItemId}`, { method: 'DELETE', showErrorToast: false });
 

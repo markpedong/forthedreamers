@@ -1,13 +1,16 @@
 'use client';
 
 import { clearUserData } from '@/redux/reducers/userData';
-import { store } from '@/redux/store';
+import { useAppDispatch } from '@/redux/store';
+import { useQueryClient } from '@tanstack/react-query';
 import { Route } from 'next';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 
 const ToastListener = () => {
+  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -18,32 +21,26 @@ const ToastListener = () => {
   const isFromSocial = searchParams.get('social');
   const isSignedIn = searchParams.get('isSignedIn');
 
-  const handleSignOut = async () => {
-    (store.dispatch as any)(clearUserData());
-    try {
-      await fetch('/api/auth/sign-out', { method: 'POST', credentials: 'include' });
-    } catch (err) {
-      console.error('Error signing out:', err);
-    }
-    router.replace('/sign-in');
-  };
+  const deleteParameters = useCallback(
+    (keys: string[]) => {
+      const nextSearchParams = new URLSearchParams(searchParams.toString());
+      keys.forEach(key => nextSearchParams.delete(key));
 
-  const deleteParameters = (keys: string[]) => {
-    const nextSearchParams = new URLSearchParams(searchParams.toString());
-    keys.forEach(key => nextSearchParams.delete(key));
+      const newQuery = nextSearchParams.toString();
+      const newUrl = newQuery ? `${pathname}?${newQuery}` : pathname;
 
-    const newQuery = nextSearchParams.toString();
-    const newUrl = newQuery ? `${pathname}?${newQuery}` : pathname;
-
-    setTimeout(() => router.replace(newUrl as Route, { scroll: false }), 100);
-  };
+      setTimeout(() => router.replace(newUrl as Route, { scroll: false }), 100);
+    },
+    [pathname, router, searchParams]
+  );
 
   useEffect(() => {
     if (isSignedIn === 'false') {
-      handleSignOut();
-      deleteParameters(['isSignedIn']);
+      queryClient.removeQueries();
+      dispatch(clearUserData());
+      router.replace('/sign-in');
     }
-  }, [pathname, isSignedIn]);
+  }, [dispatch, isSignedIn, queryClient, router]);
 
   useEffect(() => {
     if (isFromSocial) {
@@ -51,7 +48,7 @@ const ToastListener = () => {
       router.refresh();
       deleteParameters(['social']);
     }
-  }, [pathname, isFromSocial]);
+  }, [deleteParameters, isFromSocial, router]);
 
   useEffect(() => {
     if (emailVerified) {
@@ -70,7 +67,7 @@ const ToastListener = () => {
       toast.error(`Error: ${error}, please try again.`, { duration: 3000 });
       deleteParameters(['error']);
     }
-  }, [pathname, emailVerified, accountLinked, error]);
+  }, [accountLinked, deleteParameters, emailVerified, error]);
 
   return null;
 };

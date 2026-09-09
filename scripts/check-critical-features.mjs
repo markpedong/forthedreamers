@@ -38,6 +38,7 @@ const authService = read('lib/services/auth.ts');
 assert.match(authService, /getSessionClaims\(\)/);
 assert.doesNotMatch(authService, /upsertAuthUser/);
 assert.doesNotMatch(authService, /auth\.getSession\(\)/);
+assert.match(authService, /signOut\(\{ scope: 'local' \}\)/);
 
 const provider = read('components/provider/main-provider.tsx');
 assert.match(provider, /useCurrentUserQuery\(!isAuthRoute\)/);
@@ -49,5 +50,32 @@ for (const signInForm of [
 ]) {
   assert.doesNotMatch(read(signInForm), /setValueAs/);
 }
+
+const signOutMutation = read('services/useMutation.ts');
+assert.match(signOutMutation, /export const useSignOutMutation/);
+assert.match(signOutMutation, /queryClient\.removeQueries\(\)/);
+assert.match(signOutMutation, /Please sign in first/);
+assert.match(signOutMutation, /label: 'Sign in'/);
+
+const reduxStore = read('redux/store/index.ts');
+assert.match(reduxStore, /whitelist: \['appData'\]/);
+assert.doesNotMatch(reduxStore, /cartData/);
+assert.ok(!existsSync(new URL('../redux/reducers/cartData.ts', import.meta.url)));
+assert.match(read('components/navigation/cart-item-count.tsx'), /useCartCountQuery/);
+
+for (const signOutSurface of [
+  'components/navigation/navbar.tsx',
+  'app/(admin)/components/admin-header.tsx',
+  'app/(main)/profile/components/profile-header.tsx',
+]) {
+  const source = read(signOutSurface);
+  assert.match(source, /useSignOutMutation/);
+  assert.doesNotMatch(source, /fetch\(['"]\/api\/auth\/sign-out/);
+}
+
+const toastListener = read('components/provider/toast-listener.tsx');
+assert.match(toastListener, /queryClient\.removeQueries\(\)/);
+assert.doesNotMatch(toastListener, /fetch\(['"]\/api\/auth\/sign-out/);
+assert.ok(!existsSync(new URL('../hooks/useSignOut.ts', import.meta.url)));
 
 console.log('Critical customer and authentication flows are wired through shared hooks and real routes.');

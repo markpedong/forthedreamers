@@ -18,12 +18,16 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     handleSubmit,
     formState: { errors },
     isSubmitting,
-    submit,
+    mutation,
   } = useSignInForm('dashboard');
+
+  const onSubmit = handleSubmit(({ email, password }) => {
+    mutation.mutate({ email, password });
+  });
 
   return (
     <AuthCard title="Welcome back" description="Sign in to manage your store and track sales." eyebrow="Seller hub">
-      <form onSubmit={handleSubmit(submit)} className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-4">
         <FormField
           {...register('email')}
           id="seller-email"

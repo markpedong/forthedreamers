@@ -1,9 +1,11 @@
 'use client';
 
 import { useAppSelector } from '@/redux/store';
+import { useCartCountQuery } from '@/services/useQuery';
 
 const CartItemCount = () => {
-  const count = useAppSelector(state => state.cartData.cartCount);
+  const user = useAppSelector(state => state.userData.data);
+  const { data: count = 0 } = useCartCountQuery(Boolean(user));
   if (count === 0) return null;
 
   return (

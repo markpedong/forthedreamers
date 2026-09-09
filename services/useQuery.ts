@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import {
   getCategories,
+  getCartCount,
   getCurrentUser,
   getOrders,
   getReviews,
@@ -22,6 +23,7 @@ export const wishlistItemsQueryKey = ['wishlist-items'] as const;
 export const ordersQueryKey = ['orders'] as const;
 export const supportTicketsQueryKey = ['support-tickets'] as const;
 export const currentUserQueryKey = ['current-user'] as const;
+export const cartCountQueryKey = ['cart-count'] as const;
 
 export const useCurrentUserQuery = (enabled = true) =>
   useQuery({
@@ -30,6 +32,14 @@ export const useCurrentUserQuery = (enabled = true) =>
     select: result => result.data,
     retry: false,
     staleTime: 1000 * 60 * 5,
+    enabled,
+  });
+
+export const useCartCountQuery = (enabled = true) =>
+  useQuery({
+    queryKey: cartCountQueryKey,
+    queryFn: async () => (await getCartCount()).data?.count ?? 0,
+    retry: false,
     enabled,
   });
 

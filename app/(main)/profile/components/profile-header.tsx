@@ -4,9 +4,8 @@ import { Button } from '@/components/ui/button';
 import AvatarUpload from './avatar-upload';
 import { LayoutDashboard, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { clearUserData } from '@/redux/reducers/userData';
-import { store } from '@/redux/store';
 import { useAppSelector } from '@/redux/store';
+import { useSignOutMutation } from '@/services/useMutation';
 
 const isGoogleImage = (url: string | null | undefined) =>
   url?.includes('googleusercontent.com') || url?.includes('ggpht.com') || false;
@@ -14,16 +13,7 @@ const isGoogleImage = (url: string | null | undefined) =>
 const ProfileHeader = () => {
   const user = useAppSelector(state => state.userData.data);
   const router = useRouter();
-
-  const handleSignOut = async () => {
-    (store.dispatch as any)(clearUserData());
-    try {
-      await fetch('/api/auth/sign-out', { method: 'POST', credentials: 'include' });
-    } catch (err) {
-      console.error('Error signing out:', err);
-    }
-    router.replace('/sign-in');
-  };
+  const signOutMutation = useSignOutMutation();
 
   const initials =
     user?.name
@@ -68,8 +58,14 @@ const ProfileHeader = () => {
               <LayoutDashboard className="h-4 w-4" /> {`${user?.role}`} access
             </Button>
           )}
-          <Button variant="destructive" size="sm" onClick={() => void handleSignOut()}>
-            <LogOut className="h-4 w-4" /> Sign out
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => signOutMutation.mutate()}
+            disabled={signOutMutation.isPending}
+            aria-busy={signOutMutation.isPending}
+          >
+            <LogOut className="h-4 w-4" /> {signOutMutation.isPending ? 'Signing out...' : 'Sign out'}
           </Button>
         </div>
       </div>

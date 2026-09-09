@@ -17,30 +17,17 @@ import SearchOverlay from './search-overlay';
 import { usePathname } from 'next/navigation';
 import classNames from 'classnames';
 import Link from 'next/link';
-import { clearUserData } from '@/redux/reducers/userData';
 import { DISABLED_NAVBAR } from '@/constants';
 import CartItemCount from './cart-item-count';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { useRouter } from 'next/navigation';
-import { signOut } from '@/lib/http';
+import { useAppSelector } from '@/redux/store';
+import { useSignOutMutation } from '@/services/useMutation';
 
 const Navbar: FC = () => {
-  const router = useRouter();
-  const dispatch = useAppDispatch();
+  const signOutMutation = useSignOutMutation();
   const user = useAppSelector(state => state.userData.data);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const isMobile = useIsMobile();
   const pathname = usePathname();
-
-  const handleSignOut = async () => {
-    dispatch(clearUserData());
-    try {
-      await signOut();
-    } catch (err) {
-      console.error('Error signing out:', err);
-    }
-    router.replace('/sign-in');
-  };
 
   if (DISABLED_NAVBAR.some(path => pathname === path || (path === '/dashboard' && pathname.startsWith('/dashboard/')))) return null;
 
@@ -74,8 +61,14 @@ const Navbar: FC = () => {
         {pathname !== '/profile' && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer" onClick={() => void handleSignOut()} variant="destructive">
-              Logout
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => signOutMutation.mutate()}
+              variant="destructive"
+              disabled={signOutMutation.isPending}
+              aria-busy={signOutMutation.isPending}
+            >
+              {signOutMutation.isPending ? 'Signing out...' : 'Logout'}
             </DropdownMenuItem>
           </>
         )}

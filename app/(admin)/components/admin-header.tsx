@@ -3,25 +3,13 @@
 import { FC } from 'react';
 import { usePathname } from 'next/navigation';
 import { LogOut, User } from 'lucide-react';
-import { clearUserData } from '@/redux/reducers/userData';
-import { store } from '@/redux/store';
 import { useAppSelector } from '@/redux/store';
-import { useRouter } from 'next/navigation';
+import { useSignOutMutation } from '@/services/useMutation';
 
 const AdminHeader: FC = () => {
-  const router = useRouter();
+  const signOutMutation = useSignOutMutation();
   const user = useAppSelector(state => state.userData.data);
   const pathname = usePathname();
-
-  const handleSignOut = async () => {
-    (store.dispatch as any)(clearUserData());
-    try {
-      await fetch('/api/auth/sign-out', { method: 'POST', credentials: 'include' });
-    } catch (err) {
-      console.error('Error signing out:', err);
-    }
-    router.replace('/sign-in');
-  };
 
   return (
     <header className="h-16 border-b border-sidebar-border bg-background px-6 flex items-center justify-between">
@@ -39,11 +27,13 @@ const AdminHeader: FC = () => {
           </div>
         )}
         <button
-          onClick={() => void handleSignOut()}
+          onClick={() => signOutMutation.mutate()}
+          disabled={signOutMutation.isPending}
+          aria-busy={signOutMutation.isPending}
           className="flex items-center gap-2 text-sm text-sidebar-foreground/80 hover:text-sidebar-primary transition-colors"
         >
           <LogOut className="w-4 h-4" />
-          Logout
+          {signOutMutation.isPending ? 'Signing out...' : 'Logout'}
         </button>
       </div>
     </header>

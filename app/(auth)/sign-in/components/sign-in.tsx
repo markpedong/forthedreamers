@@ -19,8 +19,12 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     handleSubmit,
     formState: { errors },
     isSubmitting,
-    submit,
+    mutation,
   } = useSignInForm('customer');
+
+  const onSubmit = handleSubmit(({ email, password }) => {
+    mutation.mutate({ email, password });
+  });
 
   return (
     <AuthPage>
@@ -34,7 +38,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
       <AuthCard title="Welcome back" description="Sign in to your account to continue" eyebrow="For The Dreamers">
         <div className="space-y-3 sm:space-y-5">
-          <form onSubmit={handleSubmit(submit)} className="space-y-3 sm:space-y-5">
+          <form onSubmit={onSubmit} className="space-y-3 sm:space-y-5">
             <FormField
               {...register('email')}
               id="email"
