@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Package, Truck } from 'lucide-react';
 import Link from 'next/link';
 import OrdersBackLink from '../orders-back-link';
+import { formatDate } from '@/lib/utils';
 
 const OrderDetailPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const session = await getSession();
@@ -51,7 +52,7 @@ const OrderDetailPage = async ({ params }: { params: Promise<{ id: string }> }) 
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Order {orderGroup.id}</h1>
-            <p className="text-muted-foreground">Placed on {orderGroup.createdAt.toLocaleDateString()}</p>
+            <p className="text-muted-foreground">Placed on {formatDate(orderGroup.createdAt, 'MM/DD/YYYY')}</p>
           </div>
           <div className="text-right">
             <p className="text-sm text-muted-foreground">Total</p>
