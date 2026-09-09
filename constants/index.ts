@@ -41,7 +41,7 @@ export const LABEL_VALUE_DEFAULT = {
   value: '',
 }
 
-export const DISABLED_NAVBAR = ['/sign-in', '/reset-password', '/seller', '/users', '/dashboard']
+export const DISABLED_NAVBAR = ['/sign-in', '/reset-password', '/seller', '/users', '/dashboard', '/checkout']
 
 export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 
