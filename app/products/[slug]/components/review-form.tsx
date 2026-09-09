@@ -19,55 +19,58 @@ const ReviewForm = ({ slug }: { slug: string }) => {
     mutation.mutate({ rating: Number(data.get('rating')), title: data.get('title'), comment: data.get('comment') });
   };
 
-  if (!user)
-    return (
-      <p className="text-sm text-muted-foreground">
-        <Link className="underline" href="/sign-in">
-          Sign in
-        </Link>{' '}
-        to review a purchased product.
-      </p>
-    );
-  if (submitted)
-    return (
-      <p role="status" className="text-sm">
-        Thank you for sharing your review.
-      </p>
-    );
+  // Render all three states always (same DOM structure), hide/show via CSS to avoid hydration mismatch.
+  const notSignedInClass = !user ? '' : 'hidden';
+  const submittedClass = !submitted ? '' : 'hidden';
 
   return (
-    <form onSubmit={submit} className="space-y-4 rounded-xl border border-border p-6">
-      <h3 className="font-medium">Write a review</h3>
-      <p className="text-sm text-muted-foreground">
-        One review per product. A paid purchase is required and checked when you submit.
+    <>
+      <div className={notSignedInClass} suppressHydrationWarning>
+        <p className="text-sm text-muted-foreground">
+          <Link className="underline" href="/sign-in">
+            Sign in
+          </Link>{' '}
+          to review a purchased product.
+        </p>
+      </div>
+      <div className={submittedClass}>
+        <form onSubmit={submit} className="space-y-4 rounded-xl border border-border p-6">
+          <h3 className="font-medium">Write a review</h3>
+          <p className="text-sm text-muted-foreground">
+            One review per product. A paid purchase is required and checked when you submit.
+          </p>
+          <fieldset disabled={pending} className="grid gap-4">
+            <label className="grid gap-2 text-sm">
+              Rating
+              <select name="rating" required defaultValue="" className="rounded-md border bg-background p-2">
+                <option value="" disabled>
+                  Select a rating
+                </option>
+                {[5, 4, 3, 2, 1].map(rating => (
+                  <option key={rating} value={rating}>
+                    {rating} stars
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-2 text-sm">
+              Title (optional)
+              <input name="title" maxLength={100} className="rounded-md border bg-background p-2" />
+            </label>
+            <label className="grid gap-2 text-sm">
+              Your review (optional)
+              <textarea name="comment" maxLength={1000} rows={4} className="rounded-md border bg-background p-2" />
+            </label>
+            <Button type="submit" className="justify-self-start">
+              {pending ? 'Submitting review...' : 'Submit review'}
+            </Button>
+          </fieldset>
+        </form>
+      </div>
+      <p role="status" className={`text-sm ${!submitted ? 'hidden' : ''}`}>
+        Thank you for sharing your review.
       </p>
-      <fieldset disabled={pending} className="grid gap-4">
-        <label className="grid gap-2 text-sm">
-          Rating
-          <select name="rating" required defaultValue="" className="rounded-md border bg-background p-2">
-            <option value="" disabled>
-              Select a rating
-            </option>
-            {[5, 4, 3, 2, 1].map(rating => (
-              <option key={rating} value={rating}>
-                {rating} stars
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="grid gap-2 text-sm">
-          Title (optional)
-          <input name="title" maxLength={100} className="rounded-md border bg-background p-2" />
-        </label>
-        <label className="grid gap-2 text-sm">
-          Your review (optional)
-          <textarea name="comment" maxLength={1000} rows={4} className="rounded-md border bg-background p-2" />
-        </label>
-        <Button type="submit" className="justify-self-start">
-          {pending ? 'Submitting review...' : 'Submit review'}
-        </Button>
-      </fieldset>
-    </form>
+    </>
   );
 };
 
