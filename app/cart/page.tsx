@@ -2,6 +2,7 @@ import { getSession } from '@/lib/services/auth';
 import { redirect } from 'next/navigation';
 import { readCart } from '@/lib/services/cart';
 import CartItemsList from './cart-items-list';
+
 export default async function CartPage() {
   const session = await getSession();
   if (!session) redirect('/sign-in?next=/cart');
