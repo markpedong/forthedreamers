@@ -106,7 +106,7 @@ const AddToCartSection = ({
         </p>
       )}
 
-      {user ? (
+      <div className={`flex flex-col gap-3 sm:flex-row ${!user ? 'hidden' : ''}`} suppressHydrationWarning>
         <Button
           variant="outline"
           className="h-11 w-full"
@@ -117,17 +117,16 @@ const AddToCartSection = ({
           <Heart size={18} className={isWishlisted ? 'fill-destructive text-destructive' : ''} />
           {isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
         </Button>
-      ) : (
-        <div className="flex flex-col items-center gap-2 rounded-md border border-border p-4 text-center">
-          <Heart size={18} className="text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">
-            <Link className="underline" href="/sign-in">
-              Sign in
-            </Link>{' '}
-            to save to your wishlist.
-          </p>
-        </div>
-      )}
+      </div>
+      <div className={`flex flex-col items-center gap-2 rounded-md border border-border p-4 text-center ${user ? 'hidden' : ''}`} suppressHydrationWarning>
+        <Heart size={18} className="text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">
+          <Link className="underline" href="/sign-in">
+            Sign in
+          </Link>{' '}
+          to save to your wishlist.
+        </p>
+      </div>
     </div>
   );
 };
