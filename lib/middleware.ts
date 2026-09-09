@@ -48,24 +48,10 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith('/security') ||
     pathname.startsWith('/users');
 
-  // Check email verification status for protected routes
-  let isEmailVerified = true;
-  if (user && isProtected) {
-    const { data: userData } = await supabase.auth.getUser();
-    isEmailVerified = userData?.user?.email_confirmed_at !== undefined && userData?.user?.email_confirmed_at !== null;
-  }
-
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
     url.pathname = '/sign-in';
     url.searchParams.set('isSignedIn', 'false');
-    return NextResponse.redirect(url);
-  }
-
-  // Redirect unverified users to verify email page if they try to access protected routes
-  if (user && !isEmailVerified && isProtected) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/verify-email';
     return NextResponse.redirect(url);
   }
 

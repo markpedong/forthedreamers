@@ -23,60 +23,55 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
   return (
     <AuthCard title="Welcome back" description="Sign in to manage your store and track sales." eyebrow="Seller hub">
-          <form onSubmit={handleSubmit(submit)} className="space-y-4">
-            <FormField
-              {...register('email', { setValueAs: value => value.replace(/\s+/g, '') })}
-              id="seller-email"
-              label="Email"
-              error={errors.email?.message}
-              placeholder="your@email.com"
-              disabled={isSubmitting}
-              autoComplete="email"
-              onKeyDown={event => {
-                if (event.key === ' ') event.preventDefault();
-              }}
-            />
+      <form onSubmit={handleSubmit(submit)} className="space-y-4">
+        <FormField
+          {...register('email')}
+          id="seller-email"
+          label="Email"
+          error={errors.email?.message}
+          placeholder="your@email.com"
+          disabled={isSubmitting}
+          autoComplete="email"
+        />
 
-            <FormField
-              {...register('password', { setValueAs: value => value.replace(/\s+/g, '') })}
-              id="seller-password"
-              label="Password"
-              error={errors.password?.message}
-              type={showPassword ? 'text' : 'password'}
-              placeholder="••••••••"
-              disabled={isSubmitting}
-              className="pr-10"
-              onKeyDown={event => {
-                if (event.key === ' ') event.preventDefault();
-              }}
-            >
-              <button
-                type="button"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                onClick={() => setShowPassword(value => !value)}
-                onMouseDown={event => event.preventDefault()}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                {showPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-              </button>
-            </FormField>
+        <FormField
+          {...register('password')}
+          id="seller-password"
+          label="Password"
+          error={errors.password?.message}
+          type={showPassword ? 'text' : 'password'}
+          placeholder="••••••••"
+          disabled={isSubmitting}
+          className="pr-10"
+          autoComplete="current-password"
+        >
+          <button
+            type="button"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            onClick={() => setShowPassword(value => !value)}
+            onMouseDown={event => event.preventDefault()}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+          >
+            {showPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+          </button>
+        </FormField>
 
-            <div className="flex w-full items-center justify-end text-end">
-              <Button
-                variant="link"
-                className="h-auto p-0 text-sm font-medium"
-                onClick={() => onNavigate('forgot')}
-                type="button"
-                disabled={isSubmitting}
-              >
-                Forgot password?
-              </Button>
-            </div>
+        <div className="flex w-full items-center justify-end text-end">
+          <Button
+            variant="link"
+            className="h-auto p-0 text-sm font-medium"
+            onClick={() => onNavigate('forgot')}
+            type="button"
+            disabled={isSubmitting}
+          >
+            Forgot password?
+          </Button>
+        </div>
 
-            <Button className="w-full" disabled={isSubmitting} aria-busy={isSubmitting}>
-              {isSubmitting ? 'Signing in...' : 'Sign In'}
-            </Button>
-          </form>
+        <Button className="w-full" disabled={isSubmitting} aria-busy={isSubmitting}>
+          {isSubmitting ? 'Signing in...' : 'Sign In'}
+        </Button>
+      </form>
 
       <div className="mt-5 space-y-3 border-t border-foreground/10 pt-5 text-center text-sm text-muted-foreground">
         <p>

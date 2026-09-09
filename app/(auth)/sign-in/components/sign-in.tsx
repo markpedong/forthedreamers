@@ -36,19 +36,17 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         <div className="space-y-3 sm:space-y-5">
           <form onSubmit={handleSubmit(submit)} className="space-y-3 sm:space-y-5">
             <FormField
-              {...register('email', { setValueAs: value => value.replace(/\s+/g, '') })}
+              {...register('email')}
               id="email"
               label="Email"
               error={errors.email?.message}
               placeholder="you@example.com"
               disabled={isSubmitting}
-              onKeyDown={event => {
-                if (event.key === ' ') event.preventDefault();
-              }}
+              autoComplete="email"
             />
 
             <FormField
-              {...register('password', { setValueAs: value => value.replace(/\s+/g, '') })}
+              {...register('password')}
               id="password"
               label="Password"
               error={errors.password?.message}
@@ -56,9 +54,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
               placeholder="••••••••"
               disabled={isSubmitting}
               className="pr-10"
-              onKeyDown={event => {
-                if (event.key === ' ') event.preventDefault();
-              }}
+              autoComplete="current-password"
             >
               <button
                 type="button"

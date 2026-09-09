@@ -39,27 +39,24 @@ import type { ProductFormData, TProduct } from '@/lib/types';
 import { decrementCartCount, incrementCartCount, setCartCount } from '@/redux/reducers/cartData';
 import { setUserData } from '@/redux/reducers/userData';
 import { useAppDispatch } from '@/redux/store';
-import { productReviewsQueryKey, wishlistQueryKey } from './useQuery';
+import { currentUserQueryKey, productReviewsQueryKey, wishlistQueryKey } from './useQuery';
 import { supportTicketsQueryKey, wishlistItemsQueryKey } from './useQuery';
 import type { SupportTicketResult } from '@/lib/http';
 
 export const useSignInMutation = (portal: 'customer' | 'dashboard') => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (input: { email: string; password: string }) => signIn({ ...input, portal }),
     onSuccess: result => {
       dispatch(setUserData(result.data!));
+      queryClient.setQueryData(currentUserQueryKey, result);
       toast.success(portal === 'dashboard' ? 'Logged in successfully!' : 'Sign in successfully!', {
         duration: portal === 'dashboard' ? 3000 : 2000,
       });
-      if (portal === 'dashboard') {
-        router.push('/dashboard');
-      } else {
-        router.replace('/profile');
-        router.refresh();
-      }
+      router.replace(portal === 'dashboard' ? '/dashboard' : '/profile');
     },
     onError: error => toast.error(error.message, { duration: 5000 }),
   });

@@ -1,11 +1,12 @@
 import 'server-only';
 
+import { cache } from 'react';
 import { headers } from 'next/headers';
 import type { Provider } from '@supabase/supabase-js';
 import prisma from '@/lib/prisma';
 import { getRandomDefaultAvatarUrl } from '@/lib/default-avatars';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { upsertAuthUser } from '@/lib/auth';
+import { getSessionClaims, getSessionUser } from '@/lib/auth';
 import type { TUserData } from '@/services/types';
 
 const appOrigin = async () => {
@@ -15,37 +16,18 @@ const appOrigin = async () => {
   return process.env.NEXT_PUBLIC_APP_URL || (host ? `${proto}://${host}` : '');
 };
 
-export const getSession = async () => {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) return null;
-  const { data: sessionData } = await supabase.auth.getSession();
-  const profile = await upsertAuthUser(data.user);
+export const getSession = cache(async () => {
+  const [claims, profile] = await Promise.all([getSessionClaims(), getSessionUser()]);
+  if (!claims || !profile) return null;
 
   return {
     hasPassword:
-      data.user.app_metadata.provider === 'email' ||
-      data.user.identities?.some(identity => identity.provider === 'email') === true,
-    user: {
-      id: data.user.id,
-      email: data.user.email,
-      name:
-        profile?.name ||
-        (typeof data.user.user_metadata.name === 'string' && data.user.user_metadata.name) ||
-        data.user.email?.split('@')[0] ||
-        'user',
-      image:
-        profile?.image ??
-        (typeof data.user.user_metadata.avatar_url === 'string' ? data.user.user_metadata.avatar_url : null),
-      emailVerified: profile?.emailVerified ?? Boolean(data.user.email_confirmed_at),
-      role: profile?.role ?? 'USER',
-      twoFactorEnabled: profile?.twoFactorEnabled ?? false,
-      createdAt: profile?.createdAt ?? new Date(data.user.created_at),
-      updatedAt: profile?.updatedAt ?? new Date(data.user.updated_at ?? data.user.created_at),
-    },
-    session: { token: sessionData.session?.access_token ?? '', impersonatedBy: null as string | null },
+      claims.app_metadata?.provider === 'email' ||
+      (Array.isArray(claims.app_metadata?.providers) && claims.app_metadata.providers.includes('email')),
+    user: profile,
+    session: { token: claims.session_id, impersonatedBy: null as string | null },
   };
-};
+});
 
 export const getCurrentUserData = async (): Promise<TUserData | null> => {
   const session = await getSession();
@@ -87,7 +69,7 @@ export const signUp = async (email: string, password: string, name: string, call
 export const signIn = async (email: string, password: string) => {
   const supabase = await createSupabaseServerClient();
   const result = await supabase.auth.signInWithPassword({ email, password });
-  if (result.error) throw new Error(result.error.message);
+  if (result.error) throw result.error;
   return result.data;
 };
 
@@ -169,20 +151,17 @@ export const updateUserImage = async (userId: string, image: string) => {
 };
 
 export const listAllSessions = async () => {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session) return [];
+  const claims = await getSessionClaims();
+  if (!claims) return [];
   const headerStore = await headers();
   const forwardedFor = headerStore.get('x-forwarded-for');
   return [
     {
-      id: session.access_token,
-      token: session.access_token,
+      id: claims.session_id,
+      token: claims.session_id,
       userAgent: headerStore.get('user-agent'),
       ipAddress: forwardedFor?.split(',')[0]?.trim() ?? headerStore.get('x-real-ip'),
-      createdAt: session.user.last_sign_in_at ?? session.user.created_at,
+      createdAt: new Date(claims.iat * 1000),
     },
   ];
 };

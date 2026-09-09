@@ -53,22 +53,35 @@ export const upsertAuthUser = async (user: SupabaseUser) => {
   return profile;
 };
 
-export const getCurrentUserID = cache(async (): Promise<string | undefined> => {
+export const getSessionClaims = cache(async () => {
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data, error } = await supabase.auth.getClaims();
 
-  return user?.id;
+  return error ? null : data?.claims ?? null;
+});
+
+export const getCurrentUserID = cache(async (): Promise<string | undefined> => {
+  const claims = await getSessionClaims();
+  return claims?.sub;
 });
 
 export const getSessionUser = cache(async () => {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const userId = await getCurrentUserID();
+  if (!userId) return null;
 
-  if (!user) return null;
-
-  return upsertAuthUser(user);
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      image: true,
+      emailVerified: true,
+      role: true,
+      twoFactorEnabled: true,
+      banned: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
 });

@@ -21,13 +21,16 @@ export const categoriesQueryKey = ['categories'] as const;
 export const wishlistItemsQueryKey = ['wishlist-items'] as const;
 export const ordersQueryKey = ['orders'] as const;
 export const supportTicketsQueryKey = ['support-tickets'] as const;
+export const currentUserQueryKey = ['current-user'] as const;
 
-export const useCurrentUserQuery = () =>
+export const useCurrentUserQuery = (enabled = true) =>
   useQuery({
-    queryKey: ['current-user'],
+    queryKey: currentUserQueryKey,
     queryFn: getCurrentUser,
     select: result => result.data,
     retry: false,
+    staleTime: 1000 * 60 * 5,
+    enabled,
   });
 
 export const useProductReviewsQuery = <Review>(

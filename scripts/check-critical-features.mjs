@@ -25,4 +25,29 @@ assert.ok(existsSync(new URL('../app/api/support/tickets/[id]/route.ts', import.
 assert.ok(existsSync(new URL('../app/api/support/tickets/[id]/messages/route.ts', import.meta.url)));
 assert.doesNotMatch(read('components/navigation/footer.tsx'), /href=["']#["']/);
 
-console.log('Critical customer flows are wired through shared hooks and real routes.');
+const signInRoute = read('app/api/auth/sign-in/route.ts');
+assert.match(signInRoute, /upsertAuthUser\(authUser\)/);
+assert.doesNotMatch(signInRoute, /getSession/);
+assert.match(signInRoute, /rateLimited \? 429 : 401/);
+
+const middleware = read('lib/middleware.ts');
+assert.match(middleware, /auth\.getClaims\(\)/);
+assert.doesNotMatch(middleware, /auth\.getUser\(\)/);
+
+const authService = read('lib/services/auth.ts');
+assert.match(authService, /getSessionClaims\(\)/);
+assert.doesNotMatch(authService, /upsertAuthUser/);
+assert.doesNotMatch(authService, /auth\.getSession\(\)/);
+
+const provider = read('components/provider/main-provider.tsx');
+assert.match(provider, /useCurrentUserQuery\(!isAuthRoute\)/);
+assert.doesNotMatch(provider, /fetch\(['"]\/api\/auth\/me/);
+
+for (const signInForm of [
+  'app/(auth)/sign-in/components/sign-in.tsx',
+  'app/(auth)/seller/components/seller-sign-in.tsx',
+]) {
+  assert.doesNotMatch(read(signInForm), /setValueAs/);
+}
+
+console.log('Critical customer and authentication flows are wired through shared hooks and real routes.');
