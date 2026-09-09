@@ -16,10 +16,9 @@ export const getUserAddresses = (userId: string) =>
 
 export const createAddress = (userId: string, values: AddressInput) =>
   prisma.$transaction(async tx => {
-    const isDefault = values.isDefault || (await tx.address.count({ where: { userId } })) === 0;
-    if (isDefault) await tx.address.updateMany({ where: { userId, isDefault: true }, data: { isDefault: false } });
+    await tx.address.updateMany({ where: { userId, isDefault: true }, data: { isDefault: false } });
     return tx.address.create({
-      data: { ...values, label: values.label || null, isDefault, userId },
+      data: { ...values, label: values.label || null, isDefault: true, userId },
       omit: { createdAt: true, updatedAt: true, userId: true },
     });
   });

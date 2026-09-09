@@ -21,11 +21,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (!ticket) return errorResponse('Open support ticket not found', 404);
 
     const message = await prisma.$transaction(async tx => {
-      const created = await tx.supportMessage.create({
+      return tx.supportMessage.create({
         data: { ticketId: id.data, userId: session.user.id, message: body.data.message, isStaff: false },
       });
-      await tx.supportTicket.update({ where: { id: id.data }, data: { updatedAt: new Date() } });
-      return created;
     });
     return successResponse(message, 'Message sent', 201);
   } catch (error) {
