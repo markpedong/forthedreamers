@@ -5,7 +5,7 @@ import ProductCard from '@/app/components/product-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useProductsQuery } from '@/services/useQuery';
+import { useProductFacetsQuery, useProductsQuery } from '@/services/useQuery';
 
 const ProductsClient = ({
   initialQuery,
@@ -29,13 +29,23 @@ const ProductsClient = ({
   const [inStock, setInStock] = useState<'' | '0' | '1'>('');
   const [sort, setSort] = useState(`${initialSortBy}:${initialOrder}`);
   const [page, setPage] = useState(1);
+  const [cursor, setCursor] = useState<string>();
+  const [cursorHistory, setCursorHistory] = useState<(string | undefined)[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sortBy, order] = sort.split(':') as ['name' | 'price' | 'rating' | 'sold' | 'createdAt', 'asc' | 'desc'];
+
+  const resetPagination = () => {
+    setPage(1);
+    setCursor(undefined);
+    setCursorHistory([]);
+  };
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setQueryText(search.trim());
       setPage(1);
+      setCursor(undefined);
+      setCursorHistory([]);
     }, 350);
     return () => window.clearTimeout(timer);
   }, [search]);
@@ -51,9 +61,10 @@ const ProductsClient = ({
     inStock,
     sortBy,
     order,
-    page,
+    cursor,
     limit: 20,
   });
+  const facetsQuery = useProductFacetsQuery();
   const data = productsQuery.data;
 
   const clearFilters = () => {
@@ -67,7 +78,7 @@ const ProductsClient = ({
     setMaxRating('5');
     setInStock('');
     setSort('createdAt:desc');
-    setPage(1);
+    resetPagination();
   };
 
   return (
@@ -115,7 +126,7 @@ const ProductsClient = ({
                 value={category || 'all'}
                 onValueChange={value => {
                   setCategory(value === 'all' ? '' : value);
-                  setPage(1);
+                  resetPagination();
                 }}
               >
                 <SelectTrigger className="w-full bg-background font-normal" aria-label="Category">
@@ -123,7 +134,7 @@ const ProductsClient = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All categories</SelectItem>
-                  {data?.categories.map(item => (
+                  {facetsQuery.data?.categories.map(item => (
                     <SelectItem key={item.id} value={item.id}>
                       {item.name}
                     </SelectItem>
@@ -138,7 +149,7 @@ const ProductsClient = ({
                 value={brand || 'all'}
                 onValueChange={value => {
                   setBrand(value === 'all' ? '' : value);
-                  setPage(1);
+                  resetPagination();
                 }}
               >
                 <SelectTrigger className="w-full bg-background font-normal" aria-label="Brand">
@@ -146,7 +157,7 @@ const ProductsClient = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All brands</SelectItem>
-                  {data?.brands.map(item => (
+                  {facetsQuery.data?.brands.map(item => (
                     <SelectItem key={item} value={item}>
                       {item}
                     </SelectItem>
@@ -161,7 +172,7 @@ const ProductsClient = ({
                 value={inStock || 'any'}
                 onValueChange={value => {
                   setInStock(value === 'any' ? '' : (value as '0' | '1'));
-                  setPage(1);
+                  resetPagination();
                 }}
               >
                 <SelectTrigger className="w-full bg-background font-normal" aria-label="Stock availability">
@@ -184,7 +195,7 @@ const ProductsClient = ({
                   value={minPrice}
                   onChange={event => {
                     setMinPrice(event.target.value);
-                    setPage(1);
+                    resetPagination();
                   }}
                   placeholder="Min"
                   aria-label="Minimum price"
@@ -195,7 +206,7 @@ const ProductsClient = ({
                   value={maxPrice}
                   onChange={event => {
                     setMaxPrice(event.target.value);
-                    setPage(1);
+                    resetPagination();
                   }}
                   placeholder="Max"
                   aria-label="Maximum price"
@@ -210,7 +221,7 @@ const ProductsClient = ({
                   value={minRating}
                   onValueChange={value => {
                     setMinRating(value);
-                    setPage(1);
+                    resetPagination();
                   }}
                 >
                   <SelectTrigger className="w-full bg-background" aria-label="Minimum rating">
@@ -228,7 +239,7 @@ const ProductsClient = ({
                   value={maxRating}
                   onValueChange={value => {
                     setMaxRating(value);
-                    setPage(1);
+                    resetPagination();
                   }}
                 >
                   <SelectTrigger className="w-full bg-background" aria-label="Maximum rating">
@@ -251,7 +262,7 @@ const ProductsClient = ({
           <div className="mb-4 flex flex-col gap-3 rounded-md border border-border bg-muted/50 p-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm text-muted-foreground">
               {data?.products.length
-                ? `Showing ${(data.page - 1) * data.limit + 1}–${(data.page - 1) * data.limit + data.products.length}`
+                ? `Showing ${(page - 1) * data.limit + 1}–${(page - 1) * data.limit + data.products.length}`
                 : data
                   ? 'No products'
                   : 'Loading products…'}
@@ -263,7 +274,7 @@ const ProductsClient = ({
                 value={sort}
                 onValueChange={value => {
                   setSort(value);
-                  setPage(1);
+                  resetPagination();
                 }}
               >
                 <SelectTrigger className="w-48 bg-background" aria-label="Sort products">
@@ -306,15 +317,24 @@ const ProductsClient = ({
                 <Button
                   variant="outline"
                   disabled={page <= 1 || productsQuery.isFetching}
-                  onClick={() => setPage(value => value - 1)}
+                  onClick={() => {
+                    const previousCursor = cursorHistory.at(-1);
+                    setCursor(previousCursor);
+                    setCursorHistory(history => history.slice(0, -1));
+                    setPage(value => value - 1);
+                  }}
                 >
                   Previous
                 </Button>
                 <span className="text-sm text-muted-foreground">Page {page}</span>
                 <Button
                   variant="outline"
-                  disabled={!data.hasMore || productsQuery.isFetching}
-                  onClick={() => setPage(value => value + 1)}
+                  disabled={!data.hasMore || !data.nextCursor || productsQuery.isFetching}
+                  onClick={() => {
+                    setCursorHistory(history => [...history, cursor]);
+                    setCursor(data.nextCursor);
+                    setPage(value => value + 1);
+                  }}
                 >
                   Next
                 </Button>

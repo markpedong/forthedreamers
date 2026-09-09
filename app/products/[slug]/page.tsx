@@ -1,11 +1,10 @@
 import { productBySlug, productSlugs } from '@/lib/services/catalog';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import ProductGallery from './components/product-gallery';
 import ProductInfoTabs from './components/product-info-tabs';
 import ProductPageClient from './components/product-page-client';
-import ProductReviews from './components/product-reviews';
-import RelatedProducts from './components/related-products';
-import ReviewForm from './components/review-form';
+import ProductSupplemental from './components/product-supplemental';
 
 const ProductPage = async (props: PageProps<'/products/[slug]'>) => {
   const { slug } = await props.params;
@@ -18,9 +17,9 @@ const ProductPage = async (props: PageProps<'/products/[slug]'>) => {
     brand: product.brand,
     basePrice: product.basePrice,
     categoryName: product.category.name,
-    rating: product.reviewSummary.average,
-    reviewCount: product.reviewSummary.count,
-    soldCount: product.soldCount,
+    rating: product.rating,
+    reviewCount: product.reviewCount,
+    soldCount: product.sold,
     images: product.images,
     variants: product.variants,
   };
@@ -50,25 +49,24 @@ const ProductPage = async (props: PageProps<'/products/[slug]'>) => {
           }}
         />
 
-        <ProductReviews
-          key={JSON.stringify(product.reviewSummary)}
-          slug={slug}
-          initialReviews={product.reviews}
-          summary={product.reviewSummary}
-        />
-        <ReviewForm slug={slug} />
-
-        <RelatedProducts
-          title="More from this seller"
-          description={`Explore more products from ${product.seller.storeName}.`}
-          products={product.sellerProducts}
-        />
-
-        <RelatedProducts
-          title="You may also like"
-          description={`More products from ${product.category.name}.`}
-          products={product.relatedProducts}
-        />
+        <Suspense
+          fallback={
+            <div className="rounded-xl border border-border p-8 text-center text-sm text-muted-foreground">
+              Loading reviews and recommendations…
+            </div>
+          }
+        >
+          <ProductSupplemental
+            productId={product.id}
+            categoryId={product.category.id}
+            categoryName={product.category.name}
+            sellerId={product.seller.id}
+            sellerName={product.seller.storeName}
+            slug={slug}
+            rating={product.rating}
+            reviewCount={product.reviewCount}
+          />
+        </Suspense>
       </div>
     </main>
   );

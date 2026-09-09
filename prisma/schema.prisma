@@ -216,6 +216,8 @@ model Product {
   @@index([sellerId], map: "product_seller_idx")
   @@index([categoryId], map: "product_category_idx")
   @@index([name], map: "product_name_idx")
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "product_name_trgm_idx")
+  @@index([description(ops: raw("gin_trgm_ops"))], type: Gin, map: "product_description_trgm_idx")
   @@index([brand], map: "product_brand_idx")
   @@index([status], map: "product_status_idx")
   @@index([rating], map: "product_rating_idx")
@@ -377,6 +379,8 @@ model Review {
   @@index([variantId])
   @@index([userId])
   @@index([rating])
+  @@index([productId, isPublished, createdAt, id], map: "review_product_published_created_idx")
+  @@index([productId, isPublished, rating, createdAt, id], map: "review_product_published_rating_created_idx")
   @@map("review")
 }
 

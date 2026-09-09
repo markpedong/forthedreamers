@@ -6,7 +6,9 @@ export const cacheKeys = {
   home: 'home:public:cards',
   productSlugs: 'products:public:slugs',
   product: (slug: string) => `product:public:${encodeURIComponent(slug)}`,
+  productSupplemental: (productId: string) => `product:public:${productId}:supplemental`,
   categories: 'categories:public',
+  productFacets: 'products:public:facets',
   products: (params: Record<string, unknown>) => `products:public:cards:${stableSerialize(params)}`,
   entry: (scope: string, generation: string, key: string) => `ftd:v1:${scope}:${generation}:${key}`,
 };

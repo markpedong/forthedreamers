@@ -6,6 +6,7 @@ import {
   getCartCount,
   getCurrentUser,
   getOrders,
+  getProductFacets,
   getReviews,
   getSupportTicket,
   getSupportTickets,
@@ -18,6 +19,7 @@ import {
 export const wishlistQueryKey = ['wishlist-ids'] as const;
 export const productReviewsQueryKey = (slug: string) => ['product-reviews', slug] as const;
 export const productsQueryKey = ['products'] as const;
+export const productFacetsQueryKey = ['product-facets'] as const;
 export const categoriesQueryKey = ['categories'] as const;
 export const wishlistItemsQueryKey = ['wishlist-items'] as const;
 export const ordersQueryKey = ['orders'] as const;
@@ -55,6 +57,7 @@ export const useProductReviewsQuery = <Review>(
     queryFn: () => getReviews<{ reviews: Review[]; total: number }>(slug, page, rating, pageSize),
     select: result => result.data,
     initialData: initialData ? { success: true as const, data: initialData } : undefined,
+    staleTime: 1000 * 60,
   });
 
 export const useWishlistQuery = () =>
@@ -67,9 +70,18 @@ export const useWishlistQuery = () =>
 export const useProductsQuery = (filters: ProductSearchParams, enabled = true) =>
   useQuery({
     queryKey: [...productsQueryKey, filters],
-    queryFn: () => searchProducts(filters),
+    queryFn: ({ signal }) => searchProducts(filters, signal),
     select: result => result.data!,
     enabled,
+    staleTime: 1000 * 30,
+  });
+
+export const useProductFacetsQuery = () =>
+  useQuery({
+    queryKey: productFacetsQueryKey,
+    queryFn: ({ signal }) => getProductFacets(signal),
+    select: result => result.data!,
+    staleTime: 1000 * 60 * 60,
   });
 
 export const useCategoriesQuery = () =>

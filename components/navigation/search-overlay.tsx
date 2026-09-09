@@ -12,7 +12,7 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const query = useProductsQuery({ q: debouncedSearch, limit: 6 }, isOpen && debouncedSearch.length >= 2);
+  const query = useProductsQuery({ q: debouncedSearch, limit: 6 }, isOpen && debouncedSearch.length >= 3);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setDebouncedSearch(search.trim()), 300);
@@ -71,21 +71,31 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 placeholder="Search products..."
                 className="w-full border-0 bg-background py-3 pl-12 pr-12 text-base focus-visible:ring-2 focus-visible:ring-primary"
               />
-              <Button type="button" variant="ghost" size="icon" onClick={onClose} className="absolute right-2 top-1/2 -translate-y-1/2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="absolute right-2 top-1/2 -translate-y-1/2"
+              >
                 <X className="h-5 w-5" />
                 <span className="sr-only">Close search</span>
               </Button>
             </form>
 
             <div className="overflow-hidden rounded-lg bg-background shadow-lg">
-              {search.trim().length < 2 ? (
-                <p className="px-4 py-8 text-center text-sm text-muted-foreground">Type at least 2 characters to search.</p>
+              {search.trim().length < 3 ? (
+                <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+                  Type at least 3 characters to search.
+                </p>
               ) : query.isLoading || debouncedSearch !== search.trim() ? (
                 <p className="px-4 py-8 text-center text-sm text-muted-foreground">Searching products…</p>
               ) : query.isError ? (
                 <div className="space-y-3 px-4 py-8 text-center">
                   <p className="text-sm text-destructive">{query.error.message}</p>
-                  <Button variant="outline" size="sm" onClick={() => void query.refetch()}>Try again</Button>
+                  <Button variant="outline" size="sm" onClick={() => void query.refetch()}>
+                    Try again
+                  </Button>
                 </div>
               ) : query.data?.products.length ? (
                 <div className="divide-y divide-border">
@@ -112,7 +122,11 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                       </span>
                     </button>
                   ))}
-                  <button type="button" onClick={openResults} className="w-full px-4 py-3 text-sm font-medium hover:bg-muted">
+                  <button
+                    type="button"
+                    onClick={openResults}
+                    className="w-full px-4 py-3 text-sm font-medium hover:bg-muted"
+                  >
                     View all results
                   </button>
                 </div>

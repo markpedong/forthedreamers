@@ -48,6 +48,28 @@ export const publicCategories = () =>
     })
   );
 
+export const productSearchFacets = () =>
+  cached('catalog', cacheKeys.productFacets, 3600, async () => {
+    const [categories, brands] = await Promise.all([
+      prisma.category.findMany({
+        where: { products: { some: { status: 'ACTIVE' } } },
+        select: { id: true, name: true },
+        orderBy: { name: 'asc' },
+      }),
+      prisma.product.findMany({
+        where: { status: 'ACTIVE', brand: { not: null } },
+        select: { brand: true },
+        distinct: ['brand'],
+        orderBy: { brand: 'asc' },
+      }),
+    ]);
+
+    return {
+      categories,
+      brands: brands.flatMap(item => (item.brand ? [item.brand] : [])),
+    };
+  });
+
 export const apiProductBySlug = (slug: string) =>
   prisma.product.findUnique({
     where: { slug },
@@ -73,7 +95,7 @@ export const apiProductBySlug = (slug: string) =>
 
 // Stock and public review data are intentionally short-lived. Purchase actions re-check stock and price in the database.
 export const productBySlug = (slug: string) =>
-  cached('catalog', `${cacheKeys.product(slug)}:detail-v2`, 60, async () => {
+  cached('catalog', `${cacheKeys.product(slug)}:detail-v3`, 60, async () => {
     const product = await prisma.product.findFirst({
       where: { slug, status: 'ACTIVE' },
       select: {
@@ -85,6 +107,9 @@ export const productBySlug = (slug: string) =>
         images: true,
         tags: true,
         stock: true,
+        rating: true,
+        reviewCount: true,
+        sold: true,
         category: { select: { id: true, name: true } },
         seller: {
           select: {
@@ -95,6 +120,7 @@ export const productBySlug = (slug: string) =>
             createdAt: true,
             rating: true,
             reviewCount: true,
+            _count: { select: { products: { where: { status: 'ACTIVE' } } } },
           },
         },
         specs: { select: { id: true, label: true, value: true }, orderBy: { createdAt: 'asc' } },
@@ -115,73 +141,58 @@ export const productBySlug = (slug: string) =>
 
     if (!product) return null;
 
-    const reviewWhere = { productId: product.id, isPublished: true };
-    const paidStatuses = ['PAID', 'PROCESSING', 'SHIPPED', 'COMPLETED'] as const;
+    const { _count, ...seller } = product.seller;
 
-    // sellerProductCount is independent — include in the parallel batch
-    const [reviewAggregate, reviewGroups, reviews, soldAggregate, relatedProducts, sellerProducts, sellerProductCount] =
-      await Promise.all([
-        prisma.review.aggregate({ where: reviewWhere, _avg: { rating: true }, _count: { _all: true } }),
-        prisma.review.groupBy({ by: ['rating'], where: reviewWhere, _count: { _all: true } }),
-        prisma.review.findMany({
-          where: reviewWhere,
-          select: {
-            id: true,
-            rating: true,
-            title: true,
-            comment: true,
-            createdAt: true,
-            user: { select: { name: true, image: true } },
-            variant: { select: { name: true } },
-          },
-          orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
-          take: 6,
-        }),
-        prisma.orderItem.aggregate({
-          where: {
-            variant: { productId: product.id },
-            order: {
-              status: { in: [...paidStatuses] },
-              OR: [{ orderGroupId: null }, { orderGroup: { paymentStatus: 'PAID' } }],
-            },
-          },
-          _sum: { quantity: true },
-        }),
-        prisma.product.findMany({
-          where: { status: 'ACTIVE', categoryId: product.category.id, id: { not: product.id } },
-          select: cardSelect,
-          orderBy: [{ rating: 'desc' }, { createdAt: 'desc' }, { id: 'asc' }],
-          take: 8,
-        }),
-        prisma.product.findMany({
-          where: { status: 'ACTIVE', sellerId: product.seller.id, id: { not: product.id } },
-          select: cardSelect,
-          orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
-          take: 4,
-        }),
-        prisma.product.count({ where: { sellerId: product.seller.id, status: 'ACTIVE' } }),
-      ]);
+    return {
+      ...product,
+      seller,
+      variants: product.variants.map(variant => ({
+        ...variant,
+        attributes: z.record(z.string(), z.string()).catch({}).parse(variant.attributes),
+      })),
+      sellerProductCount: _count.products,
+    };
+  });
+
+export const productSupplemental = (productId: string, categoryId: string, sellerId: string) =>
+  cached('catalog', cacheKeys.productSupplemental(productId), 60, async () => {
+    const reviewWhere = { productId, isPublished: true };
+    const [reviewGroups, reviews, relatedProducts, sellerProducts] = await Promise.all([
+      prisma.review.groupBy({ by: ['rating'], where: reviewWhere, _count: { _all: true } }),
+      prisma.review.findMany({
+        where: reviewWhere,
+        select: {
+          id: true,
+          rating: true,
+          title: true,
+          comment: true,
+          createdAt: true,
+          user: { select: { name: true, image: true } },
+          variant: { select: { name: true } },
+        },
+        orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+        take: 6,
+      }),
+      prisma.product.findMany({
+        where: { status: 'ACTIVE', categoryId, id: { not: productId } },
+        select: cardSelect,
+        orderBy: [{ rating: 'desc' }, { createdAt: 'desc' }, { id: 'asc' }],
+        take: 8,
+      }),
+      prisma.product.findMany({
+        where: { status: 'ACTIVE', sellerId, id: { not: productId } },
+        select: cardSelect,
+        orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+        take: 4,
+      }),
+    ]);
 
     const distribution = Object.fromEntries([1, 2, 3, 4, 5].map(rating => [rating, 0])) as Record<number, number>;
     for (const group of reviewGroups) distribution[group.rating] = group._count._all;
 
     return {
-      ...product,
-      variants: product.variants.map(variant => ({
-        ...variant,
-        attributes: z.record(z.string(), z.string()).catch({}).parse(variant.attributes),
-      })),
-      reviews: reviews.map(review => ({
-        ...review,
-        createdAt: review.createdAt.toISOString(),
-      })),
-      reviewSummary: {
-        average: reviewAggregate._avg.rating ?? 0,
-        count: reviewAggregate._count._all,
-        distribution,
-      },
-      soldCount: soldAggregate._sum.quantity ?? 0,
-      sellerProductCount,
+      distribution,
+      reviews: reviews.map(review => ({ ...review, createdAt: review.createdAt.toISOString() })),
       relatedProducts,
       sellerProducts,
     };

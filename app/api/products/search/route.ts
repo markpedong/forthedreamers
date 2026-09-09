@@ -15,7 +15,7 @@ const searchSchema = z.object({
   inStock: z.enum(['0', '1']).optional(),
   sortBy: z.enum(['name', 'price', 'basePrice', 'rating', 'sold', 'createdAt']).default('createdAt'),
   order: z.enum(['asc', 'desc']).default('desc'),
-  page: z.coerce.number().int().min(1).default(1),
+  cursor: z.string().min(1).max(100).optional(),
   limit: z.coerce.number().int().min(1).max(100).default(20),
 });
 
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   if (!parsed.success) return errorResponse('Invalid search filters', 400);
 
   try {
-    const { q, category, brand, minPrice, maxPrice, minRating, maxRating, inStock, page, limit, order } = parsed.data;
+    const { q, category, brand, minPrice, maxPrice, minRating, maxRating, inStock, cursor, limit, order } = parsed.data;
     if (minPrice != null && maxPrice != null && minPrice > maxPrice)
       return errorResponse('Minimum price cannot exceed maximum price', 400);
     if (minRating > maxRating) return errorResponse('Minimum rating cannot exceed maximum rating', 400);
@@ -33,10 +33,7 @@ export async function GET(request: NextRequest) {
     const constraints: Prisma.ProductWhereInput[] = [];
     if (q) {
       constraints.push({
-        OR: [
-          { name: { contains: q, mode: 'insensitive' } },
-          { description: { contains: q, mode: 'insensitive' } },
-        ],
+        OR: [{ name: { contains: q, mode: 'insensitive' } }, { description: { contains: q, mode: 'insensitive' } }],
       });
     }
     if (minPrice != null || maxPrice != null) {
@@ -75,40 +72,25 @@ export async function GET(request: NextRequest) {
         category: { select: { id: true, name: true } },
         seller: { select: { storeName: true } },
         variants: {
-          select: { id: true, name: true, price: true, discountedPrice: true, stock: true },
+          select: { price: true },
           orderBy: { createdAt: 'asc' },
+          take: 1,
         },
       },
       orderBy: [{ [sortBy]: order }, { id: 'asc' }],
-      skip: (page - 1) * limit,
+      cursor: cursor ? { id: cursor } : undefined,
+      skip: cursor ? 1 : 0,
       take,
     });
 
     const hasMore = products.length > limit;
     const items = hasMore ? products.slice(0, limit) : products;
 
-    const [categories, brands] = await Promise.all([
-      prisma.category.findMany({
-        where: { products: { some: { status: 'ACTIVE' } } },
-        select: { id: true, name: true },
-        orderBy: { name: 'asc' },
-      }),
-      prisma.product.findMany({
-        where: { status: 'ACTIVE', brand: { not: null } },
-        select: { brand: true },
-        distinct: ['brand'],
-        orderBy: { brand: 'asc' },
-      }),
-    ]);
-
     return successResponse({
       products: items,
-      total: undefined,
-      page,
       limit,
       hasMore,
-      categories,
-      brands: brands.flatMap(item => (item.brand ? [item.brand] : [])),
+      nextCursor: hasMore ? items.at(-1)?.id : undefined,
     });
   } catch (error) {
     console.error('Search API error:', error);

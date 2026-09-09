@@ -32,16 +32,23 @@ export type ProductSearchParams = {
   inStock?: '0' | '1' | '';
   sortBy?: 'name' | 'price' | 'basePrice' | 'rating' | 'sold' | 'createdAt';
   order?: 'asc' | 'desc';
-  page?: number;
+  cursor?: string;
   limit?: number;
 };
 
+export type SearchProduct = Pick<
+  CatalogProduct,
+  'id' | 'name' | 'slug' | 'brand' | 'basePrice' | 'images' | 'rating' | 'reviewCount' | 'category' | 'seller'
+> & { variants: { price: number }[] };
+
 export type ProductsResult = {
-  products: CatalogProduct[];
-  total?: number;
-  page: number;
+  products: SearchProduct[];
   limit: number;
   hasMore: boolean;
+  nextCursor?: string;
+};
+
+export type ProductFacetsResult = {
   categories: { id: string; name: string }[];
   brands: string[];
 };
@@ -156,11 +163,15 @@ const withSearchParams = (path: string, values: Record<string, string | number |
   return query ? `${path}?${query}` : path;
 };
 
-export const searchProducts = (filters: ProductSearchParams) =>
+export const searchProducts = (filters: ProductSearchParams, signal?: AbortSignal) =>
   apiFetch<ProductsResult>(withSearchParams('/api/products/search', filters), {
     cache: 'no-store',
+    signal,
     showErrorToast: false,
   });
+
+export const getProductFacets = (signal?: AbortSignal) =>
+  apiFetch<ProductFacetsResult>('/api/products/facets', { cache: 'no-store', signal, showErrorToast: false });
 
 export const getCategories = () =>
   apiFetch<CategoryResult[]>(API_ROUTE.CATEGORIES, { cache: 'no-store', showErrorToast: false });

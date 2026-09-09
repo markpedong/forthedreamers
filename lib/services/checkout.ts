@@ -70,6 +70,16 @@ export const checkout = async (userId: string) => {
           },
         });
       }
+      const quantitiesByProduct = new Map<string, number>();
+      for (const item of items) {
+        quantitiesByProduct.set(
+          item.variant.productId,
+          (quantitiesByProduct.get(item.variant.productId) ?? 0) + item.quantity
+        );
+      }
+      for (const [productId, quantity] of quantitiesByProduct) {
+        await tx.product.update({ where: { id: productId }, data: { sold: { increment: quantity } } });
+      }
       await tx.cartItem.deleteMany({ where: { userId, id: { in: items.map(item => item.id) } } });
       return { group, reused: false };
     },

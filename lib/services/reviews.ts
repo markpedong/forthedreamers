@@ -43,14 +43,14 @@ export const listReviews = async (slug: string, { page, limit, rating, sortBy, o
       take: limit,
     }),
     prisma.review.aggregate({
-      where: { productId: product.id, isPublished: true },
+      where,
       _avg: { rating: true },
       _count: { _all: true },
     }),
   ]);
   return {
     reviews: reviews.map(review => ({ ...review, createdAt: review.createdAt.toISOString() })),
-    total: undefined,
+    total: aggregate._count._all,
     page,
     limit,
     averageRating: aggregate._avg.rating ?? 0,
