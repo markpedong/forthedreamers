@@ -107,9 +107,8 @@ const createSellerSchema = z
 const variantFormSchema = z.object({
   id: z.string().optional(),
   name: createStringSchema('Variant Name', 1, 100),
-  price: z.number().min(1, { message: 'Price must be at least 1' }),
-  stock: z.number().min(1, { message: 'Stock must be at least 1' }),
-  image: z.string().nullable().optional(),
+  price: z.number().nonnegative('Price cannot be negative'),
+  stock: z.number().nonnegative('Stock cannot be negative'),
   coupon: z.string().nullable().optional(),
   discountedPrice: z.number().nullable().optional(),
   attributes: z.record(z.string(), z.string()).default({}),
@@ -130,9 +129,9 @@ const productFormSchema = z
   .object({
     id: z.string().optional(),
     name: createStringSchema('Product Name', 1, 200),
-    brand: createStringSchema('Brand', 1, 100),
+    brand: z.string().max(100, 'Brand must be less than 100 characters'),
     basePrice: z.number().nullable().optional(),
-    description: createStringSchema('Description', 1, 1000),
+    description: z.string().max(20000, 'Description must be less than 20000 characters'),
     images: z.array(z.string()).default([]),
     tags: z.array(z.string()).default([]),
     stock: z.number().nullable().optional(),

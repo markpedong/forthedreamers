@@ -19,7 +19,7 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     formState: { errors },
     isSubmitting,
     submit,
-  } = useSignInForm('seller');
+  } = useSignInForm('dashboard');
 
   return (
     <AuthCard title="Welcome back" description="Sign in to manage your store and track sales." eyebrow="Seller hub">

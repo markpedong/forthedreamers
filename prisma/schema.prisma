@@ -240,7 +240,6 @@ model Variant {
   discountedPrice Float?
   coupon          String?
   stock           Int
-  image           String?
   attributes      Json
 
   cartItems       CartItem[]

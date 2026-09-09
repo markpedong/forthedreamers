@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -75,8 +76,8 @@ const LandingPage: FC<{ products: LandingProduct[] }> = ({ products = [] }) => (
           Curated essentials designed for comfort, style, and the moments in between.
         </p>
 
-        <Button size="lg" className="bg-white text-black rounded-full px-8 hover:bg-neutral-200">
-          Explore Collection
+        <Button asChild size="lg" className="bg-white text-black rounded-full px-8 hover:bg-neutral-200">
+          <Link href="/products">Explore Collection</Link>
         </Button>
       </div>
     </section>

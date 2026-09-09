@@ -16,7 +16,6 @@ export const GET = async () => {
 };
 
 const save = async (request: NextRequest, editing: boolean) => {
-  if (!(await hasCatalogAccess())) return errorResponse('Forbidden', 403);
   const parsed = productSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success || (editing && !parsed.data.id))
     return errorResponse('Invalid product', 400);

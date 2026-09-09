@@ -130,9 +130,9 @@ const CartItemsList = ({ items }: { items: CartItem[] }) => {
 
           return (
             <div key={item.id} className="flex gap-4 p-4 border rounded-lg bg-card">
-              {item.variant.image && (
+              {item.variant.product.images[0] && (
                 <Image
-                  src={item.variant.image}
+                  src={item.variant.product.images[0]}
                   alt={item.variant.product.name}
                   width={80}
                   height={80}

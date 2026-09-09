@@ -5,7 +5,6 @@ export type ProductPageVariant = {
   price: number;
   discountedPrice: number | null;
   coupon: string | null;
-  image: string | null;
   attributes: Record<string, string>;
 };
 

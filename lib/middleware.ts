@@ -39,7 +39,6 @@ export async function updateSession(request: NextRequest) {
 
   const isProtected =
     pathname.startsWith('/profile') ||
-    pathname === '/products' ||
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/orders') ||
     pathname.startsWith('/categories') ||

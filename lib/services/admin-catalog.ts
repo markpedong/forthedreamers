@@ -1,14 +1,15 @@
 import 'server-only';
 
 import { z } from 'zod';
-import { USER_ROLE } from '@/generated/prisma';
+import { Prisma, USER_ROLE } from '@/generated/prisma';
 import { invalidateCatalog } from '@/lib/cache';
 import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/services/auth';
+import type { TProduct } from '@/lib/types';
 import { regenerateSlug } from '@/utils/helper';
 import { revalidatePath } from 'next/cache';
 
-const requireCatalogAccess = async () => {
+export const requireCatalogAccess = async () => {
   const session = await getSession();
   if (!session || (session.user.role !== USER_ROLE.ADMIN && session.user.role !== USER_ROLE.SELLER)) {
     throw new Error('Catalog access required');
@@ -24,6 +25,22 @@ export const requireAdmin = async () => {
 
 const idSchema = z.string().min(1).max(100);
 
+const productInclude = {
+  category: true,
+  variants: true,
+  specs: true,
+  seller: true,
+} satisfies Prisma.ProductInclude;
+
+const normalizeProduct = (product: Prisma.ProductGetPayload<{ include: typeof productInclude }>): TProduct => ({
+  ...product,
+  images: product.images.filter(image => !image.startsWith('blob:')),
+  variants: product.variants.map(variant => ({
+    ...variant,
+    attributes: z.record(z.string(), z.string()).catch({}).parse(variant.attributes),
+  })),
+});
+
 const variantSchema = z
   .object({
     id: idSchema.optional(),
@@ -31,7 +48,6 @@ const variantSchema = z
     price: z.number().finite().nonnegative(),
     discountedPrice: z.number().finite().nonnegative().nullable().optional(),
     stock: z.number().int().nonnegative(),
-    image: z.string().nullable().optional(),
     coupon: z.string().nullable().optional(),
     attributes: z.record(z.string(), z.string()),
   })
@@ -69,34 +85,12 @@ export const adminProducts = async () => {
   const user = await requireCatalogAccess();
   const products = await prisma.product.findMany({
     where: user.role === USER_ROLE.SELLER ? { seller: { userId: user.id } } : undefined,
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      status: true,
-      basePrice: true,
-      images: true,
-      stock: true,
-      rating: true,
-      reviewCount: true,
-      sold: true,
-      brand: true,
-      category: { select: { id: true, name: true } },
-      variants: { select: { id: true, name: true, price: true, discountedPrice: true, stock: true, coupon: true, attributes: true } },
-      specs: { select: { id: true, label: true, value: true } },
-      seller: { select: { id: true, storeName: true } },
-    },
+    include: productInclude,
     orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
     take: 100,
   });
 
-  return products.map(product => ({
-    ...product,
-    variants: product.variants.map(variant => ({
-      ...variant,
-      attributes: z.record(z.string(), z.string()).catch({}).parse(variant.attributes),
-    })),
-  }));
+  return products.map(normalizeProduct);
 };
 
 export const adminCategories = async () => {
@@ -115,81 +109,75 @@ const invalidate = async () => {
 export const saveProduct = async (input: unknown, editing: boolean) => {
   const user = await requireCatalogAccess();
   const { id, categoryId, variants, specs, ...fields } = productSchema.parse(input);
-  const result = await prisma.$transaction(async tx => {
-    const seller = await tx.seller.findUnique({ where: { userId: user.id }, select: { id: true } });
-    if (!(await tx.category.findUnique({ where: { id: categoryId }, select: { id: true } })))
-      throw new Error('Category not found');
+  const slug = regenerateSlug(fields.name);
+  let result: Prisma.ProductGetPayload<{ include: typeof productInclude }>;
 
-    if (!editing) {
-      if (!seller) throw new Error('A seller profile is required');
+  if (!editing) {
+    const seller = await prisma.seller.findUnique({ where: { userId: user.id }, select: { id: true } });
+    if (!seller) throw new Error('A seller profile is required');
 
-      return tx.product.create({
-        data: {
-          ...fields,
-          slug: regenerateSlug(fields.name),
-          categoryId,
-          sellerId: seller.id,
-          variants: {
-            create: variants.map(variant => {
-              const value = { ...variant };
-              delete value.id;
-              return value;
-            }),
-          },
-          specs: {
-            create: specs.map(spec => {
-              const value = { ...spec };
-              delete value.id;
-              return value;
-            }),
-          },
+    result = await prisma.product.create({
+      data: {
+        ...fields,
+        slug,
+        categoryId,
+        sellerId: seller.id,
+        variants: {
+          create: variants.map(variant => {
+            const data = { ...variant };
+            delete data.id;
+            return data;
+          }),
         },
-      });
-    }
-
+        specs: {
+          create: specs.map(spec => {
+            const data = { ...spec };
+            delete data.id;
+            return data;
+          }),
+        },
+      },
+      include: productInclude,
+    });
+  } else {
     if (!id) throw new Error('Product ID required');
 
-    const existing = await tx.product.findUnique({
-      where: { id },
-      select: { sellerId: true, variants: { select: { id: true } }, specs: { select: { id: true } } },
+    const existing = await prisma.product.findFirst({
+      where: { id, ...(user.role === USER_ROLE.SELLER && { seller: { userId: user.id } }) },
+      select: { variants: { select: { id: true } }, specs: { select: { id: true } } },
     });
     if (!existing) throw new Error('Product not found');
-    if (user.role === USER_ROLE.SELLER && existing.sellerId !== seller?.id) throw new Error('Product not found');
 
-    for (const variant of variants) {
-      if (variant.id && !existing.variants.some(existingVariant => existingVariant.id === variant.id)) {
-        throw new Error('Invalid variant');
-      }
-    }
+    const variantIds = new Set(existing.variants.map(variant => variant.id));
+    const specIds = new Set(existing.specs.map(spec => spec.id));
+    if (variants.some(variant => variant.id && !variantIds.has(variant.id))) throw new Error('Invalid variant');
+    if (specs.some(spec => spec.id && !specIds.has(spec.id))) throw new Error('Invalid specification');
 
-    for (const spec of specs) {
-      if (spec.id && !existing.specs.some(existingSpec => existingSpec.id === spec.id)) {
-        throw new Error('Invalid specification');
-      }
-    }
-
-    await tx.variant.deleteMany({
-      where: { productId: id, id: { notIn: variants.flatMap(variant => (variant.id ? [variant.id] : [])) } },
+    result = await prisma.product.update({
+      where: { id },
+      data: {
+        ...fields,
+        categoryId,
+        slug,
+        variants: {
+          deleteMany: { id: { notIn: variants.flatMap(variant => (variant.id ? [variant.id] : [])) } },
+          update: variants.flatMap(({ id: variantId, ...variant }) =>
+            variantId ? [{ where: { id: variantId }, data: variant }] : []
+          ),
+          create: variants.flatMap(({ id: variantId, ...variant }) => (variantId ? [] : [variant])),
+        },
+        specs: {
+          deleteMany: { id: { notIn: specs.flatMap(spec => (spec.id ? [spec.id] : [])) } },
+          update: specs.flatMap(({ id: specId, ...spec }) => (specId ? [{ where: { id: specId }, data: spec }] : [])),
+          create: specs.flatMap(({ id: specId, ...spec }) => (specId ? [] : [spec])),
+        },
+      },
+      include: productInclude,
     });
-    await tx.spec.deleteMany({
-      where: { productId: id, id: { notIn: specs.flatMap(spec => (spec.id ? [spec.id] : [])) } },
-    });
-
-    for (const { id: variantId, ...variant } of variants) {
-      if (variantId) await tx.variant.update({ where: { id: variantId, productId: id }, data: variant });
-      else await tx.variant.create({ data: { ...variant, productId: id } });
-    }
-
-    for (const { id: specId, ...spec } of specs) {
-      if (specId) await tx.spec.update({ where: { id: specId, productId: id }, data: spec });
-      else await tx.spec.create({ data: { ...spec, productId: id } });
-    }
-
-    return tx.product.update({ where: { id }, data: { ...fields, categoryId, slug: regenerateSlug(fields.name) } });
-  });
+  }
 
   await invalidate();
-  return result;
+  return normalizeProduct(result);
 };
 
 export const deleteProduct = async (id: string) => {

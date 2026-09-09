@@ -35,7 +35,11 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
     if (!data.label?.trim() || !data.value?.trim()) return;
 
     startTransition(() => {
-      const specData = { label: data.label.trim(), value: data.value.trim() };
+      const specData = {
+        ...(editingIndex != null && specs[editingIndex]?.id ? { id: specs[editingIndex].id } : {}),
+        label: data.label.trim(),
+        value: data.value.trim(),
+      };
       const updated =
         editingIndex != null ? specs.map((s, i) => (i === editingIndex ? specData : s)) : [...specs, specData];
 
@@ -93,8 +97,8 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
         loading={isPending}
       >
         <Form form={form} customSubmitButton>
-          <Input label="Label *" name="label" placeholder="e.g., Driver Size" preventSpaces />
-          <Input label="Value *" name="value" placeholder="e.g., 40mm" preventSpaces />
+          <Input label="Label *" name="label" placeholder="e.g., Driver Size" />
+          <Input label="Value *" name="value" placeholder="e.g., 40mm" />
         </Form>
       </Dialog>
     </div>

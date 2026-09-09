@@ -59,7 +59,6 @@ const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange }) =
 
   const deleteVariant = (id: string) => onVariantsChange(variants.filter(v => v.id !== id));
 
-  const textFields = ['name', 'image'];
   const numberFields = ['price', 'discountedPrice', 'stock'];
   const allFields = [...numberFields, 'coupon'];
 
@@ -76,18 +75,14 @@ const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange }) =
             <Trash2 className="w-4 h-4" />
           </Button>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              {textFields.map(field => (
-                <div key={field}>
-                  <Label className="text-sm font-medium">{field === 'name' ? 'Variant Name' : 'Image URL'}</Label>
-                  <InputUI
-                    value={String(variant[field as keyof TVariant]) ?? ''}
-                    onChange={e => updateVariant(variant.id, field as keyof TVariant, e.target.value)}
-                    placeholder={field === 'name' ? 'e.g., Red S Size' : 'https://...'}
-                    className="mt-1"
-                  />
-                </div>
-              ))}
+            <div>
+              <Label className="text-sm font-medium">Variant Name</Label>
+              <InputUI
+                value={variant.name}
+                onChange={e => updateVariant(variant.id, 'name', e.target.value)}
+                placeholder="e.g., Red S Size"
+                className="mt-1"
+              />
             </div>
             <div className="grid grid-cols-4 gap-4">
               {allFields.map(field => {
@@ -203,7 +198,6 @@ const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange }) =
             {
               id: `temp-${Date.now()}`,
               name: '',
-              image: '',
               price: 0,
               discountedPrice: null,
               stock: 0,

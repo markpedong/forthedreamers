@@ -4,7 +4,7 @@ import { FC, useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch, type FieldErrors } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import Form from '@/components/reusable/form';
@@ -20,6 +20,7 @@ import { Label } from '@/components/ui/label';
 import { PRODUCT_DEFAULT } from '@/constants';
 import { ProductFormData, ProductFormModalProps, SchemaForm, TVariant } from '@/lib/types';
 import formSchemas from '@/hooks/form-schemas';
+import { useUploadProductImagesMutation } from '@/services/useMutation';
 
 const ProductFormModal: FC<ProductFormModalProps> = props => {
   const { open, setOpen, type, initialProduct, categories, onSubmit, isSubmitting = false } = props;
@@ -27,16 +28,21 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
   const { productFormSchema } = formSchemas;
   const [tab, setTab] = useState('basic');
   const isEdit = type === 'EDIT';
+  const uploadMutation = useUploadProductImagesMutation();
+  const isBusy = isSubmitting || uploadMutation.isPending;
 
   const form = useForm<SchemaForm<typeof productFormSchema>>({
     resolver: zodResolver(productFormSchema) as any,
     defaultValues: PRODUCT_DEFAULT,
   });
+  const [images, variants, specs, tags] = useWatch({
+    control: form.control,
+    name: ['images', 'variants', 'specs', 'tags'],
+  });
 
   useEffect(() => {
     if (!open) {
       form.reset(PRODUCT_DEFAULT);
-      setTab('basic');
       return;
     }
 
@@ -49,32 +55,55 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
     }
   }, [open, type, initialProduct, categories, form, isEdit]);
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) setTab('basic');
+    setOpen(nextOpen);
+  };
+
   const handleSubmit = (values: SchemaForm<typeof productFormSchema>) => {
     if (values.specs.length === 0) {
+      setTab('details');
       toast.error('Please add at least one spec');
       return;
     }
 
     if (values.tags.length === 0) {
+      setTab('details');
       toast.error('Please add at least one tag');
       return;
     }
 
     if (values.images.length === 0) {
+      setTab('basic');
       toast.error('Please add at least one image');
       return;
     }
 
-    const currCategory = categories.find(c => c.name === values.category);
     const { category, ...rest } = values;
+    const currCategory = categories.find(c => c.name === category);
+    if (!currCategory) {
+      toast.error('Please select a valid category');
+      return;
+    }
+
     const data: ProductFormData = {
       ...rest,
       ...(isEdit && { id: initialProduct?.id }),
-      categoryId: `${currCategory?.id}`,
-      variants: values?.variants.map(({ id, ...v }) => ({ ...v, ...(isEdit && id ? { id } : {}) })) as TVariant[],
+      categoryId: currCategory.id,
+      variants: values.variants.map(({ id, ...variant }) => ({
+        ...variant,
+        ...(isEdit && id && !id.startsWith('temp-') ? { id } : {}),
+      })) as TVariant[],
     };
 
     onSubmit(data, type);
+  };
+
+  const handleInvalid = (errors: FieldErrors<SchemaForm<typeof productFormSchema>>) => {
+    if (errors.variants || errors.basePrice || errors.stock || errors.status) setTab('inventory');
+    else if (errors.specs || errors.tags) setTab('details');
+    else setTab('basic');
+    toast.error('Please review the highlighted fields');
   };
 
   return (
@@ -85,11 +114,19 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
       title={isEdit ? 'Edit Product' : 'Create Product'}
       description={isEdit ? 'Update product information' : 'Add a new product to your catalog'}
       confirmText={
-        isSubmitting ? (isEdit ? 'Updating...' : 'Creating...') : isEdit ? 'Update Product' : 'Create Product'
+        uploadMutation.isPending
+          ? 'Uploading images...'
+          : isSubmitting
+            ? isEdit
+              ? 'Updating...'
+              : 'Creating...'
+            : isEdit
+              ? 'Update Product'
+              : 'Create Product'
       }
-      onOpenChange={setOpen}
-      onConfirm={form.handleSubmit(handleSubmit)}
-      loading={isSubmitting}
+      onOpenChange={handleOpenChange}
+      onConfirm={form.handleSubmit(handleSubmit, handleInvalid)}
+      loading={isBusy}
     >
       <ScrollArea className="max-h-[calc(90vh-180px)] mt-8">
         <Tabs value={tab} onValueChange={setTab} className="space-y-6">
@@ -102,8 +139,8 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
           <Form form={form} customSubmitButton>
             {/* BASIC INFO TAB */}
             <TabsContent value="basic" className="space-y-6">
-              <Input label="Product Name *" name="name" placeholder="e.g., Premium Wireless Headphones" preventSpaces />
-              <Input label="Brand" name="brand" placeholder="e.g., AudioTech (optional)" preventSpaces />
+              <Input label="Product Name *" name="name" placeholder="e.g., Premium Wireless Headphones" />
+              <Input label="Brand" name="brand" placeholder="e.g., AudioTech (optional)" />
               <Select
                 containerClassName="w-full"
                 label="Category *"
@@ -120,8 +157,10 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
                 <Label>Product Images</Label>
                 <div className="mt-1.5">
                   <ImageUploader
-                    images={form.watch('images') || []}
+                    images={images || []}
                     onImagesChange={imgs => form.setValue('images', imgs, { shouldValidate: true })}
+                    onUpload={async files => (await uploadMutation.mutateAsync(files)).data ?? []}
+                    isUploading={uploadMutation.isPending}
                     maxImages={5}
                   />
                 </div>
@@ -129,11 +168,10 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
             </TabsContent>
             <TabsContent value="inventory" className="space-y-6">
               <VariantEditor
-                variants={form.watch('variants') as TVariant[]}
-                onVariantsChange={(variants: any) => {
-                  console.log('variants', variants);
-                  form.setValue('variants', variants, { shouldValidate: true });
-                  if (variants.length > 0) {
+                variants={(variants || []) as TVariant[]}
+                onVariantsChange={updatedVariants => {
+                  form.setValue('variants', updatedVariants as TVariant[], { shouldValidate: true });
+                  if (updatedVariants.length > 0) {
                     form.clearErrors(['basePrice', 'stock']);
                   } else {
                     form.trigger(['basePrice', 'stock']);
@@ -160,7 +198,7 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
             </TabsContent>
             <TabsContent value="details" className="space-y-6">
               <SpecsEditor
-                specs={form.watch('specs') || []}
+                specs={specs || []}
                 onSpecsChange={specs => form.setValue('specs', specs, { shouldValidate: true })}
               />
 
@@ -168,7 +206,7 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
                 <Label>Tags</Label>
                 <div className="mt-1.5">
                   <TagsInput
-                    tags={form.watch('tags') || []}
+                    tags={tags || []}
                     onTagsChange={tags => form.setValue('tags', tags, { shouldValidate: true })}
                   />
                 </div>

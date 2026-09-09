@@ -38,9 +38,10 @@ export type ProductSearchParams = {
 
 export type ProductsResult = {
   products: CatalogProduct[];
-  total: number;
+  total?: number;
   page: number;
   limit: number;
+  hasMore: boolean;
   categories: { id: string; name: string }[];
   brands: string[];
 };
@@ -99,15 +100,19 @@ type FetchOptions = Omit<RequestInit, 'body'> & {
   showErrorToast?: boolean;
 };
 
-export const apiFetch = async <T = unknown>(url: string, options: FetchOptions = {}): Promise<ApiSuccessResponse<T>> => {
+export const apiFetch = async <T = unknown>(
+  url: string,
+  options: FetchOptions = {}
+): Promise<ApiSuccessResponse<T>> => {
   const { body, showErrorToast = true, ...requestOptions } = options;
+  const isFormData = body instanceof FormData;
   const response = await fetch(url, {
     ...requestOptions,
     headers: {
-      'Content-Type': 'application/json',
+      ...(!isFormData && { 'Content-Type': 'application/json' }),
       ...requestOptions.headers,
     },
-    body: body === undefined ? undefined : typeof body === 'string' ? body : JSON.stringify(body),
+    body: body === undefined ? undefined : isFormData || typeof body === 'string' ? body : JSON.stringify(body),
   });
   const data = (await response.json().catch(() => null)) as ApiResponse<T> | null;
 
@@ -128,6 +133,12 @@ export const createProduct = (productData: ProductFormData) =>
 
 export const updateProduct = (productData: ProductFormData) =>
   apiFetch<TProduct>(API_ROUTE.PRODUCTS, { method: 'PUT', body: productData });
+
+export const uploadProductImages = (files: File[]) => {
+  const body = new FormData();
+  files.forEach(file => body.append('images', file));
+  return apiFetch<string[]>(API_ROUTE.PRODUCT_IMAGES, { method: 'POST', body, showErrorToast: false });
+};
 
 export const deleteProduct = (id: string) => apiFetch(API_ROUTE.PRODUCTS, { method: 'DELETE', body: { id } });
 
@@ -231,7 +242,7 @@ export const sendSupportMessage = ({ ticketId, message }: { ticketId: string; me
 // ─── Auth and profile ───────────────────────────────────────────────────────
 
 export const getCurrentUser = () => apiFetch<TUserData>('/api/auth/me', { cache: 'no-store', showErrorToast: false });
-export const signIn = (input: { email: string; password: string; audience: 'user' | 'seller' }) =>
+export const signIn = (input: { email: string; password: string; portal: 'customer' | 'dashboard' }) =>
   apiFetch<TUserData>('/api/auth/sign-in', { method: 'POST', body: input, showErrorToast: false });
 export const signUp = (input: { email: string; password: string; name: string }) =>
   apiFetch('/api/auth/sign-up', { method: 'POST', body: input, showErrorToast: false });

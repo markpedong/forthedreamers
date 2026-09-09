@@ -20,7 +20,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     formState: { errors },
     isSubmitting,
     submit,
-  } = useSignInForm('user');
+  } = useSignInForm('customer');
 
   return (
     <AuthPage>

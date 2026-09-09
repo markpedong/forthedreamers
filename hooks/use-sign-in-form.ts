@@ -9,8 +9,8 @@ import { z } from 'zod';
 
 const signInSchema = z.object({ email: formSchemas.emailSchema, password: formSchemas.password });
 
-export const useSignInForm = (audience: 'user' | 'seller') => {
-  const mutation = useSignInMutation(audience);
+export const useSignInForm = (portal: 'customer' | 'dashboard') => {
+  const mutation = useSignInMutation(portal);
   const form = useForm<SchemaForm<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: { email: '', password: '' },

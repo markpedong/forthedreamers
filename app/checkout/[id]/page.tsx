@@ -78,8 +78,8 @@ const OrderDetailPage = async ({ params }: { params: Promise<{ id: string }> }) 
             <div className="space-y-3">
               {order.orderItems.map(item => (
                 <div key={item.id} className="flex items-center gap-4 p-3 rounded-lg bg-muted/50">
-                  {item.variant.image && (
-                    <img src={item.variant.image} alt={item.product?.name} className="w-16 h-16 rounded object-cover" />
+                  {item.product?.images[0] && (
+                    <img src={item.product.images[0]} alt={item.product.name} className="w-16 h-16 rounded object-cover" />
                   )}
                   <div className="flex-1">
                     <p className="font-medium">{item.product?.name}</p>

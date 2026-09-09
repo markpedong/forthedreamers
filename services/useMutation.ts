@@ -33,8 +33,9 @@ import {
   updateCartQuantity,
   updateProduct,
   updateProfile,
+  uploadProductImages,
 } from '@/lib/http';
-import type { ProductFormData } from '@/lib/types';
+import type { ProductFormData, TProduct } from '@/lib/types';
 import { decrementCartCount, incrementCartCount, setCartCount } from '@/redux/reducers/cartData';
 import { setUserData } from '@/redux/reducers/userData';
 import { useAppDispatch } from '@/redux/store';
@@ -42,18 +43,18 @@ import { productReviewsQueryKey, wishlistQueryKey } from './useQuery';
 import { supportTicketsQueryKey, wishlistItemsQueryKey } from './useQuery';
 import type { SupportTicketResult } from '@/lib/http';
 
-export const useSignInMutation = (audience: 'user' | 'seller') => {
+export const useSignInMutation = (portal: 'customer' | 'dashboard') => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
   return useMutation({
-    mutationFn: (input: { email: string; password: string }) => signIn({ ...input, audience }),
+    mutationFn: (input: { email: string; password: string }) => signIn({ ...input, portal }),
     onSuccess: result => {
       dispatch(setUserData(result.data!));
-      toast.success(audience === 'seller' ? 'Logged in successfully!' : 'Sign in successfully!', {
-        duration: audience === 'seller' ? 3000 : 2000,
+      toast.success(portal === 'dashboard' ? 'Logged in successfully!' : 'Sign in successfully!', {
+        duration: portal === 'dashboard' ? 3000 : 2000,
       });
-      if (audience === 'seller') {
+      if (portal === 'dashboard') {
         router.push('/dashboard');
       } else {
         router.replace('/profile');
@@ -266,20 +267,23 @@ export const useToggleProductStatusMutation = (rollback: (input: { id: string; a
   });
 };
 
-export const useSaveProductMutation = (onSuccess: () => void) => {
-  const router = useRouter();
-
+export const useSaveProductMutation = (onSuccess: (product: TProduct, type: 'CREATE' | 'EDIT') => void) => {
   return useMutation({
     mutationFn: ({ data, type }: { data: ProductFormData; type: 'CREATE' | 'EDIT' }) =>
       type === 'EDIT' ? updateProduct(data) : createProduct(data),
-    onSuccess: result => {
+    onSuccess: (result, { type }) => {
       toast.success(result.message);
-      onSuccess();
-      router.refresh();
+      onSuccess(result.data!, type);
     },
     onError: error => toast.error(error.message),
   });
 };
+
+export const useUploadProductImagesMutation = () =>
+  useMutation({
+    mutationFn: uploadProductImages,
+    onError: error => toast.error(error.message),
+  });
 
 export const useSetUserBannedMutation = () => {
   const router = useRouter();

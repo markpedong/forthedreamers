@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['192.168.1.211'],
+  allowedDevOrigins: ['192.168.1.215'],
   reactStrictMode: false,
   typedRoutes: true,
   experimental: {
@@ -27,6 +27,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'placehold.co',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
+        pathname: '/storage/v1/object/public/**',
       },
     ],
   },

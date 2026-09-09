@@ -34,7 +34,15 @@ const Products: FC<{ initialProducts: TProduct[]; initialCategories: import('@/g
       state.map(item => (item.id === id ? { ...item, status: active ? 'INACTIVE' : 'ACTIVE' } : item))
     );
   });
-  const saveMutation = useSaveProductMutation(() => setOpen(false));
+  const saveMutation = useSaveProductMutation((savedProduct, savedType) => {
+    setRows(state =>
+      savedType === 'EDIT'
+        ? state.map(item => (item.id === savedProduct.id ? savedProduct : item))
+        : [savedProduct, ...state]
+    );
+    setProduct(savedProduct);
+    setOpen(false);
+  });
   const isPending = deleteMutation.isPending || statusMutation.isPending || saveMutation.isPending;
   const handleDelete = () => {
     if (!deleteDialog) return;
@@ -79,6 +87,11 @@ const Products: FC<{ initialProducts: TProduct[]; initialCategories: import('@/g
   ];
 
   const columns: ProColumn<TProduct>[] = [
+    {
+      title: 'No.',
+      search: false,
+      render: (_, record) => rows.findIndex(item => item.id === record.id) + 1,
+    },
     {
       title: 'Product',
       dataIndex: 'name',
@@ -154,7 +167,7 @@ const Products: FC<{ initialProducts: TProduct[]; initialCategories: import('@/g
 
   return (
     <>
-      <div className="px-4 py-8 space-y-8">
+      <div className="px-4 py-8 space-y-8 [&_[data-slot=table]]:table-fixed [&_[data-slot=table-cell]]:text-center [&_[data-slot=table-head]]:text-center">
         <header className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold">Products</h1>
