@@ -7,12 +7,35 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import CheckoutPageClient from './page-client';
 
-const CheckoutPage = async () => {
+const CheckoutPage = async (props: { searchParams: Promise<{ items?: string }> }) => {
   const session = await getSession();
   if (!session) redirect('/sign-in?next=/checkout');
 
-  const [cartItems, addresses, shippingMethods] = await Promise.all([
-    prisma.cartItem.findMany({
+  const searchParams = await props.searchParams;
+  const selectedIds = searchParams.items?.split(',').filter(Boolean) ?? [];
+
+  let cartItems;
+  if (selectedIds.length > 0) {
+    cartItems = await prisma.cartItem.findMany({
+      where: {
+        userId: session.user.id,
+        id: { in: selectedIds },
+      },
+      include: {
+        variant: {
+          include: {
+            product: {
+              include: {
+                seller: true,
+              },
+            },
+          },
+        },
+        product: true,
+      },
+    });
+  } else {
+    cartItems = await prisma.cartItem.findMany({
       where: { userId: session.user.id },
       include: {
         variant: {
@@ -26,7 +49,10 @@ const CheckoutPage = async () => {
         },
         product: true,
       },
-    }),
+    });
+  }
+
+  const [addresses, shippingMethods] = await Promise.all([
     prisma.address.findMany({
       where: { userId: session.user.id },
       orderBy: { isDefault: 'desc' },

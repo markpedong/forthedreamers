@@ -218,7 +218,7 @@ const CheckoutPageClient = ({
                     type="radio"
                     name="checkout-address"
                     checked={address.id === selectedAddressId}
-                    onChange={() => setSelectedAddressId(address.id)}
+                    onChange={() => { setSelectedAddressId(address.id); setAddressDialogOpen(false); }}
                     className="mt-1"
                   />
                   <div>
@@ -241,52 +241,50 @@ const CheckoutPageClient = ({
   );
 };
 
-/* Inline address add/edit form inside the dialog */
+/* Address management dialog + separate add-address modal */
 const AddressFormDialog = ({ addresses }: { addresses: Address[] }) => {
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [showAdd, setShowAdd] = useState(false);
 
   return (
     <>
-      {!showForm ? (
-        <Button variant="outline" className="w-full gap-2" onClick={() => { setShowForm(true); setEditingId(null); }}>
-          <Plus className="h-4 w-4" /> Add New Address
-        </Button>
-      ) : (
-        <AddressForm
-          address={editingId ? addresses.find(a => a.id === editingId) : undefined}
-          onCancel={() => { setShowForm(false); setEditingId(null); }}
-        />
-      )}
+      <Button variant="outline" className="w-full gap-2" onClick={() => setShowAdd(true)}>
+        <Plus className="h-4 w-4" /> Add New Address
+      </Button>
+
+      <Dialog open={showAdd} onOpenChange={setShowAdd}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>{'Add New Address'}</DialogTitle>
+          </DialogHeader>
+          <AddressForm onCancel={() => setShowAdd(false)} />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
 
-const AddressForm = ({ address, onCancel }: { address?: Address; onCancel: () => void }) => {
-  const mutation = useAddressMutation(() => { onCancel(); });
+const AddressForm = ({ onCancel }: { onCancel: () => void }) => {
+  const mutation = useAddressMutation(onCancel);
   const isPending = mutation.isPending;
 
   const form = useForm<SchemaForm<typeof addressSchema>>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
-      fullName: address?.fullName || '',
-      phoneNumber: address?.phoneNumber || '',
-      street: address?.street || '',
-      city: address?.city || '',
-      region: address?.region || '',
-      postalCode: address?.postalCode || '',
-      label: address?.label || '',
-      type: (address?.type ?? 'HOME') as 'HOME' | 'WORK' | 'OTHER',
+      fullName: '',
+      phoneNumber: '',
+      street: '',
+      city: '',
+      region: '',
+      postalCode: '',
+      label: '',
+      type: 'HOME' as 'HOME' | 'WORK' | 'OTHER',
       isDefault: false,
     },
   });
 
   const { register, handleSubmit, formState: { errors } } = form;
   const onSubmit = (values: SchemaForm<typeof addressSchema>) => {
-    mutation.mutate({
-      operation: address ? 'update' : 'create',
-      input: address ? { ...values, id: address.id } : values,
-    });
+    mutation.mutate({ operation: 'create', input: values });
   };
 
   return (
@@ -306,7 +304,7 @@ const AddressForm = ({ address, onCancel }: { address?: Address; onCancel: () =>
           Cancel
         </Button>
         <Button type="submit" className="flex-1" disabled={isPending}>
-          {address ? 'Save Changes' : 'Add Address'}
+          Add Address
         </Button>
       </div>
     </form>
