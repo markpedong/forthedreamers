@@ -44,3 +44,33 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Tool Usage and Anti-Loop Rules
+
+- Inspect only the files necessary to understand the task.
+- Do not repeatedly inspect the same files unless they changed.
+- Once enough context is available, stop exploring and implement the requested changes.
+- Prefer acting over gathering more context when the relevant code is already understood.
+- After implementation, run only the necessary verification.
+- Do not continue tool calls just to gain additional confidence.
+- If blocked after a few attempts, explain the blocker and stop.
+
+### Coding Task Flow
+
+For normal coding tasks:
+
+1. Inspect the relevant files.
+2. Understand the required change.
+3. Implement the change.
+4. Verify the change.
+5. Stop.
+
+Do not get stuck repeatedly:
+- inspecting the current state
+- understanding the full picture
+- re-reading unchanged files
+- searching for additional context without a specific reason
+
+Bias toward implementation, not exploration.
+
+After roughly 3-5 exploratory tool calls, either begin implementation or identify the specific missing information preventing implementation.

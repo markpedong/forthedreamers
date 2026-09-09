@@ -1,38 +1,21 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Mail, ArrowRight, Loader2 } from 'lucide-react';
 import { useResendVerificationMutation } from '@/services/useMutation';
-import { useCurrentUserQuery } from '@/services/useQuery';
+import { useAppSelector } from '@/redux/store';
 import AuthPage from '../components/auth-page';
 import AuthCard from '../components/auth-card';
 
 const VerifyEmailPage = () => {
   const router = useRouter();
-  const userQuery = useCurrentUserQuery();
+  const email = useAppSelector(state => state.userData.data?.email);
   const mutation = useResendVerificationMutation({
     message: 'Verification link sent! Check your inbox.',
     duration: 3000,
   });
-  const email = userQuery.data?.email;
-
-  useEffect(() => {
-    if (userQuery.isError) router.push('/sign-in');
-  }, [router, userQuery.isError]);
-
   const handleResend = () => mutation.mutate();
-
-  if (userQuery.isPending) {
-    return (
-      <AuthPage>
-        <div className="mx-auto flex size-14 items-center justify-center rounded-2xl border border-white/45 bg-white/70 shadow-xl backdrop-blur-2xl dark:border-white/15 dark:bg-neutral-950/70">
-          <Loader2 className="size-6 animate-spin" />
-        </div>
-      </AuthPage>
-    );
-  }
 
   return (
     <AuthPage>

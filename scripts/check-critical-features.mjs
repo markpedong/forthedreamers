@@ -41,8 +41,11 @@ assert.doesNotMatch(authService, /auth\.getSession\(\)/);
 assert.match(authService, /signOut\(\{ scope: 'local' \}\)/);
 
 const provider = read('components/provider/main-provider.tsx');
-assert.match(provider, /useCurrentUserQuery\(!isAuthRoute\)/);
-assert.doesNotMatch(provider, /fetch\(['"]\/api\/auth\/me/);
+assert.doesNotMatch(provider, /useCurrentUserQuery|\/api\/auth\/me/);
+assert.match(read('app/layout.tsx'), /<AuthHydration \/>/);
+assert.match(read('components/provider/auth-hydration.tsx'), /getCurrentUserData/);
+assert.ok(!existsSync(new URL('../app/api/auth/me/route.ts', import.meta.url)));
+assert.doesNotMatch(read('lib/http.ts'), /\/api\/auth\/me/);
 
 for (const signInForm of [
   'app/(auth)/sign-in/components/sign-in.tsx',

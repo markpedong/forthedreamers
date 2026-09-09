@@ -255,7 +255,6 @@ export const sendSupportMessage = ({ ticketId, message }: { ticketId: string; me
 
 // ─── Auth and profile ───────────────────────────────────────────────────────
 
-export const getCurrentUser = () => apiFetch<TUserData>('/api/auth/me', { cache: 'no-store', showErrorToast: false });
 export const signIn = (input: { email: string; password: string; portal: 'customer' | 'dashboard' }) =>
   apiFetch<TUserData>('/api/auth/sign-in', { method: 'POST', body: input, showErrorToast: false });
 export const signUp = (input: { email: string; password: string; name: string }) =>

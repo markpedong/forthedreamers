@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import MainProvider from '@/components/provider/main-provider';
+import AuthHydration from '@/components/provider/auth-hydration';
 import localFont from 'next/font/local';
+import { Suspense } from 'react';
 
 const geist = localFont({
   src: [
@@ -31,7 +33,12 @@ const RootLayout = ({ children }: LayoutProps<'/'>) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geist.className}  antialiased`}>
-        <MainProvider>{children}</MainProvider>
+        <MainProvider>
+          <Suspense fallback={null}>
+            <AuthHydration />
+          </Suspense>
+          {children}
+        </MainProvider>
       </body>
     </html>
   );
