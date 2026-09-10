@@ -252,9 +252,9 @@ const CartItemsList = ({ items }: { items: CartItem[] }) => {
                       aria-label={`Select ${item.variant.product.name}`}
                     />
 
-                    {item.variant.product.images[0] && (
+                    {(item.variant.image || item.variant.product.images[0]) && (
                       <Image
-                        src={item.variant.product.images[0]}
+                        src={item.variant.image || item.variant.product.images[0]}
                         alt={item.variant.product.name}
                         width={80}
                         height={80}
@@ -318,7 +318,7 @@ const CartItemsList = ({ items }: { items: CartItem[] }) => {
         ))}
       </div>
 
-      <div className="order-first lg:order-last">
+      <div>
         <div className="p-6 border rounded-lg bg-card space-y-4">
           <h2 className="text-xl font-bold">Order Summary</h2>
           <div className="space-y-2 text-sm">
