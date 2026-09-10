@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Package, Truck, ChevronLeft, Plus } from 'lucide-react';
+import { Package, Truck, ChevronLeft, Plus, Store } from 'lucide-react';
 import Link from 'next/link';
 import AddressForm from '@/components/reusable/address-form';
 
@@ -71,23 +71,38 @@ const CheckoutPageClient = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           {/* Order Summary */}
-          <div className="border rounded-lg p-6 bg-card space-y-4">
-            <h2 className="text-xl font-bold mb-4">Order Summary</h2>
-            {cartItems.map((item) => {
-              const price = item.variant.discountedPrice ?? item.variant.price;
-              return (
-                <div key={item.id} className="flex justify-between items-center py-2">
-                  <div>
-                    <p className="font-medium">
-                      {item.variant.product.name} — {item.variant.name}
-                    </p>
-                    <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
-                  </div>
-                  <p className="font-semibold">${(price * item.quantity).toFixed(2)}</p>
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold">Order Summary</h2>
+            {Array.from(sellerGroups.entries()).map(([sellerId, items]) => (
+              <div key={sellerId} className="border rounded-lg bg-card overflow-hidden">
+                <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/30">
+                  <Store className="w-4 h-4 text-muted-foreground" />
+                  <span className="font-semibold text-sm">
+                    {items[0].variant.product.seller?.storeName || 'Seller'}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    ({items.length} item{items.length > 1 ? 's' : ''})
+                  </span>
                 </div>
-              );
-            })}
-            <div className="border-t border-border pt-2" />
+
+                <div className="divide-y">
+                  {items.map(item => {
+                    const price = item.variant.discountedPrice ?? item.variant.price;
+                    return (
+                      <div key={item.id} className="flex justify-between items-center gap-4 p-4">
+                        <div>
+                          <p className="font-medium">
+                            {item.variant.product.name} — {item.variant.name}
+                          </p>
+                          <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                        </div>
+                        <p className="font-semibold">${(price * item.quantity).toFixed(2)}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Shipping Address */}
