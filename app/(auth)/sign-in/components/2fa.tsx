@@ -9,8 +9,7 @@ import { toast } from 'sonner';
 import { twoFactor } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { tryWithToast } from '@/utils/helper';
-import AuthCard from '../../components/auth-card';
-import { ArrowLeft, ShieldCheck } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -57,49 +56,50 @@ const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
   return (
     <AuthPage>
-      <AuthCard
-        title={useBackup ? 'Backup code' : 'Two-factor authentication'}
-        description={useBackup ? 'Enter one of your backup codes' : 'Enter the 6-digit code from your authenticator app'}
-        icon={<ShieldCheck className="size-5" />}
-      >
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            {...register('otp')}
-            id="2fa-otp"
-            label="Verification Code"
-            error={errors.otp?.message}
-            type="text"
-            inputMode={useBackup ? undefined : 'numeric'}
-            placeholder={useBackup ? 'XXXX-XXXX-XXXX' : '000000'}
-            maxLength={digitCount}
-            disabled={isPending}
-          />
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">
+        {useBackup ? 'Backup code' : 'Two-factor authentication'}
+      </h1>
+      <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+        {useBackup ? 'Enter one of your backup codes' : 'Enter the 6-digit code from your authenticator app'}
+      </p>
 
-          <Button type="submit" className="w-full h-11" disabled={isPending} aria-busy={isPending}>
-            {isPending ? 'Verifying in...' : 'Verify'}
-          </Button>
-        </form>
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
+        <FormField
+          {...register('otp')}
+          id="2fa-otp"
+          label="Verification Code"
+          error={errors.otp?.message}
+          type="text"
+          inputMode={useBackup ? undefined : 'numeric'}
+          placeholder={useBackup ? 'XXXX-XXXX-XXXX' : '000000'}
+          maxLength={digitCount}
+          disabled={isPending}
+        />
 
-        <div className="mt-3 space-y-3 text-center sm:mt-6 sm:space-y-6">
-          <button
-            onClick={() => {
-              form.reset();
-              setUseBackup(!useBackup);
-            }}
-            className="block w-full text-sm font-medium text-primary underline-offset-4 hover:underline"
-          >
-            {useBackup ? 'Use authenticator code instead' : 'Use backup code'}
-          </button>
+        <Button type="submit" className="w-full h-11" disabled={isPending} aria-busy={isPending}>
+          {isPending ? 'Verifying in...' : 'Verify'}
+        </Button>
+      </form>
 
-          <button
-            onClick={() => onNavigate('login')}
-            className="mx-auto inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeft className="mr-2 size-4" />
-            Go back
-          </button>
-        </div>
-      </AuthCard>
+      <div className="mt-5 space-y-3 text-center">
+        <button
+          onClick={() => {
+            form.reset();
+            setUseBackup(!useBackup);
+          }}
+          className="block w-full text-sm font-medium text-primary underline-offset-4 hover:underline"
+        >
+          {useBackup ? 'Use authenticator code instead' : 'Use backup code'}
+        </button>
+
+        <button
+          onClick={() => onNavigate('login')}
+          className="mx-auto inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" />
+          Go back
+        </button>
+      </div>
     </AuthPage>
   );
 };

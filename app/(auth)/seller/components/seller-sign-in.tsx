@@ -6,7 +6,7 @@ import type { TOnNavigate } from '@/lib/types';
 
 import { Button } from '@/components/ui/button';
 import FormField from '@/components/reusable/form-field';
-import AuthCard from '../../components/auth-card';
+import AuthPage from '../../components/auth-page';
 
 import Link from 'next/link';
 import { useSignInForm } from '@/hooks/use-sign-in-form';
@@ -26,8 +26,14 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   });
 
   return (
-    <AuthCard title="Welcome back" description="Sign in to manage your store and track sales." eyebrow="Seller hub">
-      <form onSubmit={onSubmit} className="space-y-4">
+    <AuthPage>
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Seller hub</p>
+      <h1 className="mt-2 text-2xl font-bold tracking-tight text-foreground">Welcome back</h1>
+      <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+        Sign in to manage your store and track sales.
+      </p>
+
+      <form onSubmit={onSubmit} className="mt-6 space-y-4">
         <FormField
           {...register('email')}
           id="seller-email"
@@ -60,24 +66,23 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           </button>
         </FormField>
 
-        <div className="flex w-full items-center justify-end text-end">
-          <Button
-            variant="link"
-            className="h-auto p-0 text-sm font-medium"
-            onClick={() => onNavigate('forgot')}
+        <div className="text-right">
+          <button
             type="button"
+            onClick={() => onNavigate('forgot')}
             disabled={isSubmitting}
+            className="text-sm font-medium text-primary underline underline-offset-4 hover:underline-offset-4"
           >
             Forgot password?
-          </Button>
+          </button>
         </div>
 
         <Button className="w-full" disabled={isSubmitting} aria-busy={isSubmitting}>
-          {isSubmitting ? 'Signing in...' : 'Sign In'}
+          {isSubmitting ? 'Signing in...' : 'Sign in'}
         </Button>
       </form>
 
-      <div className="mt-5 space-y-3 border-t border-foreground/10 pt-5 text-center text-sm text-muted-foreground">
+      <div className="mt-5 space-y-2.5 text-center text-sm text-muted-foreground">
         <p>
           New to selling?{' '}
           <button
@@ -96,7 +101,7 @@ const SellerSignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           </Link>
         </p>
       </div>
-    </AuthCard>
+    </AuthPage>
   );
 };
 

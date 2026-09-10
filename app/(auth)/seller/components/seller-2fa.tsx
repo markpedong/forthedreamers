@@ -9,8 +9,8 @@ import { FC, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { tryWithToast } from '@/utils/helper';
-import AuthCard from '../../components/auth-card';
-import { ShieldCheck } from 'lucide-react';
+import AuthPage from '../../components/auth-page';
+import { ArrowLeft } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -55,12 +55,15 @@ const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
   };
 
   return (
-    <AuthCard
-      title={useBackup ? 'Backup code' : 'Enter verification code'}
-      description={useBackup ? 'Enter one of your backup codes' : 'Enter the 6-digit code from your authenticator app'}
-      icon={<ShieldCheck className="size-5" />}
-    >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <AuthPage>
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">
+        {useBackup ? 'Backup code' : 'Enter verification code'}
+      </h1>
+      <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+        {useBackup ? 'Enter one of your backup codes' : 'Enter the 6-digit code from your authenticator app'}
+      </p>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
         <FormField {...register('otp')} id="seller-2fa-otp" label="Verification Code" error={errors.otp?.message} type="text" placeholder={useBackup ? 'XXXX-XXXX-XXXX' : '000000'} maxLength={useBackup ? 14 : 6} disabled={isPending} />
 
         <Button type="submit" className="w-full h-11" disabled={isPending} aria-busy={isPending}>
@@ -81,12 +84,13 @@ const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
 
         <button
           onClick={() => onNavigate('login')}
-          className="block w-full text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="mx-auto inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
+          <ArrowLeft className="size-4" />
           Back to sign in
         </button>
       </div>
-    </AuthCard>
+    </AuthPage>
   );
 };
 

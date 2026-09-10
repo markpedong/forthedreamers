@@ -7,8 +7,8 @@ import { useTransition } from 'react';
 import { toast } from 'sonner';
 import FormField from '@/components/reusable/form-field';
 import formSchemas from '@/hooks/form-schemas';
-import { ArrowLeft, Mail } from 'lucide-react';
-import AuthCard from '../../components/auth-card';
+import { ArrowLeft } from 'lucide-react';
+import AuthPage from '../../components/auth-page';
 
 import { Button } from '@/components/ui/button';
 
@@ -32,12 +32,13 @@ const SellerForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) =
   };
 
   return (
-    <AuthCard
-      title="Reset your password"
-      description="Enter your email and we'll send you a secure reset link."
-      icon={<Mail className="size-5" />}
-    >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <AuthPage>
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">Reset your password</h1>
+      <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+        Enter your email and we&apos;ll send you a secure reset link.
+      </p>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
         <FormField {...register('email')} id="seller-forgot-email" label="Email" error={errors.email?.message} type="email" placeholder="your@email.com" disabled={isPending} autoComplete="email" />
 
         <Button type="submit" className="w-full h-11" disabled={isPending} aria-busy={isPending}>
@@ -53,7 +54,7 @@ const SellerForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) =
         <ArrowLeft className="size-4" />
         Back to sign in
       </button>
-    </AuthCard>
+    </AuthPage>
   );
 };
 

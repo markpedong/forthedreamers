@@ -12,7 +12,7 @@ import Form from '@/components/reusable/form';
 import Input from '@/components/reusable/input';
 import { useSellerSignUpMutation } from '@/services/useMutation';
 import Link from 'next/link';
-import AuthCard from '../../components/auth-card';
+import AuthPage from '../../components/auth-page';
 
 const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const mutation = useSellerSignUpMutation();
@@ -36,12 +36,18 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   };
 
   return (
-    <AuthCard title="Start selling" description="Create your seller account and set up your storefront." eyebrow="Seller hub">
+    <AuthPage>
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Seller hub</p>
+      <h1 className="mt-2 text-2xl font-bold tracking-tight text-foreground">Start selling</h1>
+      <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+        Create your seller account and set up your storefront.
+      </p>
+
       <Form
-        className="space-y-4"
+        className="mt-6 space-y-4"
         form={form}
         onSubmit={onSubmit}
-        submitLabel={isSubmitting ? 'Creating account...' : 'Create Account'}
+        submitLabel={isSubmitting ? 'Creating account...' : 'Create account'}
         isSending={isSubmitting}
       >
         <Input label="Store Name" name="storeName" placeholder="My Awesome Store" disabled={isSubmitting} />
@@ -114,7 +120,7 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         ))}
       </div>
 
-      <div className="mt-5 space-y-3 border-t border-foreground/10 pt-5 text-center text-sm text-muted-foreground">
+      <div className="mt-5 space-y-2.5 text-center text-sm text-muted-foreground">
         <p>
           Already have a seller account?{' '}
           <button
@@ -132,7 +138,7 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           </Link>
         </p>
       </div>
-    </AuthCard>
+    </AuthPage>
   );
 };
 

@@ -5,8 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import FormField from '@/components/reusable/form-field';
 import { useForgotPasswordMutation } from '@/services/useMutation';
-import AuthCard from '../../components/auth-card';
-import { ArrowLeft, Mail } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -27,36 +26,35 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
   return (
     <AuthPage>
-      <AuthCard
-        title="Reset your password"
-        description="Enter your email and we'll send you a secure reset link."
-        icon={<Mail className="size-5" />}
-      >
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-5">
-          <FormField
-            {...register('email')}
-            id="forgot-email"
-            label="Email"
-            error={errors.email?.message}
-            placeholder="you@example.com"
-            disabled={isSending}
-          />
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">Reset your password</h1>
+      <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+        Enter your email and we&apos;ll send you a secure reset link.
+      </p>
 
-          <Button type="submit" className="w-full h-11" disabled={isSending} aria-busy={isSending}>
-            {isSending ? 'Sending...' : 'Send reset link'}
-          </Button>
-        </form>
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4 sm:space-y-5">
+        <FormField
+          {...register('email')}
+          id="forgot-email"
+          label="Email"
+          error={errors.email?.message}
+          placeholder="you@example.com"
+          disabled={isSending}
+        />
 
-        <div className="mt-3 text-center sm:mt-6">
-          <button
-            onClick={() => onNavigate('login')}
-            className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center transition-colors"
-          >
-            <ArrowLeft className="mr-2 size-4" />
-            Back to sign in
-          </button>
-        </div>
-      </AuthCard>
+        <Button type="submit" className="w-full h-11" disabled={isSending} aria-busy={isSending}>
+          {isSending ? 'Sending...' : 'Send reset link'}
+        </Button>
+      </form>
+
+      <div className="mt-5 text-center">
+        <button
+          onClick={() => onNavigate('login')}
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" />
+          Back to sign in
+        </button>
+      </div>
     </AuthPage>
   );
 };

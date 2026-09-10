@@ -5,7 +5,6 @@ import SellerTwoFactorPage from './seller-2fa';
 import SellerForgotPasswordPage from './seller-forgot';
 import SellerSignIn from './seller-sign-in';
 import SellerSignUp from './seller-sign-up';
-import SellerPageWrapper from './seller-page-wrapper';
 
 export default function SellerAuthInterface() {
   const [currentPage, setCurrentPage] = useState('login');
@@ -16,7 +15,5 @@ export default function SellerAuthInterface() {
     '2fa': <SellerTwoFactorPage onNavigate={setCurrentPage} />,
   };
 
-  return (
-    <SellerPageWrapper>{pages[currentPage as keyof typeof pages]}</SellerPageWrapper>
-  );
+  return <div className="w-full">{pages[currentPage as keyof typeof pages]}</div>;
 }
