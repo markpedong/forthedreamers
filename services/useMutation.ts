@@ -40,7 +40,7 @@ import {
 import type { ProductFormData, TProduct } from '@/lib/types';
 import { clearUserData, setUserData } from '@/redux/reducers/userData';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { cartCountQueryKey, productReviewsQueryKey, wishlistQueryKey } from './useQuery';
+import { cartCountQueryKey, ordersQueryKey, productReviewsQueryKey, wishlistQueryKey } from './useQuery';
 import { supportTicketsQueryKey, wishlistItemsQueryKey } from './useQuery';
 import type { SupportTicketResult } from '@/lib/http';
 
@@ -399,6 +399,7 @@ export const useCreateReviewMutation = (slug: string, onSuccess: () => void) => 
       onSuccess();
       toast.success('Review submitted');
       void queryClient.invalidateQueries({ queryKey: productReviewsQueryKey(slug) });
+      void queryClient.invalidateQueries({ queryKey: ordersQueryKey });
       router.refresh();
     },
     onError: error => toast.error(error.message),

@@ -1,7 +1,6 @@
 import { productSupplemental } from '@/lib/services/catalog';
 import ProductReviews from './product-reviews';
 import RelatedProducts from './related-products';
-import ReviewForm from './review-form';
 
 type ProductSupplementalProps = {
   productId: string;
@@ -39,8 +38,6 @@ const ProductSupplemental = async ({
         initialReviews={supplemental.reviews}
         summary={summary}
       />
-      <ReviewForm slug={slug} />
-
       <RelatedProducts
         title="More from this seller"
         description={`Explore more products from ${sellerName}.`}

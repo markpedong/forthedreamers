@@ -40,7 +40,15 @@ export async function GET(request: NextRequest) {
       include: {
         orderItems: {
           include: {
-            product: { select: { id: true, name: true, slug: true, images: true } },
+            product: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                images: true,
+                reviews: { where: { userId }, select: { id: true } },
+              },
+            },
             variant: { select: { id: true, name: true } },
           },
         },

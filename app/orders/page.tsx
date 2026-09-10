@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useOrdersQuery } from '@/services/useQuery';
+import WriteReview from './components/write-review';
 
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 const dates = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' });
@@ -72,7 +73,16 @@ export default function OrdersPage() {
                         {item.product ? <Link href={`/products/${item.product.slug}`} className="font-medium hover:underline">{item.product.name}</Link> : <p className="font-medium">Product unavailable</p>}
                         <p className="text-muted-foreground">{item.variant.name} · Quantity {item.quantity}</p>
                       </div>
-                      <p className="font-medium">{money.format(item.finalPriceAfterDiscount)}</p>
+                      <div className="flex items-center gap-4">
+                        <p className="font-medium">{money.format(item.finalPriceAfterDiscount)}</p>
+                        {orderItem.status === 'COMPLETED' &&
+                          item.product &&
+                          (item.product.reviews.length ? (
+                            <span className="text-xs text-muted-foreground">Reviewed</span>
+                          ) : (
+                            <WriteReview slug={item.product.slug} productName={item.product.name} />
+                          ))}
+                      </div>
                     </div>
                   ))}
                 </div>

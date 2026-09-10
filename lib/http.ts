@@ -72,7 +72,7 @@ export type OrderResult = {
     id: string;
     quantity: number;
     finalPriceAfterDiscount: number;
-    product: { id: string; name: string; slug: string; images: string[] } | null;
+    product: { id: string; name: string; slug: string; images: string[]; reviews: { id: string }[] } | null;
     variant: { id: string; name: string };
   }[];
 };
