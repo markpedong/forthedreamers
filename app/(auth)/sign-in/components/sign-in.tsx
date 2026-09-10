@@ -97,7 +97,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
         <div className="my-5 flex items-center gap-3">
           <span className="h-px flex-1 bg-border" />
-          <span className="text-sm text-muted-foreground">Or sign in with</span>
+          <span className="text-sm text-muted-foreground">Or</span>
           <span className="h-px flex-1 bg-border" />
         </div>
 
@@ -121,10 +121,11 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           </Link>
         </p>
 
-        <p className="text-center text-xs text-muted-foreground">
-          © 2023 ALL RIGHTS RESERVED
-        </p>
       </form>
+
+      <p className="mt-16 text-center text-xs text-muted-foreground lg:mt-24">
+        © 2023 ALL RIGHTS RESERVED
+      </p>
     </AuthPage>
   );
 };

@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { socialSignInUrl } from '@/lib/services/auth';
 import { errorResponse, successResponse } from '@/lib/server-helper';
 
-const schema = z.object({ provider: z.literal('google'), next: z.enum(['/profile', '/dashboard']) });
+const schema = z.object({ provider: z.enum(['google', 'facebook']), next: z.enum(['/profile', '/dashboard']) });
 
 export const POST = async (request: NextRequest) => {
   const parsed = schema.safeParse(await request.json().catch(() => null));

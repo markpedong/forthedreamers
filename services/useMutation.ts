@@ -112,7 +112,7 @@ export const useUpdateSellerShippingMutation = () =>
 
 export const useSocialSignInMutation = (next: '/profile' | '/dashboard') =>
   useMutation({
-    mutationFn: () => socialSignIn('google', next),
+    mutationFn: (provider: 'google' | 'facebook') => socialSignIn(provider, next),
     onSuccess: result => {
       if (result.data?.url) window.location.assign(result.data.url);
     },

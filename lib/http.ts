@@ -276,7 +276,7 @@ export const updateSellerShipping = (courierCodes: import('@/constants/shipping'
     body: { courierCodes },
     showErrorToast: false,
   });
-export const socialSignIn = (provider: 'google', next: '/profile' | '/dashboard') =>
+export const socialSignIn = (provider: 'google' | 'facebook', next: '/profile' | '/dashboard') =>
   apiFetch<{ url: string }>('/api/auth/oauth', { method: 'POST', body: { provider, next }, showErrorToast: false });
 export const linkSocial = (provider: string, next: string) =>
   apiFetch<{ url: string }>('/api/auth/link', { method: 'POST', body: { provider, next }, showErrorToast: false });
