@@ -2,7 +2,7 @@
 
 import { TOnNavigate } from '@/lib/types';
 import AuthPage from '../../components/auth-page';
-import OauthButtons, { FacebookButton } from './oauth-buttons';
+import OauthButtons from './oauth-buttons';
 import FormField from '@/components/reusable/form-field';
 import { Button } from '@/components/ui/button';
 import { Eye, EyeOff } from 'lucide-react';
@@ -98,10 +98,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           <span className="text-sm text-muted-foreground">Or sign in with</span>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <OauthButtons next="/profile" />
-          <FacebookButton />
-        </div>
+        <OauthButtons next="/profile" />
 
         <p className="text-center text-sm text-muted-foreground">
           Don&apos;t you have an account?{' '}
