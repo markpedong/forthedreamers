@@ -7,6 +7,7 @@ import { Heart, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAddCartMutation, useWishlistMutation } from '@/services/useMutation';
 import { useWishlistItemsQuery } from '@/services/useQuery';
+import { getProductPrice } from '@/lib/utils';
 
 export default function WishlistPage() {
   const [page, setPage] = useState(1);
@@ -43,6 +44,7 @@ export default function WishlistPage() {
             {data.wishlist.map(item => {
               const product = item.product;
               const variant = product.variants.find(candidate => candidate.stock > 0);
+              const wishlistPrice = getProductPrice(product.variants);
               const cartPending = cartMutation.isPending && cartMutation.variables?.variantId === variant?.id;
               const removePending = wishlistMutation.isPending && wishlistMutation.variables?.id === product.id;
               return (
@@ -59,9 +61,7 @@ export default function WishlistPage() {
                       <p className="text-xs uppercase tracking-wider text-muted-foreground">{product.seller.storeName}</p>
                       <Link href={`/products/${product.slug}`} className="mt-1 block text-lg font-medium hover:underline">{product.name}</Link>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        {product.basePrice != null || product.variants[0]
-                          ? `$${(product.basePrice ?? product.variants[0].price).toFixed(2)}`
-                          : 'Price unavailable'}
+                        {wishlistPrice != null ? `$${wishlistPrice.toFixed(2)}` : 'Price unavailable'}
                       </p>
                     </div>
                     <div className="flex gap-2">

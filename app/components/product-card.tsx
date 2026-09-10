@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import ImagePlaceholder from '@/components/reusable/image-placeholder';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { getProductPrice } from '@/lib/utils';
 import type { LandingProduct } from './index';
 
 type ProductCardProps = LandingProduct & { rating?: number; reviewCount?: number; compact?: boolean };
@@ -11,7 +12,6 @@ type ProductCardProps = LandingProduct & { rating?: number; reviewCount?: number
 const ProductCard: FC<ProductCardProps> = ({
   name,
   images,
-  basePrice,
   variants,
   slug,
   rating = 0,
@@ -21,6 +21,7 @@ const ProductCard: FC<ProductCardProps> = ({
   const [isImageInvalid, setIsImageInvalid] = useState(false);
   const imageSrc = images && images.length > 0 ? images[0] : null;
   const showImage = imageSrc && !isImageInvalid;
+  const price = getProductPrice(variants);
   return (
     <Link
       href={`/products/${slug}`}
@@ -59,7 +60,7 @@ const ProductCard: FC<ProductCardProps> = ({
           </p>
         )}
         <p className={compact ? 'text-base font-semibold text-foreground' : 'text-sm text-muted-foreground'}>
-          {basePrice != null || variants[0] ? `$ ${(basePrice ?? variants[0].price).toFixed(2)}` : 'Price unavailable'}
+          {price != null ? `$ ${price.toFixed(2)}` : 'Price unavailable'}
         </p>
       </div>
     </Link>

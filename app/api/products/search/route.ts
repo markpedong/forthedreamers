@@ -37,14 +37,14 @@ export async function GET(request: NextRequest) {
       });
     }
     if (minPrice != null || maxPrice != null) {
-      constraints.push({ OR: [{ basePrice: price }, { basePrice: null, variants: { some: { price } } }] });
+      // Every product is sold through at least one variant (variant-less products get an
+      // implicit one from their base price), so price always lives on the variant.
+      constraints.push({ variants: { some: { price } } });
     }
     if (inStock === '1') {
-      constraints.push({ OR: [{ stock: { gt: 0 } }, { variants: { some: { stock: { gt: 0 } } } }] });
+      constraints.push({ variants: { some: { stock: { gt: 0 } } } });
     } else if (inStock === '0') {
-      constraints.push({
-        AND: [{ OR: [{ stock: { lte: 0 } }, { stock: null }] }, { variants: { none: { stock: { gt: 0 } } } }],
-      });
+      constraints.push({ variants: { none: { stock: { gt: 0 } } } });
     }
 
     const where: Prisma.ProductWhereInput = {

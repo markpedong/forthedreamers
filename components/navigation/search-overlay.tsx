@@ -5,6 +5,7 @@ import { Search, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { getProductPrice } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { useProductsQuery } from '@/services/useQuery';
 
@@ -99,29 +100,30 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 </div>
               ) : query.data?.products.length ? (
                 <div className="divide-y divide-border">
-                  {query.data.products.map(product => (
-                    <button
-                      type="button"
-                      key={product.id}
-                      onClick={() => {
-                        router.push(`/products/${product.slug}`);
-                        onClose();
-                      }}
-                      className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-muted"
-                    >
-                      <span>
-                        <span className="block text-sm font-medium">{product.name}</span>
-                        <span className="block text-xs text-muted-foreground">
-                          {product.category.name} · {product.seller.storeName}
+                  {query.data.products.map(product => {
+                    const price = getProductPrice(product.variants);
+                    return (
+                      <button
+                        type="button"
+                        key={product.id}
+                        onClick={() => {
+                          router.push(`/products/${product.slug}`);
+                          onClose();
+                        }}
+                        className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-muted"
+                      >
+                        <span>
+                          <span className="block text-sm font-medium">{product.name}</span>
+                          <span className="block text-xs text-muted-foreground">
+                            {product.category.name} · {product.seller.storeName}
+                          </span>
                         </span>
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {product.basePrice != null || product.variants[0]
-                          ? `$${(product.basePrice ?? product.variants[0].price).toFixed(2)}`
-                          : 'Price unavailable'}
-                      </span>
-                    </button>
-                  ))}
+                        <span className="text-sm text-muted-foreground">
+                          {price != null ? `$${price.toFixed(2)}` : 'Price unavailable'}
+                        </span>
+                      </button>
+                    );
+                  })}
                   <button
                     type="button"
                     onClick={openResults}

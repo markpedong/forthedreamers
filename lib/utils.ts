@@ -24,3 +24,10 @@ export const getBrowserInfo = (userAgent: string | null) => {
   if (!browser.name && !os.name) return 'Unknown Device';
   return [browser.name, os.name].filter(Boolean).join(' on ');
 };
+
+// A product is always sold through variants (a variant-less product gets one implicit
+// variant from its base price), so the selling price is the first variant's.
+export const getProductPrice = (variants: { price: number; discountedPrice?: number | null }[]) => {
+  const variant = variants[0];
+  return variant ? (variant.discountedPrice ?? variant.price) : null;
+};
