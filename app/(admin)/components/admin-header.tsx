@@ -11,14 +11,12 @@ const AdminHeader: FC = () => {
   const user = useAppSelector(state => state.userData.data);
   const pathname = usePathname();
 
+  const segment = pathname.split('/').filter(Boolean).pop() ?? 'dashboard';
+  const title = segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ');
+
   return (
-    <header className="h-16 border-b border-sidebar-border bg-background px-6 flex items-center justify-between">
-      <h2 className="text-lg font-semibold text-sidebar-foreground">
-        {pathname === '/dashboard'
-          ? 'Dashboard'
-          : pathname.split('/').pop()?.charAt(0).toUpperCase() + pathname.split('/').slice(-1)[0].replace(/-/g, ' ') ||
-            'Admin'}
-      </h2>
+    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-sidebar-border bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <h2 className="text-lg font-semibold text-sidebar-foreground">{title}</h2>
       <div className="flex items-center gap-4">
         {user && (
           <div className="flex items-center gap-2 text-sm text-sidebar-foreground/80">
@@ -30,7 +28,7 @@ const AdminHeader: FC = () => {
           onClick={() => signOutMutation.mutate()}
           disabled={signOutMutation.isPending}
           aria-busy={signOutMutation.isPending}
-          className="flex items-center gap-2 text-sm text-sidebar-foreground/80 hover:text-sidebar-primary transition-colors"
+          className="flex items-center gap-2 text-sm text-sidebar-foreground/80 transition-colors hover:text-sidebar-primary"
         >
           <LogOut className="w-4 h-4" />
           {signOutMutation.isPending ? 'Signing out...' : 'Logout'}
