@@ -13,7 +13,7 @@ export const cartSelect = {
       price: true,
       discountedPrice: true,
       stock: true,
-      product: { select: { id: true, name: true, slug: true, images: true } },
+      product: { select: { id: true, name: true, slug: true, images: true, sellerId: true } },
     },
   },
 } satisfies Prisma.CartItemSelect;
