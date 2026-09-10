@@ -102,8 +102,8 @@ const Navbar: FC = () => {
         )}
       >
         <div
-          className={classNames('w-full max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4', {
-            'gap-4': isMobile,
+          className={classNames('w-full max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3 md:py-3 md:gap-4', {
+            'gap-3': isMobile,
           })}
         >
           <Link href="/" className="font-bold text-primary">

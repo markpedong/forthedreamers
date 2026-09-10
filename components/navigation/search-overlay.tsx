@@ -64,13 +64,13 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
               }}
               className="relative mb-4 overflow-hidden rounded-lg bg-background shadow-lg"
             >
-              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground md:left-4 md:h-5 md:w-5" />
               <Input
                 autoFocus
                 value={search}
                 onChange={event => setSearch(event.target.value)}
                 placeholder="Search products..."
-                className="w-full border-0 bg-background py-3 pl-12 pr-12 text-base focus-visible:ring-2 focus-visible:ring-primary"
+                className="w-full rounded-lg border-0 bg-background py-2.5 pl-10 pr-12 text-base focus-visible:ring-2 focus-visible:ring-primary md:py-3 md:pl-12"
               />
               <Button
                 type="button"

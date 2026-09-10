@@ -15,9 +15,9 @@ const AdminHeader: FC = () => {
   const title = segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ');
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-sidebar-border bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <h2 className="text-lg font-semibold text-sidebar-foreground">{title}</h2>
-      <div className="flex items-center gap-4">
+    <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-sidebar-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:h-16 md:px-6">
+      <h2 className="text-base font-semibold text-sidebar-foreground md:text-lg">{title}</h2>
+      <div className="flex items-center gap-3 md:gap-4">
         {user && (
           <div className="flex items-center gap-2 text-sm text-sidebar-foreground/80">
             <User className="w-4 h-4" />

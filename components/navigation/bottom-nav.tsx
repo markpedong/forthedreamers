@@ -50,7 +50,7 @@ const BottomNav: FC = () => {
                     tabIndex={isDisabled ? -1 : undefined}
                     onClick={event => isDisabled && event.preventDefault()}
                     className={cn(
-                      'flex h-14 min-w-0 flex-col items-center justify-center gap-0.5 rounded-full px-1 transition-colors',
+                      'flex h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-full px-1 transition-colors',
                       isDisabled
                         ? 'pointer-events-none text-muted-foreground/40'
                         : isActive
@@ -73,10 +73,10 @@ const BottomNav: FC = () => {
           type="button"
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsSearchOpen(true)}
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-foreground text-background shadow-lg"
+          className="flex size-12 shrink-0 items-center justify-center rounded-full bg-foreground text-background shadow-lg"
           aria-label="Search"
         >
-          <Search className="h-6 w-6" />
+          <Search className="h-5 w-5" />
         </motion.button>
       </motion.nav>
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />

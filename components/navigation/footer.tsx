@@ -30,10 +30,10 @@ const Footer: FC = () => {
   if (isDashboardRoute(pathname)) return null;
 
   return (
-    <footer className={classNames('mx-auto max-w-7xl px-4 py-16 pb-6', isMobile && 'pb-24')}>
-      <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-3">
-        <div className="space-y-4">
-          <h4 className="text-lg font-bold uppercase tracking-tighter">ForTheDreamers</h4>
+    <footer className={classNames('mx-auto max-w-7xl px-4 py-10 pb-6 md:py-16', isMobile && 'pb-24')}>
+      <div className="mb-10 grid grid-cols-1 gap-8 md:mb-16 md:grid-cols-3 md:gap-12">
+        <div className="space-y-3 md:space-y-4">
+          <h4 className="text-base font-bold uppercase tracking-tighter md:text-lg">ForTheDreamers</h4>
           <p className="text-sm leading-relaxed text-neutral-500">
             A digital space for the modern minimalist. Curated with care, designed for life.
           </p>
@@ -41,7 +41,7 @@ const Footer: FC = () => {
         <Section title="Shop" items={links.shop} />
         <Section title="Support" items={links.support} />
       </div>
-      <div className="pt-8 text-center text-xs text-neutral-400 md:text-left">
+      <div className="pt-6 text-center text-xs text-neutral-400 md:pt-8 md:text-left">
         © {new Date().getFullYear()} ForTheDreamers. All rights reserved.
       </div>
     </footer>
@@ -50,7 +50,7 @@ const Footer: FC = () => {
 
 const Section: FC<{ title: string; items: { label: string; href: string }[] }> = ({ title, items }) => (
   <div>
-    <h5 className="mb-4 font-medium">{title}</h5>
+    <h5 className="mb-3 font-medium md:mb-4">{title}</h5>
     <ul className="space-y-2 text-sm text-neutral-500">
       {items.map(item => (
         <li key={item.href}>
