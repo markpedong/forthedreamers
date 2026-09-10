@@ -41,7 +41,19 @@ export const LABEL_VALUE_DEFAULT = {
   value: '',
 }
 
-export const DISABLED_NAVBAR = ['/sign-in', '/reset-password', '/seller', '/users', '/dashboard', '/checkout']
+export const DISABLED_NAVBAR = [
+  '/sign-in',
+  '/reset-password',
+  '/seller',
+  '/users',
+  '/dashboard',
+  '/checkout',
+  '/analytics',
+  '/settings',
+]
+
+export const isDashboardRoute = (pathname: string) =>
+  DISABLED_NAVBAR.some(path => pathname === path || pathname.startsWith(`${path}/`))
 
 export const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 
