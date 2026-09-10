@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from '@/app/components/product-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +19,6 @@ const ProductsClient = ({
   initialSortBy: string;
   initialOrder: 'asc' | 'desc';
 }) => {
-  const [search, setSearch] = useState(initialQuery);
   const [queryText, setQueryText] = useState(initialQuery);
   const [category, setCategory] = useState(initialCategory);
   const [brand, setBrand] = useState('');
@@ -28,6 +28,7 @@ const ProductsClient = ({
   const [maxRating, setMaxRating] = useState('5');
   const [inStock, setInStock] = useState<'' | '0' | '1'>('');
   const [sort, setSort] = useState(`${initialSortBy}:${initialOrder}`);
+  const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
   const [cursor, setCursor] = useState<string>();
   const [cursorHistory, setCursorHistory] = useState<(string | undefined)[]>([]);
@@ -39,16 +40,6 @@ const ProductsClient = ({
     setCursor(undefined);
     setCursorHistory([]);
   };
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setQueryText(search.trim());
-      setPage(1);
-      setCursor(undefined);
-      setCursorHistory([]);
-    }, 350);
-    return () => window.clearTimeout(timer);
-  }, [search]);
 
   const productsQuery = useProductsQuery({
     q: queryText,
@@ -62,13 +53,12 @@ const ProductsClient = ({
     sortBy,
     order,
     cursor,
-    limit: 20,
+    limit,
   });
   const facetsQuery = useProductFacetsQuery();
   const data = productsQuery.data;
 
   const clearFilters = () => {
-    setSearch('');
     setQueryText('');
     setCategory('');
     setBrand('');
@@ -82,22 +72,12 @@ const ProductsClient = ({
   };
 
   return (
-    <main className="mx-auto min-h-screen max-w-[1500px] px-4 py-8 sm:px-6 lg:px-8">
+    <main className="mx-auto min-h-screen max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="mb-6">
         <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Shop</p>
         <h1 className="mt-2 text-3xl font-light tracking-tight sm:text-4xl">Browse products</h1>
         <p className="mt-2 text-sm text-muted-foreground">Search and filter the active marketplace catalog.</p>
       </header>
-
-      <div className="mb-6 rounded-md border border-border bg-card p-3 shadow-sm sm:p-4">
-        <Input
-          value={search}
-          onChange={event => setSearch(event.target.value)}
-          placeholder="Search by product name or description"
-          aria-label="Search products"
-          className="h-11 bg-background"
-        />
-      </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)]">
         <aside aria-label="Product filters" className="rounded-md border border-border bg-card p-5 lg:sticky lg:top-24">
@@ -228,7 +208,7 @@ const ProductsClient = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {[0, 1, 2, 3, 4, 5].map(value => (
+                    {[0, 1, 2, 3, 4].map(value => (
                       <SelectItem key={value} value={String(value)}>
                         {value === 0 ? 'Any rating' : `${value} stars and up`}
                       </SelectItem>
@@ -268,8 +248,27 @@ const ProductsClient = ({
                   : 'Loading products…'}
               {productsQuery.isFetching && !productsQuery.isLoading && <span className="ml-2">Updating…</span>}
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <span className="shrink-0 text-muted-foreground">Sort by</span>
+            <div className="flex flex-wrap items-center gap-2 text-sm">
+              <span className="shrink-0 text-muted-foreground">Per page</span>
+              <Select
+                value={String(limit)}
+                onValueChange={value => {
+                  setLimit(Number(value));
+                  resetPagination();
+                }}
+              >
+                <SelectTrigger className="w-20 bg-background" aria-label="Products per page">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[10, 20, 30, 50].map(value => (
+                    <SelectItem key={value} value={String(value)}>
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="ml-2 shrink-0 text-muted-foreground">Sort by</span>
               <Select
                 value={sort}
                 onValueChange={value => {
@@ -308,7 +307,7 @@ const ProductsClient = ({
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
                 {data.products.map(product => (
                   <ProductCard key={product.id} {...product} compact />
                 ))}
@@ -316,6 +315,8 @@ const ProductsClient = ({
               <nav aria-label="Product pagination" className="mt-10 flex items-center justify-center gap-4">
                 <Button
                   variant="outline"
+                  size="icon"
+                  aria-label="Previous page"
                   disabled={page <= 1 || productsQuery.isFetching}
                   onClick={() => {
                     const previousCursor = cursorHistory.at(-1);
@@ -324,11 +325,13 @@ const ProductsClient = ({
                     setPage(value => value - 1);
                   }}
                 >
-                  Previous
+                  <ChevronLeft />
                 </Button>
                 <span className="text-sm text-muted-foreground">Page {page}</span>
                 <Button
                   variant="outline"
+                  size="icon"
+                  aria-label="Next page"
                   disabled={!data.hasMore || !data.nextCursor || productsQuery.isFetching}
                   onClick={() => {
                     setCursorHistory(history => [...history, cursor]);
@@ -336,7 +339,7 @@ const ProductsClient = ({
                     setPage(value => value + 1);
                   }}
                 >
-                  Next
+                  <ChevronRight />
                 </Button>
               </nav>
             </>
