@@ -7,8 +7,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Input from '@/components/reusable/input';
 import Form from '@/components/reusable/form';
 import { useSignUpMutation } from '@/services/useMutation';
-import Divider from '@/components/reusable/divider';
-import AuthCard from '../../components/auth-card';
 
 const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const mutation = useSignUpMutation();
@@ -29,64 +27,69 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     mutation.mutate({ email: values.email, password: values.password, name: values.name });
   return (
     <AuthPage>
-      <AuthCard title="Create your account" description="Join For The Dreamers and start discovering curated finds." eyebrow="New here">
-        <Form
-          form={form}
-          onSubmit={onSubmit}
-          isSending={isSigningUp}
-          submitLabel={isSigningUp ? 'Signing up...' : 'Sign up'}
-          className="space-y-3 sm:space-y-5"
-        >
-          <Input
-            control={form.control}
-            name="name"
-            label="Full Name"
-            placeholder="John Doe"
-            disabled={isSigningUp}
-            preventSpaces
-          />
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">Create your account</h1>
+      <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+        Join For The Dreamers and start discovering curated finds.
+      </p>
 
-          <Input
-            control={form.control}
-            name="email"
-            label="Email"
-            placeholder="you@example.com"
-            disabled={isSigningUp}
-            preventSpaces
-          />
+      <Form
+        form={form}
+        onSubmit={onSubmit}
+        isSending={isSigningUp}
+        submitLabel={isSigningUp ? 'Signing up...' : 'Sign up'}
+        className="mt-6 space-y-4 sm:space-y-5"
+      >
+        <Input
+          control={form.control}
+          name="name"
+          label="Full Name"
+          placeholder="John Doe"
+          disabled={isSigningUp}
+          preventSpaces
+        />
 
-          <Input
-            control={form.control}
-            name="password"
-            label="Password"
-            type="password"
-            placeholder="••••••••"
-            disabled={isSigningUp}
-            preventSpaces
-          />
+        <Input
+          control={form.control}
+          name="email"
+          label="Email"
+          placeholder="you@example.com"
+          disabled={isSigningUp}
+          preventSpaces
+        />
 
-          <Input
-            control={form.control}
-            name="confirmPassword"
-            label="Confirm Password"
-            type="password"
-            placeholder="••••••••"
-            disabled={isSigningUp}
-            preventSpaces
-          />
-        </Form>
+        <Input
+          control={form.control}
+          name="password"
+          label="Password"
+          type="password"
+          placeholder="••••••••"
+          disabled={isSigningUp}
+          preventSpaces
+        />
 
-        <Divider title="or continue with" />
+        <Input
+          control={form.control}
+          name="confirmPassword"
+          label="Confirm Password"
+          type="password"
+          placeholder="••••••••"
+          disabled={isSigningUp}
+          preventSpaces
+        />
+      </Form>
 
-        <OauthButtons next="/profile" />
+      <div className="mt-4 flex justify-center">
+        <span className="text-sm text-muted-foreground">Or sign in with</span>
+      </div>
 
-        <p className="mt-3 text-center text-sm text-muted-foreground sm:mt-6">
-          Already have an account?{' '}
-          <button onClick={() => onNavigate('login')} className="font-medium text-primary underline-offset-4 hover:underline">
-            Sign in
-          </button>
-        </p>
-      </AuthCard>
+      <OauthButtons next="/profile" />
+
+      <p className="mt-3 text-center text-sm text-muted-foreground sm:mt-6">
+        Already have an account?{' '}
+        <button onClick={() => onNavigate('login')} className="font-medium text-primary hover:underline-offset-4">
+          Sign in
+        </button>
+      </p>
     </AuthPage>
   );
 };
