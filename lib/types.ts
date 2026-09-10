@@ -184,6 +184,8 @@ export type TGetPaginatedData = {
 export type VariantEditorProps = {
   variants: TVariant[];
   onVariantsChange: (variants: Partial<TVariant>[]) => void;
+  onUpload: (files: File[]) => Promise<string[]>;
+  isUploading: boolean;
 };
 
 export type TagsInputProps = {

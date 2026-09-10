@@ -13,6 +13,7 @@ export const cartSelect = {
       price: true,
       discountedPrice: true,
       stock: true,
+      image: true,
       product: { select: { id: true, name: true, slug: true, images: true, sellerId: true } },
     },
   },

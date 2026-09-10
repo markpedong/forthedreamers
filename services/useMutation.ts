@@ -34,6 +34,7 @@ import {
   updateCartQuantity,
   updateProduct,
   updateProfile,
+  updateSellerShipping,
   uploadProductImages,
 } from '@/lib/http';
 import type { ProductFormData, TProduct } from '@/lib/types';
@@ -101,6 +102,13 @@ export const useSellerSignUpMutation = () => {
     onError: error => toast.error(error.message),
   });
 };
+
+export const useUpdateSellerShippingMutation = () =>
+  useMutation({
+    mutationFn: updateSellerShipping,
+    onSuccess: result => toast.success(result.message),
+    onError: error => toast.error(error.message),
+  });
 
 export const useSocialSignInMutation = (next: '/profile' | '/dashboard') =>
   useMutation({

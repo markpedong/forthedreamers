@@ -1,4 +1,5 @@
 import { PRODUCT_STATUS } from '@/generated/prisma';
+import { COURIER_CODES } from '@/constants/shipping';
 import { z } from 'zod';
 
 export const addressSchema = z.object({
@@ -98,7 +99,17 @@ const passkeySchema = z.object({
 });
 
 const createSellerSchema = z
-  .object({ name: nameSchema, storeName: storeNameSchema, email: emailSchema, password, confirmPassword: z.string() })
+  .object({
+    name: nameSchema,
+    storeName: storeNameSchema,
+    email: emailSchema,
+    password,
+    confirmPassword: z.string(),
+    courierCodes: z
+      .array(z.enum(COURIER_CODES))
+      .min(1, 'Select at least one courier')
+      .refine(codes => new Set(codes).size === codes.length, 'Courier selections must be unique'),
+  })
   .refine(data => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
@@ -111,6 +122,7 @@ const variantFormSchema = z.object({
   stock: z.number().nonnegative('Stock cannot be negative'),
   coupon: z.string().nullable().optional(),
   discountedPrice: z.number().nullable().optional(),
+  image: z.string().nullable().optional(),
   attributes: z.record(z.string(), z.string()).default({}),
 });
 

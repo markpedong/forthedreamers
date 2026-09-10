@@ -49,6 +49,7 @@ const variantSchema = z
     discountedPrice: z.number().finite().nonnegative().nullable().optional(),
     stock: z.number().int().nonnegative(),
     coupon: z.string().nullable().optional(),
+    image: z.string().max(2048).nullable().optional(),
     attributes: z.record(z.string(), z.string()),
   })
   .refine(value => value.discountedPrice == null || value.discountedPrice <= value.price, 'Invalid discount');

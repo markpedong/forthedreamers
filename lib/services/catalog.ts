@@ -132,6 +132,7 @@ export const productBySlug = (slug: string) =>
             price: true,
             discountedPrice: true,
             coupon: true,
+            image: true,
             attributes: true,
           },
           orderBy: { createdAt: 'asc' },

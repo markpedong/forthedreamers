@@ -196,7 +196,12 @@ export const addCartItem = ({ variantId, quantity }: { variantId: string; quanti
 export const updateCartQuantity = ({ cartItemId, quantity }: { cartItemId: string; quantity: number }) =>
   apiFetch<CartMutationData>(API_ROUTE.CART, { method: 'PUT', body: { cartItemId, quantity }, showErrorToast: false });
 
-export const checkoutCart = (input: { addressId: string; shippingMethodId: string; cartItemIds: string[] }) =>
+export const checkoutCart = (input: {
+  addressId: string;
+  cartItemIds: string[];
+  paymentMethod: 'CASH_ON_DELIVERY';
+  shipments: Array<{ sellerId: string; courierCode: import('@/constants/shipping').CourierCode }>;
+}) =>
   apiFetch<{ orderGroupId: string }>(`${API_ROUTE.CART}/checkout`, {
     method: 'POST',
     body: input,
@@ -265,6 +270,12 @@ export const signUp = (input: { email: string; password: string; name: string })
   apiFetch('/api/auth/sign-up', { method: 'POST', body: input, showErrorToast: false });
 export const sellerSignUp = (input: unknown) =>
   apiFetch(API_ROUTE.SELLER, { method: 'POST', body: input, showErrorToast: false });
+export const updateSellerShipping = (courierCodes: import('@/constants/shipping').CourierCode[]) =>
+  apiFetch<{ courierCodes: string[] }>('/api/seller/shipping', {
+    method: 'PUT',
+    body: { courierCodes },
+    showErrorToast: false,
+  });
 export const socialSignIn = (provider: 'google', next: '/profile' | '/dashboard') =>
   apiFetch<{ url: string }>('/api/auth/oauth', { method: 'POST', body: { provider, next }, showErrorToast: false });
 export const linkSocial = (provider: string, next: string) =>
