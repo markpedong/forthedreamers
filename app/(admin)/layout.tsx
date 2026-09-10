@@ -21,9 +21,9 @@ export default async function AdminLayout({ children }: LayoutProps<'/'>) {
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen bg-background w-full">
+      <div className="flex h-screen w-full bg-background">
         <AdminSidebar />
-        <div className="flex-1 flex flex-col">
+        <div className="flex min-w-0 flex-1 flex-col">
           <AdminHeader />
           <main className="flex-1 overflow-auto p-6">{children}</main>
         </div>

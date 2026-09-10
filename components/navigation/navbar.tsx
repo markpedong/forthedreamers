@@ -17,7 +17,7 @@ import SearchOverlay from './search-overlay';
 import { usePathname } from 'next/navigation';
 import classNames from 'classnames';
 import Link from 'next/link';
-import { DISABLED_NAVBAR } from '@/constants';
+import { isDashboardRoute } from '@/constants';
 import CartItemCount from './cart-item-count';
 import { useAppSelector } from '@/redux/store';
 import { useSignOutMutation } from '@/services/useMutation';
@@ -29,7 +29,7 @@ const Navbar: FC = () => {
   const isMobile = useIsMobile();
   const pathname = usePathname();
 
-  if (DISABLED_NAVBAR.some(path => pathname === path || (path === '/dashboard' && pathname.startsWith('/dashboard/')))) return null;
+  if (isDashboardRoute(pathname)) return null;
 
   const CartButton = (
     <Link href="/cart" className="relative p-2 hover:bg-muted rounded-full transition-colors">
