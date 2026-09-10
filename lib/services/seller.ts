@@ -21,11 +21,10 @@ export const sellerSignupSchema = z
     email: z.email(),
     password: z.string().min(8).max(128),
     confirmPassword: z.string(),
-    courierCodes: courierSelectionSchema,
   })
   .refine(value => value.password === value.confirmPassword);
 
-export const sellerSignup = async ({ storeName, name, email, password, courierCodes }: z.infer<typeof sellerSignupSchema>) => {
+export const sellerSignup = async ({ storeName, name, email, password }: z.infer<typeof sellerSignupSchema>) => {
   if (await prisma.seller.findUnique({ where: { storeName }, select: { id: true } }))
     throw new Error('Store name is already taken');
   const supabase = await createSupabaseServerClient();
@@ -56,7 +55,6 @@ export const sellerSignup = async ({ storeName, name, email, password, courierCo
         data: {
           storeName,
           userId: authUser.id,
-          shippingMethods: { connect: courierCodes.map(code => ({ code })) },
         },
       });
     });

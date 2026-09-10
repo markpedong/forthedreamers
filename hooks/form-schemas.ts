@@ -1,5 +1,4 @@
 import { PRODUCT_STATUS } from '@/generated/prisma';
-import { COURIER_CODES } from '@/constants/shipping';
 import { z } from 'zod';
 
 export const addressSchema = z.object({
@@ -105,10 +104,6 @@ const createSellerSchema = z
     email: emailSchema,
     password,
     confirmPassword: z.string(),
-    courierCodes: z
-      .array(z.enum(COURIER_CODES))
-      .min(1, 'Select at least one courier')
-      .refine(codes => new Set(codes).size === codes.length, 'Courier selections must be unique'),
   })
   .refine(data => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
