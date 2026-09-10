@@ -66,6 +66,19 @@ assert.doesNotMatch(reduxStore, /cartData/);
 assert.ok(!existsSync(new URL('../redux/reducers/cartData.ts', import.meta.url)));
 assert.match(read('components/navigation/cart-item-count.tsx'), /useCartCountQuery/);
 
+const checkoutPage = read('app/checkout/page-client.tsx');
+const checkoutRoute = read('app/api/cart/checkout/route.ts');
+const checkoutService = read('lib/services/checkout.ts');
+assert.match(read('app/cart/cart-items-list.tsx'), /Calculated at checkout/);
+assert.match(checkoutPage, /addressId: selectedAddressId/);
+assert.match(checkoutPage, /shippingMethodId: selectedShippingId/);
+assert.match(checkoutPage, /cartItemIds: cartItems\.map/);
+assert.match(checkoutRoute, /checkoutSchema\.safeParse/);
+assert.match(checkoutService, /paymentMethod: 'CASH_ON_DELIVERY'/);
+assert.match(checkoutService, /paymentStatus: 'PENDING'/);
+assert.match(checkoutService, /status: 'PENDING'/);
+assert.doesNotMatch(checkoutService, /paymentStatus: 'PAID'/);
+
 for (const signOutSurface of [
   'components/navigation/navbar.tsx',
   'app/(admin)/components/admin-header.tsx',
