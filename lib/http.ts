@@ -66,7 +66,7 @@ export type OrderResult = {
   total: number;
   status: string;
   createdAt: string;
-  orderGroup: { paymentStatus: string } | null;
+  orderGroup: { paymentMethod: string | null; paymentStatus: string } | null;
   seller: { storeName: string } | null;
   orderItems: {
     id: string;
@@ -196,10 +196,10 @@ export const addCartItem = ({ variantId, quantity }: { variantId: string; quanti
 export const updateCartQuantity = ({ cartItemId, quantity }: { cartItemId: string; quantity: number }) =>
   apiFetch<CartMutationData>(API_ROUTE.CART, { method: 'PUT', body: { cartItemId, quantity }, showErrorToast: false });
 
-export const checkoutCart = (shippingMethodId?: string) =>
+export const checkoutCart = (input: { addressId: string; shippingMethodId: string; cartItemIds: string[] }) =>
   apiFetch<{ orderGroupId: string }>(`${API_ROUTE.CART}/checkout`, {
     method: 'POST',
-    body: shippingMethodId ? { shippingMethodId } : undefined,
+    body: input,
   });
 
 // ─── Wishlist ──────────────────────────────────────────────────────────────

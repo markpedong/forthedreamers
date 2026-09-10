@@ -334,7 +334,7 @@ const CartItemsList = ({ items }: { items: CartItem[] }) => {
             </div>
             <div className="flex justify-between">
               <span>Shipping</span>
-              <span className="text-green-600">Free</span>
+              <span className="text-muted-foreground">Calculated at checkout</span>
             </div>
             <div className="border-t pt-2 flex justify-between font-bold text-lg">
               <span>Total</span>
