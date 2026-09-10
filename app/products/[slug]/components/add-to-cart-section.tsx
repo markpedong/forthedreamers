@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Heart, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { ProductPageVariant, ProductPurchaseData } from './product-types';
@@ -117,15 +116,6 @@ const AddToCartSection = ({
           <Heart size={18} className={isWishlisted ? 'fill-destructive text-destructive' : ''} />
           {isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
         </Button>
-      </div>
-      <div className={`flex flex-col items-center gap-2 rounded-md border border-border p-4 text-center ${user ? 'hidden' : ''}`} suppressHydrationWarning>
-        <Heart size={18} className="text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">
-          <Link className="underline" href="/sign-in">
-            Sign in
-          </Link>{' '}
-          to save to your wishlist.
-        </p>
       </div>
     </div>
   );
