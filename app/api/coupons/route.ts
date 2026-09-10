@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getSession } from '@/lib/services/auth';
+import { getCurrentUserID, getSessionUser } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/server-helper';
 
 // Simple coupon configuration (can be extended to use database)
@@ -32,14 +32,14 @@ const COUPONS = [
  */
 export async function GET(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session) {
+    const user = await getSessionUser();
+    if (!user) {
       return errorResponse('Unauthorized', 400);
     }
 
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code') || '';
-    const isAdmin = session.user.role === 'ADMIN';
+    const isAdmin = user.role === 'ADMIN';
 
     if (code) {
       // Validate a specific coupon
@@ -64,8 +64,8 @@ export async function GET(request: NextRequest) {
  */
 export async function POST_VALIDATE(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session?.user) {
+    const userId = await getCurrentUserID();
+    if (!userId) {
       return errorResponse('Unauthorized', 400);
     }
 

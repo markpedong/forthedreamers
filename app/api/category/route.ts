@@ -1,13 +1,13 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { USER_ROLE } from '@/generated/prisma';
-import { getSession } from '@/lib/services/auth';
+import { getSessionUser } from '@/lib/auth';
 import { publicCategories } from '@/lib/services/catalog';
 import { saveCategory } from '@/lib/services/admin-catalog';
 import { errorResponse, successResponse } from '@/lib/server-helper';
 
 const schema = z.object({ id: z.string().min(1).max(100).optional(), name: z.string().trim().min(1).max(100) });
-const isAdmin = async () => (await getSession())?.user.role === USER_ROLE.ADMIN;
+const isAdmin = async () => (await getSessionUser())?.role === USER_ROLE.ADMIN;
 
 export const GET = async () => successResponse(await publicCategories());
 

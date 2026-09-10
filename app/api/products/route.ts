@@ -1,13 +1,13 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { USER_ROLE } from '@/generated/prisma';
-import { getSession } from '@/lib/services/auth';
+import { getSessionUser } from '@/lib/auth';
 import { adminProducts, deleteProduct, productSchema, saveProduct } from '@/lib/services/admin-catalog';
 import { errorResponse, successResponse } from '@/lib/server-helper';
 
 const hasCatalogAccess = async () => {
-  const session = await getSession();
-  return session && (session.user.role === USER_ROLE.ADMIN || session.user.role === USER_ROLE.SELLER);
+  const user = await getSessionUser();
+  return user && (user.role === USER_ROLE.ADMIN || user.role === USER_ROLE.SELLER);
 };
 
 export const GET = async () => {

@@ -1,16 +1,16 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { getSession } from '@/lib/services/auth';
+import { getCurrentUserID } from '@/lib/auth';
 import { setWishlist, wishlistIds, wishlistItems } from '@/lib/services/wishlist';
 import { errorResponse, successResponse } from '@/lib/server-helper';
 
 const idSchema = z.string().min(1).max(100);
 
 export const GET = async (request: NextRequest) => {
-  const session = await getSession();
-  if (!session) return successResponse({ ids: [] as string[] });
+  const userId = await getCurrentUserID();
+  if (!userId) return successResponse({ ids: [] as string[] });
   if (request.nextUrl.searchParams.get('ids') === 'true') {
-    return successResponse({ ids: await wishlistIds(session.user.id) });
+    return successResponse({ ids: await wishlistIds(userId) });
   }
   const page = z.coerce
     .number()
@@ -25,12 +25,12 @@ export const GET = async (request: NextRequest) => {
     .safeParse(request.nextUrl.searchParams.get('limit') ?? 20);
   if (!page.success || !limit.success)
     return errorResponse('Invalid pagination', 400);
-  return successResponse(await wishlistItems(session.user.id, page.data, limit.data));
+  return successResponse(await wishlistItems(userId, page.data, limit.data));
 };
 
 const change = async (request: NextRequest, wanted: boolean) => {
-  const session = await getSession();
-  if (!session)
+  const userId = await getCurrentUserID();
+  if (!userId)
     return errorResponse('Please sign in to save products', 401);
   const rawId = wanted
     ? (await request.json().catch(() => null))?.productId
@@ -38,7 +38,7 @@ const change = async (request: NextRequest, wanted: boolean) => {
   const parsed = idSchema.safeParse(rawId);
   if (!parsed.success) return errorResponse('Invalid product', 400);
   try {
-    const data = await setWishlist(session.user.id, parsed.data, wanted);
+    const data = await setWishlist(userId, parsed.data, wanted);
     return successResponse(data, wanted ? 'Added to wishlist' : 'Removed from wishlist');
   } catch (error) {
     return errorResponse(error instanceof Error ? error.message : 'Unable to update wishlist', 400);

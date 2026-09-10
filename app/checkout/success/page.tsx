@@ -1,4 +1,4 @@
-import { getSession } from '@/lib/services/auth';
+import { getCurrentUserID } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { Button } from '@/components/ui/button';
@@ -7,15 +7,15 @@ import Link from 'next/link';
 import OrdersBackLink from '../orders-back-link';
 
 const CheckoutSuccessPage = async ({ searchParams }: { searchParams: Promise<{ orderId?: string }> }) => {
-  const session = await getSession();
-  if (!session) redirect('/sign-in?next=/checkout/success');
+  const userId = await getCurrentUserID();
+  if (!userId) redirect('/sign-in?next=/checkout/success');
 
   const { orderId } = await searchParams;
 
   // If no orderId, redirect to a fresh success page (user just placed an order)
   if (!orderId) {
     const pending = await prisma.orderGroup.findFirst({
-      where: { userId: session.user.id, paymentStatus: 'PAID' },
+      where: { userId, paymentStatus: 'PAID' },
       orderBy: { createdAt: 'desc' },
       include: {
         orders: {
@@ -48,7 +48,7 @@ const CheckoutSuccessPage = async ({ searchParams }: { searchParams: Promise<{ o
   }
 
   const orderGroup = await prisma.orderGroup.findUnique({
-    where: { id: orderId, userId: session.user.id },
+    where: { id: orderId, userId },
     include: {
       orders: {
         include: {

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { getSession } from '@/lib/services/auth';
+import { getCurrentUserID } from '@/lib/auth';
 import { CartError, mutateCart, readCart, readCartCount } from '@/lib/services/cart';
 import { errorResponse, successResponse } from '@/lib/server-helper';
 
@@ -28,31 +28,31 @@ const change = async (userId: string, operation: 'add' | 'update' | 'remove', in
 };
 
 export const GET = async (request: NextRequest) => {
-  const session = await getSession();
-  if (!session) return errorResponse('Unauthorized', 401);
+  const userId = await getCurrentUserID();
+  if (!userId) return errorResponse('Unauthorized', 401);
   const data =
     request.nextUrl.searchParams.get('summary') === 'count'
-      ? { count: await readCartCount(session.user.id) }
-      : await readCart(session.user.id);
+      ? { count: await readCartCount(userId) }
+      : await readCart(userId);
   return successResponse(data);
 };
 
 export const POST = async (request: NextRequest) => {
-  const session = await getSession();
-  if (!session) return errorResponse('Please sign in first', 401);
+  const userId = await getCurrentUserID();
+  if (!userId) return errorResponse('Please sign in first', 401);
   const body = await request.json().catch(() => null);
-  return change(session.user.id, 'add', body && { id: body.variantId, quantity: body.quantity ?? 1 });
+  return change(userId, 'add', body && { id: body.variantId, quantity: body.quantity ?? 1 });
 };
 
 export const PUT = async (request: NextRequest) => {
-  const session = await getSession();
-  if (!session) return errorResponse('Please sign in first', 401);
+  const userId = await getCurrentUserID();
+  if (!userId) return errorResponse('Please sign in first', 401);
   const body = await request.json().catch(() => null);
-  return change(session.user.id, 'update', body && { id: body.cartItemId, quantity: body.quantity });
+  return change(userId, 'update', body && { id: body.cartItemId, quantity: body.quantity });
 };
 
 export const DELETE = async (request: NextRequest) => {
-  const session = await getSession();
-  if (!session) return errorResponse('Please sign in first', 401);
-  return change(session.user.id, 'remove', { id: request.nextUrl.searchParams.get('id') });
+  const userId = await getCurrentUserID();
+  if (!userId) return errorResponse('Please sign in first', 401);
+  return change(userId, 'remove', { id: request.nextUrl.searchParams.get('id') });
 };

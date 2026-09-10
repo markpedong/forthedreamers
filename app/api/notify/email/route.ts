@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getSession } from '@/lib/services/auth';
+import { getCurrentUserID } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/server-helper';
 
 /**
@@ -8,8 +8,8 @@ import { successResponse, errorResponse } from '@/lib/server-helper';
  */
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session?.user) {
+    const userId = await getCurrentUserID();
+    if (!userId) {
       return errorResponse('Unauthorized', 400);
     }
 
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       subject,
       template,
       data,
-      requestedBy: session.user.id,
+      requestedBy: userId,
     });
 
     // Simulate sending email (in production, replace with actual email service call)
@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
  */
 export async function GET() {
   try {
-    const session = await getSession();
-    if (!session?.user) {
+    const userId = await getCurrentUserID();
+    if (!userId) {
       return errorResponse('Unauthorized', 400);
     }
 
@@ -75,8 +75,8 @@ export async function GET() {
  */
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session?.user) {
+    const userId = await getCurrentUserID();
+    if (!userId) {
       return errorResponse('Unauthorized', 400);
     }
 

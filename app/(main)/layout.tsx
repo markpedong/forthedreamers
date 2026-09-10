@@ -1,10 +1,10 @@
-import { getSession } from '@/lib/services/auth';
+import { getCurrentUserID } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
 export default async function MainLayout({ children }: LayoutProps<'/'>) {
-  const session = await getSession();
+  const userId = await getCurrentUserID();
 
-  if (!session) {
+  if (!userId) {
     redirect('/sign-in?isSignedIn=false');
     return;
   }

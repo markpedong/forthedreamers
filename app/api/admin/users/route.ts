@@ -1,12 +1,12 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { USER_ROLE } from '@/generated/prisma';
-import { getSession } from '@/lib/services/auth';
+import { getSessionUser } from '@/lib/auth';
 import { deleteUser, setUserBanned } from '@/lib/services/admin-users';
 import { errorResponse, successResponse } from '@/lib/server-helper';
 
 const schema = z.object({ userId: z.string().uuid(), banned: z.boolean() });
-const authorize = async () => (await getSession())?.user.role === USER_ROLE.ADMIN;
+const authorize = async () => (await getSessionUser())?.role === USER_ROLE.ADMIN;
 
 export const PATCH = async (request: NextRequest) => {
   if (!(await authorize())) return errorResponse('Forbidden', 403);

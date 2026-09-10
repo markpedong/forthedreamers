@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { getSession } from '@/lib/services/auth';
+import { getCurrentUserID } from '@/lib/auth';
 import { createReview, listReviews, reviewSchema } from '@/lib/services/reviews';
 import { errorResponse, successResponse } from '@/lib/server-helper';
 
@@ -40,12 +40,12 @@ export const GET = async (request: NextRequest, { params }: { params: Promise<{ 
 };
 
 export const POST = async (request: NextRequest, { params }: { params: Promise<{ slug: string }> }) => {
-  const session = await getSession();
-  if (!session) return errorResponse('Unauthorized', 401);
+  const userId = await getCurrentUserID();
+  if (!userId) return errorResponse('Unauthorized', 401);
   const parsed = reviewSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return errorResponse('Invalid input data', 400);
   try {
-    const data = await createReview(session.user.id, (await params).slug, parsed.data);
+    const data = await createReview(userId, (await params).slug, parsed.data);
     return successResponse(data, 'Review submitted successfully', 201);
   } catch (error) {
     const message =

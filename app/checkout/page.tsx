@@ -1,6 +1,6 @@
 import type { Address, ShippingMethod } from '@/generated/prisma';
+import { getCurrentUserID } from '@/lib/auth';
 import prisma from '@/lib/prisma';
-import { getSession } from '@/lib/services/auth';
 import { redirect } from 'next/navigation';
 import { Package } from 'lucide-react';
 import Link from 'next/link';
@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button';
 import CheckoutPageClient from './page-client';
 
 const CheckoutPage = async (props: { searchParams: Promise<{ items?: string }> }) => {
-  const session = await getSession();
-  if (!session) redirect('/sign-in?next=/checkout');
+  const userId = await getCurrentUserID();
+  if (!userId) redirect('/sign-in?next=/checkout');
 
   const searchParams = await props.searchParams;
   const selectedIds = searchParams.items?.split(',').filter(Boolean) ?? [];
@@ -18,7 +18,7 @@ const CheckoutPage = async (props: { searchParams: Promise<{ items?: string }> }
   if (selectedIds.length > 0) {
     cartItems = await prisma.cartItem.findMany({
       where: {
-        userId: session.user.id,
+        userId,
         id: { in: selectedIds },
       },
       include: {
@@ -36,7 +36,7 @@ const CheckoutPage = async (props: { searchParams: Promise<{ items?: string }> }
     });
   } else {
     cartItems = await prisma.cartItem.findMany({
-      where: { userId: session.user.id },
+      where: { userId },
       include: {
         variant: {
           include: {
@@ -54,7 +54,7 @@ const CheckoutPage = async (props: { searchParams: Promise<{ items?: string }> }
 
   const [addresses, shippingMethods] = await Promise.all([
     prisma.address.findMany({
-      where: { userId: session.user.id },
+      where: { userId },
       orderBy: { isDefault: 'desc' },
     }),
     prisma.shippingMethod.findMany({

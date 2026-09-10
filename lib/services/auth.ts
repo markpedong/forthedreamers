@@ -18,26 +18,26 @@ const appOrigin = async () => {
 };
 
 export const getSession = cache(async () => {
-  const [claims, profile] = await Promise.all([getSessionClaims(), getSessionUser()]);
-  if (!claims || !profile) return null;
+  const claims = await getSessionClaims();
+  if (!claims?.sub) return null;
 
   return {
     hasPassword:
       claims.app_metadata?.provider === 'email' ||
       (Array.isArray(claims.app_metadata?.providers) && claims.app_metadata.providers.includes('email')),
-    user: profile,
+    user: { id: claims.sub },
     session: { token: claims.session_id, impersonatedBy: null as string | null },
   };
 });
 
 export const getCurrentUserData = async (): Promise<TUserData | null> => {
-  const session = await getSession();
-  if (!session) return null;
+  const user = await getSessionUser();
+  if (!user) return null;
   return {
-    ...session.user,
-    email: session.user.email ?? '',
-    createdAt: formatDate(session.user.createdAt),
-    updatedAt: formatDate(session.user.updatedAt),
+    ...user,
+    email: user.email ?? '',
+    createdAt: formatDate(user.createdAt),
+    updatedAt: formatDate(user.updatedAt),
   };
 };
 

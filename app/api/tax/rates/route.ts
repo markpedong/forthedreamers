@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getSession } from '@/lib/services/auth';
+import { getCurrentUserID } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/server-helper';
 
 /**
@@ -8,8 +8,8 @@ import { successResponse, errorResponse } from '@/lib/server-helper';
  */
 export async function GET(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session) {
+    const userId = await getCurrentUserID();
+    if (!userId) {
       return errorResponse('Unauthorized', 400);
     }
 
@@ -43,8 +43,8 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session?.user) {
+    const userId = await getCurrentUserID();
+    if (!userId) {
       return errorResponse('Unauthorized', 400);
     }
 

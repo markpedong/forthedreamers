@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getSession } from '@/lib/services/auth';
+import { getCurrentUserID } from '@/lib/auth';
 import { successResponse, errorResponse, getPaginatedData } from '@/lib/server-helper';
 import { ORDER_STATUS } from '@/generated/prisma';
 import { z } from 'zod';
@@ -10,8 +10,8 @@ import { z } from 'zod';
  */
 export async function GET(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session?.user) {
+    const userId = await getCurrentUserID();
+    if (!userId) {
       return errorResponse('Unauthorized', 401);
     }
 
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     if (!parsed.success) return errorResponse('Invalid order filters', 400);
     const { page, limit, status, sortBy, order } = parsed.data;
 
-    const where: { userId: string; status?: ORDER_STATUS } = { userId: session.user.id };
+    const where: { userId: string; status?: ORDER_STATUS } = { userId };
     if (status) {
       where.status = status;
     }

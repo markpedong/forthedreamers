@@ -1,13 +1,13 @@
 import { USER_ROLE } from '@/generated/prisma';
-import { getSession } from '@/lib/services/auth';
+import { getSessionUser } from '@/lib/auth';
 import { listUsers } from '@/lib/services/admin-users';
 import Users from './index';
 import { redirect } from 'next/navigation';
 
 const Page = async () => {
-  const session = await getSession();
+  const user = await getSessionUser();
 
-  if (session?.user.role !== USER_ROLE.ADMIN) {
+  if (user?.role !== USER_ROLE.ADMIN) {
     redirect('/');
   }
 
@@ -22,7 +22,7 @@ const Page = async () => {
     redirect('/');
   }
 
-  return <Users users={users.filter(u => u.id !== session.user.id)} />;
+  return <Users users={users.filter(u => u.id !== user.id)} />;
 };
 
 export default Page;

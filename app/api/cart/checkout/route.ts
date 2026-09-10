@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getSession } from '@/lib/services/auth';
+import { getCurrentUserID } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/server-helper';
 import { prisma } from '@/lib/prisma';
 import { checkout } from '@/lib/services/checkout';
@@ -10,13 +10,13 @@ import { checkout } from '@/lib/services/checkout';
  */
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session) return errorResponse('Unauthorized', 401);
+    const userId = await getCurrentUserID();
+    if (!userId) return errorResponse('Unauthorized', 401);
 
     const body = await request.json();
     const shippingMethodId = typeof body?.shippingMethodId === 'string' ? body.shippingMethodId : undefined;
 
-    return successResponse(await checkout(session.user.id, shippingMethodId), 'Order confirmed');
+    return successResponse(await checkout(userId, shippingMethodId), 'Order confirmed');
   } catch (error) {
     console.error('Checkout error:', error);
     const message = error instanceof Error ? error.message : 'Internal server error';

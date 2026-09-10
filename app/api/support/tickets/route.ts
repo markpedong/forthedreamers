@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getSession } from '@/lib/services/auth';
+import { getCurrentUserID } from '@/lib/auth';
 import { successResponse, errorResponse, getPaginatedData } from '@/lib/server-helper';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
@@ -20,8 +20,8 @@ const ticketSchema = z.object({
 });
 
 export async function GET(request: NextRequest) {
-  const session = await getSession();
-  if (!session?.user) return errorResponse('Unauthorized', 401);
+  const userId = await getCurrentUserID();
+  if (!userId) return errorResponse('Unauthorized', 401);
   const parsed = listSchema.safeParse(Object.fromEntries(request.nextUrl.searchParams));
   if (!parsed.success) return errorResponse('Invalid ticket filters', 400);
 
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     const { page, limit, status } = parsed.data;
     const result = await getPaginatedData({
       model: 'supportTicket',
-      where: { userId: session.user.id, ...(status && { status }), page, pageSize: limit },
+      where: { userId, ...(status && { status }), page, pageSize: limit },
       orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }],
     });
     return successResponse({ tickets: result.data, total: result.total, page: result.page, limit: result.pageSize });
@@ -40,14 +40,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getSession();
-  if (!session?.user) return errorResponse('Unauthorized', 401);
+  const userId = await getCurrentUserID();
+  if (!userId) return errorResponse('Unauthorized', 401);
   const parsed = ticketSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return errorResponse('Invalid ticket details', 400);
 
   try {
     const ticket = await prisma.supportTicket.create({
-      data: { userId: session.user.id, ...parsed.data },
+      data: { userId, ...parsed.data },
     });
     return successResponse(ticket, 'Support ticket created', 201);
   } catch (error) {

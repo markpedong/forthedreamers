@@ -3,24 +3,24 @@ import 'server-only';
 import { z } from 'zod';
 import { Prisma, USER_ROLE } from '@/generated/prisma';
 import { invalidateCatalog } from '@/lib/cache';
+import { getSessionUser } from '@/lib/auth';
 import prisma from '@/lib/prisma';
-import { getSession } from '@/lib/services/auth';
 import type { TProduct } from '@/lib/types';
 import { regenerateSlug } from '@/utils/helper';
 import { revalidatePath } from 'next/cache';
 
 export const requireCatalogAccess = async () => {
-  const session = await getSession();
-  if (!session || (session.user.role !== USER_ROLE.ADMIN && session.user.role !== USER_ROLE.SELLER)) {
+  const user = await getSessionUser();
+  if (!user || (user.role !== USER_ROLE.ADMIN && user.role !== USER_ROLE.SELLER)) {
     throw new Error('Catalog access required');
   }
-  return session.user;
+  return user;
 };
 
 export const requireAdmin = async () => {
-  const session = await getSession();
-  if (!session || session.user.role !== USER_ROLE.ADMIN) throw new Error('Administrator access required');
-  return session.user;
+  const user = await getSessionUser();
+  if (!user || user.role !== USER_ROLE.ADMIN) throw new Error('Administrator access required');
+  return user;
 };
 
 const idSchema = z.string().min(1).max(100);
@@ -37,7 +37,7 @@ const normalizeProduct = (product: Prisma.ProductGetPayload<{ include: typeof pr
   images: product.images.filter(image => !image.startsWith('blob:')),
   variants: product.variants.map(variant => ({
     ...variant,
-    attributes: z.record(z.string(), z.string()).catch({}).parse(variant.attributes),
+    attributes: variant.attributes as Record<string, string>,
   })),
 });
 
@@ -67,6 +67,8 @@ export const productSchema = z.object({
   specs: z.array(z.object({ id: idSchema.optional(), label: z.string().min(1), value: z.string() })).max(100),
   variants: z.array(variantSchema).max(100),
 });
+
+type ProductInput = z.infer<typeof productSchema>;
 
 const requireProductAccess = async (id: string) => {
   const user = await requireCatalogAccess();
@@ -106,9 +108,9 @@ const invalidate = async () => {
   revalidatePath('/categories');
 };
 
-export const saveProduct = async (input: unknown, editing: boolean) => {
+export const saveProduct = async (input: ProductInput, editing: boolean) => {
   const user = await requireCatalogAccess();
-  const { id, categoryId, variants, specs, ...fields } = productSchema.parse(input);
+  const { id, categoryId, variants, specs, ...fields } = input;
   const slug = regenerateSlug(fields.name);
   let result: Prisma.ProductGetPayload<{ include: typeof productInclude }>;
 
@@ -181,16 +183,15 @@ export const saveProduct = async (input: unknown, editing: boolean) => {
 };
 
 export const deleteProduct = async (id: string) => {
-  await requireProductAccess(idSchema.parse(id));
-  await prisma.product.delete({ where: { id: idSchema.parse(id) } });
+  await requireProductAccess(id);
+  await prisma.product.delete({ where: { id } });
   await invalidate();
 };
 
 export const setProductStatus = async (id: string, active: boolean) => {
-  await requireProductAccess(idSchema.parse(id));
-  z.boolean().parse(active);
+  await requireProductAccess(id);
   const product = await prisma.product.update({
-    where: { id: idSchema.parse(id) },
+    where: { id },
     data: { status: active ? 'ACTIVE' : 'INACTIVE' },
   });
   await invalidate();
@@ -199,9 +200,9 @@ export const setProductStatus = async (id: string, active: boolean) => {
 
 export const saveCategory = async (name: string, id?: string) => {
   await requireAdmin();
-  const data = { name: z.string().trim().min(1).max(100).parse(name) };
+  const data = { name };
   const result = id
-    ? await prisma.category.update({ where: { id: idSchema.parse(id) }, data })
+    ? await prisma.category.update({ where: { id }, data })
     : await prisma.category.create({ data });
   await invalidate();
   return result;

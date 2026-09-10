@@ -1,11 +1,11 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { addressIdSchema, addressSchema, addressUpdateSchema } from '@/hooks/form-schemas';
-import { getSession } from '@/lib/services/auth';
+import { getCurrentUserID } from '@/lib/auth';
 import * as profile from '@/lib/services/profile';
 import { errorResponse, successResponse } from '@/lib/server-helper';
 
-const requireUser = async () => (await getSession())?.user.id;
+const requireUser = getCurrentUserID;
 
 export const GET = async () => {
   const userId = await requireUser();

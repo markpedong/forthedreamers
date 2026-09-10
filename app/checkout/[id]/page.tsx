@@ -1,4 +1,4 @@
-import { getSession } from '@/lib/services/auth';
+import { getCurrentUserID } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { Button } from '@/components/ui/button';
@@ -8,13 +8,13 @@ import OrdersBackLink from '../orders-back-link';
 import { formatDate } from '@/lib/utils';
 
 const OrderDetailPage = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const session = await getSession();
-  if (!session) redirect('/sign-in?next=/checkout');
+  const userId = await getCurrentUserID();
+  if (!userId) redirect('/sign-in?next=/checkout');
 
   const { id } = await params;
 
   const orderGroup = await prisma.orderGroup.findUnique({
-    where: { id },
+    where: { id, userId },
     include: {
       orders: {
         include: {

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getSession } from '@/lib/services/auth';
+import { getSessionUser } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/server-helper';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
@@ -37,8 +37,8 @@ const shippingMethodSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session?.user || session.user.role !== 'ADMIN') {
+    const user = await getSessionUser();
+    if (!user || user.role !== 'ADMIN') {
       return errorResponse('Unauthorized', 400);
     }
 
@@ -69,8 +69,8 @@ const seedSchema = z.object({
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session?.user || session.user.role !== 'ADMIN') {
+    const user = await getSessionUser();
+    if (!user || user.role !== 'ADMIN') {
       return errorResponse('Unauthorized', 400);
     }
 

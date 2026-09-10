@@ -3,7 +3,6 @@ import { cached } from '@/lib/cache';
 import { cacheKeys } from '@/lib/cache-keys';
 import prisma from '@/lib/prisma';
 import 'server-only';
-import { z } from 'zod';
 import { formatDate } from '@/lib/utils';
 
 export const cardSelect = {
@@ -149,7 +148,7 @@ export const productBySlug = (slug: string) =>
       seller,
       variants: product.variants.map(variant => ({
         ...variant,
-        attributes: z.record(z.string(), z.string()).catch({}).parse(variant.attributes),
+        attributes: variant.attributes as Record<string, string>,
       })),
       sellerProductCount: _count.products,
     };
