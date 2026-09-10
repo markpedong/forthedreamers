@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
             variant: { select: { id: true, name: true } },
           },
         },
-        orderGroup: { select: { paymentStatus: true } },
+        orderGroup: { select: { paymentMethod: true, paymentStatus: true } },
         seller: { select: { storeName: true } },
       },
     });

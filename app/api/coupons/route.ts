@@ -59,10 +59,10 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/coupons/validate
+ * POST /api/coupons
  * Validate a coupon code.
  */
-export async function POST_VALIDATE(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const userId = await getCurrentUserID();
     if (!userId) {

@@ -1,7 +1,7 @@
 'use client';
 
 import { FC, useState } from 'react';
-import { Heart, Home, ShoppingBag, Package, Search, User } from 'lucide-react';
+import { Home, ShoppingBag, ShoppingCart, Package, Search, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -9,12 +9,13 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { useAppSelector } from '@/redux/store';
 import { Route } from 'next';
+import CartItemCount from './cart-item-count';
 import SearchOverlay from './search-overlay';
 
 const navItems = [
   { icon: Home, label: 'Home', href: '/' },
   { icon: ShoppingBag, label: 'Categories', href: '/categories' },
-  { icon: Heart, label: 'Wishlist', href: '/wishlist', protected: true },
+  { icon: ShoppingCart, label: 'Cart', href: '/cart' },
   { icon: Package, label: 'Orders', href: '/orders', protected: true },
   { icon: User, label: 'Profile', href: '/profile' },
 ];
@@ -57,7 +58,10 @@ const BottomNav: FC = () => {
                           : 'text-muted-foreground hover:text-foreground'
                     )}
                   >
-                    <Icon className="h-5 w-5" />
+                    <span className="relative">
+                      <Icon className="h-5 w-5" />
+                      {href === '/cart' && <CartItemCount />}
+                    </span>
                     <span className="max-w-full truncate text-[11px] font-medium">{label}</span>
                   </Link>
                 </motion.div>

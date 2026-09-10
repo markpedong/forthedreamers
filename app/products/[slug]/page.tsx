@@ -1,7 +1,6 @@
 import { productBySlug, productSlugs } from '@/lib/services/catalog';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import ProductGallery from './components/product-gallery';
 import ProductInfoTabs from './components/product-info-tabs';
 import ProductPageClient from './components/product-page-client';
 import ProductSupplemental from './components/product-supplemental';
@@ -31,10 +30,7 @@ const ProductPage = async (props: PageProps<'/products/[slug]'>) => {
           Home / {product.category.name} / {product.name}
         </div>
 
-        <section className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:gap-16">
-          <ProductGallery images={product.images} alt={product.name} />
-          <ProductPageClient product={purchaseProduct} />
-        </section>
+        <ProductPageClient product={purchaseProduct} />
 
         <ProductInfoTabs
           product={{
