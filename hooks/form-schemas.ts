@@ -148,18 +148,20 @@ const productFormSchema = z
     variants: z.array(variantFormSchema).default([]),
   })
   .superRefine((data, ctx) => {
-    if (!data.variants || data.variants.length === 0) {
+    // Sold either as variants or as a single base price/stock — one of the two, not both.
+    const hasVariants = (data.variants?.length ?? 0) > 0;
+    if (!hasVariants) {
       if (data.basePrice === null || data.basePrice === undefined) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Base price is required when no variants are present',
+          message: 'Base price is required when there are no variants',
           path: ['basePrice'],
         });
       }
       if (data.stock === null || data.stock === undefined) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Stock is required when no variants are present',
+          message: 'Stock is required when there are no variants',
           path: ['stock'],
         });
       }

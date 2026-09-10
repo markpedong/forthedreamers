@@ -186,6 +186,7 @@ export type VariantEditorProps = {
   onVariantsChange: (variants: Partial<TVariant>[]) => void;
   onUpload: (files: File[]) => Promise<string[]>;
   isUploading: boolean;
+  errors?: Record<number, Record<string, { message?: string } | undefined> | undefined>;
 };
 
 export type TagsInputProps = {

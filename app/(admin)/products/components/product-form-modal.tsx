@@ -39,6 +39,32 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
     control: form.control,
     name: ['images', 'variants', 'specs', 'tags'],
   });
+  const hasVariants = (variants?.length ?? 0) > 0;
+
+  const switchVariantMode = (useVariants: boolean) => {
+    if (useVariants) {
+      form.setValue('variants', [
+        {
+          id: `temp-${Date.now()}`,
+          name: '',
+          price: form.getValues('basePrice') ?? 0,
+          stock: form.getValues('stock') ?? 0,
+          discountedPrice: null,
+          coupon: null,
+          image: null,
+          attributes: {},
+        },
+      ] as TVariant[]);
+    } else {
+      const first = variants?.[0];
+      if (first) {
+        if (first.price != null) form.setValue('basePrice', first.price);
+        if (first.stock != null) form.setValue('stock', first.stock);
+      }
+      form.setValue('variants', []);
+    }
+    form.clearErrors();
+  };
 
   useEffect(() => {
     if (!open) {
@@ -89,6 +115,9 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
     const data: ProductFormData = {
       ...rest,
       ...(isEdit && { id: initialProduct?.id }),
+      status: isEdit && initialProduct ? initialProduct.status : values.status,
+      // sold as variants → base price/stock are unused, don't store stale values
+      ...(values.variants.length > 0 && { basePrice: null, stock: null }),
       categoryId: currCategory.id,
       variants: values.variants.map(({ id, ...variant }) => ({
         ...variant,
@@ -100,7 +129,7 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
   };
 
   const handleInvalid = (errors: FieldErrors<SchemaForm<typeof productFormSchema>>) => {
-    if (errors.variants || errors.basePrice || errors.stock || errors.status) setTab('inventory');
+    if (errors.variants || errors.basePrice || errors.stock) setTab('inventory');
     else if (errors.specs || errors.tags) setTab('details');
     else setTab('basic');
     toast.error('Please review the highlighted fields');
@@ -167,36 +196,51 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
               </div>
             </TabsContent>
             <TabsContent value="inventory" className="space-y-6">
-              <VariantEditor
-                variants={(variants || []) as TVariant[]}
-                onUpload={async files => (await uploadMutation.mutateAsync(files)).data ?? []}
-                isUploading={uploadMutation.isPending}
-                onVariantsChange={updatedVariants => {
-                  form.setValue('variants', updatedVariants as TVariant[], { shouldValidate: true });
-                  if (updatedVariants.length > 0) {
-                    form.clearErrors(['basePrice', 'stock']);
-                  } else {
-                    form.trigger(['basePrice', 'stock']);
-                  }
-                }}
-              />
-              <div className="flex justify-end items-center mb-2 text-xs text-muted-foreground">
-                Base price & stock disabled when variants exist
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Input label="Base Price" name="basePrice" type="number" placeholder="0.00" maxLength={6} />
-                <Input label="Stock" name="stock" type="number" placeholder="0" maxLength={6} />
-              </div>
+              <fieldset className="space-y-3">
+                <legend className="text-sm font-medium">How is this product sold?</legend>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {[
+                    { value: false, title: 'No variants', hint: 'One price and stock for the whole product' },
+                    { value: true, title: 'Has variants', hint: 'Separate price and stock per option' },
+                  ].map(option => (
+                    <label
+                      key={option.title}
+                      className="flex cursor-pointer items-start gap-3 rounded-lg border p-3 has-checked:border-primary has-checked:bg-primary/5"
+                    >
+                      <input
+                        type="radio"
+                        name="variantMode"
+                        className="mt-0.5 size-4 accent-primary"
+                        checked={hasVariants === option.value}
+                        onChange={() => switchVariantMode(option.value)}
+                      />
+                      <span className="text-sm">
+                        <span className="block font-medium">{option.title}</span>
+                        <span className="text-muted-foreground">{option.hint}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
 
-              <Select
-                containerClassName="w-full"
-                label="Status *"
-                name="status"
-                options={[
-                  { label: 'Active', value: 'ACTIVE' },
-                  { label: 'Inactive', value: 'INACTIVE' },
-                ]}
-              />
+              {hasVariants ? (
+                <VariantEditor
+                  variants={(variants || []) as TVariant[]}
+                  onUpload={async files => (await uploadMutation.mutateAsync(files)).data ?? []}
+                  isUploading={uploadMutation.isPending}
+                  errors={form.formState.errors.variants as any}
+                  onVariantsChange={updatedVariants => {
+                    form.setValue('variants', updatedVariants as TVariant[]);
+                    // re-validate only after a submit attempt, so a fresh empty variant stays quiet
+                    if (form.formState.isSubmitted) form.trigger('variants');
+                  }}
+                />
+              ) : (
+                <div className="grid grid-cols-2 gap-4">
+                  <Input label="Base Price" name="basePrice" type="number" placeholder="0.00" maxLength={6} />
+                  <Input label="Stock" name="stock" type="number" placeholder="0" maxLength={6} />
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="details" className="space-y-6">
               <SpecsEditor

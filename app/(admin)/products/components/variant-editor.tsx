@@ -15,7 +15,7 @@ import { Input as InputUI } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import ImageUploader from './image-uploader';
 
-const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange, onUpload, isUploading }) => {
+const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange, onUpload, isUploading, errors }) => {
   const { attributeSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof attributeSchema>>({
     resolver: zodResolver(attributeSchema),
@@ -63,6 +63,9 @@ const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange, onU
   const numberFields = ['price', 'discountedPrice', 'stock'];
   const allFields = [...numberFields, 'coupon'];
 
+  const variantError = (variantId: string, field: string) =>
+    errors?.[variants.findIndex(v => v.id === variantId)]?.[field]?.message;
+
   return (
     <div className="space-y-3">
       {variants.map(variant => (
@@ -83,7 +86,11 @@ const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange, onU
                 onChange={e => updateVariant(variant.id, 'name', e.target.value)}
                 placeholder="e.g., Red S Size"
                 className="mt-1"
+                aria-invalid={!!variantError(variant.id, 'name')}
               />
+              {variantError(variant.id, 'name') && (
+                <p className="mt-1 text-sm text-destructive">{variantError(variant.id, 'name')}</p>
+              )}
             </div>
             <div>
               <Label className="text-sm font-medium">Variant Image</Label>
@@ -101,6 +108,7 @@ const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange, onU
               {allFields.map(field => {
                 const value = variant[field as keyof TVariant] ?? '';
                 const isNumber = numberFields.includes(field);
+                const error = variantError(variant.id, field);
                 const placeholderMap = { price: '0.00', discountedPrice: '0.00', stock: '0', coupon: 'PROMO_CODE' };
                 return (
                   <div key={`${variant.id}-${field}`}>
@@ -118,7 +126,14 @@ const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange, onU
                       }}
                       placeholder={placeholderMap[field as keyof typeof placeholderMap]}
                       className="mt-1"
+                      aria-invalid={!!error}
+                      aria-describedby={error ? `variant-${variant.id}-${field}-error` : undefined}
                     />
+                    {error && (
+                      <p id={`variant-${variant.id}-${field}-error`} className="mt-1 text-sm text-destructive">
+                        {error}
+                      </p>
+                    )}
                   </div>
                 );
               })}
