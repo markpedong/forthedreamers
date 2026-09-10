@@ -1,4 +1,4 @@
-import { Button, SubmitButton } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Dialog as DialogUI,
   DialogContent,
@@ -83,7 +83,7 @@ const Dialog = ({
               {cancelText}
             </Button>
           </DialogClose>
-          <Button onClick={onConfirm} disabled={loading}>
+          <Button onClick={onConfirm} type="submit" disabled={loading}>
             {loading ? 'Please wait...' : confirmText}
           </Button>
         </DialogFooter>
