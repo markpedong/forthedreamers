@@ -38,15 +38,23 @@ const BottomNav: FC = () => {
           {navItems
             .filter(item => !item.protected || !!user)
             .map(({ icon: Icon, label, href }) => {
+              const isDisabled = href === '/categories';
               const destination = href === '/profile' && !user ? '/sign-in' : href;
               const isActive = pathname === href || (href === '/profile' && pathname === '/sign-in');
               return (
                 <motion.div key={href} className="min-w-0 flex-1" whileTap={{ scale: 0.95 }}>
                   <Link
                     href={destination as Route}
+                    aria-disabled={isDisabled}
+                    tabIndex={isDisabled ? -1 : undefined}
+                    onClick={event => isDisabled && event.preventDefault()}
                     className={cn(
                       'flex h-14 min-w-0 flex-col items-center justify-center gap-0.5 rounded-full px-1 transition-colors',
-                      isActive ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'
+                      isDisabled
+                        ? 'pointer-events-none text-muted-foreground/40'
+                        : isActive
+                          ? 'bg-muted text-foreground'
+                          : 'text-muted-foreground hover:text-foreground'
                     )}
                   >
                     <Icon className="h-5 w-5" />
