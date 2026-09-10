@@ -6,7 +6,6 @@
     "dev": "prisma generate && next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "upload:default-avatars": "node --env-file=.env scripts/upload-default-avatars.mjs",
     "lint": "eslint",
     "check:critical": "node scripts/check-critical-features.mjs",
     "db:push": "prisma db push && prisma generate",

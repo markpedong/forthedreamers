@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { USER_ROLE } from '@/generated/prisma';
 import { COURIER_CODES } from '@/constants/shipping';
 import { getSessionUser } from '@/lib/auth';
-import { getRandomDefaultAvatarUrl } from '@/lib/default-avatars';
+import { generateDefaultAvatar } from '@/lib/default-avatars';
 import prisma from '@/lib/prisma';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -29,15 +29,15 @@ export const sellerSignup = async ({ storeName, name, email, password, courierCo
   if (await prisma.seller.findUnique({ where: { storeName }, select: { id: true } }))
     throw new Error('Store name is already taken');
   const supabase = await createSupabaseServerClient();
-  const image = getRandomDefaultAvatarUrl();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { name, avatar_url: image } },
+    options: { data: { name } },
   });
   const authUser = data.user;
   if (error || !authUser || !authUser.identities?.length)
     throw new Error('Unable to sign up. Sign in if you already have an account.');
+  const image = generateDefaultAvatar(authUser.id);
   try {
     await prisma.$transaction(async tx => {
       await tx.user.upsert({

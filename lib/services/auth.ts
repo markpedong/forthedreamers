@@ -4,7 +4,7 @@ import { cache } from 'react';
 import { headers } from 'next/headers';
 import type { Provider } from '@supabase/supabase-js';
 import prisma from '@/lib/prisma';
-import { getRandomDefaultAvatarUrl } from '@/lib/default-avatars';
+import { generateDefaultAvatar } from '@/lib/default-avatars';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getSessionClaims, getSessionUser } from '@/lib/auth';
 import type { TUserData } from '@/services/types';
@@ -44,11 +44,10 @@ export const getCurrentUserData = async (): Promise<TUserData | null> => {
 export const signUp = async (email: string, password: string, name: string, callbackURL = '/profile') => {
   const supabase = await createSupabaseServerClient();
   const origin = await appOrigin();
-  const image = getRandomDefaultAvatarUrl();
   const result = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: `${origin}/auth/callback?next=${callbackURL}`, data: { name, avatar_url: image } },
+    options: { emailRedirectTo: `${origin}/auth/callback?next=${callbackURL}`, data: { name } },
   });
   if (result.error) throw new Error(result.error.message);
   if (result.data.user?.email) {
@@ -59,7 +58,7 @@ export const signUp = async (email: string, password: string, name: string, call
         id: result.data.user.id,
         email: result.data.user.email,
         name,
-        image,
+        image: generateDefaultAvatar(result.data.user.id),
         emailVerified: Boolean(result.data.user.email_confirmed_at),
       },
     });

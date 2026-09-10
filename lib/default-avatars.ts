@@ -1,16 +1,6 @@
-const DEFAULT_AVATAR_BUCKET = 'avatars';
+const DICEBEAR_ADVENTURER_URL = 'https://api.dicebear.com/10.x/adventurer/svg';
+const DICEBEAR_BACKGROUND_COLOR = 'ece7de';
+const DICEBEAR_HAIR_COLORS = '6b705c,a5a58d,b98b73,7c9082,8e9aaf,9c6b58';
 
-const DEFAULT_AVATAR_PATHS = Array.from(
-  { length: 32 },
-  (_, index) => `default-avatars/avatar-${String(index + 1).padStart(2, '0')}.png`
-);
-
-export const getRandomDefaultAvatarUrl = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-
-  if (!supabaseUrl) throw new Error('Missing Supabase URL for default avatars');
-
-  const path = DEFAULT_AVATAR_PATHS[Math.floor(Math.random() * DEFAULT_AVATAR_PATHS.length)];
-
-  return `${supabaseUrl.replace(/\/$/, '')}/storage/v1/object/public/${DEFAULT_AVATAR_BUCKET}/${path}`;
-};
+export const generateDefaultAvatar = (seed: string) =>
+  `${DICEBEAR_ADVENTURER_URL}?seed=${encodeURIComponent(seed)}&backgroundColor=${DICEBEAR_BACKGROUND_COLOR}&hairColor=${DICEBEAR_HAIR_COLORS}`

@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
-import { getRandomDefaultAvatarUrl } from './default-avatars';
+import { generateDefaultAvatar } from './default-avatars';
 import { prisma } from './prisma';
 import { createSupabaseServerClient } from './supabase/server';
 
@@ -18,7 +18,7 @@ export const upsertAuthUser = async (user: SupabaseUser) => {
   const emailVerified = Boolean(user.email_confirmed_at);
 
   if (!profile) {
-    const image = metadataImage ?? getRandomDefaultAvatarUrl();
+    const image = metadataImage ?? generateDefaultAvatar(user.id);
 
     if (!metadataImage) {
       const supabase = await createSupabaseServerClient();
@@ -37,7 +37,7 @@ export const upsertAuthUser = async (user: SupabaseUser) => {
     });
   }
 
-  const image = metadataImage ?? profile.image;
+  const image = metadataImage ?? profile.image ?? generateDefaultAvatar(user.id);
 
   if (profile.email !== user.email || profile.emailVerified !== emailVerified || profile.image !== image) {
     return prisma.user.update({
