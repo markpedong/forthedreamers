@@ -116,7 +116,7 @@ export default function OrdersPage() {
   const pages = data ? Math.max(1, Math.ceil(data.total / data.limit)) : 1;
 
   return (
-    <main className="mx-auto min-h-screen max-w-3xl px-4 py-6 sm:px-6 md:py-10 lg:px-8">
+    <main className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 md:py-10 lg:px-8">
       <header className="mb-5 md:mb-6">
         <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Account</p>
         <h1 className="mt-1.5 text-2xl font-light tracking-tight md:mt-2 md:text-4xl">Order history</h1>

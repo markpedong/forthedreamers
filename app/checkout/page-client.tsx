@@ -66,7 +66,7 @@ const CheckoutPageClient = ({ cartItems, addresses, sellerShippingMethods }: Che
   const hasAllShippingSelections = [...sellerGroups.keys()].every(sellerId => selectedCouriers[sellerId]);
 
   return (
-    <main className="mx-auto max-w-6xl px-4 pt-6 pb-[calc(7rem+env(safe-area-inset-bottom))] md:pt-8 md:pb-8">
+    <main className="mx-auto max-w-7xl px-4 pt-6 pb-[calc(7rem+env(safe-area-inset-bottom))] md:pt-8 md:pb-8">
       <Link href="/cart" className="mb-4 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground md:mb-6">
         <ChevronLeft className="h-4 w-4" /> Back to Cart
       </Link>

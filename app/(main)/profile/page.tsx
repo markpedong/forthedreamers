@@ -26,7 +26,7 @@ const ProfilePage = async ({ searchParams }: ProfilePageProps) => {
   if (!userId) {
     return (
       <main className="min-h-[60vh]">
-        <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
           <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground md:p-8">
             Please sign in to view your profile.
           </div>

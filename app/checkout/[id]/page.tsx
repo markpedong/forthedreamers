@@ -44,7 +44,7 @@ const OrderDetailPage = async ({ params }: { params: Promise<{ id: string }> }) 
   }
 
   return (
-    <main className="max-w-4xl mx-auto py-8 px-4">
+    <main className="mx-auto max-w-7xl px-4 py-8">
       <Button variant="ghost" className="mb-4" asChild>
         <Link href="/orders">← Back to Orders</Link>
       </Button>
