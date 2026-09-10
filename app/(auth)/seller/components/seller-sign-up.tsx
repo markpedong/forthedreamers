@@ -11,6 +11,8 @@ import { useSellerSignUpMutation } from '@/services/useMutation';
 import Link from 'next/link';
 import AuthCard from '../../components/auth-card';
 
+import { Button, SubmitButton } from '@/components/ui/button';
+
 const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const mutation = useSellerSignUpMutation();
   const isSubmitting = mutation.isPending;
@@ -43,9 +45,7 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         <FormField {...register('password')} id="seller-signup-password" label="Password" error={errors.password?.message} type="password" placeholder="••••••••" disabled={isSubmitting} autoComplete="new-password" />
         <FormField {...register('confirmPassword')} id="seller-signup-confirm" label="Confirm Password" error={errors.confirmPassword?.message} type="password" placeholder="••••••••" disabled={isSubmitting} autoComplete="new-password" />
 
-        <button type="submit" className="w-full h-11" disabled={isSubmitting} aria-busy={isSubmitting}>
-          {isSubmitting ? 'Creating account...' : 'Create Account'}
-        </button>
+        <SubmitButton title={isSubmitting ? 'Creating account...' : 'Create Account'} className="w-full h-11" disabled={isSubmitting} aria-busy={isSubmitting} />
       </form>
 
       <div className="mt-5 grid gap-2 rounded-xl border border-white/50 bg-white/35 p-4 dark:border-white/10 dark:bg-white/5">

@@ -3,7 +3,7 @@
 import { useAppSelector } from '@/redux/store';
 import { type FormEvent, useState } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button, SubmitButton } from '@/components/ui/button';
 import { useCreateReviewMutation } from '@/services/useMutation';
 
 const ReviewForm = ({ slug }: { slug: string }) => {
@@ -61,9 +61,7 @@ const ReviewForm = ({ slug }: { slug: string }) => {
               Your review (optional)
               <textarea name="comment" maxLength={1000} rows={4} className="rounded-md border bg-background p-2" />
             </label>
-            <Button type="submit" className="justify-self-start">
-              {pending ? 'Submitting review...' : 'Submit review'}
-            </Button>
+            <SubmitButton title={pending ? 'Submitting review...' : 'Submit review'} className="justify-self-start" />
           </fieldset>
         </form>
       </div>

@@ -7,6 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import FormField from '@/components/reusable/form-field';
 import { useSignUpMutation } from '@/services/useMutation';
 
+import { Button, SubmitButton } from '@/components/ui/button';
+
 const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const mutation = useSignUpMutation();
   const isSigningUp = mutation.isPending;
@@ -74,9 +76,7 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           disabled={isSigningUp}
         />
 
-        <button type="submit" className="w-full h-11" disabled={isSigningUp} aria-busy={isSigningUp}>
-          {isSigningUp ? 'Signing up...' : 'Sign up'}
-        </button>
+        <SubmitButton title={isSigningUp ? 'Signing up...' : 'Sign up'} className="w-full h-11" disabled={isSigningUp} aria-busy={isSigningUp} />
       </form>
 
       <div className="mt-4 flex justify-center">

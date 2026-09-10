@@ -8,6 +8,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import FormField from '@/components/reusable/form-field';
 import { useResetPasswordMutation } from '@/services/useMutation';
 
+import { Button, SubmitButton } from '@/components/ui/button';
+
 const ResetPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const mutation = useResetPasswordMutation();
   const isSubmitting = mutation.isPending;
@@ -52,9 +54,7 @@ const ResetPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           disabled={isSubmitting}
         />
 
-        <button type="submit" className="w-full h-11" disabled={isSubmitting} aria-busy={isSubmitting}>
-          {isSubmitting ? 'Resetting...' : 'Reset password'}
-        </button>
+        <SubmitButton title={isSubmitting ? 'Resetting...' : 'Reset password'} className="w-full h-11" disabled={isSubmitting} aria-busy={isSubmitting} />
       </form>
 
       <p className="mt-3 text-center text-sm text-muted-foreground">

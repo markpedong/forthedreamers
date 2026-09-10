@@ -12,6 +12,8 @@ import { tryWithToast } from '@/utils/helper';
 import AuthCard from '../../components/auth-card';
 import { ArrowLeft, ShieldCheck } from 'lucide-react';
 
+import { Button, SubmitButton } from '@/components/ui/button';
+
 const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
   const [useBackup, setUseBackup] = useState(false);
@@ -72,9 +74,7 @@ const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
             disabled={isPending}
           />
 
-          <button type="submit" className="w-full h-11" disabled={isPending} aria-busy={isPending}>
-            {isPending ? 'Verifying in...' : 'Verify'}
-          </button>
+          <SubmitButton title={isPending ? 'Verifying in...' : 'Verify'} className="w-full h-11" disabled={isPending} aria-busy={isPending} />
         </form>
 
         <div className="mt-3 space-y-3 text-center sm:mt-6 sm:space-y-6">
