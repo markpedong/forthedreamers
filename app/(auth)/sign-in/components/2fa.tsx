@@ -12,7 +12,7 @@ import { tryWithToast } from '@/utils/helper';
 import AuthCard from '../../components/auth-card';
 import { ArrowLeft, ShieldCheck } from 'lucide-react';
 
-import { Button, SubmitButton } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 
 const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
@@ -68,13 +68,16 @@ const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
             id="2fa-otp"
             label="Verification Code"
             error={errors.otp?.message}
-            type="number"
+            type="text"
+            inputMode={useBackup ? undefined : 'numeric'}
             placeholder={useBackup ? 'XXXX-XXXX-XXXX' : '000000'}
             maxLength={digitCount}
             disabled={isPending}
           />
 
-          <SubmitButton title={isPending ? 'Verifying in...' : 'Verify'} className="w-full h-11" disabled={isPending} aria-busy={isPending} />
+          <Button type="submit" className="w-full h-11" disabled={isPending} aria-busy={isPending}>
+            {isPending ? 'Verifying in...' : 'Verify'}
+          </Button>
         </form>
 
         <div className="mt-3 space-y-3 text-center sm:mt-6 sm:space-y-6">

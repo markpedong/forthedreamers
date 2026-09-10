@@ -12,7 +12,7 @@ import { tryWithToast } from '@/utils/helper';
 import AuthCard from '../../components/auth-card';
 import { ShieldCheck } from 'lucide-react';
 
-import { Button, SubmitButton } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 
 const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
   const router = useRouter();
@@ -63,7 +63,9 @@ const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <FormField {...register('otp')} id="seller-2fa-otp" label="Verification Code" error={errors.otp?.message} type="text" placeholder={useBackup ? 'XXXX-XXXX-XXXX' : '000000'} maxLength={useBackup ? 14 : 6} disabled={isPending} />
 
-        <SubmitButton title={isPending ? 'Verifying...' : 'Verify'} className="w-full h-11" disabled={isPending} aria-busy={isPending} />
+        <Button type="submit" className="w-full h-11" disabled={isPending} aria-busy={isPending}>
+          {isPending ? 'Verifying...' : 'Verify'}
+        </Button>
       </form>
 
       <div className="mt-5 space-y-3 text-center">

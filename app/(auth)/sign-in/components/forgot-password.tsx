@@ -8,7 +8,7 @@ import { useForgotPasswordMutation } from '@/services/useMutation';
 import AuthCard from '../../components/auth-card';
 import { ArrowLeft, Mail } from 'lucide-react';
 
-import { Button, SubmitButton } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 
 const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const { forgotPasswordSchema } = formSchemas;
@@ -42,7 +42,9 @@ const ForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
             disabled={isSending}
           />
 
-          <SubmitButton title={isSending ? 'Sending...' : 'Send reset link'} className="w-full h-11" disabled={isSending} aria-busy={isSending} />
+          <Button type="submit" className="w-full h-11" disabled={isSending} aria-busy={isSending}>
+            {isSending ? 'Sending...' : 'Send reset link'}
+          </Button>
         </form>
 
         <div className="mt-3 text-center sm:mt-6">

@@ -4,10 +4,9 @@ import OauthButtons from './oauth-buttons';
 import formSchemas from '@/hooks/form-schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import FormField from '@/components/reusable/form-field';
+import Input from '@/components/reusable/input';
+import Form from '@/components/reusable/form';
 import { useSignUpMutation } from '@/services/useMutation';
-
-import { Button, SubmitButton } from '@/components/ui/button';
 
 const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const mutation = useSignUpMutation();
@@ -24,12 +23,8 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     },
   });
 
-  const { register, handleSubmit } = form;
-  const { errors } = form.formState;
-
   const onSubmit = (values: SchemaForm<typeof registrationSchema>) =>
     mutation.mutate({ email: values.email, password: values.password, name: values.name });
-
   return (
     <AuthPage>
       <h1 className="text-2xl font-bold tracking-tight text-foreground">Create your account</h1>
@@ -37,47 +32,51 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         Join For The Dreamers and start discovering curated finds.
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4 sm:space-y-5">
-        <FormField
-          {...register('name')}
-          id="signup-name"
+      <Form
+        form={form}
+        onSubmit={onSubmit}
+        isSending={isSigningUp}
+        submitLabel={isSigningUp ? 'Signing up...' : 'Sign up'}
+        className="mt-6 space-y-4 sm:space-y-5"
+      >
+        <Input
+          control={form.control}
+          name="name"
           label="Full Name"
-          error={errors.name?.message}
           placeholder="John Doe"
           disabled={isSigningUp}
+          preventSpaces
         />
 
-        <FormField
-          {...register('email')}
-          id="signup-email"
+        <Input
+          control={form.control}
+          name="email"
           label="Email"
-          error={errors.email?.message}
           placeholder="you@example.com"
           disabled={isSigningUp}
+          preventSpaces
         />
 
-        <FormField
-          {...register('password')}
-          id="signup-password"
+        <Input
+          control={form.control}
+          name="password"
           label="Password"
-          error={errors.password?.message}
           type="password"
           placeholder="••••••••"
           disabled={isSigningUp}
+          preventSpaces
         />
 
-        <FormField
-          {...register('confirmPassword')}
-          id="signup-confirm-password"
+        <Input
+          control={form.control}
+          name="confirmPassword"
           label="Confirm Password"
-          error={errors.confirmPassword?.message}
           type="password"
           placeholder="••••••••"
           disabled={isSigningUp}
+          preventSpaces
         />
-
-        <SubmitButton title={isSigningUp ? 'Signing up...' : 'Sign up'} className="w-full h-11" disabled={isSigningUp} aria-busy={isSigningUp} />
-      </form>
+      </Form>
 
       <div className="mt-4 flex justify-center">
         <span className="text-sm text-muted-foreground">Or sign in with</span>
