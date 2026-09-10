@@ -22,14 +22,14 @@ const ProductOverview = ({ product, selectedVariant }: ProductOverviewProps) => 
   const rating = product.rating || 0;
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-3.5 md:gap-5">
       <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
         <span>{product.categoryName}</span>
         {product.brand && <span>· {product.brand}</span>}
       </div>
 
-      <div className="space-y-3">
-        <h1 className="text-3xl font-medium leading-tight tracking-tight text-foreground lg:text-4xl">
+      <div className="space-y-2 md:space-y-3">
+        <h1 className="text-2xl font-medium leading-tight tracking-tight text-foreground md:text-3xl lg:text-4xl">
           {product.name}
         </h1>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
@@ -42,9 +42,9 @@ const ProductOverview = ({ product, selectedVariant }: ProductOverviewProps) => 
         </div>
       </div>
 
-      <div className="flex flex-wrap items-baseline gap-3 border-y border-border py-5">
+      <div className="flex flex-wrap items-baseline gap-3 border-y border-border py-4 md:py-5">
         {currentPrice !== null ? (
-          <span className="text-3xl font-semibold tracking-tight text-foreground">{formatPrice(currentPrice)}</span>
+          <span className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">{formatPrice(currentPrice)}</span>
         ) : (
           <span className="text-lg font-medium text-muted-foreground">Price unavailable</span>
         )}

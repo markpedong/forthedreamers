@@ -25,7 +25,7 @@ export const LandingProductGrid = ({ products, selectedCategory, sortBy = 'newes
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 md:py-16 sm:px-6 lg:px-8">
       {filteredAndSortedProducts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 gap-4 animate-fadeInUp">
           <p className="text-lg text-muted-foreground">No products found</p>
@@ -36,7 +36,7 @@ export const LandingProductGrid = ({ products, selectedCategory, sortBy = 'newes
           <div className="mb-6 animate-fadeInUp">
             <p className="text-sm text-muted-foreground">Showing {filteredAndSortedProducts.length} products</p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:gap-6 lg:grid-cols-4">
             {filteredAndSortedProducts.map((product, index) => (
               <div key={product.id} className={`animate-fadeInUp ${index <= 11 ? `animate-stagger-${index + 1}` : ''}`}>
                 <LandingProductCard

@@ -188,7 +188,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Users</h1>
+          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Users</h1>
           <p className="text-muted-foreground mt-1">Manage your customer base</p>
         </div>
         <Button onClick={() => toast.success('Add user dialog opened')}>

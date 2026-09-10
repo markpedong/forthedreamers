@@ -109,7 +109,7 @@ const DashboardHeader = ({ data }: { data: DashboardData }) => {
     <header className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <p className="text-sm font-medium text-primary">{isSeller ? data.storeName : 'ForTheDreamers'}</p>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight">
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">
           {isSeller ? 'Store overview' : 'Platform overview'}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">

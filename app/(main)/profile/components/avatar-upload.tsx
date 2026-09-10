@@ -34,10 +34,10 @@ const AvatarUpload: FC<AvatarUploadProps> = ({ src, alt, initials, isGoogleAvata
 
   return (
     <div
-      className="group relative h-20 w-20 shrink-0 cursor-pointer sm:h-24 sm:w-24"
+      className="group relative size-16 shrink-0 cursor-pointer sm:size-24"
       onClick={() => fileInputRef.current?.click()}
     >
-      <Avatar className="h-20 w-20 border border-border sm:h-24 sm:w-24">
+      <Avatar className="size-16 border border-border sm:size-24">
         <AvatarImage src={preview ?? src} alt={alt} />
         <AvatarFallback>{initials}</AvatarFallback>
       </Avatar>

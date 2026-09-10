@@ -44,12 +44,12 @@ export default function SupportPage() {
   };
 
   return (
-    <main className="mx-auto min-h-screen max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <header className="mb-8 flex items-end justify-between gap-4">
+    <main className="mx-auto min-h-screen max-w-7xl px-4 py-8 sm:px-6 md:py-12 lg:px-8">
+      <header className="mb-6 flex items-end justify-between gap-4 md:mb-8">
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Help center</p>
-          <h1 className="mt-2 text-4xl font-light tracking-tight">Support</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Create a ticket or continue an existing conversation.</p>
+          <h1 className="mt-1.5 text-2xl font-light tracking-tight md:mt-2 md:text-4xl">Support</h1>
+          <p className="mt-1.5 text-sm text-muted-foreground md:mt-2">Create a ticket or continue an existing conversation.</p>
         </div>
         <Button onClick={() => { setCreating(value => !value); setSelectedId(null); }}>
           <Plus className="h-4 w-4" /> New ticket

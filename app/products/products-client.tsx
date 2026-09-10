@@ -72,11 +72,11 @@ const ProductsClient = ({
   };
 
   return (
-    <main className="mx-auto min-h-screen max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <header className="mb-6">
+    <main className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 md:py-8 lg:px-8">
+      <header className="mb-5 md:mb-6">
         <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Shop</p>
-        <h1 className="mt-2 text-3xl font-light tracking-tight sm:text-4xl">Browse products</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Search and filter the active marketplace catalog.</p>
+        <h1 className="mt-1.5 text-2xl font-light tracking-tight md:mt-2 md:text-4xl">Browse products</h1>
+        <p className="mt-1.5 text-sm text-muted-foreground md:mt-2">Search and filter the active marketplace catalog.</p>
       </header>
 
       <div className="grid items-start gap-6 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)]">

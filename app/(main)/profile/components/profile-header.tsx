@@ -23,9 +23,9 @@ const ProfileHeader = () => {
       .toUpperCase() || 'U';
 
   return (
-    <section className="rounded-lg border border-border bg-card p-6 sm:p-8">
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 items-center gap-4 sm:gap-5">
+    <section className="rounded-lg border border-border bg-card p-4 sm:p-6 md:p-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
+        <div className="flex min-w-0 items-center gap-3.5 sm:gap-5">
           <AvatarUpload
             src={user?.image ?? ''}
             alt={user?.name ?? 'Profile avatar'}
@@ -34,8 +34,8 @@ const ProfileHeader = () => {
           />
 
           <div className="min-w-0">
-            <div className="mt-2">
-              <h1 className="truncate text-xl font-medium tracking-tight text-foreground sm:text-2xl">
+            <div className="mt-1 sm:mt-2">
+              <h1 className="truncate text-lg font-medium tracking-tight text-foreground sm:text-2xl">
                 {user?.name || 'Your profile'}
               </h1>
             </div>

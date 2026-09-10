@@ -58,7 +58,7 @@ const ProductGallery = ({ images, alt }: ProductGalleryProps) => {
             setSelectedIndex(idx);
           }}
           className={cn(
-            'relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all duration-200',
+            'relative size-16 shrink-0 overflow-hidden rounded-lg border-2 transition-all duration-200 md:size-20',
             selectedIndex === idx
               ? 'border-primary ring-2 ring-primary/50 scale-105'
               : 'border-border hover:border-muted-foreground hover:scale-102'

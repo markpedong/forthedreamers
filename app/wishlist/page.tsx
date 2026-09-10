@@ -18,10 +18,10 @@ export default function WishlistPage() {
   const pages = data ? Math.max(1, Math.ceil(data.total / data.limit)) : 1;
 
   return (
-    <main className="mx-auto min-h-screen max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <header className="mb-10">
+    <main className="mx-auto min-h-screen max-w-7xl px-4 py-8 sm:px-6 md:py-12 lg:px-8">
+      <header className="mb-6 md:mb-10">
         <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Saved</p>
-        <h1 className="mt-2 text-4xl font-light tracking-tight">Your wishlist</h1>
+        <h1 className="mt-1.5 text-2xl font-light tracking-tight md:mt-2 md:text-4xl">Your wishlist</h1>
       </header>
 
       {wishlistQuery.isLoading ? (
@@ -40,7 +40,7 @@ export default function WishlistPage() {
         </div>
       ) : (
         <>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
             {data.wishlist.map(item => {
               const product = item.product;
               const variant = product.variants.find(candidate => candidate.stock > 0);
@@ -48,7 +48,7 @@ export default function WishlistPage() {
               const cartPending = cartMutation.isPending && cartMutation.variables?.variantId === variant?.id;
               const removePending = wishlistMutation.isPending && wishlistMutation.variables?.id === product.id;
               return (
-                <article key={item.id} className="overflow-hidden border border-border bg-card">
+                <article key={item.id} className="overflow-hidden rounded-lg border border-border bg-card">
                   <Link href={`/products/${product.slug}`} className="relative block aspect-[4/3] bg-muted">
                     {product.images[0] ? (
                       <Image src={product.images[0]} alt={product.name} fill className="object-cover" sizes="(min-width: 1024px) 33vw, 50vw" />
@@ -56,10 +56,10 @@ export default function WishlistPage() {
                       <span className="flex h-full items-center justify-center text-sm text-muted-foreground">Image unavailable</span>
                     )}
                   </Link>
-                  <div className="space-y-4 p-5">
+                  <div className="space-y-3 p-4">
                     <div>
                       <p className="text-xs uppercase tracking-wider text-muted-foreground">{product.seller.storeName}</p>
-                      <Link href={`/products/${product.slug}`} className="mt-1 block text-lg font-medium hover:underline">{product.name}</Link>
+                      <Link href={`/products/${product.slug}`} className="mt-1 block text-sm font-medium hover:underline md:text-base">{product.name}</Link>
                       <p className="mt-1 text-sm text-muted-foreground">
                         {wishlistPrice != null ? `$${wishlistPrice.toFixed(2)}` : 'Price unavailable'}
                       </p>
@@ -88,7 +88,7 @@ export default function WishlistPage() {
               );
             })}
           </div>
-          <nav aria-label="Wishlist pagination" className="mt-12 flex items-center justify-center gap-4">
+          <nav aria-label="Wishlist pagination" className="mt-8 flex items-center justify-center gap-4 md:mt-12">
             <Button variant="outline" disabled={page <= 1 || wishlistQuery.isFetching} onClick={() => setPage(value => value - 1)}>Previous</Button>
             <span className="text-sm text-muted-foreground">Page {page} of {pages}</span>
             <Button variant="outline" disabled={page >= pages || wishlistQuery.isFetching} onClick={() => setPage(value => value + 1)}>Next</Button>

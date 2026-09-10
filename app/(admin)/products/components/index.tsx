@@ -170,7 +170,7 @@ const Products: FC<{ initialProducts: TProduct[]; initialCategories: import('@/g
       <div className="px-4 py-8 space-y-8 [&_[data-slot=table]]:table-fixed [&_[data-slot=table-cell]]:text-center [&_[data-slot=table-head]]:text-center">
         <header className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold">Products</h1>
+            <h1 className="text-2xl font-bold md:text-3xl">Products</h1>
             <p className="text-muted-foreground">Manage your product catalog</p>
           </div>
           <Button

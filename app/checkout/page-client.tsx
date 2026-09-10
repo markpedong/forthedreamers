@@ -66,13 +66,13 @@ const CheckoutPageClient = ({ cartItems, addresses, sellerShippingMethods }: Che
   const hasAllShippingSelections = [...sellerGroups.keys()].every(sellerId => selectedCouriers[sellerId]);
 
   return (
-    <main className="mx-auto max-w-6xl px-4 pt-8 pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-8">
-      <Link href="/cart" className="mb-6 flex items-center gap-2 text-muted-foreground hover:text-foreground">
+    <main className="mx-auto max-w-6xl px-4 pt-6 pb-[calc(7rem+env(safe-area-inset-bottom))] md:pt-8 md:pb-8">
+      <Link href="/cart" className="mb-4 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground md:mb-6">
         <ChevronLeft className="h-4 w-4" /> Back to Cart
       </Link>
-      <h1 className="mb-8 text-3xl font-bold">Order Summary</h1>
+      <h1 className="mb-5 text-2xl font-bold md:mb-8 md:text-3xl">Order Summary</h1>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 md:gap-8">
         <div className="space-y-6 lg:col-span-2">
           <div className="space-y-4">
             {[...sellerGroups.entries()].map(([sellerId, items]) => {

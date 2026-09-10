@@ -114,7 +114,7 @@ const OrderSummary = ({ orderGroup }: { orderGroup: NonNullable<OrderGroupWithOr
   return (
     <main className="max-w-4xl mx-auto py-12 px-4 text-center">
       <CheckCircle className="w-16 h-16 mx-auto text-green-500 mb-4" />
-      <h1 className="text-3xl font-bold mb-2">Order Confirmed!</h1>
+      <h1 className="mb-2 text-2xl font-bold md:text-3xl">Order Confirmed!</h1>
       <p className="text-muted-foreground mb-6">
         Your cash-on-delivery order has been placed. Order ID: <span className="font-mono font-bold">{orderGroup.id}</span>.
       </p>

@@ -20,11 +20,11 @@ export default function OrdersPage() {
   const pages = data ? Math.max(1, Math.ceil(data.total / data.limit)) : 1;
 
   return (
-    <main className="mx-auto min-h-screen max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
-      <header className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+    <main className="mx-auto min-h-screen max-w-5xl px-4 py-8 sm:px-6 md:py-12 lg:px-8">
+      <header className="mb-6 flex flex-col justify-between gap-4 sm:mb-8 sm:flex-row sm:items-end md:gap-5">
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Account</p>
-          <h1 className="mt-2 text-4xl font-light tracking-tight">Order history</h1>
+          <h1 className="mt-1.5 text-2xl font-light tracking-tight md:mt-2 md:text-4xl">Order history</h1>
         </div>
         <div className="flex gap-3">
           <select value={status} onChange={event => { setStatus(event.target.value); setPage(1); }} aria-label="Order status" className="h-9 border border-input bg-background px-3 text-sm">
@@ -56,19 +56,19 @@ export default function OrdersPage() {
         </div>
       ) : (
         <>
-          <div className="space-y-5">
+          <div className="space-y-4">
             {data.orders.map(orderItem => (
-              <article key={orderItem.id} className="border border-border bg-card">
-                <header className="grid gap-4 border-b border-border p-5 text-sm sm:grid-cols-5">
+              <article key={orderItem.id} className="rounded-lg border border-border bg-card">
+                <header className="grid gap-3 border-b border-border p-4 text-sm sm:grid-cols-5 md:gap-4 md:p-5">
                   <div><p className="text-xs uppercase text-muted-foreground">Order number</p><p className="mt-1 font-medium">#{orderItem.id}</p></div>
                   <div><p className="text-xs uppercase text-muted-foreground">Date</p><p className="mt-1">{dates.format(new Date(orderItem.createdAt))}</p></div>
                   <div><p className="text-xs uppercase text-muted-foreground">Total</p><p className="mt-1 font-medium">{money.format(orderItem.total)}</p></div>
                   <div><p className="text-xs uppercase text-muted-foreground">Payment</p><p className="mt-1">{orderItem.orderGroup?.paymentMethod === 'CASH_ON_DELIVERY' ? `Cash on delivery · ${orderItem.orderGroup.paymentStatus}` : 'Unavailable'}</p></div>
                   <div><p className="text-xs uppercase text-muted-foreground">Order status</p><p className="mt-1">{orderItem.status}</p></div>
                 </header>
-                <div className="divide-y divide-border px-5">
+                <div className="divide-y divide-border px-4 md:px-5">
                   {orderItem.orderItems.map(item => (
-                    <div key={item.id} className="flex items-center justify-between gap-4 py-4 text-sm">
+                    <div key={item.id} className="flex items-center justify-between gap-4 py-3.5 text-sm md:py-4">
                       <div>
                         {item.product ? <Link href={`/products/${item.product.slug}`} className="font-medium hover:underline">{item.product.name}</Link> : <p className="font-medium">Product unavailable</p>}
                         <p className="text-muted-foreground">{item.variant.name} · Quantity {item.quantity}</p>
@@ -89,7 +89,7 @@ export default function OrdersPage() {
               </article>
             ))}
           </div>
-          <nav aria-label="Order pagination" className="mt-10 flex items-center justify-center gap-4">
+          <nav aria-label="Order pagination" className="mt-8 flex items-center justify-center gap-4 md:mt-10">
             <Button variant="outline" disabled={page <= 1 || ordersQuery.isFetching} onClick={() => setPage(value => value - 1)}>Previous</Button>
             <span className="text-sm text-muted-foreground">Page {page} of {pages}</span>
             <Button variant="outline" disabled={page >= pages || ordersQuery.isFetching} onClick={() => setPage(value => value + 1)}>Next</Button>

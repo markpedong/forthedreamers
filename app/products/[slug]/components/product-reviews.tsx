@@ -50,9 +50,9 @@ const ProductReviews = ({ slug, initialReviews, summary }: ProductReviewsProps) 
         <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">Ratings & reviews</h2>
       </div>
 
-      <div className="grid gap-8 rounded-xl border border-border bg-card p-6 lg:grid-cols-[280px_1fr] lg:p-8">
-        <div className="flex flex-col items-center justify-center border-b border-border pb-8 text-center lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
-          <p className="text-5xl font-semibold tracking-tight text-foreground">
+      <div className="grid gap-6 rounded-lg border border-border bg-card p-4 md:gap-8 md:p-6 lg:grid-cols-[280px_1fr] lg:p-8">
+        <div className="flex flex-col items-center justify-center border-b border-border pb-6 text-center md:pb-8 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
+          <p className="text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
             {summary.average ? summary.average.toFixed(1) : '—'}
           </p>
           <Stars rating={Math.round(summary.average)} />

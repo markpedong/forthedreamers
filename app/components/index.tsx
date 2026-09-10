@@ -40,9 +40,9 @@ const LifestyleImg: FC<{ src: string; alt: string; title?: string }> = ({ src, a
       className="object-cover transition-transform duration-700 group-hover:scale-105"
     />
     {title && (
-      <div className="absolute bottom-0 left-0 p-8 text-white">
-        <p className="text-sm uppercase tracking-widest mb-2">Editorial</p>
-        <h3 className="text-3xl font-light">{title}</h3>
+      <div className="absolute bottom-0 left-0 p-5 text-white md:p-8">
+        <p className="mb-1.5 text-xs uppercase tracking-widest md:mb-2 md:text-sm">Editorial</p>
+        <h3 className="text-2xl font-light md:text-3xl">{title}</h3>
       </div>
     )}
   </div>
@@ -62,41 +62,41 @@ const LandingPage: FC<{ products: LandingProduct[] }> = ({ products = [] }) => (
       />
       <div className="absolute inset-0 bg-black/10" />
 
-      <div className="relative z-10 text-center text-white space-y-6 px-4">
-        <Badge className="bg-white/20 text-white border-none backdrop-blur-sm px-4 py-1 text-xs tracking-widest">
+      <div className="relative z-10 space-y-5 px-4 text-center text-white md:space-y-6">
+        <Badge className="border-none bg-white/20 px-3 py-1 text-xs tracking-widest text-white backdrop-blur-sm md:px-4">
           New Collection
         </Badge>
 
-        <h1 className="text-5xl md:text-7xl font-light tracking-tight">
+        <h1 className="text-3xl font-light tracking-tight md:text-5xl lg:text-7xl">
           Quiet Luxury for <br />
           <span className="font-medium">The Modern Soul</span>
         </h1>
 
-        <p className="text-lg md:text-xl text-white/90 font-light max-w-lg mx-auto">
+        <p className="mx-auto max-w-lg text-sm font-light text-white/90 md:text-lg lg:text-xl">
           Curated essentials designed for comfort, style, and the moments in between.
         </p>
 
-        <Button asChild size="lg" className="bg-white text-black rounded-full px-8 hover:bg-neutral-200">
+        <Button asChild size="lg" className="rounded-full bg-white px-6 text-black hover:bg-neutral-200 md:px-8">
           <Link href="/products">Explore Collection</Link>
         </Button>
       </div>
     </section>
 
     {/* PRODUCTS */}
-    <section className="py-24 px-4 max-w-7xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-end mb-12">
+    <section className="mx-auto max-w-7xl px-4 py-14 md:py-24">
+      <div className="mb-8 flex flex-col items-start justify-between gap-4 md:mb-12 md:flex-row md:items-end">
         <div>
-          <h2 className="text-3xl font-light tracking-tight">Curated Essentials</h2>
-          <p className="text-neutral-500">Timeless pieces for your everyday wardrobe.</p>
+          <h2 className="text-2xl font-light tracking-tight md:text-3xl">Curated Essentials</h2>
+          <p className="text-sm text-neutral-500 md:text-base">Timeless pieces for your everyday wardrobe.</p>
         </div>
 
-        <Button variant="link" className="p-0 h-auto text-neutral-500 group">
+        <Button variant="link" className="group h-auto p-0 text-neutral-500">
           View All Products
-          <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+          <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-8 lg:grid-cols-4">
         {products.map((p, i) => (
           <ProductCard key={i} {...p} />
         ))}
@@ -104,9 +104,9 @@ const LandingPage: FC<{ products: LandingProduct[] }> = ({ products = [] }) => (
     </section>
 
     {/* LIFESTYLE GRID */}
-    <section className="py-24 bg-neutral-50">
-      <div className="px-4 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 h-auto md:h-[600px]">
-        <div className="md:col-span-8 h-[400px] md:h-full">
+    <section className="bg-neutral-50 py-14 md:py-24">
+      <div className="mx-auto grid h-auto grid-cols-1 gap-4 px-4 md:h-[600px] md:grid-cols-12 md:gap-8 md:px-8 lg:px-4 max-w-7xl">
+        <div className="h-[280px] md:col-span-8 md:h-full">
           <LifestyleImg {...lifestyle.main} />
         </div>
 
@@ -119,18 +119,20 @@ const LandingPage: FC<{ products: LandingProduct[] }> = ({ products = [] }) => (
     </section>
 
     {/* NEWSLETTER */}
-    <section className="py-32 px-4 text-center max-w-7xl mx-auto">
-      <div className="max-w-md mx-auto space-y-6">
-        <h2 className="text-3xl font-light tracking-tight">Join the Community</h2>
-        <p className="text-neutral-500">Sign up for early access to new drops and exclusive editorial content.</p>
+    <section className="mx-auto max-w-7xl px-4 py-16 text-center md:py-32">
+      <div className="mx-auto max-w-md space-y-5 md:space-y-6">
+        <h2 className="text-2xl font-light tracking-tight md:text-3xl">Join the Community</h2>
+        <p className="text-sm text-neutral-500 md:text-base">
+          Sign up for early access to new drops and exclusive editorial content.
+        </p>
 
         <div className="flex gap-2">
           <Input
             type="email"
             placeholder="Enter your email"
-            className="rounded-full bg-neutral-50 border-neutral-200 focus-visible:ring-neutral-400"
+            className="rounded-full border-neutral-200 bg-neutral-50 focus-visible:ring-neutral-400"
           />
-          <Button className="rounded-full px-6">Subscribe</Button>
+          <Button className="rounded-full px-5 md:px-6">Subscribe</Button>
         </div>
       </div>
     </section>

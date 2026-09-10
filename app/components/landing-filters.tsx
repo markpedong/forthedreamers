@@ -41,8 +41,8 @@ export function LandingFilters({ categories, onCategoryChange, onSortChange }: L
 
   return (
     <div className="border-b border-border bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-4">
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-3 md:gap-4">
           {/* Filter Header */}
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-medium text-foreground">Filters & Sort</h3>

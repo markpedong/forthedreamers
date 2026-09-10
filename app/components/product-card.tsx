@@ -52,14 +52,14 @@ const ProductCard: FC<ProductCardProps> = ({
           <ImagePlaceholder />
         )}
       </AspectRatio>
-      <div className={compact ? 'space-y-1.5 p-3' : undefined}>
+      <div className={compact ? 'space-y-1 p-2.5 md:space-y-1.5 md:p-3' : undefined}>
         <h3 className={compact ? 'line-clamp-2 min-h-10 text-sm font-medium leading-5' : 'font-medium'}>{name}</h3>
         {reviewCount > 0 && (
           <p className={compact ? 'text-xs text-muted-foreground' : 'mt-1 text-xs text-muted-foreground'}>
             ★ {rating.toFixed(1)} · {reviewCount} reviews
           </p>
         )}
-        <p className={compact ? 'text-base font-semibold text-foreground' : 'text-sm text-muted-foreground'}>
+        <p className={compact ? 'text-sm font-semibold text-foreground md:text-base' : 'text-sm text-muted-foreground'}>
           {price != null ? `$ ${price.toFixed(2)}` : 'Price unavailable'}
         </p>
       </div>

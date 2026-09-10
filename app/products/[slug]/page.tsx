@@ -25,7 +25,7 @@ const ProductPage = async (props: PageProps<'/products/[slug]'>) => {
 
   return (
     <main className="min-h-screen">
-      <div className="mx-auto max-w-7xl space-y-16 px-4 pb-20 pt-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl space-y-8 px-4 pb-16 pt-6 sm:px-6 md:space-y-16 md:pb-20 md:pt-12 lg:px-8">
         <div className="text-xs uppercase tracking-widest text-muted-foreground">
           Home / {product.category.name} / {product.name}
         </div>

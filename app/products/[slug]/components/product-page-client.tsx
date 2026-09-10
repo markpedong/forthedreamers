@@ -21,7 +21,7 @@ const ProductPageClient = ({ product }: ProductPageClientProps) => {
     : product.images;
 
   return (
-    <section className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:gap-16">
+    <section className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:gap-16">
       <ProductGallery key={selectedVariant?.id ?? 'product'} images={images} alt={product.name} />
       <div className="flex flex-col">
         <ProductOverview product={product} selectedVariant={selectedVariant} />

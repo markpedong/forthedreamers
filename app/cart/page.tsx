@@ -8,8 +8,8 @@ export default async function CartPage() {
   if (!userId) redirect('/sign-in?next=/cart');
   const items = await readCart(userId);
   return (
-    <main className="max-w-6xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
+    <main className="mx-auto max-w-6xl px-4 py-6 md:py-8">
+      <h1 className="mb-5 text-2xl font-bold md:mb-8 md:text-3xl">Your Cart</h1>
       <CartItemsList items={items} />
     </main>
   );

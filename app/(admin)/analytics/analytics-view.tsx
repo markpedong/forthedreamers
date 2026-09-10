@@ -252,7 +252,7 @@ const AnalyticsView = ({ data }: { data: AnalyticsData }) => {
           <p className="text-sm font-medium text-primary">
             {data.role === 'SELLER' ? data.storeName : 'ForTheDreamers'}
           </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">Analytics</h1>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">Analytics</h1>
           <p className="mt-1 text-sm text-muted-foreground">Trends across revenue, orders, and catalog.</p>
         </div>
         <div className="flex items-center gap-2">
