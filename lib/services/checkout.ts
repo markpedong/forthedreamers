@@ -101,13 +101,14 @@ export const checkout = async (userId: string, input: CheckoutInput) => {
 
       if (!Number.isFinite(totalAmount) || totalAmount <= 0) throw new Error('Invalid total');
 
-      for (const item of items) {
-        const updated = await tx.variant.updateMany({
-          where: { id: item.variantId, stock: { gte: item.quantity } },
-          data: { stock: { decrement: item.quantity } },
-        });
-        if (updated.count !== 1) throw new Error('Insufficient stock');
-      }
+      const stockValues = items.map((_, i) => `($${i * 2 + 1}::text, $${i * 2 + 2}::int)`).join(',');
+      const reserved = await tx.$executeRawUnsafe(
+        `UPDATE variant v SET stock = v.stock - d.quantity, "updatedAt" = NOW()
+         FROM (VALUES ${stockValues}) AS d(variant_id, quantity)
+         WHERE v.id = d.variant_id AND v.stock >= d.quantity`,
+        ...items.flatMap(item => [item.variantId, item.quantity])
+      );
+      if (reserved !== items.length) throw new Error('Insufficient stock');
 
       const group = await tx.orderGroup.create({
         data: {
@@ -158,9 +159,13 @@ export const checkout = async (userId: string, input: CheckoutInput) => {
           (quantitiesByProduct.get(item.variant.productId) ?? 0) + item.quantity
         );
       }
-      for (const [productId, quantity] of quantitiesByProduct) {
-        await tx.product.update({ where: { id: productId }, data: { sold: { increment: quantity } } });
-      }
+      const soldValues = [...quantitiesByProduct].map((_, i) => `($${i * 2 + 1}::text, $${i * 2 + 2}::int)`).join(',');
+      await tx.$executeRawUnsafe(
+        `UPDATE product p SET sold = p.sold + s.quantity, "updatedAt" = NOW()
+         FROM (VALUES ${soldValues}) AS s(product_id, quantity)
+         WHERE p.id = s.product_id`,
+        ...[...quantitiesByProduct].flatMap(([productId, quantity]) => [productId, quantity])
+      );
       await tx.cartItem.deleteMany({ where: { userId, id: { in: items.map(item => item.id) } } });
       return group;
     },
