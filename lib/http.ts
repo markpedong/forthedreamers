@@ -66,11 +66,24 @@ export type OrderResult = {
   total: number;
   status: string;
   createdAt: string;
-  orderGroup: { paymentMethod: string | null; paymentStatus: string } | null;
+  shippingFee: number | null;
+  discount: number | null;
+  orderGroup: {
+    paymentMethod: string | null;
+    paymentStatus: string;
+    shippingFullName: string | null;
+    shippingPhoneNumber: string | null;
+    shippingRegion: string | null;
+    shippingCity: string | null;
+    shippingPostalCode: string | null;
+    shippingStreet: string | null;
+  } | null;
   seller: { storeName: string } | null;
   orderItems: {
     id: string;
     quantity: number;
+    priceAtPurchase: number;
+    discountedPriceAtPurchase: number | null;
     finalPriceAfterDiscount: number;
     product: { id: string; name: string; slug: string; images: string[]; reviews: { id: string }[] } | null;
     variant: { id: string; name: string };

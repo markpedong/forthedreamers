@@ -52,7 +52,18 @@ export async function GET(request: NextRequest) {
             variant: { select: { id: true, name: true } },
           },
         },
-        orderGroup: { select: { paymentMethod: true, paymentStatus: true } },
+        orderGroup: {
+          select: {
+            paymentMethod: true,
+            paymentStatus: true,
+            shippingFullName: true,
+            shippingPhoneNumber: true,
+            shippingRegion: true,
+            shippingCity: true,
+            shippingPostalCode: true,
+            shippingStreet: true,
+          },
+        },
         seller: { select: { storeName: true } },
       },
     });

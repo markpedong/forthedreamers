@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useOrdersQuery } from '@/services/useQuery';
+import type { OrderResult } from '@/lib/http';
+import OrderDetailDialog from './components/order-detail-dialog';
 import WriteReview from './components/write-review';
 
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -20,89 +22,89 @@ const statusClass = (status: string) => {
   return 'bg-amber-500/10 text-amber-700 dark:text-amber-400';
 };
 
-type Order = NonNullable<ReturnType<typeof useOrdersQuery>['data']>['orders'][number];
+const OrderCard = ({ order, onOpen }: { order: OrderResult; onOpen: () => void }) => (
+  <article className="overflow-hidden rounded-lg border border-border bg-card transition-colors hover:border-muted-foreground/40">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onOpen}
+      onKeyDown={event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpen();
+        }
+      }}
+      aria-label={`View details for order ${order.id}`}
+      className="w-full cursor-pointer text-left"
+    >
+      <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-b border-border bg-muted/30 px-4 py-2.5">
+        <div className="min-w-0">
+          <p className="truncate font-mono text-xs text-muted-foreground">#{order.id}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{dates.format(new Date(order.createdAt))}</p>
+        </div>
+        <span
+          className={`inline-flex shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${statusClass(order.status)}`}
+        >
+          {formatStatus(order.status)}
+        </span>
+      </header>
 
-const OrderCard = ({ order }: { order: Order }) => (
-  <article className="overflow-hidden rounded-lg border border-border bg-card">
-    <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-b border-border bg-muted/30 px-4 py-2.5">
-      <div className="min-w-0">
-        <p className="truncate font-mono text-xs text-muted-foreground" title={`#${order.id}`}>
-          #{order.id}
-        </p>
-        <p className="mt-0.5 text-xs text-muted-foreground">{dates.format(new Date(order.createdAt))}</p>
-      </div>
-      <span className={`inline-flex shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${statusClass(order.status)}`}>
-        {formatStatus(order.status)}
-      </span>
-    </header>
+      <div className="divide-y divide-border">
+        {order.orderItems.map(item => (
+          <div key={item.id} className="flex gap-3 p-3 md:gap-4 md:p-4">
+            <div className="relative size-14 shrink-0 overflow-hidden rounded-md border border-border bg-muted md:size-16">
+              {item.product?.images?.[0] ? (
+                <Image
+                  src={item.product.images[0]}
+                  alt={item.product.name}
+                  fill
+                  sizes="64px"
+                  className="object-cover"
+                />
+              ) : (
+                <span className="flex h-full w-full items-center justify-center">
+                  <Package className="h-5 w-5 text-muted-foreground" />
+                </span>
+              )}
+            </div>
 
-    <div className="divide-y divide-border">
-      {order.orderItems.map(item => (
-        <div key={item.id} className="flex gap-3 p-3 md:gap-4 md:p-4">
-          <Link
-            href={item.product ? `/products/${item.product.slug}` : '/orders'}
-            className="relative size-14 shrink-0 overflow-hidden rounded-md border border-border bg-muted md:size-16"
-          >
-            {item.product?.images?.[0] ? (
-              <Image
-                src={item.product.images[0]}
-                alt={item.product.name}
-                fill
-                sizes="64px"
-                className="object-cover"
-              />
-            ) : (
-              <span className="flex h-full w-full items-center justify-center">
-                <Package className="h-5 w-5 text-muted-foreground" />
-              </span>
-            )}
-          </Link>
-
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 flex-1 items-start justify-between gap-3">
               <div className="min-w-0">
-                {item.product ? (
-                  <Link
-                    href={`/products/${item.product.slug}`}
-                    className="line-clamp-2 text-sm font-medium hover:underline"
-                  >
-                    {item.product.name}
-                  </Link>
-                ) : (
-                  <p className="text-sm font-medium">Product unavailable</p>
-                )}
+                <p className="line-clamp-2 text-sm font-medium">
+                  {item.product ? item.product.name : 'Product unavailable'}
+                </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {item.variant.name} · Qty {item.quantity}
                 </p>
               </div>
               <p className="shrink-0 text-sm font-semibold">{money.format(item.finalPriceAfterDiscount)}</p>
             </div>
-
-            {order.status === 'COMPLETED' &&
-              item.product &&
-              (item.product.reviews.length ? (
-                <span className="mt-1 self-start text-xs text-muted-foreground">Reviewed</span>
-              ) : (
-                <div className="mt-1 self-start">
-                  <WriteReview slug={item.product.slug} productName={item.product.name} />
-                </div>
-              ))}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+
+      <footer className="flex items-center justify-between gap-3 border-t border-border px-4 py-3">
+        <p className="text-xs text-muted-foreground">
+          {order.orderGroup?.paymentMethod === 'CASH_ON_DELIVERY'
+            ? `Cash on delivery · ${formatStatus(order.orderGroup.paymentStatus)}`
+            : 'Payment unavailable'}
+        </p>
+        <p className="text-sm">
+          <span className="text-muted-foreground">Order total </span>
+          <span className="font-semibold">{money.format(order.total)}</span>
+        </p>
+      </footer>
     </div>
 
-    <footer className="flex items-center justify-between gap-3 border-t border-border px-4 py-3">
-      <p className="text-xs text-muted-foreground">
-        {order.orderGroup?.paymentMethod === 'CASH_ON_DELIVERY'
-          ? `Cash on delivery · ${formatStatus(order.orderGroup.paymentStatus)}`
-          : 'Payment unavailable'}
-      </p>
-      <p className="text-sm">
-        <span className="text-muted-foreground">Order total </span>
-        <span className="font-semibold">{money.format(order.total)}</span>
-      </p>
-    </footer>
+    {order.status === 'COMPLETED' && order.orderItems.some(item => item.product && !item.product.reviews.length) && (
+      <div className="flex flex-wrap gap-2 border-t border-border px-4 py-3">
+        {order.orderItems.map(item =>
+          item.product && !item.product.reviews.length ? (
+            <WriteReview key={item.id} slug={item.product.slug} productName={item.product.name} />
+          ) : null
+        )}
+      </div>
+    )}
   </article>
 );
 
@@ -110,6 +112,7 @@ export default function OrdersPage() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState('');
   const [sort, setSort] = useState('createdAt:desc');
+  const [selectedOrder, setSelectedOrder] = useState<OrderResult | null>(null);
   const [sortBy, order] = sort.split(':');
   const ordersQuery = useOrdersQuery(page, status, sortBy, order);
   const data = ordersQuery.data;
@@ -177,7 +180,7 @@ export default function OrdersPage() {
         <>
           <div className="space-y-3 md:space-y-4">
             {data.orders.map(orderItem => (
-              <OrderCard key={orderItem.id} order={orderItem} />
+              <OrderCard key={orderItem.id} order={orderItem} onOpen={() => setSelectedOrder(orderItem)} />
             ))}
           </div>
           <nav aria-label="Order pagination" className="mt-8 flex items-center justify-center gap-4 md:mt-10">
@@ -193,6 +196,8 @@ export default function OrdersPage() {
           </nav>
         </>
       )}
+
+      <OrderDetailDialog order={selectedOrder} onClose={() => setSelectedOrder(null)} />
     </main>
   );
 }
