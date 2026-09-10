@@ -2,15 +2,12 @@
 
 import { TOnNavigate } from '@/lib/types';
 import AuthPage from '../../components/auth-page';
-import OauthButtons from './oauth-buttons';
+import OauthButtons, { FacebookButton } from './oauth-buttons';
 import FormField from '@/components/reusable/form-field';
 import { Button } from '@/components/ui/button';
-import Divider from '@/components/reusable/divider';
-import Link from 'next/link';
-import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { useSignInForm } from '@/hooks/use-sign-in-form';
-import AuthCard from '../../components/auth-card';
 
 const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,93 +25,99 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
 
   return (
     <AuthPage>
-      <Link
-        href="/"
-        className="fixed left-4 top-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/70 bg-white px-4 py-2 text-sm font-medium text-neutral-900 shadow-sm transition-colors hover:bg-neutral-100 sm:left-6 sm:top-6"
-      >
-        <ArrowLeft className="size-4" />
-        Back to home
-      </Link>
+      {/* Desktop: heading + form */}
+      <div className="hidden lg:block">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Welcome Back 👋</h1>
+        <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+          Today is a new day. It's your day. You shape it. Sign in to start managing your projects.
+        </p>
+      </div>
 
-      <AuthCard title="Welcome back" description="Sign in to your account to continue" eyebrow="For The Dreamers">
-        <div className="space-y-3 sm:space-y-5">
-          <form onSubmit={onSubmit} className="space-y-3 sm:space-y-5">
-            <FormField
-              {...register('email')}
-              id="email"
-              label="Email"
-              error={errors.email?.message}
-              placeholder="you@example.com"
-              disabled={isSubmitting}
-              autoComplete="email"
-            />
+      {/* Mobile: heading + form below banner */}
+      <div className="lg:hidden">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Welcome Back 👋</h1>
+        <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+          Today is a new day. It's your day. You shape it. Sign in to start managing your projects.
+        </p>
+      </div>
 
-            <FormField
-              {...register('password')}
-              id="password"
-              label="Password"
-              error={errors.password?.message}
-              type={showPassword ? 'text' : 'password'}
-              placeholder="••••••••"
-              disabled={isSubmitting}
-              className="pr-10"
-              autoComplete="current-password"
-            >
-              <button
-                type="button"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                onClick={() => setShowPassword(value => !value)}
-                onMouseDown={event => event.preventDefault()}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                {showPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-              </button>
-            </FormField>
+      <form onSubmit={onSubmit} className="mt-6 space-y-4 lg:mt-8">
+        <FormField
+          {...register('email')}
+          id="email"
+          label="Email"
+          error={errors.email?.message}
+          placeholder="Example@email.com"
+          disabled={isSubmitting}
+          autoComplete="email"
+        />
 
-            <div className="flex items-center justify-end">
-              <button
-                type="button"
-                onClick={e => {
-                  e.preventDefault();
+        <FormField
+          {...register('password')}
+          id="password"
+          label="Password"
+          error={errors.password?.message}
+          type={showPassword ? 'text' : 'password'}
+          placeholder="At least 8 characters"
+          disabled={isSubmitting}
+          className="pr-10"
+          autoComplete="current-password"
+        >
+          <button
+            type="button"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            onClick={() => setShowPassword(value => !value)}
+            onMouseDown={event => event.preventDefault()}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+          >
+            {showPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+          </button>
+        </FormField>
 
-                  if (!isSubmitting) {
-                    onNavigate('forgot');
-                  }
-                }}
-                className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-              >
-                Forgot password?
-              </button>
-            </div>
+        <div className="text-right">
+          <button
+            type="button"
+            onClick={e => {
+              e.preventDefault();
 
-            <Button className="w-full" disabled={isSubmitting} aria-busy={isSubmitting}>
-              {isSubmitting ? 'Signing in...' : 'Sign in'}
-            </Button>
-          </form>
+              if (!isSubmitting) {
+                onNavigate('forgot');
+              }
+            }}
+            className="text-sm font-medium text-primary underline hover:underline-offset-4"
+          >
+            Forgot password?
+          </button>
         </div>
 
-        <Divider title="or continue with" />
+        <Button className="w-full" disabled={isSubmitting} aria-busy={isSubmitting}>
+          {isSubmitting ? 'Signing in...' : 'Sign in'}
+        </Button>
 
-        <OauthButtons next="/profile" />
+        <div className="mt-4 flex justify-center">
+          <span className="text-sm text-muted-foreground">Or sign in with</span>
+        </div>
 
-        <p className="mt-3 text-center text-sm text-muted-foreground sm:mt-5">
-          Don&apos;t have an account?{' '}
+        <div className="grid grid-cols-2 gap-3">
+          <OauthButtons next="/profile" />
+          <FacebookButton />
+        </div>
+
+        <p className="text-center text-sm text-muted-foreground">
+          Don&apos;t you have an account?{' '}
           <button
             onClick={() => onNavigate('register')}
-            className="font-medium text-primary underline-offset-4 hover:underline"
+            className="font-medium text-primary hover:underline-offset-4"
             type="button"
           >
-            Create account
+            Sign up
           </button>
         </p>
 
-        <div className="mt-3 border-t pt-3 text-center text-sm text-muted-foreground sm:mt-5 sm:pt-5">
-          Want to sell?{' '}
-          <Link href="/seller" className="font-medium text-primary underline-offset-4 hover:underline">
-            Sign in as a seller
-          </Link>
-        </div>
-      </AuthCard>
+        <p className="text-center text-xs text-muted-foreground">
+          © 2023 ALL RIGHTS RESERVED
+        </p>
+      </form>
     </AuthPage>
   );
 };
