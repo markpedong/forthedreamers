@@ -62,7 +62,7 @@ export default function OrdersPage() {
                   <div><p className="text-xs uppercase text-muted-foreground">Order number</p><p className="mt-1 font-medium">#{orderItem.id}</p></div>
                   <div><p className="text-xs uppercase text-muted-foreground">Date</p><p className="mt-1">{dates.format(new Date(orderItem.createdAt))}</p></div>
                   <div><p className="text-xs uppercase text-muted-foreground">Total</p><p className="mt-1 font-medium">{money.format(orderItem.total)}</p></div>
-                  <div><p className="text-xs uppercase text-muted-foreground">Payment</p><p className="mt-1">{orderItem.orderGroup?.paymentStatus ?? 'Unavailable'}</p></div>
+                  <div><p className="text-xs uppercase text-muted-foreground">Payment</p><p className="mt-1">{orderItem.orderGroup?.paymentMethod === 'CASH_ON_DELIVERY' ? `Cash on delivery · ${orderItem.orderGroup.paymentStatus}` : 'Unavailable'}</p></div>
                   <div><p className="text-xs uppercase text-muted-foreground">Order status</p><p className="mt-1">{orderItem.status}</p></div>
                 </header>
                 <div className="divide-y divide-border px-5">
