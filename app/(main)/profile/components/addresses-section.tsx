@@ -1,17 +1,12 @@
 'use client';
 
-import { FC, useState } from 'react';
+import { FC, startTransition, useOptimistic, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Trash2, Star, Pencil, Plus } from 'lucide-react';
-import AlertDialog from '@/components/reusable/alert-dialog';
-import Form from '@/components/reusable/form';
-import Input from '@/components/reusable/input';
-import formSchemas from '@/hooks/form-schemas';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { SchemaForm } from '@/lib/types';
+import AddressForm from '@/components/reusable/address-form';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAddressMutation } from '@/services/useMutation';
 
 type Address = {
@@ -34,64 +29,20 @@ type AddressesSectionProps = {
 const AddressesSection: FC<AddressesSectionProps> = ({ addresses }) => {
   const [showDialog, setShowDialog] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
-  const { addressSchema } = formSchemas;
-  const mutation = useAddressMutation(operation => {
-    if (operation === 'create' || operation === 'update') setShowDialog(false);
-  });
+  const mutation = useAddressMutation(() => undefined);
+  const [optimisticAddresses, setOptimisticDefault] = useOptimistic(addresses, (current, addressId: string) =>
+    current.map(address => ({ ...address, isDefault: address.id === addressId }))
+  );
   const isPending = mutation.isPending;
-
-  const form = useForm<SchemaForm<typeof addressSchema>>({
-    resolver: zodResolver(addressSchema),
-    defaultValues: {
-      fullName: '',
-      phoneNumber: '',
-      street: '',
-      city: '',
-      region: '',
-      postalCode: '',
-      label: '',
-      type: 'HOME',
-      isDefault: false,
-    },
-  });
 
   const openEditDialog = (address: Address) => {
     setEditingAddress(address);
-    form.reset({
-      fullName: address.fullName,
-      phoneNumber: address.phoneNumber,
-      street: address.street,
-      city: address.city,
-      region: address.region,
-      postalCode: address.postalCode,
-      label: address.label || '',
-      type: address.type,
-      isDefault: address.isDefault,
-    });
     setShowDialog(true);
   };
 
   const openAddDialog = () => {
     setEditingAddress(null);
-    form.reset({
-      fullName: '',
-      phoneNumber: '',
-      street: '',
-      city: '',
-      region: '',
-      postalCode: '',
-      label: '',
-      type: 'HOME',
-      isDefault: false,
-    });
     setShowDialog(true);
-  };
-
-  const onSubmit = (values: SchemaForm<typeof addressSchema>) => {
-    mutation.mutate({
-      operation: editingAddress ? 'update' : 'create',
-      input: editingAddress ? { ...values, id: editingAddress.id } : values,
-    });
   };
 
   const handleDelete = (addressId: string) => {
@@ -99,7 +50,10 @@ const AddressesSection: FC<AddressesSectionProps> = ({ addresses }) => {
   };
 
   const handleSetDefault = (addressId: string) => {
-    mutation.mutate({ operation: 'default', input: addressId });
+    startTransition(async () => {
+      setOptimisticDefault(addressId);
+      await mutation.mutateAsync({ operation: 'default', input: addressId }).catch(() => undefined);
+    });
   };
 
   const typeLabels: Record<Address['type'], string> = {
@@ -124,7 +78,7 @@ const AddressesSection: FC<AddressesSectionProps> = ({ addresses }) => {
         </CardHeader>
 
         <CardContent>
-          {addresses.length === 0 ? (
+          {optimisticAddresses.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground">
               <MapPin className="mx-auto mb-3 h-10 w-10 opacity-40" />
               <p className="font-medium">You haven&apos;t added an address yet</p>
@@ -135,7 +89,7 @@ const AddressesSection: FC<AddressesSectionProps> = ({ addresses }) => {
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
-              {addresses.map(address => (
+              {optimisticAddresses.map(address => (
                 <div
                   key={address.id}
                   className={`flex min-h-52 flex-col justify-between rounded-lg border p-5 ${
@@ -195,36 +149,18 @@ const AddressesSection: FC<AddressesSectionProps> = ({ addresses }) => {
         </CardContent>
       </Card>
 
-      <AlertDialog
-        open={showDialog}
-        onOpenChange={open => {
-          if (!open) setShowDialog(false);
-        }}
-        title={editingAddress ? 'Edit address' : 'Add address'}
-        description={editingAddress ? 'Update your delivery address details.' : 'Enter your delivery address details.'}
-        confirmText={editingAddress ? 'Save changes' : 'Add address'}
-        loading={isPending}
-        onConfirm={form.handleSubmit(onSubmit)}
-        onCancel={() => {
-          setShowDialog(false);
-          form.reset();
-        }}
-      >
-        <Form form={form} onSubmit={onSubmit} customSubmitButton>
-          <Input control={form.control} name="fullName" label="Full name" placeholder="Juan Dela Cruz" />
-          <Input control={form.control} name="phoneNumber" label="Phone number" placeholder="+63 912 345 6789" />
-          <Input
-            control={form.control}
-            name="street"
-            label="Street / Barangay"
-            placeholder="123 Rizal St, Brgy. San Antonio"
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>{editingAddress ? 'Edit Address' : 'Add New Address'}</DialogTitle>
+          </DialogHeader>
+          <AddressForm
+            key={editingAddress?.id ?? 'new'}
+            address={editingAddress ?? undefined}
+            onCancel={() => setShowDialog(false)}
           />
-          <Input control={form.control} name="city" label="City / Municipality" placeholder="Quezon City" />
-          <Input control={form.control} name="region" label="Province" placeholder="Metro Manila" />
-          <Input control={form.control} name="postalCode" label="Postal code" placeholder="1100" />
-          <Input control={form.control} name="label" label="Label (optional)" placeholder="Home, Office, etc." />
-        </Form>
-      </AlertDialog>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

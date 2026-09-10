@@ -61,14 +61,14 @@ export const deleteAddress = (userId: string, id: string) =>
 
 export const setDefaultAddress = (userId: string, id: string) =>
   prisma.$transaction(async tx => {
-    const existing = await tx.address.findFirst({ where: { id, userId } });
-    if (!existing) throw new Error('Address not found or unauthorized');
-    await tx.address.updateMany({ where: { userId, isDefault: true, id: { not: id } }, data: { isDefault: false } });
-    return tx.address.update({
-      where: { id },
+    await tx.address.updateMany({ where: { userId, isDefault: true }, data: { isDefault: false } });
+    const [address] = await tx.address.updateManyAndReturn({
+      where: { id, userId },
       data: { isDefault: true },
       omit: { createdAt: true, updatedAt: true, userId: true },
     });
+    if (!address) throw new Error('Address not found or unauthorized');
+    return address;
   });
 
 export const getUserAccounts = (userId: string) =>
