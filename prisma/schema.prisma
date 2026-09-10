@@ -136,6 +136,7 @@ model Seller {
   updatedAt   DateTime  @updatedAt
   orders      Order[]
   products    Product[]
+  shippingMethods ShippingMethod[] @relation("SellerShippingMethods")
   user        User      @relation("UserSeller", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
@@ -321,13 +322,20 @@ model Review {
 }
 
 model OrderGroup {
-  id            String         @id @default(uuid())
-  userId        String
-  totalAmount   Float
-  paymentStatus PAYMENT_STATUS @default(PENDING)
-  createdAt     DateTime       @default(now())
-  orders        Order[]
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                  String         @id @default(uuid())
+  userId              String
+  totalAmount         Float
+  paymentMethod       String?
+  paymentStatus       PAYMENT_STATUS @default(PENDING)
+  shippingFullName    String?
+  shippingPhoneNumber String?
+  shippingRegion      String?
+  shippingCity        String?
+  shippingPostalCode  String?
+  shippingStreet      String?
+  createdAt           DateTime       @default(now())
+  orders              Order[]
+  user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, paymentStatus])
   @@index([createdAt])
@@ -475,6 +483,7 @@ model ReturnItem {
 
 model ShippingMethod {
   id            String  @id @default(uuid())
+  code          String  @unique
   name          String
   description   String?
   price         Float
@@ -483,6 +492,7 @@ model ShippingMethod {
   regions       Json?
 
   orders        Order[]
+  sellers       Seller[] @relation("SellerShippingMethods")
 
   @@index([isActive])
   @@index([price])
