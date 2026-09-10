@@ -368,14 +368,18 @@ export const useAddCartMutation = () => {
   });
 };
 
-export const useCheckoutMutation = () =>
-  useMutation({
-    mutationFn: (vars?: { shippingMethodId?: string }) => checkoutCart(vars?.shippingMethodId),
+export const useCheckoutMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: checkoutCart,
     onSuccess: result => {
+      void queryClient.invalidateQueries({ queryKey: cartCountQueryKey });
       if (result.data) window.location.assign(`/checkout/success?orderId=${result.data.orderGroupId}`);
     },
     onError: error => toast.error(error.message),
   });
+};
 
 export const useCreateReviewMutation = (slug: string, onSuccess: () => void) => {
   const queryClient = useQueryClient();
