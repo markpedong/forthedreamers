@@ -44,25 +44,33 @@ export const getCurrentUserData = async (): Promise<TUserData | null> => {
 export const signUp = async (email: string, password: string, name: string, callbackURL = '/profile') => {
   const supabase = await createSupabaseServerClient();
   const origin = await appOrigin();
-  const result = await supabase.auth.signUp({
-    email,
-    password,
-    options: { emailRedirectTo: `${origin}/auth/callback?next=${callbackURL}`, data: { name } },
-  });
+  const [result] = await Promise.all([
+    supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: `${origin}/auth/callback?next=${callbackURL}`, data: { name } },
+    }),
+    // ponytail: warms the local pool during the ~180ms GoTrue round-trip; harmless if unused.
+    prisma.$queryRaw`SELECT 1 AS ok`,
+  ]);
   if (result.error) throw new Error(result.error.message);
-  if (result.data.user?.email) {
-    await prisma.user.upsert({
-      where: { id: result.data.user.id },
-      update: { email: result.data.user.email, name },
-      create: {
-        id: result.data.user.id,
-        email: result.data.user.email,
-        name,
-        image: generateDefaultAvatar(result.data.user.id),
-        emailVerified: Boolean(result.data.user.email_confirmed_at),
-      },
-    });
-  }
+  const user = result.data.user;
+  // Supabase returns a fake success for an already-registered address (anti-enumeration),
+  // with no identities. Without this the caller is told "created" for an existing account.
+  if (!user?.email || !user.identities?.length)
+    throw new Error('Unable to sign up. Sign in if you already have an account.');
+  // A single upsert covers both branches; `update` omits role so an existing SELLER/ADMIN keeps it.
+  await prisma.user.upsert({
+    where: { id: user.id },
+    update: { email: user.email, name },
+    create: {
+      id: user.id,
+      email: user.email,
+      name,
+      image: generateDefaultAvatar(user.id),
+      emailVerified: Boolean(user.email_confirmed_at),
+    },
+  });
   return result.data;
 };
 

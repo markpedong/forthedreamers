@@ -6,6 +6,7 @@ import OauthButtons from './oauth-buttons';
 import FormField from '@/components/reusable/form-field';
 import { Button } from '@/components/ui/button';
 import { Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { useSignInForm } from '@/hooks/use-sign-in-form';
 
@@ -109,6 +110,13 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           >
             Sign up
           </button>
+        </p>
+
+        <p className="text-center text-sm text-muted-foreground">
+          Selling on For The Dreamers?{' '}
+          <Link href="/seller" className="font-medium text-primary hover:underline-offset-4">
+            Seller sign in
+          </Link>
         </p>
 
         <p className="text-center text-xs text-muted-foreground">
