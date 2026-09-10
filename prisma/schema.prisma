@@ -121,23 +121,23 @@ model Passkey {
 }
 
 model Seller {
-  id          String    @id @default(uuid())
-  userId      String    @unique
-  storeName   String    @unique
-  contact     String?
-  rating      Float     @default(0)
-  reviewCount Int       @default(0)
-  totalSales  Float     @default(0)
-  description String?
-  address     String?
-  logo        String?
-  banner      String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  orders      Order[]
-  products    Product[]
+  id              String           @id @default(uuid())
+  userId          String           @unique
+  storeName       String           @unique
+  contact         String?
+  rating          Float            @default(0)
+  reviewCount     Int              @default(0)
+  totalSales      Float            @default(0)
+  description     String?
+  address         String?
+  logo            String?
+  banner          String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  orders          Order[]
+  products        Product[]
   shippingMethods ShippingMethod[] @relation("SellerShippingMethods")
-  user        User      @relation("UserSeller", fields: [userId], references: [id], onDelete: Cascade)
+  user            User             @relation("UserSeller", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
   @@map("seller")
@@ -343,25 +343,25 @@ model OrderGroup {
 }
 
 model Order {
-  id              String           @id @default(cuid())
-  orderGroupId    String?
-  sellerId        String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  coupon          String?
-  discount        Float?
-  total           Float
-  shippingFee     Float?
+  id               String           @id @default(cuid())
+  orderGroupId     String?
+  sellerId         String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  coupon           String?
+  discount         Float?
+  total            Float
+  shippingFee      Float?
   shippingMethodId String?
-  userId          String
-  status          ORDER_STATUS     @default(PENDING)
-  orderGroup      OrderGroup?      @relation(fields: [orderGroupId], references: [id])
-  seller          Seller?          @relation(fields: [sellerId], references: [id])
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  shippingMethod  ShippingMethod?  @relation(fields: [shippingMethodId], references: [id])
-  orderItems      OrderItem[]
-  returnRequests  ReturnRequest[]
-  supportMessages SupportMessage[]
+  userId           String
+  status           ORDER_STATUS     @default(PENDING)
+  orderGroup       OrderGroup?      @relation(fields: [orderGroupId], references: [id])
+  seller           Seller?          @relation(fields: [sellerId], references: [id])
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shippingMethod   ShippingMethod?  @relation(fields: [shippingMethodId], references: [id])
+  orderItems       OrderItem[]
+  returnRequests   ReturnRequest[]
+  supportMessages  SupportMessage[]
 
   @@index([userId])
   @@index([sellerId])
@@ -488,11 +488,11 @@ model ShippingMethod {
   description   String?
   price         Float
   estimatedDays Int
-  isActive      Boolean  @default(true)
+  isActive      Boolean @default(true)
   regions       Json?
 
-  orders        Order[]
-  sellers       Seller[] @relation("SellerShippingMethods")
+  orders  Order[]
+  sellers Seller[] @relation("SellerShippingMethods")
 
   @@index([isActive])
   @@index([price])
