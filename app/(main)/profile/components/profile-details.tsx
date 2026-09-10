@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button, SubmitButton } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import formSchemas from '@/hooks/form-schemas';
 import { SchemaForm } from '@/lib/types';
 import { useForm } from 'react-hook-form';
@@ -60,7 +60,9 @@ const ProfileDetails = () => {
                   className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   disabled={isSubmitting}
                 />
-                <SubmitButton title={isSubmitting ? 'Saving...' : 'Save'} disabled={isSubmitting} size="sm" />
+                <Button type="submit" disabled={isSubmitting} size="sm">
+                  {isSubmitting ? 'Saving...' : 'Save'}
+                </Button>
                 <Button
                   type="button"
                   variant="outline"

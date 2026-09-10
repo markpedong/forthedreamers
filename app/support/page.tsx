@@ -3,8 +3,8 @@
 import { FormEvent, useState } from 'react';
 import Link from 'next/link';
 import { LifeBuoy, Plus } from 'lucide-react';
-import { Button, SubmitButton } from '@/components/ui/button';
-import FormField from '@/components/reusable/form-field';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateSupportTicketMutation, useSupportMessageMutation } from '@/services/useMutation';
 import { useSupportTicketQuery, useSupportTicketsQuery } from '@/services/useQuery';
@@ -59,7 +59,7 @@ export default function SupportPage() {
       {creating && (
         <form onSubmit={createTicket} className="mb-8 space-y-4 border border-border bg-card p-6">
           <h2 className="text-xl font-medium">Create a support ticket</h2>
-          <FormField value={subject} onChange={event => setSubject(event.target.value)} minLength={5} maxLength={200} required placeholder="Subject" />
+          <Input value={subject} onChange={event => setSubject(event.target.value)} minLength={5} maxLength={200} required placeholder="Subject" />
           <div className="grid gap-3 sm:grid-cols-2">
             <select value={category} onChange={event => setCategory(event.target.value as typeof category)} aria-label="Ticket category" className="h-9 border border-input bg-background px-3 text-sm">
               <option value="ORDER">Order</option><option value="PRODUCT">Product</option><option value="SHIPPING">Shipping</option><option value="ACCOUNT">Account</option><option value="OTHER">Other</option>
@@ -70,7 +70,9 @@ export default function SupportPage() {
           </div>
           <Textarea value={message} onChange={event => setMessage(event.target.value)} minLength={10} maxLength={2000} required placeholder="Describe how we can help" className="min-h-32" />
           <div className="flex gap-3">
-            <SubmitButton title={createMutation.isPending ? 'Creating ticket…' : 'Create ticket'} disabled={createMutation.isPending} />
+            <Button type="submit" disabled={createMutation.isPending}>
+              {createMutation.isPending ? 'Creating ticket…' : 'Create ticket'}
+            </Button>
             <Button type="button" variant="outline" onClick={() => setCreating(false)}>Cancel</Button>
           </div>
         </form>
@@ -130,7 +132,9 @@ export default function SupportPage() {
               {!['CLOSED', 'CANCELLED'].includes(ticketQuery.data.status) && (
                 <form onSubmit={sendReply} className="space-y-3 border-t border-border p-5">
                   <Textarea value={reply} onChange={event => setReply(event.target.value)} minLength={10} maxLength={2000} required placeholder="Write a reply" />
-              <SubmitButton title={replyMutation.isPending ? 'Sending…' : 'Send message'} disabled={replyMutation.isPending} />
+                  <Button type="submit" disabled={replyMutation.isPending}>
+                    {replyMutation.isPending ? 'Sending…' : 'Send message'}
+                  </Button>
                 </form>
               )}
             </div>

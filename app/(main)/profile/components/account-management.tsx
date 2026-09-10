@@ -4,9 +4,11 @@ import { FC, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { CHANGE_PASSWORD_DEFAULT, OAUTH_PROVIDERS } from '@/constants';
 import formSchemas from '@/hooks/form-schemas';
 import { Account, SchemaForm } from '@/lib/types';
-import FormField from '@/components/reusable/form-field';
+import Form from '@/components/reusable/form';
+import Input from '@/components/reusable/input';
 import Divider from '@/components/reusable/divider';
 import AccountCard from '@/components/reusable/account-card';
 import AlertDialog from '@/components/reusable/alert-dialog';
@@ -29,12 +31,12 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
   const { changePasswordSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof changePasswordSchema>>({
     resolver: zodResolver(changePasswordSchema),
-    defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
+    defaultValues: CHANGE_PASSWORD_DEFAULT,
   });
 
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const passwordMutation = useChangePasswordMutation(() => {
-    form.reset({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    form.reset(CHANGE_PASSWORD_DEFAULT);
     setShowPasswordDialog(false);
   });
   const resetMutation = useForgotPasswordMutation({
@@ -43,9 +45,6 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
   });
   const linkMutation = useLinkSocialMutation();
   const isSubmitting = passwordMutation.isPending || resetMutation.isPending || linkMutation.isPending;
-
-  const { register, handleSubmit } = form;
-  const { errors } = form.formState;
 
   const onSubmit = (values: SchemaForm<typeof changePasswordSchema>) => {
     passwordMutation.mutate(values.confirmPassword);
@@ -85,13 +84,13 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
           <section>
             <p className="mb-3 text-sm font-medium text-foreground">Available to link</p>
             <div className="grid gap-3">
-              {['google', 'github'].filter(provider => !accounts.some(a => a.providerId === provider)).map(provider => (
+              {OAUTH_PROVIDERS.filter(provider => !accounts.some(a => a.providerId === provider)).map(provider => (
                 <AccountCard
                   key={provider}
-                  provider={provider as any}
+                  provider={provider}
                   account={null}
                   loading={isSubmitting}
-                  onClick={provider => linkMutation.mutate(provider as any)}
+                  onClick={provider => linkMutation.mutate(provider)}
                 />
               ))}
             </div>
@@ -144,11 +143,34 @@ const AccountManagement: FC<AccountManagementProps> = ({ hasPassword, accounts }
         confirmText="Change Password"
         loading={isSubmitting}
         onConfirm={form.handleSubmit(onSubmit)}
-        onCancel={() => form.reset({ currentPassword: '', newPassword: '', confirmPassword: '' })}
+        onCancel={() => form.reset(CHANGE_PASSWORD_DEFAULT)}
       >
-        <FormField {...register('currentPassword')} id="account-current-password" label="Current Password" error={errors.currentPassword?.message} type="password" placeholder="••••••••" disabled={isSubmitting} />
-        <FormField {...register('newPassword')} id="account-new-password" label="New Password" error={errors.newPassword?.message} type="password" placeholder="••••••••" disabled={isSubmitting} />
-        <FormField {...register('confirmPassword')} id="account-confirm-password" label="Confirm Password" error={errors.confirmPassword?.message} type="password" placeholder="••••••••" disabled={isSubmitting} />
+        <Form form={form} onSubmit={onSubmit} customSubmitButton className="mt-8">
+          <Input
+            control={form.control}
+            name="currentPassword"
+            label="Current Password"
+            type="password"
+            placeholder="••••••••"
+            disabled={isSubmitting}
+          />
+          <Input
+            control={form.control}
+            name="newPassword"
+            label="New Password"
+            type="password"
+            placeholder="••••••••"
+            disabled={isSubmitting}
+          />
+          <Input
+            control={form.control}
+            name="confirmPassword"
+            label="Confirm Password"
+            type="password"
+            placeholder="••••••••"
+            disabled={isSubmitting}
+          />
+        </Form>
       </AlertDialog>
     </>
   );
