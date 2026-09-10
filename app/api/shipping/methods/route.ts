@@ -83,16 +83,20 @@ export async function PUT(request: NextRequest) {
       return successResponse({ message: 'Shipping methods already seeded' }, undefined, 200);
     }
 
-    // Philippine courier defaults (Shopee/Lazada style)
     const defaultMethods = [
-      { name: 'Standard Delivery', description: 'J&T Express / Ninja Van — 3–7 days', price: 50, estimatedDays: 3 },
-      { name: 'Economy Delivery', description: 'PHL Post / ARI — 7–14 days', price: 30, estimatedDays: 7 },
-      { name: 'Express Delivery', description: 'LBC Express / Flash Express — 1–3 days', price: 120, estimatedDays: 1 },
+      { name: 'J&T Express', description: 'Nationwide tracked delivery', price: 3.99, estimatedDays: 3 },
+      { name: 'Ninja Van', description: 'Door-to-door standard delivery', price: 4.49, estimatedDays: 3 },
+      { name: 'Flash Express', description: 'Tracked express delivery', price: 4.99, estimatedDays: 2 },
+      { name: 'LBC Express', description: 'Priority nationwide delivery', price: 6.99, estimatedDays: 1 },
     ];
 
-    await prisma.shippingMethod.deleteMany({});
     const methods = await Promise.all(
-      defaultMethods.map(m => prisma.shippingMethod.create({ data: { name: m.name, description: m.description, price: m.price as number, estimatedDays: m.estimatedDays } })),
+      defaultMethods.map(async method => {
+        const existingMethod = await prisma.shippingMethod.findFirst({ where: { name: method.name } });
+        return existingMethod
+          ? prisma.shippingMethod.update({ where: { id: existingMethod.id }, data: { ...method, isActive: true } })
+          : prisma.shippingMethod.create({ data: method });
+      }),
     );
 
     return successResponse(methods, 'Shipping methods seeded', 201);
