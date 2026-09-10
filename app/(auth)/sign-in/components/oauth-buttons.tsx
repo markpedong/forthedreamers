@@ -1,4 +1,4 @@
-import { GoogleIcon, FacebookIcon } from '@/components/icons/oauth';
+import { GoogleIcon } from '@/components/icons/oauth';
 import { Button } from '@/components/ui/button';
 import { useSocialSignInMutation } from '@/services/useMutation';
 
@@ -20,16 +20,4 @@ const OauthButtons = ({ next }: OauthButtonsProps) => {
   );
 };
 
-const FacebookButton = () => (
-  <Button
-    type="button"
-    variant="outline"
-    className="h-12 w-full rounded-xl bg-background font-medium shadow-xs"
-  >
-    <FacebookIcon />
-    <span>Sign in with Facebook</span>
-  </Button>
-);
-
-export { OauthButtons, FacebookButton };
 export default OauthButtons;
