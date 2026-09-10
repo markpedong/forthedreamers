@@ -10,7 +10,7 @@ type AddressUpdateInput = z.infer<typeof addressUpdateSchema>;
 export const getUserAddresses = (userId: string) =>
   prisma.address.findMany({
     where: { userId },
-    orderBy: [{ isDefault: 'desc' }, { updatedAt: 'desc' }],
+    orderBy: { createdAt: 'desc' },
     omit: { createdAt: true, updatedAt: true, userId: true },
   });
 
