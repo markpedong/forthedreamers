@@ -16,7 +16,9 @@ const createPrisma = () => {
   const adapter = new PrismaPg({
     connectionString,
     ssl: { rejectUnauthorized: false },
+    min: 1,
     max: 5,
+    idleTimeoutMillis: 60_000,
   });
 
   return new PrismaClient({
