@@ -1,4 +1,3 @@
-import type { Address, ShippingMethod } from '@/generated/prisma';
 import { getCurrentUserID } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { redirect } from 'next/navigation';
@@ -52,16 +51,10 @@ const CheckoutPage = async (props: { searchParams: Promise<{ items?: string }> }
     });
   }
 
-  const [addresses, shippingMethods] = await Promise.all([
-    prisma.address.findMany({
-      where: { userId },
-      orderBy: { isDefault: 'desc' },
-    }),
-    prisma.shippingMethod.findMany({
-      where: { isActive: true },
-      orderBy: { price: 'asc' },
-    }),
-  ]);
+  const addresses = await prisma.address.findMany({
+    where: { userId },
+    orderBy: { isDefault: 'desc' },
+  });
 
   if (cartItems.length === 0) {
     return (
@@ -76,11 +69,30 @@ const CheckoutPage = async (props: { searchParams: Promise<{ items?: string }> }
     );
   }
 
+  const sellerIds = [...new Set(cartItems.map(item => item.variant.product.sellerId))];
+  const sellers = await prisma.seller.findMany({
+    where: { id: { in: sellerIds } },
+    select: {
+      id: true,
+      storeName: true,
+      shippingMethods: { where: { isActive: true }, select: { code: true } },
+    },
+  });
+  const sellerShippingMethods = sellerIds.map(sellerId => {
+    const seller = sellers.find(candidate => candidate.id === sellerId);
+    const fallbackName = cartItems.find(item => item.variant.product.sellerId === sellerId)?.variant.product.seller.storeName;
+    return {
+      sellerId,
+      storeName: seller?.storeName ?? fallbackName ?? 'Seller',
+      courierCodes: seller?.shippingMethods.map(method => method.code) ?? [],
+    };
+  });
+
   return (
     <CheckoutPageClient
       cartItems={cartItems}
       addresses={addresses}
-      shippingMethods={shippingMethods}
+      sellerShippingMethods={sellerShippingMethods}
     />
   );
 };
