@@ -2,7 +2,7 @@
 
 import ProTable from '@/components/pro-table';
 import { Button } from '@/components/ui/button';
-import FormField from '@/components/reusable/form-field';
+import { Input } from '@/components/ui/input';
 import { Category } from '@/generated/prisma';
 import { ProColumn, ActionType } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
@@ -29,7 +29,7 @@ const Categories: FC<{ initialCategories: Category[] }> = ({ initialCategories }
   return (
     <div className="space-y-4">
       <div className="flex max-w-md gap-2">
-        <FormField value={name} onChange={event => setName(event.target.value)} placeholder="Category name" />
+        <Input value={name} onChange={event => setName(event.target.value)} placeholder="Category name" />
         <Button onClick={handleSubmit} disabled={mutation.isPending || !name.trim()}>
           Add Category
         </Button>

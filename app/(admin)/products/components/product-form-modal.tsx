@@ -7,13 +7,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch, type FieldErrors } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import Form from '@/components/reusable/form';
+import Input from '@/components/reusable/input';
+import Select from '@/components/reusable/select';
 import AlertDialog from '@/components/reusable/alert-dialog';
 import VariantEditor from './variant-editor';
 import SpecsEditor from './specs-editor';
 import TagsInput from './tags-input';
 import ImageUploader from './image-uploader';
-import FormField from '@/components/reusable/form-field';
-import Select from '@/components/reusable/select';
 import { Label } from '@/components/ui/label';
 
 import { PRODUCT_DEFAULT } from '@/constants';
@@ -39,9 +40,6 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
     name: ['images', 'variants', 'specs', 'tags'],
   });
 
-  const { register, handleSubmit } = form;
-  const { errors } = form.formState;
-
   useEffect(() => {
     if (!open) {
       form.reset(PRODUCT_DEFAULT);
@@ -62,7 +60,7 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
     setOpen(nextOpen);
   };
 
-  const handleFormSubmit = (values: SchemaForm<typeof productFormSchema>) => {
+  const handleSubmit = (values: SchemaForm<typeof productFormSchema>) => {
     if (values.specs.length === 0) {
       setTab('details');
       toast.error('Please add at least one spec');
@@ -101,9 +99,9 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
     onSubmit(data, type);
   };
 
-  const handleInvalid = (errorObj: FieldErrors<SchemaForm<typeof productFormSchema>>) => {
-    if (errorObj.variants || errorObj.basePrice || errorObj.stock || errorObj.status) setTab('inventory');
-    else if (errorObj.specs || errorObj.tags) setTab('details');
+  const handleInvalid = (errors: FieldErrors<SchemaForm<typeof productFormSchema>>) => {
+    if (errors.variants || errors.basePrice || errors.stock || errors.status) setTab('inventory');
+    else if (errors.specs || errors.tags) setTab('details');
     else setTab('basic');
     toast.error('Please review the highlighted fields');
   };
@@ -127,7 +125,7 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
               : 'Create Product'
       }
       onOpenChange={handleOpenChange}
-      onConfirm={form.handleSubmit(handleFormSubmit, handleInvalid)}
+      onConfirm={form.handleSubmit(handleSubmit, handleInvalid)}
       loading={isBusy}
     >
       <ScrollArea className="max-h-[calc(90vh-180px)] mt-8">
@@ -138,18 +136,23 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
             <TabsTrigger value="details">Details</TabsTrigger>
           </TabsList>
 
-          <form className="space-y-6">
+          <Form form={form} customSubmitButton>
             {/* BASIC INFO TAB */}
             <TabsContent value="basic" className="space-y-6">
-              <FormField {...register('name')} id="product-name" label="Product Name *" error={errors.name?.message} placeholder="e.g., Premium Wireless Headphones" />
-              <FormField {...register('brand')} id="product-brand" label="Brand" error={errors.brand?.message} placeholder="e.g., AudioTech (optional)" />
+              <Input label="Product Name *" name="name" placeholder="e.g., Premium Wireless Headphones" />
+              <Input label="Brand" name="brand" placeholder="e.g., AudioTech (optional)" />
               <Select
                 containerClassName="w-full"
                 label="Category *"
                 name="category"
                 options={categories.map(c => ({ value: c.name, label: c.name }))}
               />
-              <FormField {...register('description')} id="product-description" label="Description" error={errors.description?.message} type="textarea" placeholder="Enter product description..." />
+              <Input
+                type="textarea"
+                label="Description"
+                name="description"
+                placeholder="Enter product description..."
+              />
               <div>
                 <Label>Product Images</Label>
                 <div className="mt-1.5">
@@ -179,8 +182,8 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
                 Base price & stock disabled when variants exist
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <FormField {...register('basePrice')} id="product-base-price" label="Base Price" error={errors.basePrice?.message} type="number" placeholder="0.00" />
-                <FormField {...register('stock')} id="product-stock" label="Stock" error={errors.stock?.message} type="number" placeholder="0" />
+                <Input label="Base Price" name="basePrice" type="number" placeholder="0.00" maxLength={6} />
+                <Input label="Stock" name="stock" type="number" placeholder="0" maxLength={6} />
               </div>
 
               <Select
@@ -209,7 +212,7 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
                 </div>
               </div>
             </TabsContent>
-          </form>
+          </Form>
         </Tabs>
       </ScrollArea>
     </AlertDialog>

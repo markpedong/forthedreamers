@@ -43,6 +43,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
     setSelectedUser(null);
   });
   const isPending = updateMutation.isPending || deleteMutation.isPending;
+  const { register } = form;
 
   const handleViewDetails = (user: UserWithRole) => {
     setSelectedUser(user);
@@ -241,7 +242,17 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
         confirmText={isPending ? 'Deleting...' : 'Delete'}
       >
         <form className="space-y-4">
-          <FormField id="otp" type="number" name="otp" placeholder="000000" autoFocus maxLength={6} />
+          <FormField
+            {...register('otp')}
+            id="otp"
+            type="text"
+            inputMode="numeric"
+            label="Verification code"
+            error={form.formState.errors.otp?.message}
+            placeholder="000000"
+            autoFocus
+            maxLength={6}
+          />
         </form>
       </AlertDialog>
     </div>

@@ -6,7 +6,8 @@ import { Card } from '@/components/ui/card';
 import { Trash2, Plus, X, Check, Edit } from 'lucide-react';
 import { TVariant, VariantEditorProps, SchemaForm } from '@/lib/types';
 import Dialog from '@/components/reusable/dialog';
-import FormField from '@/components/reusable/form-field';
+import Input from '@/components/reusable/input';
+import Form from '@/components/reusable/form';
 import { useForm } from 'react-hook-form';
 import formSchemas from '@/hooks/form-schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,8 +21,6 @@ const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange }) =
     defaultValues: { label: '', value: '' },
   });
 
-  const { register, handleSubmit } = form;
-
   const [editingAttr, setEditingAttr] = useState<Record<string, { key: string; value: string } | null>>({});
   const [dialogOpen, setDialogOpen] = useState<Record<string, boolean>>({});
 
@@ -29,14 +28,14 @@ const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange }) =
     return onVariantsChange(variants.map(v => (v.id === id ? { ...v, [field]: value } : v)));
   };
 
-  const addAttribute = (data: SchemaForm<typeof attributeSchema>) => {
-    const variant = variants.find(v => v.id === data.variantId);
+  const addAttribute = ({ label, value, variantId }: SchemaForm<typeof attributeSchema> & { variantId: string }) => {
+    const variant = variants.find(v => v.id === variantId);
     if (!variant) return;
 
-    if (variant.attributes[data.label]) return alert(`Attribute key "${data.label}" already exists.`);
+    if (variant.attributes[label]) return alert(`Attribute key "${label}" already exists.`);
 
-    updateVariant(data.variantId, 'attributes', { ...variant.attributes, [data.label]: data.value });
-    setDialogOpen(prev => ({ ...prev, [data.variantId]: false }));
+    updateVariant(variantId, 'attributes', { ...variant.attributes, [label]: value });
+    setDialogOpen(prev => ({ ...prev, [variantId]: false }));
     form.reset();
   };
 
@@ -179,10 +178,14 @@ const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange }) =
                   setDialogOpen(prev => ({ ...prev, [variant.id]: open }));
                 }}
                 triggerText={false}
-                onConfirm={form.handleSubmit((data: SchemaForm<typeof attributeSchema>) => addAttribute({ ...data, variantId: variant.id }))}
+                onConfirm={form.handleSubmit((data: SchemaForm<typeof attributeSchema>) =>
+                  addAttribute({ ...data, variantId: variant.id })
+                )}
               >
-                <FormField {...register('label')} id="attr-label" label="Label" error={form.formState.errors.label?.message} placeholder="Attribute key" />
-                <FormField {...register('value')} id="attr-value" label="Value" error={form.formState.errors.value?.message} placeholder="Attribute value" />
+                <Form form={form} customSubmitButton>
+                  <Input label="Label" name="label" placeholder="Attribute key" isHorizontal preventSpaces />
+                  <Input label="Value" name="value" placeholder="Attribute value" isHorizontal preventSpaces />
+                </Form>
               </Dialog>
             </div>
           </div>
