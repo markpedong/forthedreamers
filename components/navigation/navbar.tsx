@@ -38,7 +38,7 @@ const Navbar: FC = () => {
     </Link>
   );
 
-  const ProfileButton = !isMobile && (
+  const ProfileButton = (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
@@ -77,28 +77,14 @@ const Navbar: FC = () => {
   );
 
   const SearchBar = (
-    <div
-      className={classNames('relative cursor-pointer flex-1 max-w-md', {
-        'flex-1 mx-2': isMobile,
-      })}
-      onClick={() => setIsSearchOpen(true)}
-    >
+    <div className="relative max-w-md flex-1 cursor-pointer" onClick={() => setIsSearchOpen(true)}>
       <Input
         type="text"
         placeholder="Search products, categories, shops..."
         readOnly
-        className={classNames(
-          'w-full rounded-full bg-muted border-0 focus-visible:ring-2 focus-visible:ring-primary cursor-pointer pl-10 pr-4 py-2',
-          {
-            'pl-8 pr-3 py-1.5 text-sm': isMobile,
-          }
-        )}
+        className="w-full cursor-pointer rounded-full border-0 bg-muted py-2 pl-10 pr-4 focus-visible:ring-2 focus-visible:ring-primary"
       />
-      <Search
-        className={classNames('absolute top-1/2 -translate-y-1/2 text-muted-foreground left-3 w-4 h-4', {
-          'left-2.5 w-4 h-4': isMobile,
-        })}
-      />
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
     </div>
   );
 
@@ -123,22 +109,26 @@ const Navbar: FC = () => {
           <Link href="/" className="font-bold text-primary">
             FTD
           </Link>
-          {SearchBar}
-          <div className="flex items-center gap-2">
-            {!!user ? (
-              <>
-                {CartButton}
-                {ProfileButton}
-              </>
-            ) : (
-              <Button variant="ghost" asChild>
-                <Link href="/sign-in">
-                  Sign In
-                  <LogIn />
-                </Link>
-              </Button>
-            )}
-          </div>
+          {!isMobile && (
+            <>
+              {SearchBar}
+              <div className="flex items-center gap-2">
+                {!!user ? (
+                  <>
+                    {CartButton}
+                    {ProfileButton}
+                  </>
+                ) : (
+                  <Button variant="ghost" asChild>
+                    <Link href="/sign-in">
+                      Sign In
+                      <LogIn />
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </motion.nav>
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
