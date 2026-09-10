@@ -4,7 +4,6 @@ import prisma from '@/lib/prisma';
 import { Button } from '@/components/ui/button';
 import { Package, Truck } from 'lucide-react';
 import Link from 'next/link';
-import OrdersBackLink from '../orders-back-link';
 import { formatDate } from '@/lib/utils';
 
 const OrderDetailPage = async ({ params }: { params: Promise<{ id: string }> }) => {
@@ -46,7 +45,9 @@ const OrderDetailPage = async ({ params }: { params: Promise<{ id: string }> }) 
 
   return (
     <main className="max-w-4xl mx-auto py-8 px-4">
-      <OrdersBackLink />
+      <Button variant="ghost" className="mb-4" asChild>
+        <Link href="/orders">← Back to Orders</Link>
+      </Button>
 
       <div className="border rounded-lg p-6 bg-card space-y-6">
         <div className="flex items-center justify-between">
@@ -58,6 +59,27 @@ const OrderDetailPage = async ({ params }: { params: Promise<{ id: string }> }) 
             <p className="text-sm text-muted-foreground">Total</p>
             <p className="text-2xl font-bold">${orderGroup.totalAmount.toFixed(2)}</p>
           </div>
+        </div>
+
+        <div className="grid gap-4 border-t pt-6 text-sm sm:grid-cols-2">
+          <div>
+            <p className="text-muted-foreground">Payment</p>
+            <p className="font-medium">
+              {orderGroup.paymentMethod === 'CASH_ON_DELIVERY' ? 'Cash on Delivery' : 'Payment method unavailable'} ·{' '}
+              {orderGroup.paymentStatus}
+            </p>
+          </div>
+          {orderGroup.shippingFullName && (
+            <div>
+              <p className="text-muted-foreground">Deliver to</p>
+              <p className="font-medium">{orderGroup.shippingFullName}</p>
+              <p>{orderGroup.shippingPhoneNumber}</p>
+              <p>
+                {orderGroup.shippingStreet}, {orderGroup.shippingCity}, {orderGroup.shippingRegion}{' '}
+                {orderGroup.shippingPostalCode}
+              </p>
+            </div>
+          )}
         </div>
 
         {orderGroup.orders.map(order => (

@@ -9,9 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Package, Truck, ChevronLeft, Plus, Store } from 'lucide-react';
+import { Banknote, Package, Truck, ChevronLeft, Plus, Store } from 'lucide-react';
 import Link from 'next/link';
 import AddressForm from '@/components/reusable/address-form';
+import { useCheckoutMutation } from '@/services/useMutation';
 
 interface CheckoutPageClientProps {
   cartItems: Array<{
@@ -41,6 +42,7 @@ const CheckoutPageClient = ({
     shippingMethods[0]?.id ?? ''
   );
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
+  const checkoutMutation = useCheckoutMutation();
 
   const total = cartItems.reduce((sum, item) => {
     const price = item.variant.discountedPrice ?? item.variant.price;
@@ -48,7 +50,6 @@ const CheckoutPageClient = ({
   }, 0);
 
   const shipping = shippingMethods.find(m => m.id === selectedShippingId);
-  const grandTotal = total + (shipping?.price ?? 0);
 
   const sellerGroups = new Map<string, typeof cartItems>();
   for (const item of cartItems) {
@@ -58,6 +59,8 @@ const CheckoutPageClient = ({
   }
 
   const selectedAddress = addresses.find(a => a.id === selectedAddressId);
+  const shippingTotal = (shipping?.price ?? 0) * sellerGroups.size;
+  const grandTotal = total + shippingTotal;
 
   return (
     <main className="max-w-6xl mx-auto py-8 px-4">
@@ -169,7 +172,34 @@ const CheckoutPageClient = ({
             )}
           </div>
 
-          <PlaceOrderButton total={grandTotal} shippingMethodsCount={shippingMethods.length} />
+          <div className="border rounded-lg p-6 bg-card space-y-3">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <Banknote className="w-5 h-5" />Payment Method
+            </h2>
+            <div className="rounded-lg border border-primary bg-primary/5 p-4">
+              <p className="font-medium">Cash on Delivery</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Pay the courier when your order arrives. No online payment will be collected.
+              </p>
+            </div>
+          </div>
+
+          <Button
+            type="button"
+            disabled={!selectedAddressId || !selectedShippingId || checkoutMutation.isPending || grandTotal <= 0}
+            aria-busy={checkoutMutation.isPending}
+            className="w-full text-lg py-6"
+            onClick={() => {
+              if (!selectedAddressId || !selectedShippingId) return;
+              checkoutMutation.mutate({
+                addressId: selectedAddressId,
+                shippingMethodId: selectedShippingId,
+                cartItemIds: cartItems.map(item => item.id),
+              });
+            }}
+          >
+            {checkoutMutation.isPending ? 'Placing order…' : `Place COD Order — $${grandTotal.toFixed(2)}`}
+          </Button>
         </div>
 
         {/* Right Sidebar */}
@@ -178,8 +208,8 @@ const CheckoutPageClient = ({
             <div className="p-6 border rounded-lg bg-card space-y-4">
               <h2 className="text-xl font-bold">Shipping</h2>
               <div className="flex justify-between text-sm">
-                <span>{shipping.name}</span>
-                <span>${shipping.price.toFixed(2)}</span>
+                <span>{shipping.name} × {sellerGroups.size} shop{sellerGroups.size === 1 ? '' : 's'}</span>
+                <span>${shippingTotal.toFixed(2)}</span>
               </div>
             </div>
           )}
@@ -272,11 +302,5 @@ const AddressFormDialog = () => {
     </>
   );
 };
-
-const PlaceOrderButton = ({ total, shippingMethodsCount }: { total: number; shippingMethodsCount: number }) => (
-  <Button disabled={shippingMethodsCount === 0 || total <= 0} className="w-full text-lg py-6">
-    Place Order — ${total.toFixed(2)}
-  </Button>
-);
 
 export default CheckoutPageClient;

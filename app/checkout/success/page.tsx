@@ -4,7 +4,6 @@ import prisma from '@/lib/prisma';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Package, Truck } from 'lucide-react';
 import Link from 'next/link';
-import OrdersBackLink from '../orders-back-link';
 
 const CheckoutSuccessPage = async ({ searchParams }: { searchParams: Promise<{ orderId?: string }> }) => {
   const userId = await getCurrentUserID();
@@ -12,10 +11,10 @@ const CheckoutSuccessPage = async ({ searchParams }: { searchParams: Promise<{ o
 
   const { orderId } = await searchParams;
 
-  // If no orderId, redirect to a fresh success page (user just placed an order)
+  // Fall back to the customer's latest order for older links without an order ID.
   if (!orderId) {
     const pending = await prisma.orderGroup.findFirst({
-      where: { userId, paymentStatus: 'PAID' },
+      where: { userId },
       orderBy: { createdAt: 'desc' },
       include: {
         orders: {
@@ -85,7 +84,14 @@ type OrderGroupWithOrders = {
   id: string;
   userId: string;
   totalAmount: number;
+  paymentMethod: string | null;
   paymentStatus: string;
+  shippingFullName: string | null;
+  shippingPhoneNumber: string | null;
+  shippingRegion: string | null;
+  shippingCity: string | null;
+  shippingPostalCode: string | null;
+  shippingStreet: string | null;
   createdAt: Date;
   orders: Array<{
     id: string;
@@ -110,17 +116,37 @@ const OrderSummary = ({ orderGroup }: { orderGroup: NonNullable<OrderGroupWithOr
       <CheckCircle className="w-16 h-16 mx-auto text-green-500 mb-4" />
       <h1 className="text-3xl font-bold mb-2">Order Confirmed!</h1>
       <p className="text-muted-foreground mb-6">
-        Thank you for your purchase. Your order ID is <span className="font-mono font-bold">{orderGroup.id}</span>.
+        Your cash-on-delivery order has been placed. Order ID: <span className="font-mono font-bold">{orderGroup.id}</span>.
       </p>
 
       <div className="border rounded-lg p-6 bg-card text-left max-w-2xl mx-auto mb-8">
         <h2 className="text-xl font-bold mb-4">Order Details</h2>
         <div className="space-y-4">
+          <div className="grid gap-3 border-b pb-4 text-sm sm:grid-cols-2">
+            <div>
+              <p className="text-muted-foreground">Payment</p>
+              <p className="font-medium">
+                {orderGroup.paymentMethod === 'CASH_ON_DELIVERY' ? 'Cash on Delivery' : 'Payment method unavailable'} ·{' '}
+                {orderGroup.paymentStatus}
+              </p>
+            </div>
+            {orderGroup.shippingFullName && (
+              <div>
+                <p className="text-muted-foreground">Deliver to</p>
+                <p className="font-medium">{orderGroup.shippingFullName}</p>
+                <p>{orderGroup.shippingPhoneNumber}</p>
+                <p>
+                  {orderGroup.shippingStreet}, {orderGroup.shippingCity}, {orderGroup.shippingRegion}{' '}
+                  {orderGroup.shippingPostalCode}
+                </p>
+              </div>
+            )}
+          </div>
           {orderGroup.orders.map(order => (
             <div key={order.id} className="border-b pb-4 last:border-0 last:pb-0">
               <p className="font-semibold">{order.seller?.storeName || 'Seller'}</p>
               <p className="text-sm text-muted-foreground">
-                Status: <span className="text-green-500 font-medium">{order.status}</span>
+                Status: <span className="font-medium">{order.status}</span>
               </p>
 
               {/* Shipping info per seller order */}
@@ -158,7 +184,9 @@ const OrderSummary = ({ orderGroup }: { orderGroup: NonNullable<OrderGroupWithOr
         <Link href="/">
           <Button size="lg">Continue Shopping</Button>
         </Link>
-        <OrdersBackLink />
+        <Button size="lg" variant="outline" asChild>
+          <Link href="/orders">View Orders</Link>
+        </Button>
       </div>
     </main>
   );
