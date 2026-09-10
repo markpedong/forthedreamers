@@ -67,7 +67,10 @@ export const productSchema = z.object({
   status: z.enum(['ACTIVE', 'INACTIVE']),
   specs: z.array(z.object({ id: idSchema.optional(), label: z.string().min(1), value: z.string() })).max(100),
   variants: z.array(variantSchema).max(100),
-});
+}).refine(
+  input => input.variants.length > 0 || (input.basePrice != null && input.stock != null),
+  'Base price and stock are required when a product has no variants'
+);
 
 type ProductInput = z.infer<typeof productSchema>;
 
@@ -111,9 +114,26 @@ const invalidate = async () => {
 
 export const saveProduct = async (input: ProductInput, editing: boolean) => {
   const user = await requireCatalogAccess();
-  const { id, categoryId, variants, specs, ...fields } = input;
+  const { id, categoryId, specs, ...fields } = input;
   const slug = regenerateSlug(fields.name);
   let result: Prisma.ProductGetPayload<{ include: typeof productInclude }>;
+
+  // Shopee-style: a product with no variants is sold as a single implicit variant built
+  // from base price/stock, so cart and checkout only ever deal with variants.
+  const variants =
+    input.variants.length > 0
+      ? input.variants
+      : [
+          {
+            name: fields.name,
+            price: fields.basePrice ?? 0,
+            stock: fields.stock ?? 0,
+            discountedPrice: null,
+            coupon: null,
+            image: fields.images[0] ?? null,
+            attributes: {},
+          },
+        ];
 
   if (!editing) {
     const seller = await prisma.seller.findUnique({ where: { userId: user.id }, select: { id: true } });

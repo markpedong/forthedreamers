@@ -25,7 +25,7 @@ const ProductPageClient = ({ product }: ProductPageClientProps) => {
       <ProductGallery key={selectedVariant?.id ?? 'product'} images={images} alt={product.name} />
       <div className="flex flex-col">
         <ProductOverview product={product} selectedVariant={selectedVariant} />
-        {product.variants.length > 0 && (
+        {(product.variants.length > 1 || Object.keys(product.variants[0]?.attributes ?? {}).length > 0) && (
           <fieldset className="mt-6 space-y-3">
             <legend className="text-sm font-medium">Choose an option</legend>
             <div className="flex flex-wrap gap-2">
