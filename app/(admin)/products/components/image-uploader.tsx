@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ChangeEvent, type DragEvent } from 'react';
+import { useId, useState, type ChangeEvent, type DragEvent } from 'react';
 import Image from 'next/image';
 import { Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ interface ImageUploaderProps {
 }
 
 const ImageUploader = ({ images, onImagesChange, onUpload, isUploading, maxImages = 5 }: ImageUploaderProps) => {
+  const uploadId = useId();
   const [isDragging, setIsDragging] = useState(false);
   const full = images.length >= maxImages;
   const disabled = full || isUploading;
@@ -60,7 +61,7 @@ const ImageUploader = ({ images, onImagesChange, onUpload, isUploading, maxImage
         )}
       >
         <input
-          id="image-upload"
+          id={uploadId}
           type="file"
           multiple
           accept="image/jpeg,image/png,image/webp"
@@ -68,7 +69,7 @@ const ImageUploader = ({ images, onImagesChange, onUpload, isUploading, maxImage
           className="hidden"
           disabled={disabled}
         />
-        <label htmlFor="image-upload" className="cursor-pointer select-none">
+        <label htmlFor={uploadId} className="cursor-pointer select-none">
           <Upload className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <p className="text-sm font-medium mb-1">
             {isUploading ? 'Uploading images...' : full ? 'Maximum images reached' : 'Drop images here or click to upload'}

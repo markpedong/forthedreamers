@@ -4,6 +4,8 @@ import type { SchemaForm, TOnNavigate } from '@/lib/types';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle } from 'lucide-react';
+import { COURIERS, type CourierCode } from '@/constants/shipping';
+import { Checkbox } from '@/components/ui/checkbox';
 
 import formSchemas from '@/hooks/form-schemas';
 import Form from '@/components/reusable/form';
@@ -25,6 +27,7 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       email: '',
       password: '',
       confirmPassword: '',
+      courierCodes: [],
     },
   });
 
@@ -67,6 +70,39 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           autoComplete="new-password"
           label="Confirm Password"
         />
+        <fieldset className="space-y-2">
+          <legend className="text-sm font-medium">Available couriers</legend>
+          <p className="text-xs text-muted-foreground">Select at least one courier that can collect from your shop.</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {COURIERS.map(courier => {
+              const selected = form.watch('courierCodes').includes(courier.code);
+              return (
+                <label key={courier.code} className="flex cursor-pointer items-center gap-3 rounded-lg border p-3">
+                  <Checkbox
+                    checked={selected}
+                    disabled={isSubmitting}
+                    onCheckedChange={checked => {
+                      const current = form.getValues('courierCodes');
+                      form.setValue(
+                        'courierCodes',
+                        checked
+                          ? [...current, courier.code]
+                          : current.filter((code: CourierCode) => code !== courier.code),
+                        { shouldDirty: true, shouldValidate: true }
+                      );
+                    }}
+                  />
+                  <span className="text-sm">
+                    {courier.name} <span className="text-muted-foreground">(${courier.fee.toFixed(2)})</span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+          {form.formState.errors.courierCodes?.message && (
+            <p className="text-sm text-destructive">{form.formState.errors.courierCodes.message}</p>
+          )}
+        </fieldset>
       </Form>
 
       <div className="mt-5 grid gap-2 rounded-xl border border-white/50 bg-white/35 p-4 dark:border-white/10 dark:bg-white/5">

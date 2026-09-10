@@ -13,8 +13,9 @@ import formSchemas from '@/hooks/form-schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input as InputUI } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import ImageUploader from './image-uploader';
 
-const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange }) => {
+const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange, onUpload, isUploading }) => {
   const { attributeSchema } = formSchemas;
   const form = useForm<SchemaForm<typeof attributeSchema>>({
     resolver: zodResolver(attributeSchema),
@@ -83,6 +84,18 @@ const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange }) =
                 placeholder="e.g., Red S Size"
                 className="mt-1"
               />
+            </div>
+            <div>
+              <Label className="text-sm font-medium">Variant Image</Label>
+              <div className="mt-1.5">
+                <ImageUploader
+                  images={variant.image ? [variant.image] : []}
+                  onImagesChange={images => updateVariant(variant.id, 'image', images[0] ?? null)}
+                  onUpload={onUpload}
+                  isUploading={isUploading}
+                  maxImages={1}
+                />
+              </div>
             </div>
             <div className="grid grid-cols-4 gap-4">
               {allFields.map(field => {
@@ -202,6 +215,7 @@ const VariantEditor: FC<VariantEditorProps> = ({ variants, onVariantsChange }) =
               discountedPrice: null,
               stock: 0,
               coupon: null,
+              image: null,
               attributes: {},
             },
           ])

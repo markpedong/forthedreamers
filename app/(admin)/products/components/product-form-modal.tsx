@@ -169,6 +169,8 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
             <TabsContent value="inventory" className="space-y-6">
               <VariantEditor
                 variants={(variants || []) as TVariant[]}
+                onUpload={async files => (await uploadMutation.mutateAsync(files)).data ?? []}
+                isUploading={uploadMutation.isPending}
                 onVariantsChange={updatedVariants => {
                   form.setValue('variants', updatedVariants as TVariant[], { shouldValidate: true });
                   if (updatedVariants.length > 0) {

@@ -12,6 +12,7 @@ import {
   Settings,
   LogOut as Logo,
   ShoppingBag,
+  Truck,
 } from 'lucide-react';
 import { FC } from 'react';
 import { USER_ROLE } from '@/generated/prisma';
@@ -40,6 +41,7 @@ const Sidebar: FC = () => {
     { label: 'Analytics', href: '/analytics', icon: BarChart3 },
     { label: 'Security', href: '/security', icon: Lock },
     { label: 'Settings', href: '/settings', icon: Settings },
+    { label: 'Shipping', href: '/settings/shipping', icon: Truck, allowed: user?.role === USER_ROLE.SELLER },
   ];
   const visibleNavItems = navItems.filter(item => item.allowed === undefined || item.allowed === true);
 
