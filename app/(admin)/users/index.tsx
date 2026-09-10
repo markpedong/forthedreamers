@@ -8,8 +8,7 @@ import AlertDialog from '@/components/reusable/alert-dialog';
 import { DropdownMenuItemType, SchemaForm } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import classNames from 'classnames';
-import Form from '@/components/reusable/form';
-import Input from '@/components/reusable/input';
+import FormField from '@/components/reusable/form-field';
 import formSchemas from '@/hooks/form-schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -241,9 +240,9 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
         onConfirm={form.handleSubmit(onSubmit)}
         confirmText={isPending ? 'Deleting...' : 'Delete'}
       >
-        <Form form={form} customSubmitButton>
-          <Input id="otp" type="number" name="otp" placeholder="000000" autoFocus maxLength={6} />
-        </Form>
+        <form className="space-y-4">
+          <FormField id="otp" type="number" name="otp" placeholder="000000" autoFocus maxLength={6} />
+        </form>
       </AlertDialog>
     </div>
   );

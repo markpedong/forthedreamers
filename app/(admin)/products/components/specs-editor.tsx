@@ -3,9 +3,8 @@
 import { FC, useState, useTransition } from 'react';
 import { Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Input from '@/components/reusable/input';
 import Dialog from '@/components/reusable/dialog';
-import Form from '@/components/reusable/form';
+import FormField from '@/components/reusable/form-field';
 import formSchemas from '@/hooks/form-schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,6 +22,8 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
     defaultValues: LABEL_VALUE_DEFAULT,
   });
 
+  const { register, handleSubmit } = form;
+
   const openDialog = (index?: number) => {
     form.reset(index != null ? specs[index] : LABEL_VALUE_DEFAULT);
     setEditingIndex(index ?? null);
@@ -31,7 +32,7 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
 
   const handleDelete = (index: number) => onSpecsChange(specs.filter((_, i) => i !== index));
 
-  const handleSubmit = (data: SchemaForm<typeof specFormSchema>) => {
+  const onSubmit = (data: SchemaForm<typeof specFormSchema>) => {
     if (!data.label?.trim() || !data.value?.trim()) return;
 
     startTransition(() => {
@@ -92,14 +93,12 @@ const SpecsEditor: FC<SpecsEditorProps> = ({ specs, onSpecsChange }) => {
         onOpenChange={setDialogOpen}
         triggerText={false}
         onCancel={() => setDialogOpen(false)}
-        onConfirm={form.handleSubmit(handleSubmit)}
+        onConfirm={form.handleSubmit(onSubmit)}
         confirmText={editingIndex != null ? 'Save' : 'Add'}
         loading={isPending}
       >
-        <Form form={form} customSubmitButton>
-          <Input label="Label *" name="label" placeholder="e.g., Driver Size" />
-          <Input label="Value *" name="value" placeholder="e.g., 40mm" />
-        </Form>
+        <FormField {...register('label')} id="spec-label" label="Label *" error={form.formState.errors.label?.message} placeholder="e.g., Driver Size" />
+        <FormField {...register('value')} id="spec-value" label="Value *" error={form.formState.errors.value?.message} placeholder="e.g., 40mm" />
       </Dialog>
     </div>
   );

@@ -1,7 +1,6 @@
 'use client';
 
-import Form from '@/components/reusable/form';
-import Input from '@/components/reusable/input';
+import FormField from '@/components/reusable/form-field';
 import formSchemas from '@/hooks/form-schemas';
 import { SchemaForm, TOnNavigate } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,11 +16,15 @@ const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
   const router = useRouter();
   const [useBackup, setUseBackup] = useState(false);
   const { twoFactorSchema } = formSchemas;
+
   const form = useForm<SchemaForm<typeof twoFactorSchema>>({
     resolver: zodResolver(twoFactorSchema),
     defaultValues: { otp: '' },
   });
+
   const [isPending, startTransition] = useTransition();
+  const { register, handleSubmit } = form;
+  const { errors } = form.formState;
 
   const onSubmit = async (values: SchemaForm<typeof twoFactorSchema>) => {
     if (values?.otp?.length !== 6) {
@@ -33,7 +36,6 @@ const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
     }
 
     startTransition(async () => {
-      // Mock implementation - wrap in promise for tryWithToast
       const result = await tryWithToast(
         Promise.resolve().then(() => {
           if (values.otp === '123456') {
@@ -56,36 +58,32 @@ const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
       description={useBackup ? 'Enter one of your backup codes' : 'Enter the 6-digit code from your authenticator app'}
       icon={<ShieldCheck className="size-5" />}
     >
-          <Form className="space-y-4" form={form} onSubmit={onSubmit} submitLabel={isPending ? 'Verifying...' : 'Verify'}>
-            <Input
-              control={form.control}
-              name="otp"
-              label="Verification Code"
-              type="text"
-              placeholder={useBackup ? 'XXXX-XXXX-XXXX' : '000000'}
-              maxLength={useBackup ? 14 : 6}
-              disabled={isPending}
-            />
-          </Form>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <FormField {...register('otp')} id="seller-2fa-otp" label="Verification Code" error={errors.otp?.message} type="text" placeholder={useBackup ? 'XXXX-XXXX-XXXX' : '000000'} maxLength={useBackup ? 14 : 6} disabled={isPending} />
 
-          <div className="mt-5 space-y-3 text-center">
-            <button
-              onClick={() => {
-                form.reset();
-                setUseBackup(!useBackup);
-              }}
-              className="block w-full text-sm font-medium text-primary underline-offset-4 hover:underline"
-            >
-              {useBackup ? 'Use authenticator code' : 'Use backup code'}
-            </button>
+        <button type="submit" className="w-full h-11" disabled={isPending} aria-busy={isPending}>
+          {isPending ? 'Verifying...' : 'Verify'}
+        </button>
+      </form>
 
-            <button
-              onClick={() => onNavigate('login')}
-              className="block w-full text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Back to sign in
-            </button>
-          </div>
+      <div className="mt-5 space-y-3 text-center">
+        <button
+          onClick={() => {
+            form.reset();
+            setUseBackup(!useBackup);
+          }}
+          className="block w-full text-sm font-medium text-primary underline-offset-4 hover:underline"
+        >
+          {useBackup ? 'Use authenticator code' : 'Use backup code'}
+        </button>
+
+        <button
+          onClick={() => onNavigate('login')}
+          className="block w-full text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          Back to sign in
+        </button>
+      </div>
     </AuthCard>
   );
 };

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from '@/app/components/product-card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import FormField from '@/components/reusable/form-field';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useProductFacetsQuery, useProductsQuery } from '@/services/useQuery';
 
@@ -169,7 +169,7 @@ const ProductsClient = ({
             <fieldset className="space-y-2">
               <legend className="text-sm font-medium">Price range</legend>
               <div className="grid grid-cols-2 gap-2">
-                <Input
+                <FormField
                   type="number"
                   min="0"
                   value={minPrice}
@@ -180,7 +180,7 @@ const ProductsClient = ({
                   placeholder="Min"
                   aria-label="Minimum price"
                 />
-                <Input
+                <FormField
                   type="number"
                   min="0"
                   value={maxPrice}

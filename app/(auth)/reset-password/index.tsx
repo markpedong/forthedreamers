@@ -1,67 +1,70 @@
 'use client';
 
-import { FC } from 'react';
+import { SchemaForm, TOnNavigate } from '@/lib/types';
+import AuthPage from '../../components/auth-page';
+import formSchemas from '@/hooks/form-schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Form from '@/components/reusable/form';
-import formSchemas from '@/hooks/form-schemas';
-import Input from '@/components/reusable/input';
-import { SchemaForm } from '@/lib/types';
+import FormField from '@/components/reusable/form-field';
 import { useResetPasswordMutation } from '@/services/useMutation';
-import AuthPage from '../components/auth-page';
-import AuthCard from '../components/auth-card';
-import { KeyRound } from 'lucide-react';
 
-const ResetPassword: FC<{ token: string }> = ({ token }) => {
+const ResetPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
+  const mutation = useResetPasswordMutation();
+  const isSubmitting = mutation.isPending;
   const { resetPasswordSchema } = formSchemas;
-  const mutation = useResetPasswordMutation(token);
-  const isLoading = mutation.isPending;
+
   const form = useForm<SchemaForm<typeof resetPasswordSchema>>({
     resolver: zodResolver(resetPasswordSchema),
-    defaultValues: {
-      password: '',
-      confirmPassword: '',
-    },
+    defaultValues: { password: '', confirmPassword: '' },
   });
 
-  const onSubmit = (values: SchemaForm<typeof resetPasswordSchema>) => mutation.mutate(values.password);
+  const { register, handleSubmit } = form;
+  const { errors } = form.formState;
+
+  const onSubmit = (values: SchemaForm<typeof resetPasswordSchema>) =>
+    mutation.mutate({ password: values.password });
 
   return (
     <AuthPage>
-      <AuthCard
-        title="Choose a new password"
-        description="Use at least 8 characters with uppercase, lowercase, and numbers."
-        icon={<KeyRound className="size-5" />}
-      >
-            <Form className="space-y-4" form={form} onSubmit={onSubmit} submitLabel={isLoading ? 'Resetting...' : 'Reset Password'}>
-              <Input
-                control={form.control}
-                name="password"
-                type="password"
-                label="New Password"
-                description="Must contain uppercase, lowercase, and numbers"
-                placeholder="Enter your new password"
-                disabled={isLoading}
-              />
-              <Input
-                control={form.control}
-                name="confirmPassword"
-                label="Confirm Password"
-                type="password"
-                placeholder="Confirm your new password"
-                disabled={isLoading}
-                description="Passwords must match"
-              />
-            </Form>
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          Remember your password?{' '}
-          <a href="/sign-in" className="font-medium text-primary hover:underline">
-            Sign in instead
-          </a>
-        </p>
-      </AuthCard>
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">Reset your password</h1>
+      <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+        Enter your new password below.
+      </p>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4 sm:space-y-5">
+        <FormField
+          {...register('password')}
+          id="reset-password"
+          label="New Password"
+          error={errors.password?.message}
+          type="password"
+          placeholder="••••••••"
+          disabled={isSubmitting}
+        />
+
+        <FormField
+          {...register('confirmPassword')}
+          id="reset-confirm-password"
+          label="Confirm Password"
+          error={errors.confirmPassword?.message}
+          type="password"
+          placeholder="••••••••"
+          disabled={isSubmitting}
+        />
+
+        <button type="submit" className="w-full h-11" disabled={isSubmitting} aria-busy={isSubmitting}>
+          {isSubmitting ? 'Resetting...' : 'Reset password'}
+        </button>
+      </form>
+
+      <p className="mt-3 text-center text-sm text-muted-foreground">
+        Remember your password?{' '}
+        <button onClick={() => onNavigate('login')} className="font-medium text-primary hover:underline-offset-4">
+          Sign in
+        </button>
+      </p>
     </AuthPage>
   );
 };
 
-export default ResetPassword;
+export default ResetPasswordPage;

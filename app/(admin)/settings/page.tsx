@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Save } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import FormField from '@/components/reusable/form-field';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
@@ -92,7 +92,7 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Store Name</label>
-                  <Input
+                  <FormField
                     value={storeInfo.name}
                     onChange={e => setStoreInfo({ ...storeInfo, name: e.target.value })}
                     className="mt-2"
@@ -100,7 +100,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium">Store Email</label>
-                  <Input
+                  <FormField
                     type="email"
                     value={storeInfo.email}
                     onChange={e => setStoreInfo({ ...storeInfo, email: e.target.value })}
@@ -119,7 +119,7 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Store Currency</label>
-                  <Input
+                  <FormField
                     value={storeInfo.currency}
                     onChange={e => setStoreInfo({ ...storeInfo, currency: e.target.value })}
                     className="mt-2"
@@ -127,7 +127,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium">Store Timezone</label>
-                  <Input
+                  <FormField
                     value={storeInfo.timezone}
                     onChange={e => setStoreInfo({ ...storeInfo, timezone: e.target.value })}
                     className="mt-2"
@@ -214,7 +214,7 @@ export default function SettingsPage() {
                 ].map(field => (
                   <div key={field.key}>
                     <label className="text-sm font-medium">{field.label}</label>
-                    <Input
+                    <FormField
                       placeholder={field.placeholder}
                       value={taxSettings[field.key]}
                       onChange={e => setTaxSettings({ ...taxSettings, [field.key]: e.target.value })}
@@ -241,11 +241,11 @@ export default function SettingsPage() {
             <CardContent className="space-y-4">
               <div>
                 <label className="text-sm font-medium">API Key</label>
-                <Input value={apiSettings.apiKey} className="mt-2" disabled />
+                <FormField value={apiSettings.apiKey} className="mt-2" disabled />
               </div>
               <div>
                 <label className="text-sm font-medium">Webhook URL</label>
-                <Input
+                <FormField
                   placeholder="https://your-domain.com/webhooks"
                   value={apiSettings.webhookUrl}
                   onChange={e => setApiSettings({ ...apiSettings, webhookUrl: e.target.value })}

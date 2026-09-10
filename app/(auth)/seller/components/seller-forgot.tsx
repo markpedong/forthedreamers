@@ -5,19 +5,22 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
-import Input from '@/components/reusable/input';
-import Form from '@/components/reusable/form';
+import FormField from '@/components/reusable/form-field';
 import formSchemas from '@/hooks/form-schemas';
 import { ArrowLeft, Mail } from 'lucide-react';
 import AuthCard from '../../components/auth-card';
 
 const SellerForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const { forgotPasswordSchema } = formSchemas;
+  const [isPending, startTransition] = useTransition();
+
   const form = useForm<SchemaForm<typeof forgotPasswordSchema>>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: { email: '' },
   });
-  const [isPending, startTransition] = useTransition();
+
+  const { register, handleSubmit } = form;
+  const { errors } = form.formState;
 
   const onSubmit = async () => {
     startTransition(async () => {
@@ -32,9 +35,13 @@ const SellerForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) =
       description="Enter your email and we'll send you a secure reset link."
       icon={<Mail className="size-5" />}
     >
-      <Form className="space-y-4" form={form} submitLabel={isPending ? 'Sending...' : 'Send reset link'} onSubmit={onSubmit}>
-        <Input name="name" type="email" placeholder="your@email.com" disabled={isPending} autoComplete="email" />
-      </Form>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <FormField {...register('email')} id="seller-forgot-email" label="Email" error={errors.email?.message} type="email" placeholder="your@email.com" disabled={isPending} autoComplete="email" />
+
+        <button type="submit" className="w-full h-11" disabled={isPending} aria-busy={isPending}>
+          {isPending ? 'Sending...' : 'Send reset link'}
+        </button>
+      </form>
 
       <button
         type="button"

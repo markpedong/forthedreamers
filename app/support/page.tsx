@@ -4,7 +4,7 @@ import { FormEvent, useState } from 'react';
 import Link from 'next/link';
 import { LifeBuoy, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import FormField from '@/components/reusable/form-field';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateSupportTicketMutation, useSupportMessageMutation } from '@/services/useMutation';
 import { useSupportTicketQuery, useSupportTicketsQuery } from '@/services/useQuery';
@@ -59,7 +59,7 @@ export default function SupportPage() {
       {creating && (
         <form onSubmit={createTicket} className="mb-8 space-y-4 border border-border bg-card p-6">
           <h2 className="text-xl font-medium">Create a support ticket</h2>
-          <Input value={subject} onChange={event => setSubject(event.target.value)} minLength={5} maxLength={200} required placeholder="Subject" />
+          <FormField value={subject} onChange={event => setSubject(event.target.value)} minLength={5} maxLength={200} required placeholder="Subject" />
           <div className="grid gap-3 sm:grid-cols-2">
             <select value={category} onChange={event => setCategory(event.target.value as typeof category)} aria-label="Ticket category" className="h-9 border border-input bg-background px-3 text-sm">
               <option value="ORDER">Order</option><option value="PRODUCT">Product</option><option value="SHIPPING">Shipping</option><option value="ACCOUNT">Account</option><option value="OTHER">Other</option>
