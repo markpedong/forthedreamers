@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Heart, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Button as LoadingButton } from '@/components/reusable/button';
 import type { ProductPageVariant, ProductPurchaseData } from './product-types';
 import { useAddCartMutation, useWishlistMutation } from '@/services/useMutation';
 import { useWishlistQuery } from '@/services/useQuery';
@@ -86,17 +87,17 @@ const AddToCartSection = ({
               Add to Cart
             </Button>
             {/* Buy Now: critical action — disable button and show pending feedback (AGENTS.md). */}
-            <Button
+            <LoadingButton
               size="lg"
               variant="outline"
               className="h-12 flex-1"
+              loading={isProcessingBuyNow}
+              title="Buy Now"
               onClick={handleBuyNow}
               onMouseEnter={prefetchCheckout}
               onFocus={prefetchCheckout}
-              disabled={maxQuantity === 0 || isProcessingBuyNow}
-            >
-              {isProcessingBuyNow ? 'Preparing checkout...' : 'Buy Now'}
-            </Button>
+              disabled={maxQuantity === 0}
+            />
           </div>
         </>
       ) : (

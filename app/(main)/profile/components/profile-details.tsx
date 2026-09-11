@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Button as LoadingButton } from '@/components/reusable/button';
 import formSchemas from '@/hooks/form-schemas';
 import { SchemaForm } from '@/lib/types';
 import { useForm } from 'react-hook-form';
@@ -60,9 +61,7 @@ const ProfileDetails = () => {
                   className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   disabled={isSubmitting}
                 />
-                <Button type="submit" disabled={isSubmitting} size="sm">
-                  {isSubmitting ? 'Saving...' : 'Save'}
-                </Button>
+                <LoadingButton type="submit" loading={isSubmitting} size="sm" title="Save" />
                 <Button
                   type="button"
                   variant="outline"
@@ -124,16 +123,15 @@ const ProfileDetails = () => {
             </div>
 
             {!user?.emailVerified && (
-              <Button
+              <LoadingButton
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={handleResendVerification}
-                disabled={isPending}
+                loading={isPending}
                 className="mt-3"
-              >
-                Resend Email
-              </Button>
+                title="Resend Email"
+              />
             )}
           </div>
 

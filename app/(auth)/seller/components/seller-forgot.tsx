@@ -10,7 +10,7 @@ import formSchemas from '@/hooks/form-schemas';
 import { ArrowLeft } from 'lucide-react';
 import AuthPage from '../../components/auth-page';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/reusable/button';
 
 const SellerForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const { forgotPasswordSchema } = formSchemas;
@@ -41,9 +41,7 @@ const SellerForgotPasswordPage = ({ onNavigate }: { onNavigate: TOnNavigate }) =
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
         <FormField {...register('email')} id="seller-forgot-email" label="Email" error={errors.email?.message} type="email" placeholder="your@email.com" disabled={isPending} autoComplete="email" />
 
-        <Button type="submit" className="w-full h-11" disabled={isPending} aria-busy={isPending}>
-          {isPending ? 'Sending...' : 'Send reset link'}
-        </Button>
+        <Button type="submit" className="w-full h-11" loading={isPending} title="Send reset link" />
       </form>
 
       <button

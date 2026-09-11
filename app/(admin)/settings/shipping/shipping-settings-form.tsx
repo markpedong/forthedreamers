@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { COURIERS, type CourierCode } from '@/constants/shipping';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/reusable/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useUpdateSellerShippingMutation } from '@/services/useMutation';
 
@@ -45,8 +45,9 @@ export default function ShippingSettingsForm({ initialCourierCodes }: { initialC
       </div>
 
       <Button
-        disabled={mutation.isPending || selectedCodes.length === 0}
-        aria-busy={mutation.isPending}
+        loading={mutation.isPending}
+        disabled={selectedCodes.length === 0}
+        title="Save shipping settings"
         onClick={() =>
           mutation.mutate(selectedCodes, {
             onSuccess: result => {
@@ -57,9 +58,7 @@ export default function ShippingSettingsForm({ initialCourierCodes }: { initialC
             onError: () => setSelectedCodes(savedCodes),
           })
         }
-      >
-        {mutation.isPending ? 'Saving…' : 'Save shipping settings'}
-      </Button>
+      />
     </div>
   );
 }

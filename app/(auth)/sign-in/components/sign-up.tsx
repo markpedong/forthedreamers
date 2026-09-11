@@ -36,7 +36,7 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         form={form}
         onSubmit={onSubmit}
         isSending={isSigningUp}
-        submitLabel={isSigningUp ? 'Signing up...' : 'Sign up'}
+        submitLabel="Sign up"
         className="mt-6 space-y-4 sm:space-y-5"
       >
         <Input

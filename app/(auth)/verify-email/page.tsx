@@ -2,7 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Mail, ArrowRight, Loader2 } from 'lucide-react';
+import { Button as LoadingButton } from '@/components/reusable/button';
+import { Mail } from 'lucide-react';
 import { useResendVerificationMutation } from '@/services/useMutation';
 import { useAppSelector } from '@/redux/store';
 import AuthPage from '../components/auth-page';
@@ -38,23 +39,13 @@ const VerifyEmailPage = () => {
             </ol>
           </div>
 
-          <Button
+          <LoadingButton
             onClick={handleResend}
-            disabled={mutation.isPending || !email}
+            loading={mutation.isPending}
+            disabled={!email}
             className="h-12 w-full rounded-xl"
-          >
-            {mutation.isPending ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Sending...
-              </>
-            ) : (
-              <>
-                Resend Verification Link
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </Button>
+            title="Resend Verification Link"
+          />
 
           <p className="text-center text-sm text-muted-foreground">
             Didn&apos;t receive the email? Check your spam folder or try resending.

@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { tryWithToast } from '@/utils/helper';
 import { ArrowLeft } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/reusable/button';
 
 const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const router = useRouter();
@@ -76,9 +76,7 @@ const TwoFactorPage = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           disabled={isPending}
         />
 
-        <Button type="submit" className="w-full h-11" disabled={isPending} aria-busy={isPending}>
-          {isPending ? 'Verifying in...' : 'Verify'}
-        </Button>
+        <Button type="submit" className="w-full h-11" loading={isPending} title="Verify" />
       </form>
 
       <div className="mt-5 space-y-3 text-center">

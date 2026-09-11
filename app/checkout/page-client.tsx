@@ -6,6 +6,7 @@ import { Banknote, ChevronLeft, Plus, Store, Truck } from 'lucide-react';
 import Link from 'next/link';
 import AddressForm from '@/components/reusable/address-form';
 import { Button } from '@/components/ui/button';
+import { Button as LoadingButton } from '@/components/reusable/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ENABLED_PAYMENT_METHOD, PAYMENT_METHODS } from '@/constants/payment';
 import { COURIERS, type CourierCode } from '@/constants/shipping';
@@ -239,17 +240,17 @@ const CheckoutPageClient = ({ cartItems, addresses, sellerShippingMethods }: Che
               </div>
             </div>
           </div>
-          <Button
+          <LoadingButton
             type="button"
+            loading={checkoutMutation.isPending}
             disabled={
               !selectedAddressId ||
               !hasAllShippingSelections ||
               shopsWithoutShipping.length > 0 ||
-              checkoutMutation.isPending ||
               grandTotal <= 0
             }
-            aria-busy={checkoutMutation.isPending}
             className="w-full py-6 text-lg"
+            title={`Place COD Order — $${grandTotal.toFixed(2)}`}
             onClick={() => {
               if (!selectedAddressId || !hasAllShippingSelections) return;
               checkoutMutation.mutate({
@@ -262,9 +263,7 @@ const CheckoutPageClient = ({ cartItems, addresses, sellerShippingMethods }: Che
                 })),
               });
             }}
-          >
-            {checkoutMutation.isPending ? 'Placing order…' : `Place COD Order — $${grandTotal.toFixed(2)}`}
-          </Button>
+          />
         </div>
       </div>
 

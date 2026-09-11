@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react';
 import Link from 'next/link';
 import { LifeBuoy, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Button as LoadingButton } from '@/components/reusable/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateSupportTicketMutation, useSupportMessageMutation } from '@/services/useMutation';
@@ -70,9 +71,7 @@ export default function SupportPage() {
           </div>
           <Textarea value={message} onChange={event => setMessage(event.target.value)} minLength={10} maxLength={2000} required placeholder="Describe how we can help" className="min-h-32" />
           <div className="flex gap-3">
-            <Button type="submit" disabled={createMutation.isPending}>
-              {createMutation.isPending ? 'Creating ticket…' : 'Create ticket'}
-            </Button>
+            <LoadingButton type="submit" loading={createMutation.isPending} title="Create ticket" />
             <Button type="button" variant="outline" onClick={() => setCreating(false)}>Cancel</Button>
           </div>
         </form>
@@ -132,9 +131,7 @@ export default function SupportPage() {
               {!['CLOSED', 'CANCELLED'].includes(ticketQuery.data.status) && (
                 <form onSubmit={sendReply} className="space-y-3 border-t border-border p-5">
                   <Textarea value={reply} onChange={event => setReply(event.target.value)} minLength={10} maxLength={2000} required placeholder="Write a reply" />
-                  <Button type="submit" disabled={replyMutation.isPending}>
-                    {replyMutation.isPending ? 'Sending…' : 'Send message'}
-                  </Button>
+                  <LoadingButton type="submit" loading={replyMutation.isPending} title="Send message" />
                 </form>
               )}
             </div>

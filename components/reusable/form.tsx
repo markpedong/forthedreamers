@@ -1,5 +1,5 @@
 import { ComponentPropsWithoutRef, ReactNode } from 'react';
-import { Button } from '../ui/button';
+import { Button } from './button';
 import { Form as FormUI } from '../ui/form';
 import { FieldValues, SubmitHandler, UseFormReturn } from 'react-hook-form';
 import classnames from 'classnames';
@@ -39,9 +39,7 @@ const Form = <T extends FieldValues>({
       >
         {children}
         {!customSubmitButton && (
-          <Button className="w-full h-11" disabled={isSending} aria-busy={isSending}>
-            {submitLabel}
-          </Button>
+          <Button type="submit" className="w-full h-11" loading={isSending} title={submitLabel ?? 'Submit'} />
         )}
       </form>
     </FormUI>

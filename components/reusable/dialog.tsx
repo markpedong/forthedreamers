@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Button as LoadingButton } from '@/components/reusable/button';
 import {
   Dialog as DialogUI,
   DialogContent,
@@ -83,9 +84,7 @@ const Dialog = ({
               {cancelText}
             </Button>
           </DialogClose>
-          <Button onClick={onConfirm} type="submit" disabled={loading}>
-            {loading ? 'Please wait...' : confirmText}
-          </Button>
+          <LoadingButton onClick={onConfirm} type="submit" loading={loading} title={confirmText} />
         </DialogFooter>
       </DialogContent>
     </DialogUI>

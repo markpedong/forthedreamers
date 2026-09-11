@@ -12,7 +12,7 @@ import { tryWithToast } from '@/utils/helper';
 import AuthPage from '../../components/auth-page';
 import { ArrowLeft } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/reusable/button';
 
 const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
   const router = useRouter();
@@ -66,9 +66,7 @@ const Seller2FA: FC<{ onNavigate: TOnNavigate }> = ({ onNavigate }) => {
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
         <FormField {...register('otp')} id="seller-2fa-otp" label="Verification Code" error={errors.otp?.message} type="text" placeholder={useBackup ? 'XXXX-XXXX-XXXX' : '000000'} maxLength={useBackup ? 14 : 6} disabled={isPending} />
 
-        <Button type="submit" className="w-full h-11" disabled={isPending} aria-busy={isPending}>
-          {isPending ? 'Verifying...' : 'Verify'}
-        </Button>
+        <Button type="submit" className="w-full h-11" loading={isPending} title="Verify" />
       </form>
 
       <div className="mt-5 space-y-3 text-center">

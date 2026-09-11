@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Button as LoadingButton } from '@/components/reusable/button';
 import AvatarUpload from './avatar-upload';
 import { LayoutDashboard, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -58,15 +59,14 @@ const ProfileHeader = () => {
               <LayoutDashboard className="h-4 w-4" /> {`${user?.role}`} access
             </Button>
           )}
-          <Button
+          <LoadingButton
             variant="destructive"
             size="sm"
             onClick={() => signOutMutation.mutate()}
-            disabled={signOutMutation.isPending}
-            aria-busy={signOutMutation.isPending}
-          >
-            <LogOut className="h-4 w-4" /> {signOutMutation.isPending ? 'Signing out...' : 'Sign out'}
-          </Button>
+            loading={signOutMutation.isPending}
+            icon={<LogOut className="h-4 w-4" />}
+            title="Sign out"
+          />
         </div>
       </div>
     </section>

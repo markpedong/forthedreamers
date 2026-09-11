@@ -1,7 +1,7 @@
 'use client';
 
 import { FC } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/reusable/button';
 import { Badge } from '@/components/ui/badge';
 import type { Account as AccountType } from '@/lib/types';
 import { OAUTH_PROVIDER_DETAILS } from '@/constants';
@@ -47,9 +47,7 @@ const AccountCard: FC<AccountCardProps> = ({ provider, account, loading, onClick
       {isLinked ? (
         <Badge variant="secondary">Connected</Badge>
       ) : (
-        <Button variant="outline" size="sm" onClick={() => onClick?.(provider)} disabled={loading}>
-          Link
-        </Button>
+        <Button variant="outline" size="sm" onClick={() => onClick?.(provider)} loading={loading} title="Link" />
       )}
     </div>
   );

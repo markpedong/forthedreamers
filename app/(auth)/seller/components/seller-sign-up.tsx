@@ -44,7 +44,7 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         className="mt-6 space-y-4"
         form={form}
         onSubmit={onSubmit}
-        submitLabel={isSubmitting ? 'Creating account...' : 'Create account'}
+        submitLabel="Create account"
         isSending={isSubmitting}
       >
         <Input label="Store Name" name="storeName" placeholder="My Awesome Store" disabled={isSubmitting} />

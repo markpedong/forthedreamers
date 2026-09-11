@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
+import { Button as LoadingButton } from '@/components/reusable/button';
 import FormField from '@/components/reusable/form-field';
 import { addressSchema } from '@/hooks/form-schemas';
 import type { SchemaForm } from '@/lib/types';
@@ -59,9 +60,7 @@ const AddressForm = ({ address, onCancel }: { address?: AddressFormAddress; onCa
         <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit" className="flex-1" disabled={isPending}>
-          {address ? 'Save Changes' : 'Add Address'}
-        </Button>
+        <LoadingButton type="submit" className="flex-1" loading={isPending} title={address ? 'Save Changes' : 'Add Address'} />
       </div>
     </form>
   );

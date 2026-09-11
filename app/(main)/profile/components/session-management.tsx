@@ -2,7 +2,7 @@
 
 import { FC, useTransition } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Button as LoadingButton } from '@/components/reusable/button';
 import { toast } from 'sonner';
 import { LogOut } from 'lucide-react';
 import SessionItem from '@/components/reusable/session-item';
@@ -62,16 +62,15 @@ const SessionManagement: FC<SessionsSectionProps> = ({ sessions, currentSessionT
           <>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-muted-foreground">Other Sessions</h3>
-              <Button
+              <LoadingButton
                 variant="outline"
                 size="sm"
                 onClick={handleAction}
-                disabled={isPending}
+                loading={isPending}
+                icon={<LogOut className="w-3 h-3 mr-1" />}
+                title="Revoke All"
                 className="text-xs bg-transparent"
-              >
-                <LogOut className="w-3 h-3 mr-1" />
-                Revoke All
-              </Button>
+              />
             </div>
 
             <div className="space-y-2">

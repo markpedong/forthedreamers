@@ -4,7 +4,7 @@ import { TOnNavigate } from '@/lib/types';
 import AuthPage from '../../components/auth-page';
 import OauthButtons from './oauth-buttons';
 import FormField from '@/components/reusable/form-field';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/reusable/button';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -91,9 +91,7 @@ const SignIn = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           </button>
         </div>
 
-        <Button className="w-full" disabled={isSubmitting} aria-busy={isSubmitting}>
-          {isSubmitting ? 'Signing in...' : 'Sign in'}
-        </Button>
+        <Button type="submit" className="w-full" loading={isSubmitting} title="Sign in" />
 
         <div className="my-5 flex items-center gap-3">
           <span className="h-px flex-1 bg-border" />

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Button as LoadingButton } from '@/components/reusable/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useCreateReviewMutation } from '@/services/useMutation';
 
@@ -67,9 +68,7 @@ const WriteReview = ({ slug, productName }: { slug: string; productName: string 
             />
           </label>
 
-          <Button type="submit" disabled={pending || !rating} className="w-full">
-            {pending ? 'Submitting...' : 'Submit review'}
-          </Button>
+          <LoadingButton type="submit" loading={pending} disabled={!rating} className="w-full" title="Submit review" />
         </form>
       </DialogContent>
     </Dialog>

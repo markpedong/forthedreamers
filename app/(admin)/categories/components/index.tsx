@@ -1,7 +1,7 @@
 'use client';
 
 import ProTable from '@/components/pro-table';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/reusable/button';
 import { Input } from '@/components/ui/input';
 import { Category } from '@/generated/prisma';
 import { ProColumn, ActionType } from '@/lib/types';
@@ -30,9 +30,7 @@ const Categories: FC<{ initialCategories: Category[] }> = ({ initialCategories }
     <div className="space-y-4">
       <div className="flex max-w-md gap-2">
         <Input value={name} onChange={event => setName(event.target.value)} placeholder="Category name" />
-        <Button onClick={handleSubmit} disabled={mutation.isPending || !name.trim()}>
-          Add Category
-        </Button>
+        <Button onClick={handleSubmit} loading={mutation.isPending} disabled={!name.trim()} title="Add Category" />
       </div>
       <ProTable<Category> rowKey="id" dataSource={initialCategories} columns={columns} actionRef={actionRef} />
     </div>

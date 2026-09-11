@@ -1,5 +1,5 @@
 import { FacebookIcon, GoogleIcon } from '@/components/icons/oauth';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/reusable/button';
 import { useSocialSignInMutation } from '@/services/useMutation';
 
 type OauthButtonsProps = { next: '/profile' | '/dashboard' };
@@ -19,12 +19,12 @@ const OauthButtons = ({ next }: OauthButtonsProps) => {
           type="button"
           variant="outline"
           className="h-12 w-full justify-center rounded-xl bg-background font-medium shadow-xs"
+          loading={provider === option.id}
+          icon={option.icon}
+          title={option.label}
           disabled={mutation.isPending}
           onClick={() => mutation.mutate(option.id)}
-        >
-          {option.icon}
-          <span>{provider === option.id ? `Opening ${option.id}...` : option.label}</span>
-        </Button>
+        />
       ))}
     </>
   );

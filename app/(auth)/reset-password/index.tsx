@@ -37,7 +37,7 @@ const ResetPassword: FC<{ token: string }> = ({ token }) => {
           className="space-y-4"
           form={form}
           onSubmit={onSubmit}
-          submitLabel={isLoading ? 'Resetting...' : 'Reset Password'}
+          submitLabel="Reset Password"
           isSending={isLoading}
         >
           <Input
