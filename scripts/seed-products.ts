@@ -29,7 +29,8 @@ async function main() {
   const testUser = await prisma.user.create({
     data: {
       id: 'test-seller-001',
-      name: 'Dreamer Store',
+      username: 'dreamer_store',
+      displayName: 'Dreamer Store',
       email: 'seller@dreamers.com',
       emailVerified: true,
       role: 'SELLER',
