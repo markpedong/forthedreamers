@@ -36,12 +36,12 @@ const ProfileDetails = () => {
     formState: { errors },
   } = useForm<SchemaForm<typeof nameEmailSchema>>({
     resolver: zodResolver(nameEmailSchema),
-    values: { name: user?.name ?? '', email: user?.email ?? '' },
+    values: { displayName: user?.displayName ?? '', email: user?.email ?? '' },
   });
 
   const handleResendVerification = () => verificationMutation.mutate();
 
-  const onSubmit = ({ name }: SchemaForm<typeof nameEmailSchema>) => profileMutation.mutate({ name });
+  const onSubmit = ({ displayName }: SchemaForm<typeof nameEmailSchema>) => profileMutation.mutate({ displayName });
 
   return (
     <Card id="personal-information" className="scroll-mt-24 shadow-none">
@@ -52,12 +52,12 @@ const ProfileDetails = () => {
       <CardContent className="space-y-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-foreground">Full name</label>
+            <label className="text-sm font-medium text-foreground">Display name</label>
             <p className="text-sm text-muted-foreground">Shown on your account and reviews.</p>
             {isEditing ? (
               <div className="mt-2 flex gap-2">
                 <input
-                  {...register('name')}
+                  {...register('displayName')}
                   className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   disabled={isSubmitting}
                 />
@@ -68,7 +68,7 @@ const ProfileDetails = () => {
                   size="sm"
                   onClick={() => {
                     setIsEditing(false);
-                    reset({ name: user?.name ?? '', email: user?.email ?? '' });
+                    reset({ displayName: user?.displayName ?? '', email: user?.email ?? '' });
                   }}
                   disabled={isSubmitting}
                 >
@@ -77,7 +77,7 @@ const ProfileDetails = () => {
               </div>
             ) : (
               <div className="mt-2 flex items-center gap-2">
-                <span className="text-sm text-foreground">{user?.name}</span>
+                <span className="text-sm text-foreground">{user?.displayName}</span>
                 <Button
                   type="button"
                   variant="ghost"
@@ -90,7 +90,13 @@ const ProfileDetails = () => {
                 </Button>
               </div>
             )}
-            {errors.name && <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>}
+            {errors.displayName && <p className="mt-1 text-xs text-destructive">{errors.displayName.message}</p>}
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-foreground">Username</label>
+            <p className="text-sm text-muted-foreground">Your unique handle.</p>
+            <p className="mt-2 text-sm text-foreground">@{user?.username}</p>
           </div>
 
           <div>

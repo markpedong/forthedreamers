@@ -17,7 +17,7 @@ const ProfileHeader = () => {
   const signOutMutation = useSignOutMutation();
 
   const initials =
-    user?.name
+    user?.displayName
       ?.split(' ')
       .map(n => n[0])
       .join('')
@@ -29,7 +29,7 @@ const ProfileHeader = () => {
         <div className="flex min-w-0 items-center gap-3.5 sm:gap-5">
           <AvatarUpload
             src={user?.image ?? ''}
-            alt={user?.name ?? 'Profile avatar'}
+            alt={user?.displayName ?? 'Profile avatar'}
             initials={initials}
             isGoogleAvatar={isGoogleImage(user?.image)}
           />
@@ -37,9 +37,10 @@ const ProfileHeader = () => {
           <div className="min-w-0">
             <div className="mt-1 sm:mt-2">
               <h1 className="truncate text-lg font-medium tracking-tight text-foreground sm:text-2xl">
-                {user?.name || 'Your profile'}
+                {user?.displayName || 'Your profile'}
               </h1>
             </div>
+            <p className="mt-1 truncate text-sm text-muted-foreground">@{user?.username}</p>
             <p className="mt-1 truncate text-sm text-muted-foreground">{user?.email}</p>
             {user?.createdAt && (
               <p className="mt-1 text-xs text-muted-foreground">
