@@ -82,8 +82,12 @@ export const useSignUpMutation = () => {
 
   return useMutation({
     mutationFn: signUp,
-    onSuccess: () => {
+    onSuccess: (_result, input) => {
       toast.success('Account created successfully!', { duration: 3000 });
+      sessionStorage.setItem('pending-verification-email', input.email);
+      router.replace('/profile');
+      // The profile page is a Server Component; without this the router serves the render it
+      // cached before the signup cookie existed, so the page shows signed-out until a manual reload.
       router.refresh();
     },
     onError: error => toast.error(error.message),

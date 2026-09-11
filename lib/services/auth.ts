@@ -68,7 +68,7 @@ export const signUp = async (email: string, password: string, name: string, call
       email: user.email,
       name,
       image: generateDefaultAvatar(user.id),
-      emailVerified: Boolean(user.email_confirmed_at),
+      emailVerified: false,
     },
   });
   return result.data;

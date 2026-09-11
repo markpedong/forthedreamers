@@ -1,5 +1,6 @@
 'use client';
 
+import { useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Button as LoadingButton } from '@/components/reusable/button';
@@ -9,14 +10,22 @@ import { useAppSelector } from '@/redux/store';
 import AuthPage from '../components/auth-page';
 import AuthCard from '../components/auth-card';
 
+const emptySubscribe = () => () => {};
+
 const VerifyEmailPage = () => {
   const router = useRouter();
-  const email = useAppSelector(state => state.userData.data?.email);
+  const authenticatedEmail = useAppSelector(state => state.userData.data?.email);
+  const pendingEmail = useSyncExternalStore(
+    emptySubscribe,
+    () => sessionStorage.getItem('pending-verification-email') ?? undefined,
+    () => undefined
+  );
+  const email = authenticatedEmail ?? pendingEmail;
   const mutation = useResendVerificationMutation({
     message: 'Verification link sent! Check your inbox.',
     duration: 3000,
   });
-  const handleResend = () => mutation.mutate();
+  const handleResend = () => mutation.mutate(email);
 
   return (
     <AuthPage>

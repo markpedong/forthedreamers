@@ -305,8 +305,8 @@ export const changePassword = (password: string) =>
   apiFetch('/api/profile/password', { method: 'PATCH', body: { password }, showErrorToast: false });
 export const updateProfile = (input: { name: string } | { image: string }) =>
   apiFetch<{ user: TUserData }>('/api/profile', { method: 'PATCH', body: input, showErrorToast: false });
-export const resendVerification = () =>
-  apiFetch('/api/profile/verification', { method: 'POST', showErrorToast: false });
+export const resendVerification = (email?: string) =>
+  apiFetch('/api/profile/verification', { method: 'POST', body: email ? { email } : undefined, showErrorToast: false });
 export const createAddress = (input: unknown) =>
   apiFetch('/api/profile/addresses', { method: 'POST', body: input, showErrorToast: false });
 export const updateAddress = (input: unknown) =>

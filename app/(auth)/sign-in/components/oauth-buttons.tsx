@@ -9,7 +9,7 @@ const OauthButtons = ({ next }: OauthButtonsProps) => {
   const provider = mutation.isPending ? mutation.variables : null;
 
   return (
-    <>
+    <div className="space-y-3">
       {[
         { id: 'google' as const, label: 'Sign in with Google', icon: <GoogleIcon /> },
         { id: 'facebook' as const, label: 'Sign in with Facebook', icon: <FacebookIcon /> },
@@ -22,11 +22,11 @@ const OauthButtons = ({ next }: OauthButtonsProps) => {
           loading={provider === option.id}
           icon={option.icon}
           title={option.label}
-          disabled={mutation.isPending}
+          disabled={mutation.isPending || option.id === 'facebook'}
           onClick={() => mutation.mutate(option.id)}
         />
       ))}
-    </>
+    </div>
   );
 };
 
