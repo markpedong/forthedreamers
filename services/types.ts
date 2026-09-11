@@ -8,7 +8,8 @@ export type TAppDataState = {
 
 export type TUserData = {
   id: string;
-  name: string;
+  username: string;
+  displayName: string;
   email: string;
   image: string | null;
   role: 'USER' | 'SELLER' | 'ADMIN';

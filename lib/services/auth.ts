@@ -2,13 +2,39 @@ import 'server-only';
 
 import { cache } from 'react';
 import { headers } from 'next/headers';
+import { z } from 'zod';
 import type { Provider } from '@supabase/supabase-js';
 import prisma from '@/lib/prisma';
 import { generateDefaultAvatar } from '@/lib/default-avatars';
+import { generateDisplayName } from '@/lib/display-name';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getSessionClaims, getSessionUser } from '@/lib/auth';
 import type { TUserData } from '@/services/types';
 import { formatDate } from '@/lib/utils';
+
+export const usernameSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .regex(/^[a-z0-9_]{3,24}$/, 'Username can only use lowercase letters, numbers, and underscores');
+
+export const displayNameSchema = z.string().trim().min(1).max(50);
+
+export class UsernameTakenError extends Error {
+  constructor() {
+    super('That username is already taken');
+  }
+}
+
+export const validateUsername = (username: string) => usernameSchema.parse(username);
+
+export const isUsernameAvailable = async (username: string) => {
+  const parsed = usernameSchema.safeParse(username);
+  if (!parsed.success) return false;
+  const existing = await prisma.user.findUnique({ where: { username: parsed.data }, select: { id: true } });
+  return !existing;
+};
+
 
 const appOrigin = async () => {
   const headerStore = await headers();
@@ -41,17 +67,32 @@ export const getCurrentUserData = async (): Promise<TUserData | null> => {
   };
 };
 
-export const signUp = async (email: string, password: string, name: string, callbackURL = '/profile') => {
+export const signUp = async (
+  email: string,
+  password: string,
+  username: string,
+  displayName: string | undefined,
+  callbackURL = '/profile'
+) => {
   const supabase = await createSupabaseServerClient();
   const origin = await appOrigin();
+  validateUsername(username);
+  const [existing] = await Promise.all([
+    prisma.user.findUnique({ where: { username }, select: { id: true } }),
+    // ponytail: warms the local pool during the ~180ms GoTrue round-trip; harmless if unused.
+    prisma.$queryRaw`SELECT 1 AS ok`,
+  ]);
+  if (existing) throw new UsernameTakenError();
+  const trimmedDisplayName = displayName?.trim();
   const [result] = await Promise.all([
     supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${origin}/auth/callback?next=${callbackURL}`, data: { name } },
+      options: {
+        emailRedirectTo: `${origin}/auth/callback?next=${callbackURL}`,
+        data: { username, ...(trimmedDisplayName ? { displayName: trimmedDisplayName } : {}) },
+      },
     }),
-    // ponytail: warms the local pool during the ~180ms GoTrue round-trip; harmless if unused.
-    prisma.$queryRaw`SELECT 1 AS ok`,
   ]);
   if (result.error) throw new Error(result.error.message);
   const user = result.data.user;
@@ -59,17 +100,20 @@ export const signUp = async (email: string, password: string, name: string, call
   // with no identities. Without this the caller is told "created" for an existing account.
   if (!user?.email || !user.identities?.length)
     throw new Error('Unable to sign up. Sign in if you already have an account.');
+  const create = {
+    id: user.id,
+    email: user.email,
+    username,
+    displayName: trimmedDisplayName || generateDisplayName(),
+    image: generateDefaultAvatar(user.id),
+    emailVerified: false,
+  };
   // A single upsert covers both branches; `update` omits role so an existing SELLER/ADMIN keeps it.
+  // `update` must not touch username/displayName — an account the user already owns keeps both.
   await prisma.user.upsert({
     where: { id: user.id },
-    update: { email: user.email, name },
-    create: {
-      id: user.id,
-      email: user.email,
-      name,
-      image: generateDefaultAvatar(user.id),
-      emailVerified: false,
-    },
+    update: { email: user.email },
+    create,
   });
   return result.data;
 };
@@ -136,14 +180,14 @@ export const changePassword = async (newPassword: string) => {
   if (error) throw new Error(error.message);
 };
 
-export const updateUser = async (userId: string, name: string) => {
+export const updateUser = async (userId: string, displayName: string) => {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
     error,
-  } = await supabase.auth.updateUser({ data: { name } });
+  } = await supabase.auth.updateUser({ data: { displayName } });
   if (error || !user || user.id !== userId) throw new Error(error?.message ?? 'Authentication required');
-  await prisma.user.update({ where: { id: userId }, data: { name } });
+  await prisma.user.update({ where: { id: userId }, data: { displayName } });
   return getCurrentUserData();
 };
 
