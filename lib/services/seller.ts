@@ -5,6 +5,8 @@ import { USER_ROLE } from '@/generated/prisma';
 import { COURIER_CODES } from '@/constants/shipping';
 import { getSessionUser } from '@/lib/auth';
 import { generateDefaultAvatar } from '@/lib/default-avatars';
+import { generateDisplayName } from '@/lib/display-name';
+import { displayNameSchema, usernameSchema, UsernameTakenError } from '@/lib/services/auth';
 import prisma from '@/lib/prisma';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -17,21 +19,33 @@ export const courierSelectionSchema = z
 export const sellerSignupSchema = z
   .object({
     storeName: storeSchema,
-    name: z.string().trim().min(1).max(100),
+    username: usernameSchema,
+    displayName: displayNameSchema.optional(),
     email: z.email(),
     password: z.string().min(8).max(128),
     confirmPassword: z.string(),
   })
   .refine(value => value.password === value.confirmPassword);
 
-export const sellerSignup = async ({ storeName, name, email, password }: z.infer<typeof sellerSignupSchema>) => {
+export const sellerSignup = async ({
+  storeName,
+  username,
+  displayName,
+  email,
+  password,
+}: z.infer<typeof sellerSignupSchema>) => {
   if (await prisma.seller.findUnique({ where: { storeName }, select: { id: true } }))
     throw new Error('Store name is already taken');
+  if (await prisma.user.findUnique({ where: { username }, select: { id: true } }))
+    throw new UsernameTakenError();
   const supabase = await createSupabaseServerClient();
+  const trimmedDisplayName = displayName?.trim();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { name } },
+    options: {
+      data: { username, ...(trimmedDisplayName ? { displayName: trimmedDisplayName } : {}) },
+    },
   });
   const authUser = data.user;
   if (error || !authUser || !authUser.identities?.length)
@@ -41,11 +55,12 @@ export const sellerSignup = async ({ storeName, name, email, password }: z.infer
     await prisma.$transaction(async tx => {
       await tx.user.upsert({
         where: { id: authUser.id },
-        update: { email, name, image, role: USER_ROLE.SELLER },
+        update: { email, image, role: USER_ROLE.SELLER },
         create: {
           id: authUser.id,
           email,
-          name,
+          username,
+          displayName: trimmedDisplayName || generateDisplayName(),
           image,
           emailVerified: Boolean(authUser.email_confirmed_at),
           role: USER_ROLE.SELLER,

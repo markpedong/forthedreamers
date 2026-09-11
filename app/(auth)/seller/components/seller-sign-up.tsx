@@ -21,7 +21,8 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
     resolver: zodResolver(createSellerSchema),
     defaultValues: {
       storeName: '',
-      name: '',
+      username: '',
+      displayName: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -48,7 +49,20 @@ const SellerSignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
         isSending={isSubmitting}
       >
         <Input label="Store Name" name="storeName" placeholder="My Awesome Store" disabled={isSubmitting} />
-        <Input name="name" label="Name" placeholder="John Doe" disabled={isSubmitting} />
+        <Input
+          name="username"
+          label="Username"
+          placeholder="markpedong"
+          description="Lowercase letters, numbers, and underscores."
+          disabled={isSubmitting}
+          preventSpaces
+        />
+        <Input
+          name="displayName"
+          label="Display name (optional)"
+          placeholder="Leave blank and we'll pick one for you"
+          disabled={isSubmitting}
+        />
         <Input
           name="email"
           label="Email"

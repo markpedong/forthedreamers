@@ -36,12 +36,19 @@ const createStringSchema = (fieldName: string, min = 2, max = 50) =>
     .min(min, { message: `${fieldName} must be at least ${min} characters` })
     .max(max, { message: `${fieldName} must be less than ${max} characters` });
 
-const nameSchema = createStringSchema('Name');
+const usernameSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .regex(/^[a-z0-9_]{3,24}$/, 'Use 3-24 lowercase letters, numbers, or underscores');
+
+const displayNameSchema = z.string().trim().max(50, 'Display name must be less than 50 characters');
+
 const storeNameSchema = createStringSchema('Store name');
 
 const searchSchema = z.object({ search: createStringSchema('Search') });
 
-const nameEmailSchema = z.object({ name: nameSchema }).extend({ email: emailSchema });
+const nameEmailSchema = z.object({ displayName: displayNameSchema }).extend({ email: emailSchema });
 
 const password = z
   .string()
@@ -61,8 +68,14 @@ const forgotPasswordSchema = z.object({
   email: emailSchema,
 });
 
-const registrationSchema = nameEmailSchema
-  .extend({ email: emailSchema, password, confirmPassword: z.string() })
+const registrationSchema = z
+  .object({
+    username: usernameSchema,
+    displayName: displayNameSchema,
+    email: emailSchema,
+    password,
+    confirmPassword: z.string(),
+  })
   .refine(data => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
@@ -94,12 +107,13 @@ const twoFactorSchema = z.object({
 });
 
 const passkeySchema = z.object({
-  name: nameSchema.optional(),
+  name: createStringSchema('Name').optional(),
 });
 
 const createSellerSchema = z
   .object({
-    name: nameSchema,
+    username: usernameSchema,
+    displayName: displayNameSchema,
     storeName: storeNameSchema,
     email: emailSchema,
     password,
@@ -172,6 +186,8 @@ const formSchemas = {
   addressSchema,
   addressUpdateSchema,
   nameEmailSchema,
+  usernameSchema,
+  displayNameSchema,
   password,
   resetPasswordSchema,
   emailSchema,
