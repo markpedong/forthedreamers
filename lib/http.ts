@@ -282,7 +282,7 @@ export const sendSupportMessage = ({ ticketId, message }: { ticketId: string; me
 
 export const signIn = (input: { email: string; password: string; portal: 'customer' | 'dashboard' }) =>
   apiFetch<TUserData>('/api/auth/sign-in', { method: 'POST', body: input, showErrorToast: false });
-export const signUp = (input: { email: string; password: string; name: string }) =>
+export const signUp = (input: { email: string; password: string; username: string; displayName?: string }) =>
   apiFetch('/api/auth/sign-up', { method: 'POST', body: input, showErrorToast: false });
 export const sellerSignUp = (input: unknown) =>
   apiFetch(API_ROUTE.SELLER, { method: 'POST', body: input, showErrorToast: false });
@@ -303,8 +303,13 @@ export const resetPassword = (token: string, password: string) =>
 export const signOut = () => apiFetch('/api/auth/sign-out', { method: 'POST', showErrorToast: false });
 export const changePassword = (password: string) =>
   apiFetch('/api/profile/password', { method: 'PATCH', body: { password }, showErrorToast: false });
-export const updateProfile = (input: { name: string } | { image: string }) =>
+export const updateProfile = (input: { displayName: string } | { image: string }) =>
   apiFetch<{ user: TUserData }>('/api/profile', { method: 'PATCH', body: input, showErrorToast: false });
+export const checkUsername = (username: string) =>
+  apiFetch<{ available: boolean }>(
+    `/api/auth/sign-up?username=${encodeURIComponent(username)}`,
+    { cache: 'no-store', showErrorToast: false }
+  );
 export const resendVerification = (email?: string) =>
   apiFetch('/api/profile/verification', { method: 'POST', body: email ? { email } : undefined, showErrorToast: false });
 export const createAddress = (input: unknown) =>
