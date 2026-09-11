@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import MainProvider from '@/components/provider/main-provider';
-import AuthHydration from '@/components/provider/auth-hydration';
+import UserHydrator from '@/components/provider/user-hydrator';
 import localFont from 'next/font/local';
 import { Suspense } from 'react';
 
@@ -35,7 +35,7 @@ const RootLayout = ({ children }: LayoutProps<'/'>) => {
       <body className={`${geist.className}  antialiased`}>
         <MainProvider>
           <Suspense fallback={null}>
-            <AuthHydration />
+            <UserHydrator />
           </Suspense>
           {children}
         </MainProvider>

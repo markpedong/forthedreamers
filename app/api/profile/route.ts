@@ -1,13 +1,15 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getCurrentUserID } from '@/lib/auth';
-import { updateUser, updateUserImage } from '@/lib/services/auth';
+import { getCurrentUserData, updateUser, updateUserImage } from '@/lib/services/auth';
 import { errorResponse, successResponse } from '@/lib/server-helper';
 
 const schema = z.union([
   z.object({ name: z.string().trim().min(1).max(100) }),
   z.object({ image: z.string().startsWith('data:image/').max(5_000_000) }),
 ]);
+
+export const GET = async () => successResponse({ user: await getCurrentUserData() });
 
 export const PATCH = async (request: NextRequest) => {
   const userId = await getCurrentUserID();

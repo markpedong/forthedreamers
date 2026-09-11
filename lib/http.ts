@@ -222,6 +222,9 @@ export const checkoutCart = (input: {
 
 // ─── Wishlist ──────────────────────────────────────────────────────────────
 
+export const getCurrentUser = () =>
+  apiFetch<{ user: TUserData | null }>('/api/profile', { cache: 'no-store', showErrorToast: false });
+
 export const getWishlistIds = () =>
   apiFetch<{ ids: string[] }>('/api/wishlist?ids=true', { cache: 'no-store', showErrorToast: false });
 

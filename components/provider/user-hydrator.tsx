@@ -1,16 +1,23 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getCurrentUser } from '@/lib/http';
 import { setUserData } from '@/redux/reducers/userData';
 import { useAppDispatch } from '@/redux/store';
-import type { TUserData } from '@/services/types';
 
-const UserHydrator = ({ user }: { user: TUserData | null }) => {
+const UserHydrator = () => {
   const dispatch = useAppDispatch();
+  const { data } = useQuery({
+    queryKey: ['current-user'],
+    queryFn: async () => (await getCurrentUser()).data?.user ?? null,
+    staleTime: Infinity,
+    retry: false,
+  });
 
   useEffect(() => {
-    if (user) dispatch(setUserData(user));
-  }, [dispatch, user]);
+    if (data) dispatch(setUserData(data));
+  }, [data, dispatch]);
 
   return null;
 };
