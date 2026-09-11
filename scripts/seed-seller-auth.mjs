@@ -20,13 +20,13 @@ const { data, error } = existing
   ? await supabase.auth.admin.updateUserById(existing.id, {
       password: PASSWORD,
       email_confirm: true,
-      user_metadata: { name: 'Dreamer Store' },
+      user_metadata: { username: 'dreamer_store', displayName: 'Dreamer Store' },
     })
   : await supabase.auth.admin.createUser({
       email: EMAIL,
       password: PASSWORD,
       email_confirm: true,
-      user_metadata: { name: 'Dreamer Store' },
+      user_metadata: { username: 'dreamer_store', displayName: 'Dreamer Store' },
     });
 if (error) throw new Error(error.message);
 console.log(existing ? 'updated existing auth user' : 'created auth user');
@@ -43,53 +43,51 @@ const prisma = new PrismaClient({
   }),
 });
 
-// Link seller@dreamers.com onto the seller's own existing store (never delete the other account:
-// the seller row and its products cascade with it).
-const existingSeller = await prisma.seller.findFirst({
-  where: { NOT: { userId: authId } },
-  select: { id: true, storeName: true },
-});
+// The DB seed (seed-products.ts) owns the store + products under a placeholder id.
+// Re-point that placeholder row at the real Supabase auth id so the login works,
+// and move the seller owner with it. Username/displayName stay with the store.
+const PLACEHOLDER_ID = 'test-seller-001';
 
-const owner = await prisma.user.upsert({
-  where: { id: authId },
-  update: { email: EMAIL, role: 'SELLER', emailVerified: true },
-  create: {
-    id: authId,
-    email: EMAIL,
-    name: 'Dreamer Store',
-    role: 'SELLER',
-    emailVerified: true,
-  },
-});
+const placeholder = await prisma.user.findUnique({ where: { id: PLACEHOLDER_ID }, select: { id: true } });
 
-const store = existingSeller
-  ? await prisma.seller.update({
-      where: { id: existingSeller.id },
-      data: { userId: owner.id },
-      select: { id: true, storeName: true },
-    })
-  : await prisma.seller.create({
-      data: {
-        userId: owner.id,
-        storeName: "Dreamer's Shop",
-        contact: '+1-555-0123',
-        rating: 4.5,
-        reviewCount: 128,
-        totalSales: 1542.5,
-        description: 'Premium quality products for dreamers and creators.',
-        address: '123 Dream Street, Creative City',
-        logo: 'https://placehold.co/200x200/4F46E5/FFFFFF?text=DS',
-        banner: 'https://placehold.co/1200x400/7C3AED/FFFFFF?text=Dreamer%27s+Shop',
-      },
-      select: { id: true, storeName: true },
+if (placeholder && placeholder.id !== authId) {
+  await prisma.$transaction(async tx => {
+    // Re-key the placeholder row in place. Creating a second user would trip user_email_key
+    // (the same email may already belong to another row), and seller.userId is an FK to user.id,
+    // so the row has to be re-pointed rather than duplicated. Products hang off seller, not user.
+    await tx.user.update({
+      where: { id: PLACEHOLDER_ID },
+      data: { id: authId, email: EMAIL, role: 'SELLER', emailVerified: true },
     });
-console.log(`linked ${EMAIL} -> seller "${store.storeName}" (${store.id})`);
+  });
+} else {
+  await prisma.user.upsert({
+    where: { id: authId },
+    update: { email: EMAIL, role: 'SELLER', emailVerified: true },
+    create: {
+      id: authId,
+      email: EMAIL,
+      username: 'dreamer_store',
+      displayName: 'Dreamer Store',
+      role: 'SELLER',
+      emailVerified: true,
+    },
+  });
+}
+
+const store = await prisma.seller.findUniqueOrThrow({
+  where: { userId: authId },
+  select: { id: true, storeName: true, _count: { select: { products: true } } },
+});
+console.log(
+  `linked ${EMAIL} -> seller "${store.storeName}" (${store.id}), ${store._count.products} products`
+);
 
 const { data: signIn, error: signInError } = await supabase.auth.signInWithPassword({
   email: EMAIL,
   password: PASSWORD,
 });
 if (signInError) throw new Error(`sign-in check failed: ${signInError.message}`);
-if (signIn.user.id !== owner.id) throw new Error('sign-in returned a different user id');
+if (signIn.user.id !== authId) throw new Error('sign-in returned a different user id');
 console.log('sign-in check: ok, userId =', signIn.user.id);
 await prisma.$disconnect();
