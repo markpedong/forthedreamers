@@ -45,7 +45,6 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
           label="Full Name"
           placeholder="John Doe"
           disabled={isSigningUp}
-          preventSpaces
         />
 
         <Input
