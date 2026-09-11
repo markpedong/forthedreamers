@@ -44,12 +44,16 @@ function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
 }
 
 function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div data-slot="card-content" className={cn('px-4 md:px-6', className)} />;
+  return <div data-slot="card-content" className={cn('px-4 md:px-6', className)} {...props} />;
 }
 
 function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
-    <div data-slot="card-footer" className={cn('flex items-center px-4 md:px-6 [.border-t]:pt-4 md:[.border-t]:pt-6', className)} />
+    <div
+      data-slot="card-footer"
+      className={cn('flex items-center px-4 md:px-6 [.border-t]:pt-4 md:[.border-t]:pt-6', className)}
+      {...props}
+    />
   );
 }
 
