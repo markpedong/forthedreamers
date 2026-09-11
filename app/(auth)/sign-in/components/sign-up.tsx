@@ -16,7 +16,8 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   const form = useForm<SchemaForm<typeof registrationSchema>>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
-      name: '',
+      username: '',
+      displayName: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -24,7 +25,12 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
   });
 
   const onSubmit = (values: SchemaForm<typeof registrationSchema>) =>
-    mutation.mutate({ email: values.email, password: values.password, name: values.name });
+    mutation.mutate({
+      email: values.email,
+      password: values.password,
+      username: values.username,
+      displayName: values.displayName || undefined,
+    });
   return (
     <AuthPage>
       <h1 className="text-2xl font-bold tracking-tight text-foreground">Create your account</h1>
@@ -41,9 +47,19 @@ const SignUp = ({ onNavigate }: { onNavigate: TOnNavigate }) => {
       >
         <Input
           control={form.control}
-          name="name"
-          label="Full Name"
-          placeholder="John Doe"
+          name="username"
+          label="Username"
+          placeholder="markpedong"
+          description="Lowercase letters, numbers, and underscores."
+          disabled={isSigningUp}
+          preventSpaces
+        />
+
+        <Input
+          control={form.control}
+          name="displayName"
+          label="Display name (optional)"
+          placeholder="Leave blank and we'll pick one for you"
           disabled={isSigningUp}
         />
 

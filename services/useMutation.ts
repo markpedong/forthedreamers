@@ -39,6 +39,7 @@ import {
 } from '@/lib/http';
 import type { ProductFormData, TProduct } from '@/lib/types';
 import { clearUserData, setUserData } from '@/redux/reducers/userData';
+import { setCurrentProfileTab } from '@/redux/reducers/appData';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { cartCountQueryKey, ordersQueryKey, productReviewsQueryKey, wishlistQueryKey } from './useQuery';
 import { supportTicketsQueryKey, wishlistItemsQueryKey } from './useQuery';
@@ -78,6 +79,7 @@ export const useSignOutMutation = () => {
 };
 
 export const useSignUpMutation = () => {
+  const dispatch = useAppDispatch();
   const router = useRouter();
 
   return useMutation({
@@ -85,6 +87,8 @@ export const useSignUpMutation = () => {
     onSuccess: (_result, input) => {
       toast.success('Account created successfully!', { duration: 3000 });
       sessionStorage.setItem('pending-verification-email', input.email);
+      // The persisted tab outlives the session; a fresh signup should land on personal info.
+      dispatch(setCurrentProfileTab('profile'));
       router.replace('/profile');
       // The profile page is a Server Component; without this the router serves the render it
       // cached before the signup cookie existed, so the page shows signed-out until a manual reload.
