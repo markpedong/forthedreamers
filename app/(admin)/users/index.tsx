@@ -21,7 +21,8 @@ import { useDeleteUserMutation, useSetUserBannedMutation } from '@/services/useM
 
 type UserWithRole = {
   id: string;
-  name: string;
+  username: string;
+  displayName: string;
   email: string;
   emailVerified: boolean;
   role?: string | null;
@@ -52,7 +53,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
 
   const handleEditUser = (userId: string) => {
     const user = users.find(u => u.id === userId);
-    if (user) toast.success(`Editing ${user.name}`);
+    if (user) toast.success(`Editing ${user.username}`);
   };
 
   const handleDeleteUser = (userId: string) => {
@@ -101,11 +102,19 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
 
   const columns: ProColumn<UserWithRole>[] = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      title: 'Username',
+      dataIndex: 'username',
+      sorter: (a, b) => a.username.localeCompare(b.username),
       fieldProps: {
-        placeholder: 'eg: John Doe',
+        placeholder: 'eg: markpedong',
+      },
+    },
+    {
+      title: 'Display name',
+      dataIndex: 'displayName',
+      sorter: (a, b) => a.displayName.localeCompare(b.displayName),
+      fieldProps: {
+        placeholder: 'eg: Cosmic Otter',
       },
     },
     {
@@ -213,8 +222,12 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-muted-foreground">Name</p>
-              <p className="font-medium">{selectedUser?.name}</p>
+              <p className="text-sm text-muted-foreground">Username</p>
+              <p className="font-medium">{selectedUser?.username}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Display name</p>
+              <p className="font-medium">{selectedUser?.displayName}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Role</p>
@@ -234,7 +247,7 @@ const UsersPage: FC<{ users: UserWithRole[] }> = ({ users }) => {
       </AlertDialog>
       <AlertDialog
         headerClassName="gap-0 mb-6"
-        title={`Delete ${selectedUser?.name}?`}
+        title={`Delete ${selectedUser?.username}?`}
         description="Please enter your 2FA code from your authenticator app"
         open={showDeleteUser}
         onOpenChange={setShowDeleteUser}

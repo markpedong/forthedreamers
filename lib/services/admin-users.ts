@@ -9,18 +9,15 @@ export const listUsers = async () => {
   if (error) throw new Error(error.message);
   const profiles = await prisma.user.findMany({
     where: { id: { in: data.users.map(user => user.id) } },
-    select: { id: true, name: true, emailVerified: true, role: true, banned: true },
+    select: { id: true, username: true, displayName: true, emailVerified: true, role: true, banned: true },
   });
   const profileById = new Map(profiles.map(profile => [profile.id, profile]));
   return data.users.map(user => {
     const profile = profileById.get(user.id);
     return {
       ...user,
-      name:
-        profile?.name ||
-        (typeof user.user_metadata.name === 'string' && user.user_metadata.name) ||
-        user.email?.split('@')[0] ||
-        'user',
+      username: profile?.username ?? '',
+      displayName: profile?.displayName ?? profile?.username ?? '',
       email: user.email ?? '',
       emailVerified: profile?.emailVerified ?? Boolean(user.email_confirmed_at),
       role: profile?.role ?? 'USER',
