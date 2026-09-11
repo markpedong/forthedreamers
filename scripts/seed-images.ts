@@ -50,17 +50,23 @@ const IMAGES: Record<string, string[]> = {
 
 const url = (id: string, w = 800) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
 
+// seed-images.ts keys Unsplash photos by the old 'test-product-N' ids; orderBy name matches
+// the order seed-products.ts declares them in (indexOf + 1), so map by position.
+const IMAGE_LIST = Object.keys(IMAGES)
+  .sort((a, b) => Number(a.replace('test-product-', '')) - Number(b.replace('test-product-', '')))
+  .map(k => IMAGES[k]);
+
 const main = async () => {
   const products = await prisma.product.findMany({
     select: { id: true, name: true, variants: { select: { id: true } } },
-    orderBy: { id: 'asc' },
+    orderBy: { name: 'asc' },
   });
 
   let updated = 0;
-  for (const product of products) {
-    const ids = IMAGES[product.id];
+  for (const [index, product] of products.entries()) {
+    const ids = IMAGE_LIST[index];
     if (!ids) {
-      console.log(`skip (no mapping): ${product.id} ${product.name}`);
+      console.log(`skip (no mapping): #${index} ${product.name}`);
       continue;
     }
 
