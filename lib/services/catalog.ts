@@ -168,7 +168,7 @@ export const productSupplemental = (productId: string, categoryId: string, selle
           title: true,
           comment: true,
           createdAt: true,
-          user: { select: { name: true, image: true } },
+          user: { select: { displayName: true, username: true, image: true } },
           variant: { select: { name: true } },
         },
         orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],

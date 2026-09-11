@@ -36,7 +36,7 @@ export const listReviews = async (slug: string, { page, limit, rating, sortBy, o
         title: true,
         comment: true,
         createdAt: true,
-        user: { select: { name: true, image: true } },
+        user: { select: { displayName: true, username: true, image: true } },
         variant: { select: { name: true } },
       },
       orderBy: [{ [sortBy]: order }, { id: 'asc' }],
@@ -88,7 +88,7 @@ export const createReview = async (userId: string, slug: string, validated: Revi
           title: true,
           comment: true,
           createdAt: true,
-          user: { select: { name: true, image: true } },
+          user: { select: { displayName: true, username: true, image: true } },
           variant: { select: { name: true } },
         },
       });

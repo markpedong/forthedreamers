@@ -116,10 +116,10 @@ const ProductReviews = ({ slug, initialReviews, summary }: ProductReviewsProps) 
                 <div className="flex items-center gap-3">
                   <Avatar>
                     <AvatarImage src={review.user.image ?? undefined} alt="" />
-                    <AvatarFallback>{(review.user.name ?? 'U').slice(0, 1).toUpperCase()}</AvatarFallback>
+                    <AvatarFallback>{(review.user.displayName ?? review.user.username ?? 'U').slice(0, 1).toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-medium text-foreground">{review.user.name}</p>
+                    <p className="font-medium text-foreground">{review.user.displayName || review.user.username}</p>
                     <p className="text-xs text-muted-foreground">{new Date(review.createdAt).toLocaleDateString()}</p>
                   </div>
                 </div>

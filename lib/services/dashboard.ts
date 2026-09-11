@@ -227,7 +227,7 @@ const getSellerRecentOrders = async (sellerId: string, range: DashboardRange) =>
       total: true,
       createdAt: true,
       sellerId: true,
-      user: { select: { name: true } },
+      user: { select: { displayName: true, username: true } },
       orderItems: {
         where: sellerItems(sellerId),
         select: { quantity: true, finalPriceAfterDiscount: true },
@@ -237,7 +237,7 @@ const getSellerRecentOrders = async (sellerId: string, range: DashboardRange) =>
 
   return orders.map(order => ({
     id: order.id,
-    customer: order.user.name || 'Customer',
+    customer: order.user.displayName || order.user.username || 'Customer',
     itemCount: order.orderItems.reduce((sum, item) => sum + item.quantity, 0),
     amount: order.orderItems.reduce((sum, item) => sum + item.finalPriceAfterDiscount, 0),
     status: order.status,
@@ -256,14 +256,14 @@ const getAdminRecentOrders = async (range: DashboardRange) => {
       status: true,
       total: true,
       createdAt: true,
-      user: { select: { name: true } },
+      user: { select: { displayName: true, username: true } },
       orderItems: { select: { quantity: true } },
     },
   });
 
   return orders.map(order => ({
     id: order.id,
-    customer: order.user.name || 'Customer',
+    customer: order.user.displayName || order.user.username || 'Customer',
     itemCount: order.orderItems.reduce((sum, item) => sum + item.quantity, 0),
     amount: order.total,
     status: order.status,

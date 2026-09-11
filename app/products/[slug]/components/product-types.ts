@@ -29,7 +29,8 @@ export type ProductReview = {
   comment: string | null;
   createdAt: string;
   user: {
-    name: string | null;
+    displayName: string;
+    username: string;
     image: string | null;
   };
   variant: {
