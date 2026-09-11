@@ -48,45 +48,51 @@ const IMAGES: Record<string, string[]> = {
   ],
 };
 
-const url = (id: string, w = 800) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const IMAGE_KEY_BY_PRODUCT: Record<string, string> = {
+  'Wireless Bluetooth Headphones': 'test-product-1',
+  'Organic Cotton T-Shirt': 'test-product-2',
+  'Smart Home Speaker': 'test-product-3',
+  'Ceramic Pour-Over Coffee Set': 'test-product-4',
+  'Yoga Mat Premium': 'test-product-5',
+  'The Art of Programming': 'test-product-6',
+  'Building Blocks Mega Set': 'test-product-7',
+  'Natural Face Serum': 'test-product-8',
+  'LED Desk Lamp': 'test-product-9',
+  'Carbon Road Bike': 'test-product-10',
+};
 
-// seed-images.ts keys Unsplash photos by the old 'test-product-N' ids; orderBy name matches
-// the order seed-products.ts declares them in (indexOf + 1), so map by position.
-const IMAGE_LIST = Object.keys(IMAGES)
-  .sort((a, b) => Number(a.replace('test-product-', '')) - Number(b.replace('test-product-', '')))
-  .map(k => IMAGES[k]);
+const url = (id: string, w = 800) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const variantUrl = (product: string, variant: string) =>
+  `https://placehold.co/800x800/111827/FFFFFF?text=${encodeURIComponent(`${product}\n${variant}`)}`;
 
 const main = async () => {
   const products = await prisma.product.findMany({
-    select: { id: true, name: true, variants: { select: { id: true } } },
-    orderBy: { name: 'asc' },
+    where: { name: { in: Object.keys(IMAGE_KEY_BY_PRODUCT) } },
+    select: { id: true, name: true, variants: { select: { id: true, name: true } } },
   });
 
   let updated = 0;
-  for (const [index, product] of products.entries()) {
-    const ids = IMAGE_LIST[index];
+  for (const product of products) {
+    const ids = IMAGES[IMAGE_KEY_BY_PRODUCT[product.name]];
     if (!ids) {
-      console.log(`skip (no mapping): #${index} ${product.name}`);
+      console.log(`skip (no mapping): ${product.name}`);
       continue;
     }
 
-    // Randomize which photos this product gets, so nothing looks uniform.
-    const shuffled = [...ids].sort(() => Math.random() - 0.5);
-    const gallery = shuffled.map(id => url(id));
+    const gallery = ids.map(id => url(id));
 
-    await prisma.product.update({
-      where: { id: product.id },
-      data: { images: gallery },
-    });
-
-    // Give each variant its own randomly picked lead image.
-    for (const variant of product.variants) {
-      const pick = gallery[Math.floor(Math.random() * gallery.length)];
-      await prisma.variant.update({ where: { id: variant.id }, data: { image: pick } });
-    }
+    await prisma.$transaction([
+      prisma.product.update({ where: { id: product.id }, data: { images: gallery } }),
+      ...product.variants.map(variant =>
+        prisma.variant.update({
+          where: { id: variant.id },
+          data: { image: variantUrl(product.name, variant.name) },
+        })
+      ),
+    ]);
 
     updated++;
-    console.log(`✓ ${product.name}: ${gallery.length} images, ${product.variants.length} variants`);
+    console.log(`✓ ${product.name}: ${gallery.length} product images, ${product.variants.length} variant images`);
   }
 
   console.log(`\nupdated ${updated}/${products.length} products`);

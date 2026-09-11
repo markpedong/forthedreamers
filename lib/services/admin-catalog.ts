@@ -62,7 +62,7 @@ export const productSchema = z.object({
   basePrice: z.number().finite().nonnegative().nullable().optional(),
   stock: z.number().int().nonnegative().nullable().optional(),
   description: z.string().max(20000),
-  images: z.array(z.string()).max(20),
+  images: z.array(z.string()).min(1).max(20),
   tags: z.array(z.string()).max(100),
   status: z.enum(['ACTIVE', 'INACTIVE']),
   specs: z.array(z.object({ id: idSchema.optional(), label: z.string().min(1), value: z.string() })).max(100),
@@ -130,7 +130,7 @@ export const saveProduct = async (input: ProductInput, editing: boolean) => {
             stock: fields.stock ?? 0,
             discountedPrice: null,
             coupon: null,
-            image: fields.images[0] ?? null,
+            image: null,
             attributes: {},
           },
         ];

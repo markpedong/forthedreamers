@@ -99,12 +99,6 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
       return;
     }
 
-    if (values.images.length === 0) {
-      setTab('basic');
-      toast.error('Please add at least one image');
-      return;
-    }
-
     const { category, ...rest } = values;
     const currCategory = categories.find(c => c.name === category);
     if (!currCategory) {
@@ -129,7 +123,8 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
   };
 
   const handleInvalid = (errors: FieldErrors<SchemaForm<typeof productFormSchema>>) => {
-    if (errors.variants || errors.basePrice || errors.stock) setTab('inventory');
+    if (errors.images) setTab('basic');
+    else if (errors.variants || errors.basePrice || errors.stock) setTab('inventory');
     else if (errors.specs || errors.tags) setTab('details');
     else setTab('basic');
     toast.error('Please review the highlighted fields');
@@ -183,7 +178,7 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
                 placeholder="Enter product description..."
               />
               <div>
-                <Label>Product Images</Label>
+                <Label>Product Images *</Label>
                 <div className="mt-1.5">
                   <ImageUploader
                     images={images || []}
@@ -193,6 +188,9 @@ const ProductFormModal: FC<ProductFormModalProps> = props => {
                     maxImages={5}
                   />
                 </div>
+                {form.formState.errors.images?.message && (
+                  <p className="mt-1.5 text-sm text-destructive">{form.formState.errors.images.message}</p>
+                )}
               </div>
             </TabsContent>
             <TabsContent value="inventory" className="space-y-6">

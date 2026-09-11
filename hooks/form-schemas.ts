@@ -139,7 +139,7 @@ const productFormSchema = z
     brand: z.string().max(100, 'Brand must be less than 100 characters'),
     basePrice: z.number().nullable().optional(),
     description: z.string().max(20000, 'Description must be less than 20000 characters'),
-    images: z.array(z.string()).default([]),
+    images: z.array(z.string()).min(1, 'At least one product image is required'),
     tags: z.array(z.string()).default([]),
     stock: z.number().nullable().optional(),
     status: z.enum(PRODUCT_STATUS).default('INACTIVE'),

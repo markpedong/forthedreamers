@@ -12,20 +12,33 @@ interface ProductPageClientProps {
 }
 
 const ProductPageClient = ({ product }: ProductPageClientProps) => {
-  const [selectedId, setSelectedId] = useState(
-    () => (product.variants.find(variant => variant.stock > 0) ?? product.variants[0])?.id
+  const hasVariantOptions =
+    product.variants.length > 1 || Object.keys(product.variants[0]?.attributes ?? {}).length > 0;
+  const [selectedId, setSelectedId] = useState(() =>
+    hasVariantOptions ? undefined : (product.variants.find(variant => variant.stock > 0) ?? product.variants[0])?.id
   );
+  const [hoveredId, setHoveredId] = useState<string>();
+  const [showProductImage, setShowProductImage] = useState(false);
   const selectedVariant = product.variants.find(variant => variant.id === selectedId) ?? null;
-  const images = selectedVariant?.image
-    ? [selectedVariant.image, ...product.images.filter(image => image !== selectedVariant.image)]
+  const productImages = hasVariantOptions
+    ? product.images.filter(image => product.variants.every(variant => variant.image !== image))
     : product.images;
+  const previewVariant =
+    product.variants.find(variant => variant.id === hoveredId) ??
+    (hasVariantOptions && !showProductImage ? selectedVariant : null);
 
   return (
     <section className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:gap-16">
-      <ProductGallery key={selectedVariant?.id ?? 'product'} images={images} alt={product.name} />
+      <ProductGallery
+        images={productImages}
+        previewImage={previewVariant?.image}
+        alt={product.name}
+        onSelectImage={() => setShowProductImage(true)}
+        onProductImageClick={selectedVariant && showProductImage ? () => setShowProductImage(false) : undefined}
+      />
       <div className="flex flex-col">
         <ProductOverview product={product} selectedVariant={selectedVariant} />
-        {(product.variants.length > 1 || Object.keys(product.variants[0]?.attributes ?? {}).length > 0) && (
+        {hasVariantOptions && (
           <fieldset className="mt-6 space-y-3">
             <legend className="text-sm font-medium">Choose an option</legend>
             <div className="flex flex-wrap gap-2">
@@ -36,7 +49,12 @@ const ProductPageClient = ({ product }: ProductPageClientProps) => {
                   variant={selectedId === variant.id ? 'default' : 'outline'}
                   className="h-auto whitespace-normal py-3 text-left"
                   aria-pressed={selectedId === variant.id}
-                  onClick={() => setSelectedId(variant.id)}
+                  onClick={() => {
+                    setSelectedId(current => (current === variant.id ? undefined : variant.id));
+                    setShowProductImage(false);
+                  }}
+                  onMouseEnter={() => setHoveredId(variant.id)}
+                  onMouseLeave={() => setHoveredId(undefined)}
                 >
                   {variant.name}
                   {Object.keys(variant.attributes).length > 0 &&

@@ -10,31 +10,34 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface ProductGalleryProps {
   images: string[];
+  previewImage?: string | null;
   alt: string;
+  onSelectImage?: () => void;
+  onProductImageClick?: () => void;
 }
 
-const ProductGallery = ({ images, alt }: ProductGalleryProps) => {
+const ProductGallery = ({ images, previewImage, alt, onSelectImage, onProductImageClick }: ProductGalleryProps) => {
   const validImages = images.filter(Boolean);
   const hasMultiple = validImages.length > 1;
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
-  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
 
-  const currentImage = validImages[selectedIndex];
-  const hasError = imageErrors.has(selectedIndex);
+  const currentImage = previewImage || validImages[selectedIndex];
+  const hasError = currentImage ? imageErrors.has(currentImage) : false;
 
   const handlePrev = () => setSelectedIndex(prev => (prev === 0 ? validImages.length - 1 : prev - 1));
   const handleNext = () => setSelectedIndex(prev => (prev === validImages.length - 1 ? 0 : prev + 1));
 
-  const handleImageLoad = () => setLoadedImages(prev => new Set(prev).add(selectedIndex));
+  const handleImageLoad = () => currentImage && setLoadedImages(prev => new Set(prev).add(currentImage));
   const handleImageError = () => {
-    setImageErrors(prev => new Set(prev).add(selectedIndex));
+    if (currentImage) setImageErrors(prev => new Set(prev).add(currentImage));
   };
 
   const renderMainImage = () => {
     if (!currentImage || hasError) return <ImagePlaceholder hasError={Boolean(currentImage)} />;
 
-    return (
+    const image = (
       <Image
         src={currentImage}
         alt={alt}
@@ -46,16 +49,30 @@ const ProductGallery = ({ images, alt }: ProductGalleryProps) => {
         priority
       />
     );
+
+    return onProductImageClick ? (
+      <button
+        type="button"
+        className="absolute inset-0 cursor-pointer"
+        onClick={onProductImageClick}
+        aria-label="Return to selected variant image"
+      >
+        {image}
+      </button>
+    ) : (
+      image
+    );
   };
 
   const renderThumbnails = () =>
     validImages.map((img, idx) => {
-      const thumbError = imageErrors.has(idx);
+      const thumbError = imageErrors.has(img);
       return (
         <button
           key={idx}
           onClick={() => {
             setSelectedIndex(idx);
+            onSelectImage?.();
           }}
           className={cn(
             'relative size-16 shrink-0 overflow-hidden rounded-lg border-2 transition-all duration-200 md:size-20',
@@ -75,7 +92,7 @@ const ProductGallery = ({ images, alt }: ProductGalleryProps) => {
               fill
               sizes="80px"
               className="object-cover"
-              onError={() => setImageErrors(prev => new Set(prev).add(idx))}
+              onError={() => setImageErrors(prev => new Set(prev).add(img))}
             />
           )}
         </button>
@@ -85,12 +102,12 @@ const ProductGallery = ({ images, alt }: ProductGalleryProps) => {
   return (
     <div className="flex flex-col gap-4" role="region" aria-label={`${alt} image gallery`}>
       <div className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted/20">
-        {!loadedImages.has(selectedIndex) && currentImage && !hasError && (
+        {currentImage && !loadedImages.has(currentImage) && !hasError && (
           <Skeleton className="absolute inset-0 z-10" />
         )}
         {renderMainImage()}
 
-        {hasMultiple && (
+        {hasMultiple && !previewImage && (
           <>
             <Button
               variant="outline"
@@ -118,7 +135,9 @@ const ProductGallery = ({ images, alt }: ProductGalleryProps) => {
         )}
       </div>
 
-      {hasMultiple && <div className="flex gap-2 overflow-x-auto px-1 py-2">{renderThumbnails()}</div>}
+      {validImages.length > 0 && (hasMultiple || previewImage) && (
+        <div className="flex gap-2 overflow-x-auto px-1 py-2">{renderThumbnails()}</div>
+      )}
     </div>
   );
 };
