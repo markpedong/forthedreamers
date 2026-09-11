@@ -4,8 +4,8 @@ import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | For The Dreamers',
-    absolute: 'For The Dreamers',
+    template: '%s | For the Dreamers',
+    absolute: 'For the Dreamers',
   },
   description: 'Curated finds, secure checkout.',
 };

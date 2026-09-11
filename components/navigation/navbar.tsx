@@ -21,6 +21,7 @@ import { isDashboardRoute } from '@/constants';
 import CartItemCount from './cart-item-count';
 import { useAppSelector } from '@/redux/store';
 import { useSignOutMutation } from '@/services/useMutation';
+import { Logo } from '@/components/brand/logo';
 
 const Navbar: FC = () => {
   const signOutMutation = useSignOutMutation();
@@ -106,8 +107,8 @@ const Navbar: FC = () => {
             'gap-3': isMobile,
           })}
         >
-          <Link href="/" className="font-bold text-primary">
-            FTD
+          <Link href="/" aria-label="For the Dreamers home" className="shrink-0">
+            <Logo />
           </Link>
           {!isMobile && (
             <>

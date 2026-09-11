@@ -22,11 +22,23 @@ const geist = localFont({
 });
 
 export const metadata: Metadata = {
+  applicationName: 'For the Dreamers',
   title: {
     template: '%s | For the Dreamers',
     absolute: 'For the Dreamers',
   },
   description: 'A modern marketplace for independent dreamers and makers.',
+  openGraph: {
+    type: 'website',
+    siteName: 'For the Dreamers',
+    title: 'For the Dreamers',
+    description: 'A modern marketplace for independent dreamers and makers.',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'For the Dreamers',
+    description: 'A modern marketplace for independent dreamers and makers.',
+  },
 };
 
 const RootLayout = ({ children }: LayoutProps<'/'>) => {

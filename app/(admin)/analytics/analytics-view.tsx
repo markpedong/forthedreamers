@@ -250,7 +250,7 @@ const AnalyticsView = ({ data }: { data: AnalyticsData }) => {
       <header className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm font-medium text-primary">
-            {data.role === 'SELLER' ? data.storeName : 'ForTheDreamers'}
+            {data.role === 'SELLER' ? data.storeName : 'For the Dreamers'}
           </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">Analytics</h1>
           <p className="mt-1 text-sm text-muted-foreground">Trends across revenue, orders, and catalog.</p>

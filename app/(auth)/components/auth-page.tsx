@@ -1,5 +1,7 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import type { PropsWithChildren } from 'react';
+import { Logo } from '@/components/brand/logo';
 
 const AuthPage = ({ children }: PropsWithChildren) => (
   <main className="mx-auto flex min-h-screen max-w-7xl flex-col bg-background lg:flex-row">
@@ -10,7 +12,12 @@ const AuthPage = ({ children }: PropsWithChildren) => (
 
     {/* Left: form panel */}
     <div className="flex w-full flex-col justify-center px-4 py-12 sm:px-6 lg:w-[52%] lg:py-16">
-      <div className="w-full max-w-md">{children}</div>
+      <div className="w-full max-w-md">
+        <Link href="/" aria-label="For the Dreamers home" className="mb-8 inline-flex lg:mb-10">
+          <Logo />
+        </Link>
+        {children}
+      </div>
     </div>
 
     {/* Right: image card — hidden on mobile, shown on desktop */}

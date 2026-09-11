@@ -8,7 +8,6 @@ import {
   Package,
   BarChart3,
   Settings,
-  LogOut as Logo,
   ShoppingBag,
   Truck,
 } from 'lucide-react';
@@ -16,6 +15,7 @@ import { FC } from 'react';
 import { USER_ROLE } from '@/generated/prisma';
 import { useAppSelector } from '@/redux/store';
 import { Route } from 'next';
+import { Logo } from '@/components/brand/logo';
 
 const Sidebar: FC = () => {
   const user = useAppSelector(state => state.userData.data);
@@ -44,8 +44,9 @@ const Sidebar: FC = () => {
   return (
     <aside className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
       <div className="h-16 flex items-center px-6 border-b border-sidebar-border">
-        <Logo className="w-6 h-6 text-sidebar-primary mr-2" />
-        <span className="font-bold text-lg text-sidebar-foreground">Admin</span>
+        <Link href="/dashboard" aria-label="For the Dreamers dashboard" className="inline-flex">
+          <Logo className="text-sidebar-foreground" />
+        </Link>
       </div>
 
       <nav className="flex-1 overflow-y-auto py-6">
@@ -73,7 +74,7 @@ const Sidebar: FC = () => {
       </nav>
 
       <div className="p-4 border-t border-sidebar-border">
-        <div className="text-xs text-sidebar-foreground/60">© 2025 Admin</div>
+        <div className="text-xs text-sidebar-foreground/60">For the Dreamers studio</div>
       </div>
     </aside>
   );

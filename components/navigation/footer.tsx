@@ -7,6 +7,7 @@ import classNames from 'classnames';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { usePathname } from 'next/navigation';
 import { isDashboardRoute } from '@/constants';
+import { Logo } from '@/components/brand/logo';
 
 const links = {
   shop: [
@@ -33,7 +34,9 @@ const Footer: FC = () => {
     <footer className={classNames('mx-auto max-w-7xl px-4 py-10 pb-6 md:py-16', isMobile && 'pb-24')}>
       <div className="mb-10 grid grid-cols-1 gap-8 md:mb-16 md:grid-cols-3 md:gap-12">
         <div className="space-y-3 md:space-y-4">
-          <h4 className="text-base font-bold uppercase tracking-tighter md:text-lg">ForTheDreamers</h4>
+          <Link href="/" aria-label="For the Dreamers home" className="inline-flex">
+            <Logo />
+          </Link>
           <p className="text-sm leading-relaxed text-neutral-500">
             A digital space for the modern minimalist. Curated with care, designed for life.
           </p>
@@ -42,7 +45,7 @@ const Footer: FC = () => {
         <Section title="Support" items={links.support} />
       </div>
       <div className="pt-6 text-center text-xs text-neutral-400 md:pt-8 md:text-left">
-        © {new Date().getFullYear()} ForTheDreamers. All rights reserved.
+        © {new Date().getFullYear()} For the Dreamers. All rights reserved.
       </div>
     </footer>
   );
